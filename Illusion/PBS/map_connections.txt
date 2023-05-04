@@ -1,0 +1,76 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+# Safari Zone: Forest (10) - Safari Zone: Desert (11)
+10,North,0,11,South,0
+# Safari Zone: Marsh (12) - Safari Zone: Desert (11)
+12,South,2,11,North,0
+# Berheide (15) - Hornfeldcity (17)
+15,West,0,17,East,23
+# Hornfeldcity (17) - Hornbach (30)
+17,West,21,30,East,0
+# Trees (18) - Schwalbenweg (86)
+18,South,0,86,North,30
+# Gronhafen (87) - Trees (18)
+87,West,0,18,East,26
+# Trees (20) - Trees (18)
+20,West,0,18,East,6
+# Gronsee (300) - Trees (18)
+300,West,0,18,East,83
+# Trees (19) - Schwalbenweg (86)
+19,North,0,86,South,30
+# Trees (19) - Gronhafen (87)
+19,East,0,87,West,24
+# Trees (20) - Trees (19)
+20,West,44,19,East,0
+# Gronsee (300) - Trees (19)
+300,West,0,19,East,33
+# Trees (20) - Schwalbenweg (86)
+20,West,24,86,East,0
+# Trees (20) - Gronhafen (87)
+20,South,0,87,North,0
+# Schmidrütli (31) - Hornbach (30)
+31,East,0,30,West,0
+# Wishing Well (50) - Hornbach (30)
+50,South,50,30,North,0
+# Wishing Well (50) - Schmidrütli (31)
+50,South,0,31,North,0
+# Wanderweg (95) - Schmidrütli (31)
+95,East,17,31,West,0
+# Wanderweg (95) - Wishing Well (50)
+95,East,0,50,West,22
+# Wishing Well (64) - Liliko'i (89)
+64,East,0,89,West,16
+# Bermoor (76) - Bad Bernau-Tempel (69)
+76,North,0,69,South,16
+# Pfützenpfad (350) - Bad Bernau-Tempel (69)
+350,East,0,69,West,0
+# Gronhafen (87) - Schwalbenweg (86)
+87,West,4,86,East,0
+# Gronsee (300) - Schwalbenweg (86)
+300,West,0,86,East,53
+# Gronsee (300) - Gronhafen (87)
+300,North,0,87,South,0
+# Teufelsbrücke (351) - Pfützenpfad (350)
+351,East,0,350,West,0
+# Zwielichtung (352) - Teufelsbrücke (351)
+352,East,0,351,West,0
+# Goodvale (353) - Zwielichtung (352)
+353,East,9,352,West,0
+# Brennende Felder (354) - Goodvale (353)
+354,East,8,353,West,0
+# Gangervill (355) - Brennende Felder (354)
+355,East,0,354,West,4
+# Siedlingen (32) - Wiesenflur (77)
+32,East,19,77,West,0
+# Normallichtung (133) - Wiesenflur (77)
+133,South,0,77,North,0
+# Gallenstedt (78) - Wiesenflur (77)
+78,West,3,77,East,0
+# Siedlerforst (200) - Siedlingen (32)
+200,South,13,32,North,0
+# Normallichtung (133) - Siedlingen (32)
+133,West,13,32,East,0
+# Hagerode (203) - Siedlerforst (200)
+203,South,13,200,North,0
+# Frostfeld (85) - Hagerode (203)
+85,South,0,203,North,9
