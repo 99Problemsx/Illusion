@@ -57,7 +57,7 @@ EliteBattle.defineMoveAnimation(:THUNDERBOLT) do | args |
         t = rand(5)*48
         fp["#{j}"].opacity = 255
         fp["#{j}"].tone = Tone.new(t,t,t)
-        fp["#{j}"].mirror = (rand(2)==0 ? true : false)
+        fp["#{j}"].mirror = (rand(2)==0)
       end
       fp["#{j}"].src_rect.x += 98
       fp["#{j}"].src_rect.x = 0 if fp["#{j}"].src_rect.x >= 294

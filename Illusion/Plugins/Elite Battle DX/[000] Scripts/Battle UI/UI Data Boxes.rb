@@ -95,7 +95,7 @@ class DataBoxEBDX  <  SpriteWrapper
         @colors = data[:HPCOLORS] if data.has_key?(:HPCOLORS) && data[:HPCOLORS].is_a?(String)
         @containerBmp = data[:CONTAINER] if data.has_key?(:CONTAINER) && data[:CONTAINER].is_a?(String)
         # expand databox even in doubles
-        @expandDouble = data[:EXPANDINDOUBLES] == true ? true : false if data.has_key?(:EXPANDINDOUBLES)
+        @expandDouble = data[:EXPANDINDOUBLES] == true if data.has_key?(:EXPANDINDOUBLES)
         @showexp = true if @expandDouble && @playerpoke && @battler.pbOwnedByPlayer?
         @showhp = true if @expandDouble && @playerpoke
         # applies a set of possible modifier keys
