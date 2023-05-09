@@ -249,7 +249,7 @@ class VoltseonsPauseMenu_Scene
     shadowColor = LOCATION_TEXTOUTLINE[$PokemonSystem.current_menu_theme].is_a?(Color) ? LOCATION_TEXTOUTLINE[$PokemonSystem.current_menu_theme] : Color.new(48,48,48)
     xOffset = @sprites["location"].bitmap.width - 64
     pbSetSystemFont(@sprites["location"].bitmap)
-    pbDrawTextPositions(@sprites["location"].bitmap,[["#{$game_map.name}",xOffset,12,1,baseColor,shadowColor,true]])
+    pbDrawTextPositions(@sprites["location"].bitmap,[[$game_map.name.to_s,xOffset,12,1,baseColor,shadowColor,true]])
     @sprites["location"].x = -@sprites["location"].bitmap.width + (@sprites["location"].bitmap.text_size($game_map.name).width + 64 + 32)
     @components.each do |component|
       component.refresh

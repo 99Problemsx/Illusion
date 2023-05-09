@@ -21,17 +21,17 @@ EliteBattle.defineMoveAnimation(:ROLLOUT) do
   fp["bg"].opacity = 0
   # init
   for j in 0...5
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb458_13")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height + 16
-    fp["#{j}"].zoom_x = factor*0.75
-    fp["#{j}"].zoom_y = factor*0.75
-    fp["#{j}"].opacity = 0
-    fp["#{j}"].x = cx
-    fp["#{j}"].y = cy
-    fp["#{j}"].z = @userIsPlayer ? 29 : 19
-    fp["#{j}"].angle = 60*j + 30
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb458_13")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height + 16
+    fp[j.to_s].zoom_x = factor*0.75
+    fp[j.to_s].zoom_y = factor*0.75
+    fp[j.to_s].opacity = 0
+    fp[j.to_s].x = cx
+    fp[j.to_s].y = cy
+    fp[j.to_s].z = @userIsPlayer ? 29 : 19
+    fp[j.to_s].angle = 60*j + 30
   end
   fp["ring"] = Sprite.new(@viewport)
   fp["ring"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb458_12")
@@ -53,9 +53,9 @@ EliteBattle.defineMoveAnimation(:ROLLOUT) do
       fp["ring"].zoom_y += factor/16.0
     elsif i < 64
       for j in 0...5
-        fp["#{j}"].zoom_x += 0.05*factor*((i < 24) ? 0.5 : 0.25)
-        fp["#{j}"].zoom_y += 0.05*factor*((i < 24) ? 0.5 : 0.25)
-        fp["#{j}"].opacity += 32*((i < 24) ? 1 : -1)
+        fp[j.to_s].zoom_x += 0.05*factor*((i < 24) ? 0.5 : 0.25)
+        fp[j.to_s].zoom_y += 0.05*factor*((i < 24) ? 0.5 : 0.25)
+        fp[j.to_s].opacity += 32*((i < 24) ? 1 : -1)
       end
       fp["ring"].opacity -= 8
     end

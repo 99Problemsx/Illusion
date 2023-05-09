@@ -248,17 +248,17 @@ class QuestData
 
   # Get ID number for quest
   def getID(quest)
-    return "#{QuestModule.const_get(quest)[:ID]}"
+    return (QuestModule.const_get(quest)[:ID]).to_s
   end
 
   # Get quest name
   def getName(quest)
-    return "#{QuestModule.const_get(quest)[:Name]}"
+    return (QuestModule.const_get(quest)[:Name]).to_s
   end
 
   # Get name of quest giver
   def getQuestGiver(quest)
-    return "#{QuestModule.const_get(quest)[:QuestGiver]}"
+    return (QuestModule.const_get(quest)[:QuestGiver]).to_s
   end
 
   # Get array of quest stages
@@ -272,24 +272,24 @@ class QuestData
 
   # Get quest reward
   def getQuestReward(quest)
-    return "#{QuestModule.const_get(quest)[:RewardString]}"
+    return (QuestModule.const_get(quest)[:RewardString]).to_s
   end
 
   # Get overall quest description
   def getQuestDescription(quest)
-    return "#{QuestModule.const_get(quest)[:QuestDescription]}"
+    return (QuestModule.const_get(quest)[:QuestDescription]).to_s
   end
 
   # Get current task location
   def getStageLocation(quest,stage)
-    loc = ("Location" + "#{stage}").to_sym
-    return "#{QuestModule.const_get(quest)[loc]}"
+    loc = ("Location" + stage.to_s).to_sym
+    return (QuestModule.const_get(quest)[loc]).to_s
   end  
 
   # Get summary of current task
   def getStageDescription(quest,stage)
-    stg = ("Stage" + "#{stage}").to_sym
-    return "#{QuestModule.const_get(quest)[stg]}"
+    stg = ("Stage" + stage.to_s).to_sym
+    return (QuestModule.const_get(quest)[stg]).to_s
   end 
 
   # Get maximum number of tasks for quest

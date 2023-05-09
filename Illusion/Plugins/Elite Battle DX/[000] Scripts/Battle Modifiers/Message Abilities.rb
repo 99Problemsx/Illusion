@@ -18,7 +18,7 @@ class Battle::Scene
     bitmap = @sprites["abilityMessage"].bitmap
     # draws text with outline
     pbDrawOutlineText(bitmap, 28, 4, bitmap.width - 38, bitmap.font.size, _INTL("{1}'s", battler.name), baseColor, Color.new(0, 0, 0, 125), 0)
-    pbDrawOutlineText(bitmap, 0, bitmap.height/2 + 4, bitmap.width - 28, bitmap.font.size, "#{effect}", baseColor, Color.new(0, 0, 0, 125), 2)
+    pbDrawOutlineText(bitmap, 0, bitmap.height/2 + 4, bitmap.width - 28, bitmap.font.size, effect.to_s, baseColor, Color.new(0, 0, 0, 125), 2)
     # positions message box
     width = bitmap.width
     @sprites["abilityMessage"].x = playerBattler?(battler) ? (-width - width%10) : (Graphics.width + width%10)

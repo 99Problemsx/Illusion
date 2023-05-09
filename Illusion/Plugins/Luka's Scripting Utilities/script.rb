@@ -923,15 +923,15 @@ class TrailingSprite
   def update
     @frame += 1
     if @frame > @keyFrame.delta_add(false)
-      @sprites["#{@i}"] = Sprite.new(@viewport)
-      @sprites["#{@i}"].bitmap = @bmp
-      @sprites["#{@i}"].center
-      @sprites["#{@i}"].x = x
-      @sprites["#{@i}"].y = y
-      @sprites["#{@i}"].z = z
-      @sprites["#{@i}"].zoom_x = @zoom_x
-      @sprites["#{@i}"].zoom_y = @zoom_y
-      @sprites["#{@i}"].opacity = @opacity
+      @sprites[@i.to_s] = Sprite.new(@viewport)
+      @sprites[@i.to_s].bitmap = @bmp
+      @sprites[@i.to_s].center
+      @sprites[@i.to_s].x = x
+      @sprites[@i.to_s].y = y
+      @sprites[@i.to_s].z = z
+      @sprites[@i.to_s].zoom_x = @zoom_x
+      @sprites[@i.to_s].zoom_y = @zoom_y
+      @sprites[@i.to_s].opacity = @opacity
       @i += 1
       @frame = 0
     end
@@ -1093,7 +1093,7 @@ class CallbackWrapper
   #-----------------------------------------------------------------------------
   def execute(block, *args)
     @params.each do |key, value|
-      args.instance_variable_set("@#{key.to_s}", value)
+      args.instance_variable_set("@#{key}", value)
     end
     args.instance_eval(&block)
   end

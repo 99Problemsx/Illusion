@@ -15,16 +15,16 @@ EliteBattle.defineMoveAnimation(:FIRESPIN) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.new(130,52,42))
   fp["bg"].opacity = 0
   for j in 0...flames
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb136")
-    fp["#{j}"].src_rect.set(0,101*rand(3),53,101)
-    fp["#{j}"].ox = 26
-    fp["#{j}"].oy = 101
-    fp["#{j}"].zoom_x = factor
-    fp["#{j}"].zoom_y = factor
-    fp["#{j}"].opacity = 0
-    fp["#{j}"].y = cy - 48*factor - k*2*factor
-    fp["#{j}"].x = cx + 64*factor - (j%4)*32*factor
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb136")
+    fp[j.to_s].src_rect.set(0,101*rand(3),53,101)
+    fp[j.to_s].ox = 26
+    fp[j.to_s].oy = 101
+    fp[j.to_s].zoom_x = factor
+    fp[j.to_s].zoom_y = factor
+    fp[j.to_s].opacity = 0
+    fp[j.to_s].y = cy - 48*factor - k*2*factor
+    fp[j.to_s].x = cx + 64*factor - (j%4)*32*factor
     reversed.push([false,true][j/4])
   end
   #-----------------------------------------------------------------------------
@@ -40,17 +40,17 @@ EliteBattle.defineMoveAnimation(:FIRESPIN) do
     pbSEPlay("Anim/Smokescreen",120) if i==50
     vol -= 5 if i%8 == 0
     for j in 0...flames
-      reversed[j] = true if fp["#{j}"].x <= cx - 64*factor
-      reversed[j] = false if fp["#{j}"].x >= cx + 64*factor
-      fp["#{j}"].z = reversed[j] ? @targetSprite.z - 1 : @targetSprite.z + 1
-      fp["#{j}"].y = cy - 48*factor - k*2*factor - (reversed[j] ? 4*factor : 0) + 120 if !@targetIsPlayer
-      fp["#{j}"].y = cy - 48*factor - k*2*factor - (reversed[j] ? 4*factor : 0) + 200 if @targetIsPlayer
-      fp["#{j}"].x -= reversed[j] ? -4*factor : 4*factor
+      reversed[j] = true if fp[j.to_s].x <= cx - 64*factor
+      reversed[j] = false if fp[j.to_s].x >= cx + 64*factor
+      fp[j.to_s].z = reversed[j] ? @targetSprite.z - 1 : @targetSprite.z + 1
+      fp[j.to_s].y = cy - 48*factor - k*2*factor - (reversed[j] ? 4*factor : 0) + 120 if !@targetIsPlayer
+      fp[j.to_s].y = cy - 48*factor - k*2*factor - (reversed[j] ? 4*factor : 0) + 200 if @targetIsPlayer
+      fp[j.to_s].x -= reversed[j] ? -4*factor : 4*factor
 	  next if j>(i/4)
-      fp["#{j}"].opacity += 16 if fp["#{j}"].opacity < 150
-      fp["#{j}"].opacity -= 25 if i >= 48
-	  fp["#{j}"].src_rect.x += 53 if j%4==0
-      fp["#{j}"].src_rect.x = 0 if fp["#{j}"].src_rect.x >= fp["#{j}"].bitmap.width
+      fp[j.to_s].opacity += 16 if fp[j.to_s].opacity < 150
+      fp[j.to_s].opacity -= 25 if i >= 48
+	  fp[j.to_s].src_rect.x += 53 if j%4==0
+      fp[j.to_s].src_rect.x = 0 if fp[j.to_s].src_rect.x >= fp[j.to_s].bitmap.width
     end
     if i >= 30
       @targetSprite.ox += shake

@@ -23,21 +23,21 @@ EliteBattle.defineCommonAnimation(:LEECHSEED) do | args |
   factor = 1
   pbSEPlay("Anim/Absorb2", 80)
   for j in 0...frames
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/"+ext[rand(ext.length)])
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].x = cxT
-    fp["#{j}"].y = cyT
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/"+ext[rand(ext.length)])
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].x = cxT
+    fp[j.to_s].y = cyT
     z = [1,0.75,0.5,0.25][rand(4)]
-    fp["#{j}"].zoom_x = z*@userSprite.zoom_x
-    fp["#{j}"].zoom_y = z*@userSprite.zoom_y
+    fp[j.to_s].zoom_x = z*@userSprite.zoom_x
+    fp[j.to_s].zoom_y = z*@userSprite.zoom_y
     v = type == "mega" ? 1 : 0
     ox = -16*factor + rand(32*factor) - 32*v + rand(64*v)
     oy = -16*factor + rand(32*factor) - 32*v + rand(64*v)
     vert = rand(96)*(rand(2)==0 ? 1 : -1)*(factor**2)
-    fp["#{j}"].z = 50
-    fp["#{j}"].opacity = 0
+    fp[j.to_s].z = 50
+    fp[j.to_s].opacity = 0
     curve = calculateCurve(cxT+ox,cyT+oy,mx,my+vert+oy,cxP+ox,cyP+oy,32)
     curves.push(curve)
     zoom.push(z)
@@ -62,19 +62,19 @@ EliteBattle.defineCommonAnimation(:LEECHSEED) do | args |
     for j in 0...frames
       next if j>i/(32/frames)
       k = i - j*(32/frames)
-      fp["#{j}"].visible = false if k >= frames
+      fp[j.to_s].visible = false if k >= frames
       k = frames - 1 if k >= frames
       k = 0 if k < 0
       if type == "giga"
-        fp["#{j}"].tone.red += 4
-        fp["#{j}"].tone.blue += 4
-        fp["#{j}"].tone.green += 4
+        fp[j.to_s].tone.red += 4
+        fp[j.to_s].tone.blue += 4
+        fp[j.to_s].tone.green += 4
       end
-      fp["#{j}"].x = curves[j][k][0]
-      fp["#{j}"].y = curves[j][k][1]
-      fp["#{j}"].opacity += (k < 16) ? 64 : -16
-      fp["#{j}"].zoom_x -= (fp["#{j}"].zoom_x - @targetSprite.zoom_x*zoom[j])*0.1
-      fp["#{j}"].zoom_y -= (fp["#{j}"].zoom_y - @targetSprite.zoom_y*zoom[j])*0.1
+      fp[j.to_s].x = curves[j][k][0]
+      fp[j.to_s].y = curves[j][k][1]
+      fp[j.to_s].opacity += (k < 16) ? 64 : -16
+      fp[j.to_s].zoom_x -= (fp[j.to_s].zoom_x - @targetSprite.zoom_x*zoom[j])*0.1
+      fp[j.to_s].zoom_y -= (fp[j.to_s].zoom_y - @targetSprite.zoom_y*zoom[j])*0.1
     end
     for k in 0...max
       next if type == "absorb"

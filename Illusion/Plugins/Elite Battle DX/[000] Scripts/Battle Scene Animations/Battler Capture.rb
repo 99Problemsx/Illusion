@@ -217,21 +217,21 @@ class Battle::Scene
       pokeball.color = Color.new(0, 0, 0, 0)
       fp = {}
       for j in 0...3
-        fp["#{j}"] = Sprite.new(pokeball.viewport)
-        fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebStar")
-        fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-        fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-        fp["#{j}"].x = pokeball.x
-        fp["#{j}"].y = pokeball.y
-        fp["#{j}"].opacity = 0
-        fp["#{j}"].z = pokeball.z + 1
+        fp[j.to_s] = Sprite.new(pokeball.viewport)
+        fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebStar")
+        fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+        fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+        fp[j.to_s].x = pokeball.x
+        fp[j.to_s].y = pokeball.y
+        fp[j.to_s].opacity = 0
+        fp[j.to_s].z = pokeball.z + 1
       end
       for i in 0...16
         for j in 0...3
-          fp["#{j}"].y -= [3,4,3][j]
-          fp["#{j}"].x -= [3,0,-3][j]
-          fp["#{j}"].opacity += 32*(i < 8 ? 1 : -1)
-          fp["#{j}"].angle += [4,2,-4][j]
+          fp[j.to_s].y -= [3,4,3][j]
+          fp[j.to_s].x -= [3,0,-3][j]
+          fp[j.to_s].opacity += 32*(i < 8 ? 1 : -1)
+          fp[j.to_s].angle += [4,2,-4][j]
         end
         @sprites["dataBox_#{targetBattler}"].opacity -= 25.5
         pokeball.color.alpha += 8

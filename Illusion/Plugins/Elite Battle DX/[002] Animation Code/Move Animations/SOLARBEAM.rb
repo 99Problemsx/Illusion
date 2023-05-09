@@ -19,12 +19,12 @@ EliteBattle.defineMoveAnimation(:SOLARBEAM_CHARGE) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.black)
   fp["bg"].opacity = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 50
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 50
   end
   k = 0
   c = [Tone.new(211,186,3),Tone.new(0,0,0)]
@@ -34,29 +34,29 @@ EliteBattle.defineMoveAnimation(:SOLARBEAM_CHARGE) do
   for i in 0...128
     cx, cy = @userSprite.getCenter
     for j in 0...12
-      if fp["#{j}"].opacity == 0
+      if fp[j.to_s].opacity == 0
         r = rand(2)
-        fp["#{j}"].zoom_x = factor*(r==0 ? 1 : 0.5)
-        fp["#{j}"].zoom_y = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].zoom_x = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].zoom_y = factor*(r==0 ? 1 : 0.5)
         x, y = randCircleCord(64*factor)
-        fp["#{j}"].x = cx - 64*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
-        fp["#{j}"].y = cy - 64*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
+        fp[j.to_s].x = cx - 64*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
+        fp[j.to_s].y = cy - 64*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
       end
       next if j>(i/4)
       x2 = cx
       y2 = cy
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].zoom_x -= fp["#{j}"].zoom_x*0.1
-      fp["#{j}"].zoom_y -= fp["#{j}"].zoom_y*0.1
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].zoom_x -= fp[j.to_s].zoom_x*0.1
+      fp[j.to_s].zoom_y -= fp[j.to_s].zoom_y*0.1
       if i >= 96
-        fp["#{j}"].opacity -= 35
+        fp[j.to_s].opacity -= 35
       elsif (x2 - x0)*0.1 < 1 && (y2 - y0)*0.1 < 1
-        fp["#{j}"].opacity = 0
+        fp[j.to_s].opacity = 0
       else
-        fp["#{j}"].opacity += 35
+        fp[j.to_s].opacity += 35
       end
     end
     if i < 96
@@ -92,12 +92,12 @@ EliteBattle.defineMoveAnimation(:SOLARBEAM_ATK) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.black)
   fp["bg"].opacity = 0
   for i in 0...72
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 19
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 19
     rndx.push(rand(64))
     rndy.push(rand(64))
     dx.push(0)
@@ -112,26 +112,26 @@ EliteBattle.defineMoveAnimation(:SOLARBEAM_ATK) do
     ax, ay = @userSprite.getAnchor
     cx, cy = @targetSprite.getCenter(true)
     for j in 0...72
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].tone.gray == 0
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].tone.gray == 0
         dx[j] = ax - 32*@userSprite.zoom_x*0.5 + rndx[j]*@userSprite.zoom_x*0.5
         dy[j] = ay - 32*@userSprite.zoom_y*0.5 + rndy[j]*@userSprite.zoom_y*0.5
-        fp["#{j}"].x = dx[j]
-        fp["#{j}"].y = dy[j]
+        fp[j.to_s].x = dx[j]
+        fp[j.to_s].y = dy[j]
       end
       next if j>(i)
       x2 = cx - 32*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
       y2 = cy - 32*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
       x0 = dx[j]
       y0 = dy[j]
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].opacity += 32
-      nextx = fp["#{j}"].x + (x2 - x0)*0.1
-      nexty = fp["#{j}"].y + (y2 - y0)*0.1
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].opacity += 32
+      nextx = fp[j.to_s].x + (x2 - x0)*0.1
+      nexty = fp[j.to_s].y + (y2 - y0)*0.1
       if !@targetIsPlayer
-        fp["#{j}"].z = @targetSprite.z - 1 if nextx > cx && nexty < cy
+        fp[j.to_s].z = @targetSprite.z - 1 if nextx > cx && nexty < cy
       else
-        fp["#{j}"].z = @targetSprite.z + 1 if nextx < cx && nexty > cy
+        fp[j.to_s].z = @targetSprite.z + 1 if nextx < cx && nexty > cy
       end
     end
     fp["bg"].opacity += 10 if fp["bg"].opacity < 255*0.75

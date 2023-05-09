@@ -67,18 +67,18 @@ class TargetWindowEBDX
     rh = 2*(bmp.height + 4)
     # render each button
     for i in 0...texts.length
-      @buttons["#{i}"] = Sprite.new(@viewport)
-      @buttons["#{i}"].bitmap = Bitmap.new(bmp.width, bmp.height)
-      @buttons["#{i}"].bitmap.blt(0, 0, bmp, bmp.rect)
+      @buttons[i.to_s] = Sprite.new(@viewport)
+      @buttons[i.to_s].bitmap = Bitmap.new(bmp.width, bmp.height)
+      @buttons[i.to_s].bitmap.blt(0, 0, bmp, bmp.rect)
       # apply icon sprite if valid target
       if !texts[i].nil? && @battle.battlers[i].displayPokemon
         pkmn = @battle.battlers[i].displayPokemon
         icon = pbBitmap(GameData::Species.icon_filename_from_pokemon(pkmn))
         ix = (bmp.width - icon.width/2)/2
         iy = (bmp.height - icon.height)/2 - 9
-        @buttons["#{i}"].bitmap.blt(ix, iy, icon, Rect.new(0, 0, icon.width/2, bmp.height - 4 - iy), 216) if @battle.battlers[i].hp > 0
+        @buttons[i.to_s].bitmap.blt(ix, iy, icon, Rect.new(0, 0, icon.width/2, bmp.height - 4 - iy), 216) if @battle.battlers[i].hp > 0
       else
-        @buttons["#{i}"].opacity = i/2 > @battle.pbMaxSize(i%2) - 1 ? 0 : 128
+        @buttons[i.to_s].opacity = i/2 > @battle.pbMaxSize(i%2) - 1 ? 0 : 128
       end
       # calculate x and y positions
       x = (@viewport.width - rw)/2 + (i%2 == 0 ? i/2 : @battle.pbMaxSize(1) - 1 - (i-1)/2)*(bmp.width + 8)
@@ -86,9 +86,9 @@ class TargetWindowEBDX
       x += dif*0.5*(bmp.width + 8) if dif > 0
       y = (@viewport.height - rh - 4) + (1 - i%2)*(bmp.height + 4)
       # apply positioning
-      @buttons["#{i}"].x = x
-      @buttons["#{i}"].y = y + 120
-      @buttons["#{i}"].z = 100
+      @buttons[i.to_s].x = x
+      @buttons[i.to_s].y = y + 120
+      @buttons[i.to_s].z = 100
     end
     bmp.dispose
   end
@@ -97,8 +97,8 @@ class TargetWindowEBDX
   #-----------------------------------------------------------------------------
   def index=(val)
     @index = val
-    @sel.target(@buttons["#{@index}"])
-    @buttons["#{@index}"].src_rect.y = -4
+    @sel.target(@buttons[@index.to_s])
+    @buttons[@index.to_s].src_rect.y = -4
   end
   def shiftMode=(val); end
   #-----------------------------------------------------------------------------

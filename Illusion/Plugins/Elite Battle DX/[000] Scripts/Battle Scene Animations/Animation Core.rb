@@ -38,7 +38,7 @@ module EliteBattle
       wrapper.execute(anim, *args)
     rescue
       # safety code, no need to crash game for bad animation
-      msg  = "\r\nUnable to play animation for: #{id.to_s}\r\n"
+      msg  = "\r\nUnable to play animation for: #{id}\r\n"
       msg += "Backtrace:\r\n"
       $!.backtrace[0, 10].each { |i| msg += "#{i}\r\n" }
       EliteBattle.log.warn(msg)
@@ -69,7 +69,7 @@ module EliteBattle
       wrapper.execute(anim, *args)
     rescue
       # safety code, no need to crash game for bad animation
-      msg  = "\r\nUnable to play animation for: #{id.to_s}\r\n"
+      msg  = "\r\nUnable to play animation for: #{id}\r\n"
       msg += "Backtrace:\r\n"
       $!.backtrace[0, 10].each { |i| msg += "#{i}\r\n" }
       EliteBattle.log.warn(msg)
@@ -479,7 +479,7 @@ class AnimationHelperEBDX
   #-----------------------------------------------------------------------------
   def add_component(id, type, start, duration, options = {})
     if !id.is_a?(Symbol) && !id.is_a?(String)
-      EliteBattle.log.warn("Animation component ID for animation `#{@anim.to_s}` has to be expressed as a string or symbol. #{id} is not valid.")
+      EliteBattle.log.warn("Animation component ID for animation `#{@anim}` has to be expressed as a string or symbol. #{id} is not valid.")
     elsif eval("defined?(EBDX_Anim_#{type.to_s.upcase})")
       # exception for basic sprites (to apply stacked effects)
       if type == :BASIC_SPRITE && @components.keys.include?(id)
@@ -502,11 +502,11 @@ class AnimationHelperEBDX
         :hit_time => 0,
         :finished => false,
         :sprites => {}
-      }.each { |key, value| @components[id].instance_variable_set("@#{key.to_s}", value) }
+      }.each { |key, value| @components[id].instance_variable_set("@#{key}", value) }
       # define mandatory setter and getter
       [:start, :duration, :finished, :hit_time, :with_hit
-      ].each { |arg| @components[id].singleton_class.class_eval("def #{arg.to_s};@#{arg.to_s};end") }
-      [:start, :duration, :finished].each { |arg| @components[id].singleton_class.class_eval("def #{arg.to_s}=(val);@#{arg.to_s}=val;end") }
+      ].each { |arg| @components[id].singleton_class.class_eval("def #{arg};@#{arg};end") }
+      [:start, :duration, :finished].each { |arg| @components[id].singleton_class.class_eval("def #{arg}=(val);@#{arg}=val;end") }
       # define other mandatory functions
       @comp_func.each do |key, func|
         func = "def #{key};#{func};end"
@@ -516,7 +516,7 @@ class AnimationHelperEBDX
       # associate all the instance variables
       @data.each do |key, value|
         next if [:sprites].include?(key)
-        @components[id].instance_variable_set("@#{key.to_s}", value)
+        @components[id].instance_variable_set("@#{key}", value)
       end
       # begin configuration
       @components[id].configure
@@ -524,7 +524,7 @@ class AnimationHelperEBDX
       self.calc_duration(id)
     else
       # print message if component not found
-      EliteBattle.log.warn("Cannot load non-existent animation component for animation `#{@anim.to_s}`: EBDX_Anim_#{type.to_s.upcase}.")
+      EliteBattle.log.warn("Cannot load non-existent animation component for animation `#{@anim}`: EBDX_Anim_#{type.to_s.upcase}.")
     end
   end
   #-----------------------------------------------------------------------------

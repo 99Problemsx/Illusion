@@ -207,7 +207,7 @@ class FightWindowEBDX
     @oldindex = -1
     @x = []; @y = []
     for i in 0...4
-      @button["#{i}"].dispose if @button["#{i}"]
+      @button[i.to_s].dispose if @button[i.to_s]
       @nummoves += 1 if @moves[i] && @moves[i].id
       @x.push(@viewport.width/2 + (i%2==0 ? -1 : 1)*(@viewport.width/2 + 99))
       @y.push(@viewport.height - 90 + (i/2)*44)
@@ -222,27 +222,27 @@ class FightWindowEBDX
       category = movedata.physical? ? 0 : (movedata.special? ? 1 : 2)
       type = GameData::Type.get(movedata.type).icon_position
       # create sprite
-      @button["#{i}"] = Sprite.new(@viewport)
-      @button["#{i}"].param = category
-      @button["#{i}"].z = 102
-      @button["#{i}"].bitmap = Bitmap.new(198*2, 74)
-      @button["#{i}"].bitmap.blt(0, 0, @buttonBitmap, Rect.new(0, type*74, 198, 74))
-      @button["#{i}"].bitmap.blt(198, 0, @buttonBitmap, Rect.new(198, type*74, 198, 74))
-      @button["#{i}"].bitmap.blt(65, 46, @catBitmap, Rect.new(0, category*22, 38, 22))
-      @button["#{i}"].bitmap.blt(3, 46, @typeBitmap, Rect.new(0, type*22, 72, 22))
+      @button[i.to_s] = Sprite.new(@viewport)
+      @button[i.to_s].param = category
+      @button[i.to_s].z = 102
+      @button[i.to_s].bitmap = Bitmap.new(198*2, 74)
+      @button[i.to_s].bitmap.blt(0, 0, @buttonBitmap, Rect.new(0, type*74, 198, 74))
+      @button[i.to_s].bitmap.blt(198, 0, @buttonBitmap, Rect.new(198, type*74, 198, 74))
+      @button[i.to_s].bitmap.blt(65, 46, @catBitmap, Rect.new(0, category*22, 38, 22))
+      @button[i.to_s].bitmap.blt(3, 46, @typeBitmap, Rect.new(0, type*22, 72, 22))
       baseColor = @buttonBitmap.get_pixel(5, 32 + (type*74)).darken(0.4)
-      pbSetSmallFont(@button["#{i}"].bitmap)
-      pbDrawOutlineText(@button["#{i}"].bitmap, 198, 10, 196, 42,"#{movedata.real_name}", Color.white, baseColor, 1)
+      pbSetSmallFont(@button[i.to_s].bitmap)
+      pbDrawOutlineText(@button[i.to_s].bitmap, 198, 10, 196, 42,movedata.real_name.to_s, Color.white, baseColor, 1)
       pp = "#{@moves[i].pp}/#{movedata.total_pp}"
-      pbDrawOutlineText(@button["#{i}"].bitmap, 0, 48, 191, 26, pp, Color.white, baseColor, 2)
-      pbSetSystemFont(@button["#{i}"].bitmap)
+      pbDrawOutlineText(@button[i.to_s].bitmap, 0, 48, 191, 26, pp, Color.white, baseColor, 2)
+      pbSetSystemFont(@button[i.to_s].bitmap)
       selectedMoveNameYPos = 18
       text = [[movedata.real_name, 99, selectedMoveNameYPos, 2, baseColor, Color.new(0, 0, 0, 24)]]
-      pbDrawTextPositions(@button["#{i}"].bitmap, text)
-      @button["#{i}"].src_rect.set(198, 0, 198, 74)
-      @button["#{i}"].ox = @button["#{i}"].src_rect.width/2
-      @button["#{i}"].x = @x[i]
-      @button["#{i}"].y = @y[i]
+      pbDrawTextPositions(@button[i.to_s].bitmap, text)
+      @button[i.to_s].src_rect.set(198, 0, 198, 74)
+      @button[i.to_s].ox = @button[i.to_s].src_rect.width/2
+      @button[i.to_s].x = @x[i]
+      @button[i.to_s].y = @y[i]
     end
   end
   #-----------------------------------------------------------------------------
@@ -258,7 +258,7 @@ class FightWindowEBDX
     @typeInd.visible = false
     @background.y -= (@background.bitmap.height/8)
     for i in 0...@nummoves
-      @button["#{i}"].x += ((i%2 == 0 ? 1 : -1)*@viewport.width/16)
+      @button[i.to_s].x += ((i%2 == 0 ? 1 : -1)*@viewport.width/16)
     end
   end
   def showPlay
@@ -277,7 +277,7 @@ class FightWindowEBDX
     @background.y += (@background.bitmap.height/8)
     @megaButton.y += 12
     for i in 0...@nummoves
-      @button["#{i}"].x -= ((i%2 == 0 ? 1 : -1)*@viewport.width/16)
+      @button[i.to_s].x -= ((i%2 == 0 ? 1 : -1)*@viewport.width/16)
     end
     @showMega = false
     @megaButton.src_rect.x = 0
@@ -312,7 +312,7 @@ class FightWindowEBDX
       @megaButton.src_rect.y += 1 if @megaButton.src_rect.y < 0
     end
     if @oldindex != @index
-      @button["#{@index}"].src_rect.y = -4
+      @button[@index.to_s].src_rect.y = -4
       if @showTypeAdvantage && !(@battle.doublebattle? || @battle.triplebattle?)
         move = @battler.moves[@index]
         @modifier = move.pbCalcTypeMod(move.type, @player, @opponent)
@@ -320,26 +320,26 @@ class FightWindowEBDX
       @oldindex = @index
     end
     for i in 0...@nummoves
-      @button["#{i}"].src_rect.x = 198*(@index == i ? 0 : 1)
-      @button["#{i}"].y = @y[i]
-      @button["#{i}"].src_rect.y += 1 if @button["#{i}"].src_rect.y < 0
+      @button[i.to_s].src_rect.x = 198*(@index == i ? 0 : 1)
+      @button[i.to_s].y = @y[i]
+      @button[i.to_s].src_rect.y += 1 if @button[i.to_s].src_rect.y < 0
       next if i != @index
       if [0,1].include?(i)
-        @button["#{i}"].y = @y[i] - ((@nummoves < 3) ? 14 : 30)
+        @button[i.to_s].y = @y[i] - ((@nummoves < 3) ? 14 : 30)
       elsif [2,3].include?(i)
-        @button["#{i}"].y = @y[i] - 30
-        @button["#{i-2}"].y = @y[i-2] - 30
+        @button[i.to_s].y = @y[i] - 30
+        @button[(i-2).to_s].y = @y[i-2] - 30
       end
     end
-    @sel.x = @button["#{@index}"].x
-    @sel.y = @button["#{@index}"].y + @button["#{@index}"].src_rect.height/2 - 1
+    @sel.x = @button[@index.to_s].x
+    @sel.y = @button[@index.to_s].y + @button[@index.to_s].src_rect.height/2 - 1
     @sel.update
     if @showTypeAdvantage && !(@battle.doublebattle? || @battle.triplebattle?)
       @typeInd.visible = true
-      @typeInd.y = @button["#{@index}"].y
-      @typeInd.x = @button["#{@index}"].x
+      @typeInd.y = @button[@index.to_s].y
+      @typeInd.x = @button[@index.to_s].x
       eff = 0
-      if @button["#{@index}"].param == 2 # status move
+      if @button[@index.to_s].param == 2 # status move
         eff = 4
       elsif @modifier == 0 # No effect
         eff = 3

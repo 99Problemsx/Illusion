@@ -83,7 +83,7 @@ class Battle::Scene
       @sprites["pokemon_#{i}"].zoom_y = 0
       @sprites["dataBox_#{i}"].appear
       playBattlerCry(battler)
-      burst["#{i}"] = EBBallBurst.new(@viewport, @sprites["pokeball#{i}"].x, @sprites["pokeball#{i}"].y, 19, 1, pkmn.poke_ball)
+      burst[i.to_s] = EBBallBurst.new(@viewport, @sprites["pokeball#{i}"].x, @sprites["pokeball#{i}"].y, 19, 1, pkmn.poke_ball)
     end
     # starting Pokemon release animation
     pbSEPlay("Battle recall")
@@ -93,7 +93,7 @@ class Battle::Scene
     for j in 0...20
       sendOuts.each_with_index do |b, m|
         battler = @battlers[b[0]]; i = battler.index
-        burst["#{i}"].update
+        burst[i.to_s].update
         next if j < 4
         @sprites["pokeball#{i}"].opacity -= 51
         @sprites["pokemon_#{i}"].zoom_x = zStep[j][1]*@vector.zoom1*0.1
@@ -106,8 +106,8 @@ class Battle::Scene
     for j in 0...22
       sendOuts.each_with_index do |b, m|
         battler = @battlers[b[0]]; i = battler.index
-        burst["#{i}"].update
-        burst["#{i}"].dispose if j == 21
+        burst[i.to_s].update
+        burst[i.to_s].dispose if j == 21
         next if j < 8
         @sprites["pokemon_#{i}"].tone.red -= 51 if @sprites["pokemon_#{i}"].tone.red > 0
         @sprites["pokemon_#{i}"].tone.green -= 51 if @sprites["pokemon_#{i}"].tone.green > 0

@@ -26,12 +26,12 @@ EliteBattle.defineMoveAnimation(:POISONFANG) do
   fp["fang2"].angle = 180
   l = 0; m = 0; q = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb429_2")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 51
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb429_2")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 51
   end
   # start animation
   @sprites["battlebg"].defocus
@@ -68,22 +68,22 @@ EliteBattle.defineMoveAnimation(:POISONFANG) do
     pbSEPlay("Anim/Poison") if i%8==0 && i>=48
     for n in 0...12
       next if i < 32
-      if fp["#{n}"].opacity == 0 && fp["#{n}"].tone.gray == 0
+      if fp[n.to_s].opacity == 0 && fp[n.to_s].tone.gray == 0
         r2 = rand(4)
-        fp["#{n}"].zoom_x = [0.2,0.25,0.5,0.75][r2]
-        fp["#{n}"].zoom_y = [0.2,0.25,0.5,0.75][r2]
+        fp[n.to_s].zoom_x = [0.2,0.25,0.5,0.75][r2]
+        fp[n.to_s].zoom_y = [0.2,0.25,0.5,0.75][r2]
         #fp["#{n}"].tone = rand(2)==0 ? Tone.new(196,196,196) : Tone.new(0,0,0)
         x, y = randCircleCord(48*factor)
-        fp["#{n}"].x = cx - 48*factor*@targetSprite.zoom_x + x*@targetSprite.zoom_x
-        fp["#{n}"].y = cy - 48*factor*@targetSprite.zoom_y + y*@targetSprite.zoom_y
-        fp["#{n}"].angle = -Math.atan(1.0*(fp["#{n}"].y-cy)/(fp["#{n}"].x-cx))*(180.0/Math::PI) + rand(2)*180 + rand(90)
+        fp[n.to_s].x = cx - 48*factor*@targetSprite.zoom_x + x*@targetSprite.zoom_x
+        fp[n.to_s].y = cy - 48*factor*@targetSprite.zoom_y + y*@targetSprite.zoom_y
+        fp[n.to_s].angle = -Math.atan(1.0*(fp[n.to_s].y-cy)/(fp[n.to_s].x-cx))*(180.0/Math::PI) + rand(2)*180 + rand(90)
       end
       next if m>(i-32)/4
-      fp["#{n}"].opacity += 51 if fp["#{n}"].tone.gray == 0
-      fp["#{n}"].angle += 180 if (i-16)%3==0
-      fp["#{n}"].tone.gray = 1 if fp["#{n}"].opacity >= 255
-      q += 1 if fp["#{n}"].opacity >= 255
-      fp["#{n}"].opacity -= 10 if fp["#{n}"].tone.gray > 0 && q > 96
+      fp[n.to_s].opacity += 51 if fp[n.to_s].tone.gray == 0
+      fp[n.to_s].angle += 180 if (i-16)%3==0
+      fp[n.to_s].tone.gray = 1 if fp[n.to_s].opacity >= 255
+      q += 1 if fp[n.to_s].opacity >= 255
+      fp[n.to_s].opacity -= 10 if fp[n.to_s].tone.gray > 0 && q > 96
     end
     fp["bg"].opacity += 4 if  i < 40
     fp["bg"].opacity -= 10 if i >= 56

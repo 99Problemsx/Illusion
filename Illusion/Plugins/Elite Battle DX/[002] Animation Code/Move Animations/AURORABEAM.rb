@@ -11,13 +11,13 @@ EliteBattle.defineMoveAnimation(:AURORABEAM) do
   fp["bg"].bitmap.fill_rect(0, 0, fp["bg"].bitmap.width, fp["bg"].bitmap.height, Color.black)
   fp["bg"].opacity = 0
   for i in 0...36
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb246")
-    fp["#{i}"].src_rect.set(44*rand(4),0,44,44)
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/8
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = (@targetIsPlayer ? 29 : 19)
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb246")
+    fp[i.to_s].src_rect.set(44*rand(4),0,44,44)
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/8
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = (@targetIsPlayer ? 29 : 19)
     rndx.push(rand(8))
     rndy.push(rand(8))
   end
@@ -29,28 +29,28 @@ EliteBattle.defineMoveAnimation(:AURORABEAM) do
     cx, cy = @targetSprite.getCenter(true)
     ax, ay = @userSprite.getAnchor
     for j in 0...36
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].tone.gray == 0
-        fp["#{j}"].zoom_x = @userSprite.zoom_x
-        fp["#{j}"].zoom_y = @userSprite.zoom_y
-        fp["#{j}"].x = ax
-        fp["#{j}"].y = ay
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].tone.gray == 0
+        fp[j.to_s].zoom_x = @userSprite.zoom_x
+        fp[j.to_s].zoom_y = @userSprite.zoom_y
+        fp[j.to_s].x = ax
+        fp[j.to_s].y = ay
       end
       next if j>(i/2)
       x2 = cx - 4*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
       y2 = cy - 4*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].zoom_x -= (fp["#{j}"].zoom_x - @targetSprite.zoom_x)*0.1
-      fp["#{j}"].zoom_y -= (fp["#{j}"].zoom_y - @targetSprite.zoom_y)*0.1
-      fp["#{j}"].angle += 2
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].zoom_x -= (fp[j.to_s].zoom_x - @targetSprite.zoom_x)*0.1
+      fp[j.to_s].zoom_y -= (fp[j.to_s].zoom_y - @targetSprite.zoom_y)*0.1
+      fp[j.to_s].angle += 2
       if (x2 - x0)*0.1 < 1 && (y2 - y0)*0.1 < 1
-        fp["#{j}"].opacity -= 8
-        fp["#{j}"].tone.gray += 8
-        fp["#{j}"].angle += 2
+        fp[j.to_s].opacity -= 8
+        fp[j.to_s].tone.gray += 8
+        fp[j.to_s].angle += 2
       else
-        fp["#{j}"].opacity += 12
+        fp[j.to_s].opacity += 12
       end
     end
     if i >= 96

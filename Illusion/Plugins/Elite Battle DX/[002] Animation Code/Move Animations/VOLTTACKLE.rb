@@ -56,17 +56,17 @@ EliteBattle.defineMoveAnimation(:VOLTTACKLE) do
   pbSEPlay("EBDX/Anim/electric1",100)
   pbSEPlay("EBDX/Anim/electric2",100)
   for j in 0...3
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb064_3")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].x = cx - 32 + rand(64)
-    fp["#{j}"].y = cy - 32 + rand(64)
-    fp["#{j}"].z = @targetSprite.z + 1
-    fp["#{j}"].visible = false
-    fp["#{j}"].zoom_x = @targetSprite.zoom_x
-    fp["#{j}"].zoom_y = @targetSprite.zoom_y
-	fp["#{j}"].angle += 32
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb064_3")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].x = cx - 32 + rand(64)
+    fp[j.to_s].y = cy - 32 + rand(64)
+    fp[j.to_s].z = @targetSprite.z + 1
+    fp[j.to_s].visible = false
+    fp[j.to_s].zoom_x = @targetSprite.zoom_x
+    fp[j.to_s].zoom_y = @targetSprite.zoom_y
+	fp[j.to_s].angle += 32
   end
   for m in 0...12
     fp["p#{m}"] = Sprite.new(@viewport)
@@ -93,11 +93,11 @@ EliteBattle.defineMoveAnimation(:VOLTTACKLE) do
     for j in 0...3
       next if i < 12
       next if j>(i-12)/4
-      fp["#{j}"].visible = true
-      fp["#{j}"].opacity -= 16
-      fp["#{j}"].angle += 3
-      fp["#{j}"].zoom_x += 0.1
-      fp["#{j}"].zoom_y += 0.1
+      fp[j.to_s].visible = true
+      fp[j.to_s].opacity -= 16
+      fp[j.to_s].angle += 3
+      fp[j.to_s].zoom_x += 0.1
+      fp[j.to_s].zoom_y += 0.1
     end
     for m in 0...12
       next if i < 6
