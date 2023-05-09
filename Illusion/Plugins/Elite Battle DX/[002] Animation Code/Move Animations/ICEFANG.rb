@@ -11,15 +11,15 @@ EliteBattle.defineMoveAnimation(:ICEFANG) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.new(100,128,142))
   fp["bg"].opacity = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb248")
-    fp["#{i}"].src_rect.set(0,0,26,42)
-    fp["#{i}"].ox = 13
-    fp["#{i}"].oy = 21
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = (@targetIsPlayer ? 29 : 19)
-    fp["#{i}"].zoom_x = (@targetSprite.zoom_x)
-    fp["#{i}"].zoom_y = (@targetSprite.zoom_y)
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb248")
+    fp[i.to_s].src_rect.set(0,0,26,42)
+    fp[i.to_s].ox = 13
+    fp[i.to_s].oy = 21
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = (@targetIsPlayer ? 29 : 19)
+    fp[i.to_s].zoom_x = (@targetSprite.zoom_x)
+    fp[i.to_s].zoom_y = (@targetSprite.zoom_y)
     rndx.push(rand(128))
     rndy.push(rand(128))
   end
@@ -70,20 +70,20 @@ EliteBattle.defineMoveAnimation(:ICEFANG) do
     end
     for j in 0...12
       next if i < 40
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].src_rect.x == 0
-        fp["#{j}"].x = cx - 64*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
-        fp["#{j}"].y = cy - 64*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].src_rect.x == 0
+        fp[j.to_s].x = cx - 64*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
+        fp[j.to_s].y = cy - 64*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
       end
-      fp["#{j}"].src_rect.x += 26 if i%4==0 && fp["#{j}"].opacity >= 255
-      fp["#{j}"].src_rect.x = 78 if fp["#{j}"].src_rect.x > 78
-      if fp["#{j}"].src_rect.x==78
-        fp["#{j}"].opacity -= 24
-        fp["#{j}"].zoom_x += 0.02
-        fp["#{j}"].zoom_y += 0.02
-      elsif fp["#{j}"].opacity >= 255
-        fp["#{j}"].opacity -= 24
+      fp[j.to_s].src_rect.x += 26 if i%4==0 && fp[j.to_s].opacity >= 255
+      fp[j.to_s].src_rect.x = 78 if fp[j.to_s].src_rect.x > 78
+      if fp[j.to_s].src_rect.x==78
+        fp[j.to_s].opacity -= 24
+        fp[j.to_s].zoom_x += 0.02
+        fp[j.to_s].zoom_y += 0.02
+      elsif fp[j.to_s].opacity >= 255
+        fp[j.to_s].opacity -= 24
       else
-        fp["#{j}"].opacity += 45 if (i-40)/2 > j
+        fp[j.to_s].opacity += 45 if (i-40)/2 > j
       end
     end
     fp["bg"].opacity += 4 if  i < 40

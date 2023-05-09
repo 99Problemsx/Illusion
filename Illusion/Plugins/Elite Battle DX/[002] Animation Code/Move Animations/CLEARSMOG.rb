@@ -12,22 +12,22 @@ EliteBattle.defineMoveAnimation(:CLEARSMOG) do
   fp = {}
   mass = 40
   for j in 0...mass
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb59_2")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb59_2")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
     r = 40*factor
     x, y = randCircleCord(r)
     x = cx - r + x
     y = cy - r + y
-    fp["#{j}"].x = cx
-    fp["#{j}"].y = cx
-    fp["#{j}"].z = @targetSprite.z
-    fp["#{j}"].visible = false
-    fp["#{j}"].angle = rand(360)
+    fp[j.to_s].x = cx
+    fp[j.to_s].y = cx
+    fp[j.to_s].z = @targetSprite.z
+    fp[j.to_s].visible = false
+    fp[j.to_s].angle = rand(360)
     z = [0.5,1,0.75][rand(3)]
-    fp["#{j}"].zoom_x = z
-    fp["#{j}"].zoom_y = z
+    fp[j.to_s].zoom_x = z
+    fp[j.to_s].zoom_y = z
     dx.push(x)
     dy.push(y)
   end
@@ -38,12 +38,12 @@ EliteBattle.defineMoveAnimation(:CLEARSMOG) do
   for i in 0...48
     for j in 0...mass
       next if j>(i*2)
-      fp["#{j}"].visible = true
-      if ((fp["#{j}"].x - dx[j])*0.1).abs < 1
-        fp["#{j}"].opacity -= 32
+      fp[j.to_s].visible = true
+      if ((fp[j.to_s].x - dx[j])*0.1).abs < 1
+        fp[j.to_s].opacity -= 32
       else
-        fp["#{j}"].x -= (fp["#{j}"].x - dx[j])*0.1
-        fp["#{j}"].y -= (fp["#{j}"].y - dy[j])*0.1
+        fp[j.to_s].x -= (fp[j.to_s].x - dx[j])*0.1
+        fp[j.to_s].y -= (fp[j.to_s].y - dy[j])*0.1
       end
     end
 	if i < 30

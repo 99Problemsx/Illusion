@@ -13,12 +13,12 @@ EliteBattle.defineMoveAnimation(:CHARGE) do | args |
   rndx = []
   rndy = []
   for i in 0...8
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb081_2")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 50
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb081_2")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 50
   end
   for i in 0...16
     fp["c#{i}"] = Sprite.new(@viewport)
@@ -48,32 +48,32 @@ EliteBattle.defineMoveAnimation(:CHARGE) do | args |
     pbSEPlay("Anim/Saint8") if i == 64
     cx, cy = @userSprite.getCenter
     for j in 0...8
-      if fp["#{j}"].opacity == 0
+      if fp[j.to_s].opacity == 0
         r = rand(2)
-        fp["#{j}"].zoom_x = factor*(r==0 ? 1 : 0.5)
-        fp["#{j}"].zoom_y = factor*(r==0 ? 1 : 0.5)
-        fp["#{j}"].tone = rand(2)==0 ? Tone.new(196,196,196) : Tone.new(0,0,0)
+        fp[j.to_s].zoom_x = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].zoom_y = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].tone = rand(2)==0 ? Tone.new(196,196,196) : Tone.new(0,0,0)
         x, y = randCircleCord(96*factor)
-        fp["#{j}"].x = cx - 96*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
-        fp["#{j}"].y = cy - 96*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
+        fp[j.to_s].x = cx - 96*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
+        fp[j.to_s].y = cy - 96*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
       end
       next if j>(i/8)
       x2 = cx
       y2 = cy
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].zoom_x -= fp["#{j}"].zoom_x*0.1
-      fp["#{j}"].zoom_y -= fp["#{j}"].zoom_y*0.1
-      fp["#{j}"].angle = -Math.atan(1.0*(y2-y0)/(x2-x0))*(180.0/Math::PI)# + (rand{4}==0 ? 180 : 0)
-      fp["#{j}"].mirror = !fp["#{j}"].mirror if i%2==0
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].zoom_x -= fp[j.to_s].zoom_x*0.1
+      fp[j.to_s].zoom_y -= fp[j.to_s].zoom_y*0.1
+      fp[j.to_s].angle = -Math.atan(1.0*(y2-y0)/(x2-x0))*(180.0/Math::PI)# + (rand{4}==0 ? 180 : 0)
+      fp[j.to_s].mirror = !fp[j.to_s].mirror if i%2==0
       if i >= 96
-        fp["#{j}"].opacity -= 35
+        fp[j.to_s].opacity -= 35
       elsif (x2 - x0)*0.1 < 1 && (y2 - y0)*0.1 < 1
-        fp["#{j}"].opacity = 0
+        fp[j.to_s].opacity = 0
       else
-        fp["#{j}"].opacity += 35
+        fp[j.to_s].opacity += 35
       end
     end
     for k in 0...16
@@ -128,7 +128,7 @@ EliteBattle.defineMoveAnimation(:CHARGE) do | args |
       end
       for j in 0...8
         next if i < 96
-        fp["#{j}"].opacity -= 30.5
+        fp[j.to_s].opacity -= 30.5
       end
     end
     @userSprite.still if !strike

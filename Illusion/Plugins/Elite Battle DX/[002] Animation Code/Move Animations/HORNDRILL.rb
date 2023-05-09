@@ -21,16 +21,16 @@ EliteBattle.defineMoveAnimation(:HORNDRILL) do | args |
   #fp["bg"].color = Color.new(0,0,0,255)
   fp["bg"].opacity = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb303_2_2")
-    fp["#{i}"].ox = 10
-    fp["#{i}"].oy = 10
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 50
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb303_2_2")
+    fp[i.to_s].ox = 10
+    fp[i.to_s].oy = 10
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 50
     r = rand(3)
-    fp["#{i}"].zoom_x = (@targetSprite.zoom_x)*(r==0 ? 1 : 0.5)
-    fp["#{i}"].zoom_y = (@targetSprite.zoom_y)*(r==0 ? 1 : 0.5)
-    fp["#{i}"].tone = Tone.new(60,60,60)
+    fp[i.to_s].zoom_x = (@targetSprite.zoom_x)*(r==0 ? 1 : 0.5)
+    fp[i.to_s].zoom_y = (@targetSprite.zoom_y)*(r==0 ? 1 : 0.5)
+    fp[i.to_s].tone = Tone.new(60,60,60)
     rndx.push(rand(128))
     rndy.push(rand(64))
   end
@@ -115,27 +115,27 @@ EliteBattle.defineMoveAnimation(:HORNDRILL) do | args |
     end
     for j in 0...12
       cx = frame.x; cy = frame.y
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].visible
-        fp["#{j}"].x = cx
-        fp["#{j}"].y = cy
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].visible
+        fp[j.to_s].x = cx
+        fp[j.to_s].y = cy
       end
       x2 = cx - 64*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
       y2 = cy - 64*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.2
-      fp["#{j}"].y += (y2 - y0)*0.2
-      fp["#{j}"].zoom_x += 0.01
-      fp["#{j}"].zoom_y += 0.01
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.2
+      fp[j.to_s].y += (y2 - y0)*0.2
+      fp[j.to_s].zoom_x += 0.01
+      fp[j.to_s].zoom_y += 0.01
       if i < 20
-        fp["#{j}"].tone.red -= 6; fp["#{j}"].tone.blue -= 6; fp["#{j}"].tone.green -= 6
+        fp[j.to_s].tone.red -= 6; fp[j.to_s].tone.blue -= 6; fp[j.to_s].tone.green -= 6
       end
       if (x2 - x0)*0.2 < 1 && (y2 - y0)*0.2 < 1
-        fp["#{j}"].opacity -= 51
+        fp[j.to_s].opacity -= 51
       else
-        fp["#{j}"].opacity += 51
+        fp[j.to_s].opacity += 51
       end
-      fp["#{j}"].visible = false if fp["#{j}"].opacity <= 0
+      fp[j.to_s].visible = false if fp[j.to_s].opacity <= 0
     end
     @scene.wait
   end

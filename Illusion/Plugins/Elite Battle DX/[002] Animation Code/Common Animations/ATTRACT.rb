@@ -26,20 +26,20 @@ EliteBattle.defineCommonAnimation(:ATTRACT) do
   dy = []
   t = 2
   for j in 0..t
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb636_2")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].x = cx + 20 if j == 0
-    fp["#{j}"].x = cx - 20 if j == 1    
-	fp["#{j}"].x = cx      if j == 2
-    fp["#{j}"].y = cy - 40 if j < 2
-    fp["#{j}"].y = cy - 10 if j == 2
-    fp["#{j}"].z = @targetSprite.z
-    fp["#{j}"].visible = false
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb636_2")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].x = cx + 20 if j == 0
+    fp[j.to_s].x = cx - 20 if j == 1    
+	fp[j.to_s].x = cx      if j == 2
+    fp[j.to_s].y = cy - 40 if j < 2
+    fp[j.to_s].y = cy - 10 if j == 2
+    fp[j.to_s].z = @targetSprite.z
+    fp[j.to_s].visible = false
     z = [0.5,1,0.75][rand(3)]
-    fp["#{j}"].zoom_x = z
-    fp["#{j}"].zoom_y = z
+    fp[j.to_s].zoom_x = z
+    fp[j.to_s].zoom_y = z
   end
   # start animation
   for i in 0...30
@@ -47,14 +47,14 @@ EliteBattle.defineCommonAnimation(:ATTRACT) do
     for j in 0..t
       next if j>(i*2)
 	  next if i <= 5 && j == 1
-      fp["#{j}"].visible = true
+      fp[j.to_s].visible = true
       if i > 20
-        fp["#{j}"].opacity -= 32
+        fp[j.to_s].opacity -= 32
       else
-		if fp["#{j}"].zoom <= 1.5
-			fp["#{j}"].zoom += 0.1
+		if fp[j.to_s].zoom <= 1.5
+			fp[j.to_s].zoom += 0.1
 		else
-		    fp["#{j}"].opacity -= 32
+		    fp[j.to_s].opacity -= 32
 		end
       end
     end

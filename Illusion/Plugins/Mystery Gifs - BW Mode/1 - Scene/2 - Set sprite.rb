@@ -6,62 +6,62 @@ module MGBW
 		#------------#
 		# Image
 		def create_sprite(spritename,filename,vp,dir="")
-			@sprites["#{spritename}"] = Sprite.new(vp)
+			@sprites[spritename.to_s] = Sprite.new(vp)
 			folder = "Mytery Gifs BW"
 			file = dir ? "Graphics/Pictures/#{folder}/#{dir}/#{filename}" : "Graphics/Pictures/#{folder}/#{filename}"
-			@sprites["#{spritename}"].bitmap = Bitmap.new(file)
+			@sprites[spritename.to_s].bitmap = Bitmap.new(file)
 		end
 		def set_sprite(spritename,filename,dir="")
 			folder = "Mytery Gifs BW"
 			file = dir ? "Graphics/Pictures/#{folder}/#{dir}/#{filename}" : "Graphics/Pictures/#{folder}/#{filename}"
-			@sprites["#{spritename}"].bitmap = Bitmap.new(file)
+			@sprites[spritename.to_s].bitmap = Bitmap.new(file)
 		end
 		# Set ox, oy
 		def set_oxoy_sprite(spritename,ox,oy)
-			@sprites["#{spritename}"].ox = ox
-			@sprites["#{spritename}"].oy = oy
+			@sprites[spritename.to_s].ox = ox
+			@sprites[spritename.to_s].oy = oy
 		end
 		# Set x, y
 		def set_xy_sprite(spritename,x,y)
-			@sprites["#{spritename}"].x = x
-			@sprites["#{spritename}"].y = y
+			@sprites[spritename.to_s].x = x
+			@sprites[spritename.to_s].y = y
 		end
 		# Set zoom
 		def set_zoom_sprite(spritename,zoom_x,zoom_y)
-			@sprites["#{spritename}"].zoom_x = zoom_x
-			@sprites["#{spritename}"].zoom_y = zoom_y
+			@sprites[spritename.to_s].zoom_x = zoom_x
+			@sprites[spritename.to_s].zoom_y = zoom_y
 		end
 		# Set visible
 		def set_visible_sprite(spritename,vsb=false)
-			@sprites["#{spritename}"].visible = vsb
+			@sprites[spritename.to_s].visible = vsb
 		end
 		# Set angle
 		def set_angle_sprite(spritename,angle)
-			@sprites["#{spritename}"].angle = angle
+			@sprites[spritename.to_s].angle = angle
 		end
 		# Set src
 		# width, height
 		def set_src_wh_sprite(spritename,w,h)
-			@sprites["#{spritename}"].src_rect.width = w
-			@sprites["#{spritename}"].src_rect.height = h
+			@sprites[spritename.to_s].src_rect.width = w
+			@sprites[spritename.to_s].src_rect.height = h
 		end
 		# x, y
 		def set_src_xy_sprite(spritename,x,y)
-			@sprites["#{spritename}"].src_rect.x = x
-			@sprites["#{spritename}"].src_rect.y = y
+			@sprites[spritename.to_s].src_rect.x = x
+			@sprites[spritename.to_s].src_rect.y = y
 		end
 		#------#
 		# Text #
 		#------#
 		# Draw
 		def create_sprite_2(spritename,vp)
-			@sprites["#{spritename}"] = Sprite.new(vp)
-			@sprites["#{spritename}"].bitmap = Bitmap.new(Graphics.width,Graphics.height)
+			@sprites[spritename.to_s] = Sprite.new(vp)
+			@sprites[spritename.to_s].bitmap = Bitmap.new(Graphics.width,Graphics.height)
 		end
 		# Write
 		def drawTxt(bitmap,textpos,font=nil,fontsize=nil,width=0,pw=false,height=0,ph=false,clearbm=true)
 			# Sprite
-			bitmap = @sprites["#{bitmap}"].bitmap
+			bitmap = @sprites[bitmap.to_s].bitmap
 			bitmap.clear if clearbm
 			# Set font, size
 			(font!=nil)? (bitmap.font.name=font) : pbSetSystemFont(bitmap)
@@ -83,7 +83,7 @@ module MGBW
 		end
 		# Clear
 		def clearTxt(bitmap)
-			@sprites["#{bitmap}"].bitmap.clear
+			@sprites[bitmap.to_s].bitmap.clear
 		end
 		#------------------------------------------------------------------------------#
 		# Set SE for input

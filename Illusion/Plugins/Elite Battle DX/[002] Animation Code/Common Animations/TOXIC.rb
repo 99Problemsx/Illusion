@@ -12,17 +12,17 @@ EliteBattle.defineCommonAnimation(:TOXIC) do
   #-----------------------------------------------------------------------------
   #  set up sprites
   for j in 0...20
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebToxic#{rand(3)+1}")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].x = cx - 48*factor + rand(96)*factor
-    fp["#{j}"].y = cy
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebToxic#{rand(3)+1}")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].x = cx - 48*factor + rand(96)*factor
+    fp[j.to_s].y = cy
     z = [1,0.9,0.8][rand(3)]
-    fp["#{j}"].zoom_x = z*factor
-    fp["#{j}"].zoom_y = z*factor
-    fp["#{j}"].opacity = 0
-    fp["#{j}"].z = @targetIsPlayer ? 29 : 19
+    fp[j.to_s].zoom_x = z*factor
+    fp[j.to_s].zoom_y = z*factor
+    fp[j.to_s].opacity = 0
+    fp[j.to_s].z = @targetIsPlayer ? 29 : 19
     endy.push(cy - 64*factor - rand(32)*factor)
   end
   #-----------------------------------------------------------------------------
@@ -34,11 +34,11 @@ EliteBattle.defineCommonAnimation(:TOXIC) do
     inc += k
     for j in 0...20
       next if j>(i/2)
-      fp["#{j}"].y -= (fp["#{j}"].y - endy[j])*0.06
-      fp["#{j}"].opacity += 51 if i < 16
-      fp["#{j}"].opacity -= 16 if i >= 16
-      fp["#{j}"].x -= 1*factor*(fp["#{j}"].x < cx ? 1 : -1)
-      fp["#{j}"].angle += 4*(fp["#{j}"].x < cx ? 1 : -1)
+      fp[j.to_s].y -= (fp[j.to_s].y - endy[j])*0.06
+      fp[j.to_s].opacity += 51 if i < 16
+      fp[j.to_s].opacity -= 16 if i >= 16
+      fp[j.to_s].x -= 1*factor*(fp[j.to_s].x < cx ? 1 : -1)
+      fp[j.to_s].angle += 4*(fp[j.to_s].x < cx ? 1 : -1)
     end
     shake = -1*inc.round if @targetSprite.ox > @targetSprite.bitmap.width/2
     shake = 1*inc.round if @targetSprite.ox < @targetSprite.bitmap.width/2

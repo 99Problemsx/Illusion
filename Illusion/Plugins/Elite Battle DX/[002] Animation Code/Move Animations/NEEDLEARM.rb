@@ -12,19 +12,19 @@ EliteBattle.defineMoveAnimation(:NEEDLEARM) do | args |
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.new(0,204,102))
   fp["bg"].opacity = 0
   for i in 0...20
-    fp["#{i}"] = Sprite.new(@viewport)
+    fp[i.to_s] = Sprite.new(@viewport)
 	if rand(2) == 0
-		fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb208")
+		fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb208")
 	else
-		fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb208_2")
+		fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb208_2")
 	end
     #fp["#{i}"].src_rect.set(0,0,53,101)
-    fp["#{i}"].ox = 26
-    fp["#{i}"].oy = 50
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 50
-    fp["#{i}"].zoom_x = (@targetSprite.zoom_x)/2
-    fp["#{i}"].zoom_y = (@targetSprite.zoom_y)/2
+    fp[i.to_s].ox = 26
+    fp[i.to_s].oy = 50
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 50
+    fp[i.to_s].zoom_x = (@targetSprite.zoom_x)/2
+    fp[i.to_s].zoom_y = (@targetSprite.zoom_y)/2
     rndx.push(rand(144))
     rndy.push(rand(144))
   end
@@ -59,28 +59,28 @@ EliteBattle.defineMoveAnimation(:NEEDLEARM) do | args |
     pbSEPlay("EBDX/Anim/grass2") if i==40
     for j in 0...20
       next if i < 40
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].tone.gray == 0
-        fp["#{j}"].x = cx
-        fp["#{j}"].y = cy
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].tone.gray == 0
+        fp[j.to_s].x = cx
+        fp[j.to_s].y = cy
       end
       x2 = cx - 72*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
       y2 = cy - 72*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.2
-      fp["#{j}"].y += (y2 - y0)*0.2
-	  fp["#{j}"].angle += 1 if j%2 == 1
-	  fp["#{j}"].angle -= 1 if j%2 == 0
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.2
+      fp[j.to_s].y += (y2 - y0)*0.2
+	  fp[j.to_s].angle += 1 if j%2 == 1
+	  fp[j.to_s].angle -= 1 if j%2 == 0
       #fp["#{j}"].src_rect.x += 53 if i%2==0
       #fp["#{j}"].src_rect.x = 0 if fp["#{j}"].src_rect.x >= fp["#{j}"].bitmap.width
       if (x2 - x0)*0.2 < 1 && (y2 - y0)*0.2 < 1
-        fp["#{j}"].opacity -= 16
-        fp["#{j}"].tone.gray += 16
-        fp["#{j}"].tone.red -= 4; fp["#{j}"].tone.green -= 4; fp["#{j}"].tone.blue -= 4
+        fp[j.to_s].opacity -= 16
+        fp[j.to_s].tone.gray += 16
+        fp[j.to_s].tone.red -= 4; fp[j.to_s].tone.green -= 4; fp[j.to_s].tone.blue -= 4
         #fp["#{j}"].zoom_x -= 0.005
         #fp["#{j}"].zoom_y += 0.01
       else
-        fp["#{j}"].opacity += 45
+        fp[j.to_s].opacity += 45
       end
     end
     fp["bg"].opacity += 4 if  i < 40

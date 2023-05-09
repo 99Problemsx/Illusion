@@ -22,12 +22,12 @@ EliteBattle.defineMoveAnimation(:ICEBEAM) do
     crndy.push(rand(64))
   end
   for i in 0...72
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb243")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 19
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb243")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 19
     rndx.push(rand(16))
     rndy.push(rand(16))
     dx.push(0)
@@ -40,30 +40,30 @@ EliteBattle.defineMoveAnimation(:ICEBEAM) do
     ax, ay = @userSprite.getAnchor
     cx, cy = @targetSprite.getCenter(true)
     for j in 0...72
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].tone.gray == 0
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].tone.gray == 0
         dx[j] = ax - 8*@userSprite.zoom_x*0.5 + rndx[j]*@userSprite.zoom_x*0.5
         dy[j] = ay - 8*@userSprite.zoom_y*0.5 + rndy[j]*@userSprite.zoom_y*0.5
-        fp["#{j}"].x = dx[j]
-        fp["#{j}"].y = dy[j]
+        fp[j.to_s].x = dx[j]
+        fp[j.to_s].y = dy[j]
       end
       next if j>(i)
       x2 = cx - 8*@targetSprite.zoom_x*0.5 + rndx[j]*@targetSprite.zoom_x*0.5
       y2 = cy - 8*@targetSprite.zoom_y*0.5 + rndy[j]*@targetSprite.zoom_y*0.5
       x0 = dx[j]
       y0 = dy[j]
-      fp["#{j}"].x += (x2 - x0)*0.05
-      fp["#{j}"].y += (y2 - y0)*0.05
-      fp["#{j}"].zoom_x = @targetIsPlayer ? @userSprite.zoom_x : @targetSprite.zoom_x
-      fp["#{j}"].zoom_y = @targetIsPlayer ? @userSprite.zoom_y : @targetSprite.zoom_y
-      fp["#{j}"].opacity += 32
-      fp["#{j}"].angle = -Math.atan(1.0*(y2-y0)/(x2-x0))*180/Math::PI + (rand(4)==0 ? 180 : 0)
-      nextx = fp["#{j}"].x + (x2 - x0)*0.05
-      nexty = fp["#{j}"].y + (y2 - y0)*0.05
+      fp[j.to_s].x += (x2 - x0)*0.05
+      fp[j.to_s].y += (y2 - y0)*0.05
+      fp[j.to_s].zoom_x = @targetIsPlayer ? @userSprite.zoom_x : @targetSprite.zoom_x
+      fp[j.to_s].zoom_y = @targetIsPlayer ? @userSprite.zoom_y : @targetSprite.zoom_y
+      fp[j.to_s].opacity += 32
+      fp[j.to_s].angle = -Math.atan(1.0*(y2-y0)/(x2-x0))*180/Math::PI + (rand(4)==0 ? 180 : 0)
+      nextx = fp[j.to_s].x + (x2 - x0)*0.05
+      nexty = fp[j.to_s].y + (y2 - y0)*0.05
       if !@targetIsPlayer
-        fp["#{j}"].z = @targetSprite.z - 1 if nextx > cx && nexty < cy
-        fp["#{j}"].visible = false if nextx > cx && nexty < cy
+        fp[j.to_s].z = @targetSprite.z - 1 if nextx > cx && nexty < cy
+        fp[j.to_s].visible = false if nextx > cx && nexty < cy
       else
-        fp["#{j}"].visible = false if nextx < cx && nexty > cy
+        fp[j.to_s].visible = false if nextx < cx && nexty > cy
       end
     end
     pbSEPlay("Anim/Ice1") if i>32 && (i-32)%4==0

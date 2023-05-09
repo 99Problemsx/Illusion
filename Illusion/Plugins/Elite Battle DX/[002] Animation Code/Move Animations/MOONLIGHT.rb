@@ -42,22 +42,22 @@ EliteBattle.defineMoveAnimation(:MOONLIGHT) do
   fp["bg"].opacity = 0
   #
   for j in 0...t
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb619_6")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb619_6")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
     r = 64*factor
     x, y = randCircleCord(r)
     x = cx - r + x
     y = cy - r + y
-    fp["#{j}"].x = cx
-    fp["#{j}"].y = cx
-    fp["#{j}"].z = @userSprite.z
-    fp["#{j}"].visible = false
-    fp["#{j}"].angle = rand(360)
+    fp[j.to_s].x = cx
+    fp[j.to_s].y = cx
+    fp[j.to_s].z = @userSprite.z
+    fp[j.to_s].visible = false
+    fp[j.to_s].angle = rand(360)
     z = [0.5,1,0.75][rand(3)]
-    fp["#{j}"].zoom_x = z
-    fp["#{j}"].zoom_y = z
+    fp[j.to_s].zoom_x = z
+    fp[j.to_s].zoom_y = z
     dx.push(x)
     dy.push(y)
   end
@@ -72,12 +72,12 @@ EliteBattle.defineMoveAnimation(:MOONLIGHT) do
   for i in 0...2*t
     for j in 0...t
       next if j>(i*2)
-      fp["#{j}"].visible = true
-      if ((fp["#{j}"].x - dx[j])*0.1).abs < 1
-        fp["#{j}"].opacity -= 32
+      fp[j.to_s].visible = true
+      if ((fp[j.to_s].x - dx[j])*0.1).abs < 1
+        fp[j.to_s].opacity -= 32
       else
-        fp["#{j}"].x -= (fp["#{j}"].x - dx[j])*0.1
-        fp["#{j}"].y -= (fp["#{j}"].y - dy[j])*0.1
+        fp[j.to_s].x -= (fp[j.to_s].x - dx[j])*0.1
+        fp[j.to_s].y -= (fp[j.to_s].y - dy[j])*0.1
       end
     end
     @scene.wait

@@ -132,7 +132,7 @@ module MGBW
 		def check_code
 			ret = false
 			@gift.each { |g|
-				if "#{g[0]}" == @words.join
+				if (g[0]).to_s == @words.join
 					@got = g
 					ret = true
 				end

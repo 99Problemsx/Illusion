@@ -10,14 +10,14 @@ EliteBattle.defineCommonAnimation(:SLEEP) do
   #-----------------------------------------------------------------------------
   #  set up sprites
   for i in 0...3
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebSleep")
-    fp["#{i}"].center!
-    fp["#{i}"].angle = @targetIsPlayer ? 55 : 125
-    fp["#{i}"].zoom_x = 0
-    fp["#{i}"].zoom_y = 0
-    fp["#{i}"].z = @targetIsPlayer ? 29 : 19
-    fp["#{i}"].tone = Tone.new(192,192,192)
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebSleep")
+    fp[i.to_s].center!
+    fp[i.to_s].angle = @targetIsPlayer ? 55 : 125
+    fp[i.to_s].zoom_x = 0
+    fp[i.to_s].zoom_y = 0
+    fp[i.to_s].z = @targetIsPlayer ? 29 : 19
+    fp[i.to_s].tone = Tone.new(192,192,192)
     r.push(0)
   end
   #-----------------------------------------------------------------------------
@@ -27,16 +27,16 @@ EliteBattle.defineCommonAnimation(:SLEEP) do
     cx, cy = @targetSprite.getCenter(true)
     for i in 0...3
       next if i > (j/12)
-      fp["#{i}"].zoom_x += ((1*factor) - fp["#{i}"].zoom_x)*0.1
-      fp["#{i}"].zoom_y += ((1*factor) - fp["#{i}"].zoom_y)*0.1
+      fp[i.to_s].zoom_x += ((1*factor) - fp[i.to_s].zoom_x)*0.1
+      fp[i.to_s].zoom_y += ((1*factor) - fp[i.to_s].zoom_y)*0.1
       a = @targetIsPlayer ? 55 : 125
       r[i] += 4*factor
       x = cx + r[i]*Math.cos(a*(Math::PI/180)) + 16*factor*(@targetIsPlayer ? 1 : -1)
       y = cy - r[i]*Math.sin(a*(Math::PI/180)) - 32*factor
-      fp["#{i}"].x = x; fp["#{i}"].y = y
-      fp["#{i}"].opacity -= 16 if r[i] >= 64
-      fp["#{i}"].tone.all -= 16 if fp["#{i}"].tone.all > 0
-      fp["#{i}"].angle += @targetIsPlayer ? - 1 : 1
+      fp[i.to_s].x = x; fp[i.to_s].y = y
+      fp[i.to_s].opacity -= 16 if r[i] >= 64
+      fp[i.to_s].tone.all -= 16 if fp[i.to_s].tone.all > 0
+      fp[i.to_s].angle += @targetIsPlayer ? - 1 : 1
     end
     @scene.wait(1,true)
   end
