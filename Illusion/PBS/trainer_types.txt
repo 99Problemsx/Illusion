@@ -500,3 +500,18 @@ BaseMoney = 60
 Name = Ninja
 Gender = Male
 BaseMoney = 60
+#-------------------------------
+[Spezi_Vorstand_Patendony]
+Name = Spezi Vorstand
+Gender = Male
+BaseMoney = 85
+#-------------------------------
+[Spezi_Vorstand_Alina]
+Name = Spezi Vorstand
+Gender = Female
+BaseMoney = 85
+#-------------------------------
+[POLICE_M]
+Name = Police_M
+Gender = Male
+BaseMoney = 56

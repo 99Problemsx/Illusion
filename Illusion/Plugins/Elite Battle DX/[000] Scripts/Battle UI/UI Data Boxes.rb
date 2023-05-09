@@ -247,6 +247,7 @@ class DataBoxEBDX  <  SpriteWrapper
     # reset of the set-up procedure
     @loaded = false
     @showing = false
+    @hpTextY = EliteBattle::HP_TEXT_Y_OFFSET
     pbDisposeSpriteHash(@sprites)
     @sprites.clear
     # caches the bitmap used for coloring
@@ -387,7 +388,7 @@ class DataBoxEBDX  <  SpriteWrapper
     # updates the HP text
     str = "#{self.hp}/#{@battler.totalhp}"
     @sprites["textHP"].bitmap.clear
-    textpos = [[str,@sprites["textHP"].bitmap.width,0,1,Color.white,Color.new(0,0,0,125)]]
+    textpos = [[str,@sprites["textHP"].bitmap.width,0,@hpTextY,Color.white,Color.new(0,0,0,125)]]
     pbDrawTextPositions(@sprites["textHP"].bitmap,textpos) if @showhp
   end
   #-----------------------------------------------------------------------------
@@ -406,7 +407,7 @@ class DataBoxEBDX  <  SpriteWrapper
     @pokemon = @battler.displayPokemon
     # failsafe
     return if @pokemon.nil?
-    @hidden = EliteBattle.get_data(@pokemon.species, :Species, :HIDENAME, (@pokemon.form rescue 0)) && !$Trainer.owned?(@pokemon.species)
+    @hidden = EliteBattle.get_data(@pokemon.species, :Species, :HIDENAME, (@pokemon.form rescue 0)) && !$player.owned?(@pokemon.species)
     # exits the refresh if the databox isn't fully set up yet
     return if !@loaded
     # update for HP/EXP bars
