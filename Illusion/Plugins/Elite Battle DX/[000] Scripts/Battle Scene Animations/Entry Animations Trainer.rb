@@ -161,26 +161,26 @@ class EliteBattle_BasicTrainerAnimations
     # creates necessary sprites
     for i in 0...6
       # black rectangles
-      rects["#{i}"] = Sprite.new(@viewport)
-      rects["#{i}"].bitmap = Bitmap.new(2,@viewport.height/6)
-      rects["#{i}"].bitmap.fill_rect(0,0,2,@viewport.height/6,Color.black)
-      rects["#{i}"].x = (i%2==0) ? -32 : @viewport.width+32
-      rects["#{i}"].ox = (i%2==0) ? 0 : 2
-      rects["#{i}"].y = (@viewport.height/6)*i
-      rects["#{i}"].zoom_x = 0
+      rects[i.to_s] = Sprite.new(@viewport)
+      rects[i.to_s].bitmap = Bitmap.new(2,@viewport.height/6)
+      rects[i.to_s].bitmap.fill_rect(0,0,2,@viewport.height/6,Color.black)
+      rects[i.to_s].x = (i%2==0) ? -32 : @viewport.width+32
+      rects[i.to_s].ox = (i%2==0) ? 0 : 2
+      rects[i.to_s].y = (@viewport.height/6)*i
+      rects[i.to_s].zoom_x = 0
       # ballsprites
-      balls["#{i}"] = Sprite.new(@viewport)
-      balls["#{i}"].bitmap = ball
-      balls["#{i}"].center!
-      balls["#{i}"].x = rects["#{i}"].x
-      balls["#{i}"].y = rects["#{i}"].y + rects["#{i}"].bitmap.height/2
+      balls[i.to_s] = Sprite.new(@viewport)
+      balls[i.to_s].bitmap = ball
+      balls[i.to_s].center!
+      balls[i.to_s].x = rects[i.to_s].x
+      balls[i.to_s].y = rects[i.to_s].y + rects[i.to_s].bitmap.height/2
     end
     # moves sprites across screen
     for j in 0...28.delta_add
       for i in 0...6
-        balls["#{i}"].x += ((i%2==0) ? 24 : -24)/self.delta
-        balls["#{i}"].angle -= ((i%2==0) ? 32 : -32)/self.delta
-        rects["#{i}"].zoom_x += 12/self.delta
+        balls[i.to_s].x += ((i%2==0) ? 24 : -24)/self.delta
+        balls[i.to_s].angle -= ((i%2==0) ? 32 : -32)/self.delta
+        rects[i.to_s].zoom_x += 12/self.delta
       end
       pbWait(1)
     end

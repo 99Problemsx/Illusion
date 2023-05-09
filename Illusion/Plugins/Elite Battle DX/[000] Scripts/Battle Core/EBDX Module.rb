@@ -500,13 +500,13 @@ module EliteBattle
   def self.get_map_data(key)
     d1 = EliteBattle.get_data($game_map.map_id, :Map, key)
     if pbIsSpring
-      d2 = EliteBattle.get_data($game_map.map_id, :Map, "SPRING_#{key.to_s}".to_sym)
+      d2 = EliteBattle.get_data($game_map.map_id, :Map, "SPRING_#{key}".to_sym)
     elsif pbIsSummer
-      d2 = EliteBattle.get_data($game_map.map_id, :Map, "SUMMER_#{key.to_s}".to_sym)
+      d2 = EliteBattle.get_data($game_map.map_id, :Map, "SUMMER_#{key}".to_sym)
     elsif pbIsAutumn
-      d2 = EliteBattle.get_data($game_map.map_id, :Map, "AUTUMN_#{key.to_s}".to_sym)
+      d2 = EliteBattle.get_data($game_map.map_id, :Map, "AUTUMN_#{key}".to_sym)
     elsif pbIsWinter
-      d2 = EliteBattle.get_data($game_map.map_id, :Map, "WINTER_#{key.to_s}".to_sym)
+      d2 = EliteBattle.get_data($game_map.map_id, :Map, "WINTER_#{key}".to_sym)
     else
       d2 = nil
     end

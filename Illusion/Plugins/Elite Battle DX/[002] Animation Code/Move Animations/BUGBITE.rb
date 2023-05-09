@@ -24,18 +24,18 @@ EliteBattle.defineMoveAnimation(:BUGBITE) do
     fp["s#{j}"].visible = false
   end
   for j in 0...32
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb008_2")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb008_2")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
     r = 32*factor
     x = cx - r + rand(r*2)
     y = cy - r + rand(r)
-    fp["#{j}"].x = x
-    fp["#{j}"].y = y
-    fp["#{j}"].z = @targetSprite.z
-    fp["#{j}"].visible = false
-    fp["#{j}"].angle = rand(360)
+    fp[j.to_s].x = x
+    fp[j.to_s].y = y
+    fp[j.to_s].z = @targetSprite.z
+    fp[j.to_s].visible = false
+    fp[j.to_s].angle = rand(360)
     ox = (x < cx ? x-rand(24*factor)-24*factor : x+rand(24*factor)+24*factor)
     oy = y - rand(24*factor) - 24*factor
     dx.push(ox)
@@ -47,15 +47,15 @@ EliteBattle.defineMoveAnimation(:BUGBITE) do
   for i in 0...64
     for j in 0...32
       next if j>i
-      fp["#{j}"].visible = true
-      if ((fp["#{j}"].x - dx[j])*0.2).abs < 1
-        fp["#{j}"].y += 4
-        fp["#{j}"].opacity -= 16
+      fp[j.to_s].visible = true
+      if ((fp[j.to_s].x - dx[j])*0.2).abs < 1
+        fp[j.to_s].y += 4
+        fp[j.to_s].opacity -= 16
       else
-        fp["#{j}"].x -= (fp["#{j}"].x - dx[j])*0.2
-        fp["#{j}"].y -= (fp["#{j}"].y - dy[j])*0.2
+        fp[j.to_s].x -= (fp[j.to_s].x - dx[j])*0.2
+        fp[j.to_s].y -= (fp[j.to_s].y - dy[j])*0.2
       end
-      fp["#{j}"].angle += da[j]*8
+      fp[j.to_s].angle += da[j]*8
     end
     for j in 0...12
       next if j>(i/4)

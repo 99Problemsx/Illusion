@@ -15,7 +15,7 @@ class EBBallBurst
   #-----------------------------------------------------------------------------
   def initialize(viewport, x = 0, y = 0, z = 50, factor = 1, balltype = :POKEBALL)
     # defaults to regular Pokeball particles if specific ones cannot be found
-    balltype = :POKEBALL if pbResolveBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype.to_s}_shine").nil?
+    balltype = :POKEBALL if pbResolveBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype}_shine").nil?
     # configuring main variables
     @balltype = balltype
     @viewport = viewport
@@ -27,7 +27,7 @@ class EBBallBurst
     # ray particles
     for j in 0...8
       @fp["s#{j}"] = Sprite.new(@viewport)
-      @fp["s#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype.to_s}_ray")
+      @fp["s#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype}_ray")
       @fp["s#{j}"].oy = @fp["s#{j}"].bitmap.height/2
       @fp["s#{j}"].zoom_x = 0
       @fp["s#{j}"].zoom_y = 0
@@ -40,7 +40,7 @@ class EBBallBurst
     end
     # inner glow particle
     @fp["cir"] = Sprite.new(@viewport)
-    @fp["cir"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype.to_s}_shine")
+    @fp["cir"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype}_shine")
     @fp["cir"].center!
     @fp["cir"].x = x
     @fp["cir"].y = y
@@ -52,7 +52,7 @@ class EBBallBurst
     for k in 0...16
       str = ["particle","eff"][rand(2)]
       @fp["p#{k}"] = Sprite.new(@viewport)
-      @fp["p#{k}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype.to_s}_#{str}")
+      @fp["p#{k}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{balltype}_#{str}")
       @fp["p#{k}"].center!
       @pzoom.push([1.0,0.3,0.75,0.5][rand(4)]*@factor)
       @fp["p#{k}"].zoom_x = 1*@factor
@@ -188,7 +188,7 @@ class EBBallBurst
       @fp["p#{k}"].tone = Tone.new(0,0,0)
       @fp["p#{k}"].opacity = 0
       str = ["particle", "eff"][k%2]
-      @fp["p#{k}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{@balltype.to_s}_#{str}")
+      @fp["p#{k}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Ballburst/#{@balltype}_#{str}")
       @fp["p#{k}"].ox = @fp["p#{k}"].bitmap.width/2
       @fp["p#{k}"].oy = @fp["p#{k}"].bitmap.height/2
     end

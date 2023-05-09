@@ -11,17 +11,17 @@ EliteBattle.defineCommonAnimation(:SANDTOMB) do
   #-----------------------------------------------------------------------------
   #  set up sprites
   for i in 0...idxSand
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb504_2")
-    fp["#{i}"].src_rect.set(0, 0*rand(3), 53, 101)
-    fp["#{i}"].ox = 26
-    fp["#{i}"].oy = 101
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = (@targetIsPlayer ? 29 : 19)
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb504_2")
+    fp[i.to_s].src_rect.set(0, 0*rand(3), 53, 101)
+    fp[i.to_s].ox = 26
+    fp[i.to_s].oy = 101
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = (@targetIsPlayer ? 29 : 19)
     rndx.push(rand(64))
     rndy.push(rand(64))
-    fp["#{i}"].x = cx - 32*factor + rndx[i]*factor
-    fp["#{i}"].y = cy - 32*factor + rndy[i]*factor + 50*factor
+    fp[i.to_s].x = cx - 32*factor + rndx[i]*factor
+    fp[i.to_s].y = cy - 32*factor + rndy[i]*factor + 50*factor
   end
   #-----------------------------------------------------------------------------
   #  begin animation
@@ -29,17 +29,17 @@ EliteBattle.defineCommonAnimation(:SANDTOMB) do
   pbSEPlay("EBDX/Anim/ground1", 80) if i%8 == 0
     k *= -1 if i%16 == 0
     for j in 0...idxSand
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].tone.gray == 0
-        fp["#{j}"].zoom_x = factor; fp["#{j}"].zoom_y = factor
-        fp["#{j}"].y -= 2*factor
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].tone.gray == 0
+        fp[j.to_s].zoom_x = factor; fp[j.to_s].zoom_y = factor
+        fp[j.to_s].y -= 2*factor
       end
       next if j > (i/4)
-      if fp["#{j}"].opacity == 255 || fp["#{j}"].tone.gray > 0
-        fp["#{j}"].opacity -= 16
-        fp["#{j}"].tone.gray += 8
-        fp["#{j}"].zoom_x -= 0.01; fp["#{j}"].zoom_y += 0.02
+      if fp[j.to_s].opacity == 255 || fp[j.to_s].tone.gray > 0
+        fp[j.to_s].opacity -= 16
+        fp[j.to_s].tone.gray += 8
+        fp[j.to_s].zoom_x -= 0.01; fp[j.to_s].zoom_y += 0.02
       else
-        fp["#{j}"].opacity += 51
+        fp[j.to_s].opacity += 51
       end
     end
     @targetSprite.ox += shake

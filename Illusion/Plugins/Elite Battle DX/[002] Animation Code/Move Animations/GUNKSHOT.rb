@@ -15,17 +15,17 @@ EliteBattle.defineMoveAnimation(:GUNKSHOT) do
   fp["bg"].color = Color.new(0,0,0,255)
   fp["bg"].opacity = 0
   for i in 0...128
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb427_1")
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb427_1")
     z = 1 - rand(61)/100.0
-    fp["#{i}"].zoom_x = z
-    fp["#{i}"].zoom_y = z
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].visible = false
-    fp["#{i}"].toggle = rand(2)==0 ? 1 : -1
-    fp["#{i}"].param = 1 + rand(4)
-    fp["#{i}"].z = @targetSprite.z + 1
+    fp[i.to_s].zoom_x = z
+    fp[i.to_s].zoom_y = z
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].visible = false
+    fp[i.to_s].toggle = rand(2)==0 ? 1 : -1
+    fp[i.to_s].param = 1 + rand(4)
+    fp[i.to_s].z = @targetSprite.z + 1
     rndx.push(rand(192)); prndx.push(rand(64))
     rndy.push(rand(192)); prndy.push(rand(64))
     rangl.push(rand(9))
@@ -64,22 +64,22 @@ EliteBattle.defineMoveAnimation(:GUNKSHOT) do
     cx, cy = @targetSprite.getCenter(true)
     for j in 0...128
       next if j>(i*2)
-      if !fp["#{j}"].visible
+      if !fp[j.to_s].visible
         dx[j] = ax - 32*@userSprite.zoom_x*0.5 + prndx[j]*@userSprite.zoom_x*0.5
         dy[j] = ay - 32*@userSprite.zoom_y*0.5 + prndy[j]*@userSprite.zoom_y*0.5
-        fp["#{j}"].x = dx[j]
-        fp["#{j}"].y = dy[j]
-        fp["#{j}"].visible = true
+        fp[j.to_s].x = dx[j]
+        fp[j.to_s].y = dy[j]
+        fp[j.to_s].visible = true
       end
       x0 = ax - 32*@userSprite.zoom_x*0.5 + prndx[j]*@userSprite.zoom_x*0.5
       y0 = ay - 32*@userSprite.zoom_y*0.5 + prndy[j]*@userSprite.zoom_y*0.5
       x2 = cx - 96*@targetSprite.zoom_x*0.5 + rndx[j]*@targetSprite.zoom_x*0.5
       y2 = cy - 96*@targetSprite.zoom_y*0.5 + rndy[j]*@targetSprite.zoom_y*0.5
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].angle += fp["#{j}"].toggle*(2 + fp["#{j}"].param)
-      fp["#{j}"].tone.gray += 8
-      fp["#{j}"].opacity -= 16
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].angle += fp[j.to_s].toggle*(2 + fp[j.to_s].param)
+      fp[j.to_s].tone.gray += 8
+      fp[j.to_s].opacity -= 16
     end
     for l in 0...12
       next if i < 16

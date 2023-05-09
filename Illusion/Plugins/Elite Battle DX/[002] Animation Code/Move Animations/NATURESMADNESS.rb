@@ -13,13 +13,13 @@ EliteBattle.defineMoveAnimation(:NATURESMADNESS) do | args |
   fp["bg"].opacity = 0
   @userSprite.color = Color.new(217,189,52,0) if strike
   for i in 0...8
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb069_2_2")
-    fp["#{i}"].src_rect.set(0,0,98,430)
-    fp["#{i}"].ox = fp["#{i}"].src_rect.width/2
-    fp["#{i}"].oy = fp["#{i}"].src_rect.height
-    fp["#{i}"].zoom_x = 0.5
-    fp["#{i}"].z = 50
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb069_2_2")
+    fp[i.to_s].src_rect.set(0,0,98,430)
+    fp[i.to_s].ox = fp[i.to_s].src_rect.width/2
+    fp[i.to_s].oy = fp[i.to_s].src_rect.height
+    fp[i.to_s].zoom_x = 0.5
+    fp[i.to_s].z = 50
   end
   for i in 0...16
     fp["s#{i}"] = Sprite.new(@viewport)
@@ -50,20 +50,20 @@ EliteBattle.defineMoveAnimation(:NATURESMADNESS) do | args |
   for i in 0...96
     for j in 0...8
       next if j>(i/4)
-      if fp["#{j}"].y <= 0 && i < 32
+      if fp[j.to_s].y <= 0 && i < 32
         pbSEPlay("Anim/Thunder3",80) if i%8==0
-        fp["#{j}"].x = cx - 32*@targetSprite.zoom_x + rand(64)*@targetSprite.zoom_x
-        fp["#{j}"].src_rect.x = 98*rand(3)
+        fp[j.to_s].x = cx - 32*@targetSprite.zoom_x + rand(64)*@targetSprite.zoom_x
+        fp[j.to_s].src_rect.x = 98*rand(3)
         t = rand(5)*48
-        fp["#{j}"].opacity = 255
-        fp["#{j}"].tone = Tone.new(t,t,t)
-        fp["#{j}"].mirror = (rand(2)==0 ? true : false)
+        fp[j.to_s].opacity = 255
+        fp[j.to_s].tone = Tone.new(t,t,t)
+        fp[j.to_s].mirror = (rand(2)==0)
       end
-      fp["#{j}"].src_rect.x += 98
-      fp["#{j}"].src_rect.x = 0 if fp["#{j}"].src_rect.x >= 294
-      fp["#{j}"].y += (@targetIsPlayer ? @vector.y : @vector.y2)/8.0 if fp["#{j}"].y < (@targetIsPlayer ? @vector.y : @vector.y2) + 32
-      fp["#{j}"].opacity -= 32 if fp["#{j}"].y >= (@targetIsPlayer ? @vector.y : @vector.y2) + 32
-      fp["#{j}"].y = 0 if fp["#{j}"].opacity <= 0
+      fp[j.to_s].src_rect.x += 98
+      fp[j.to_s].src_rect.x = 0 if fp[j.to_s].src_rect.x >= 294
+      fp[j.to_s].y += (@targetIsPlayer ? @vector.y : @vector.y2)/8.0 if fp[j.to_s].y < (@targetIsPlayer ? @vector.y : @vector.y2) + 32
+      fp[j.to_s].opacity -= 32 if fp[j.to_s].y >= (@targetIsPlayer ? @vector.y : @vector.y2) + 32
+      fp[j.to_s].y = 0 if fp[j.to_s].opacity <= 0
     end
     for n in 0...16
       next if i < 48

@@ -517,7 +517,7 @@ class PokemonSaveScreen
 
     return "<c3=3050C8,D0D0C8>#{datetime_str}</c3>"+ # blue
            "<ac><c3=209808,90F090>#{map_str}</c3></ac>"+ # green
-           "#{elapsed_str}"
+           elapsed_str.to_s
   end
 end
 

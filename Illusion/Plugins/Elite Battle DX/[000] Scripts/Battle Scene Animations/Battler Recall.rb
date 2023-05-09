@@ -72,7 +72,7 @@ class Battle::Scene
       val = 1 if dig[m]
       alt.push(val)
       next if i == EliteBattle.follower(@battle)
-      dust["#{i}"] = EBDustParticle.new(@viewport, @sprites["pokemon_#{i}"], (startBattle ? 1 : 2))
+      dust[i.to_s] = EBDustParticle.new(@viewport, @sprites["pokemon_#{i}"], (startBattle ? 1 : 2))
       @sprites["pokeball#{i}"].dispose
     end
     # register as heavy shake
@@ -118,8 +118,8 @@ class Battle::Scene
       sendOuts.each_with_index do |b, m|
         battler = @battlers[b[0]]; i = battler.index
         next if i == EliteBattle.follower(@battle)
-        dust["#{i}"].update if battler.pbWeight*0.1 >= 291 && alt[m] < 1
-        dust["#{i}"].dispose if j == 24
+        dust[i.to_s].update if battler.pbWeight*0.1 >= 291 && alt[m] < 1
+        dust[i.to_s].dispose if j == 24
       end
       self.wait(1, false) if j < 24
     end

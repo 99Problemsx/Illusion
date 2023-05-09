@@ -12,12 +12,12 @@ EliteBattle.defineMoveAnimation(:WHIRLWIND) do
   dx = []
   dy = []
   for i in 0...128
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb423")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].visible = false
-    fp["#{i}"].z = @targetSprite.z + 1
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb423")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].visible = false
+    fp[i.to_s].z = @targetSprite.z + 1
     rndx.push(rand(256)); prndx.push(rand(72))
     rndy.push(rand(256)); prndy.push(rand(72))
     rangl.push(rand(9))
@@ -33,26 +33,26 @@ EliteBattle.defineMoveAnimation(:WHIRLWIND) do
     cx, cy = @targetSprite.getCenter(true)
     for j in 0...128
       next if j>(i*2)
-      if !fp["#{j}"].visible
+      if !fp[j.to_s].visible
         dx[j] = ax - 46*@userSprite.zoom_x*0.5 + prndx[j]*@userSprite.zoom_x*0.5
         dy[j] = ay - 46*@userSprite.zoom_y*0.5 + prndy[j]*@userSprite.zoom_y*0.5
-        fp["#{j}"].x = dx[j]
-        fp["#{j}"].y = dy[j]
-        fp["#{j}"].visible = true
+        fp[j.to_s].x = dx[j]
+        fp[j.to_s].y = dy[j]
+        fp[j.to_s].visible = true
       end
       x0 = ax - 46*@userSprite.zoom_x*0.5 + prndx[j]*@userSprite.zoom_x*0.5
       y0 = ay - 46*@userSprite.zoom_y*0.5 + prndy[j]*@userSprite.zoom_y*0.5
       x2 = cx - 128*@targetSprite.zoom_x*0.5 + rndx[j]*@targetSprite.zoom_x*0.5
       y2 = cy - 128*@targetSprite.zoom_y*0.5 + rndy[j]*@targetSprite.zoom_y*0.5
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].angle += rangl[j]*2
-      nextx = fp["#{j}"].x
-      nexty = fp["#{j}"].y
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].angle += rangl[j]*2
+      nextx = fp[j.to_s].x
+      nexty = fp[j.to_s].y
       if !@targetIsPlayer
-        fp["#{j}"].opacity -= 51 if nextx > cx && nexty < cy
+        fp[j.to_s].opacity -= 51 if nextx > cx && nexty < cy
       else
-        fp["#{j}"].opacity -= 51 if nextx < cx && nexty > cy
+        fp[j.to_s].opacity -= 51 if nextx < cx && nexty > cy
       end
     end
     if i >= 64

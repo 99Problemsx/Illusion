@@ -233,27 +233,27 @@ class BagWindowEBDX
     pbmp = pbBitmap(@path + @cmdImg)
     ibmp = pbBitmap(@path + @frameImg)
     for i in 0...@pocket.length
-      @items["#{i}"] = Sprite.new(@viewport)
+      @items[i.to_s] = Sprite.new(@viewport)
       # create bitmap and draw all the required contents on it
-      @items["#{i}"].bitmap = Bitmap.new(pbmp.width, pbmp.height/4)
-      @items["#{i}"].bitmap.blt(0, 0, pbmp, Rect.new(0, (pbmp.height/4)*@index, pbmp.width, pbmp.height/4))
-      @items["#{i}"].bitmap.blt((pbmp.width - ibmp.width)/2, (pbmp.height/4 - ibmp.height)/2, ibmp, ibmp.rect)
-      pbSetSystemFont(@items["#{i}"].bitmap)
+      @items[i.to_s].bitmap = Bitmap.new(pbmp.width, pbmp.height/4)
+      @items[i.to_s].bitmap.blt(0, 0, pbmp, Rect.new(0, (pbmp.height/4)*@index, pbmp.width, pbmp.height/4))
+      @items[i.to_s].bitmap.blt((pbmp.width - ibmp.width)/2, (pbmp.height/4 - ibmp.height)/2, ibmp, ibmp.rect)
+      pbSetSystemFont(@items[i.to_s].bitmap)
       icon = pbBitmap(GameData::Item.icon_filename(@pocket[i][0]))
-      @items["#{i}"].bitmap.blt(pbmp.width - icon.width - (pbmp.width - ibmp.width)/2 - 4, (pbmp.height/4 - icon.height)/2, icon, icon.rect, 164); icon.dispose
+      @items[i.to_s].bitmap.blt(pbmp.width - icon.width - (pbmp.width - ibmp.width)/2 - 4, (pbmp.height/4 - icon.height)/2, icon, icon.rect, 164); icon.dispose
       # draw texxt
       text = [
-        ["#{GameData::Item.get(@pocket[i][0]).real_name}", pbmp.width/2 - 15, 2*pbmp.height/64 - 8, 2, @baseColor, Color.new(0, 0, 0, 32)],
+        [GameData::Item.get(@pocket[i][0]).real_name.to_s, pbmp.width/2 - 15, 2*pbmp.height/64 - 8, 2, @baseColor, Color.new(0, 0, 0, 32)],
         ["x#{@pocket[i][1]}", pbmp.width/2 - 12, 8*pbmp.height/64 - 14, 2, @baseColor, Color.new(0, 0, 0, 32)],
       ]
-      pbDrawTextPositions(@items["#{i}"].bitmap, text)
+      pbDrawTextPositions(@items[i.to_s].bitmap, text)
       # center sprite
-      @items["#{i}"].center!
+      @items[i.to_s].center!
       # position items
-      @items["#{i}"].x = @viewport.width + (x%2 == 0 ? 1 : -1)*8 + (x*2 + 1)*@viewport.width/4 + (i/6)*@viewport.width
-      @xpos.push(@items["#{i}"].x - @viewport.width)
-      @items["#{i}"].y = (y + 1)*@viewport.height/5 + (y*12)
-      @items["#{i}"].opacity = 255
+      @items[i.to_s].x = @viewport.width + (x%2 == 0 ? 1 : -1)*8 + (x*2 + 1)*@viewport.width/4 + (i/6)*@viewport.width
+      @xpos.push(@items[i.to_s].x - @viewport.width)
+      @items[i.to_s].y = (y + 1)*@viewport.height/5 + (y*12)
+      @items[i.to_s].opacity = 255
       # increment the position count
       x += 1; y += 1 if x > 1
       x = 0 if x > 1
@@ -288,8 +288,8 @@ class BagWindowEBDX
     @page = @item/6
     # animate position of item sprites
     for i in 0...@pocket.length
-      @items["#{i}"].x -= (@items["#{i}"].x - (@xpos[i] - @page*@viewport.width))*0.2
-      @items["#{i}"].src_rect.y += 1 if @items["#{i}"].src_rect.y < 0
+      @items[i.to_s].x -= (@items[i.to_s].x - (@xpos[i] - @page*@viewport.width))*0.2
+      @items[i.to_s].src_rect.y += 1 if @items[i.to_s].src_rect.y < 0
     end
     @sprites["name"].x += @sprites["name"].width/10 if @sprites["name"].x < -24
     @sprites["pocket5"].src_rect.y += 1 if @sprites["pocket5"].src_rect.y < 0
@@ -349,8 +349,8 @@ class BagWindowEBDX
     if @item != @olditem
       @olditem = @item
       pbSEPlay("EBDX/SE_Select1")
-      @sprites["sel"].target(@back ? @sprites["pocket5"] : @items["#{@item}"])
-      @items["#{@item}"].src_rect.y -= 6 if !@back
+      @sprites["sel"].target(@back ? @sprites["pocket5"] : @items[@item.to_s])
+      @items[@item.to_s].src_rect.y -= 6 if !@back
       self.name
     end
   end
@@ -401,7 +401,7 @@ class BagWindowEBDX
       end
       if @pocket
         for i in 0...@pocket.length
-          @items["#{i}"].opacity -= 25.5
+          @items[i.to_s].opacity -= 25.5
         end
       end
       @sprites["name"].x -= 48 if @sprites["name"].x > -380
@@ -434,7 +434,7 @@ class BagWindowEBDX
       if @pocket
         # fade out panels
         for i in 0...@pocket.length
-          @items["#{i}"].opacity -= 32
+          @items[i.to_s].opacity -= 32
         end
       end
       for i in 0...4
@@ -454,7 +454,7 @@ class BagWindowEBDX
     choice = (index == 0) ? "confirm" : "cancel"
     # start the main input loop
     loop do
-      @sprites["#{choice}"].src_rect.y += 1 if @sprites["#{choice}"].src_rect.y < 0
+      @sprites[choice.to_s].src_rect.y += 1 if @sprites[choice.to_s].src_rect.y < 0
       # process directional input
       if Input.trigger?(Input::UP)
         index -= 1
@@ -469,8 +469,8 @@ class BagWindowEBDX
       if index != oldindex
         oldindex = index
         pbSEPlay("EBDX/SE_Select1")
-        @sprites["#{choice}"].src_rect.y -= 6
-        @sprites["sel"].target(@sprites["#{choice}"])
+        @sprites[choice.to_s].src_rect.y -= 6
+        @sprites["sel"].target(@sprites[choice.to_s])
       end
       # confirmation and cancellation input
       if Input.trigger?(Input::C)
@@ -514,7 +514,7 @@ class BagWindowEBDX
     # format text
     i = last > 0 ? 1 : 0
     name = last > 0 ? GameData::Item.get(@lastUsed).real_name : ""
-    text = ["", "#{name}"]
+    text = ["", name.to_s]
     # clean bitmap
     bmp = pbBitmap(@path + @lastImg)
     icon = pbBitmap(GameData::Item.icon_filename(name))
@@ -543,7 +543,7 @@ class BagWindowEBDX
       @sprites["pocket5"].y -= 8 if @sprites["pocket5"].y > @sprites["pocket5"].ey
       if @pocket
         for i in 0...@pocket.length
-          @items["#{i}"].opacity -= 51 if @items["#{i}"] && @items["#{i}"].opacity > 0
+          @items[i.to_s].opacity -= 51 if @items[i.to_s] && @items[i.to_s].opacity > 0
         end
       end
       @sprites["name"].x -= @sprites["name"].width/10 if @sprites["name"].x > -@sprites["name"].width
@@ -558,7 +558,7 @@ class BagWindowEBDX
       end
       @sprites["pocket4"].y += 8 if @sprites["pocket4"].y < (@sprites["pocket4"].ey + 80)
       for i in 0...@pocket.length
-        @items["#{i}"].opacity += 51 if @items["#{i}"] && @items["#{i}"].opacity < 255
+        @items[i.to_s].opacity += 51 if @items[i.to_s] && @items[i.to_s].opacity < 255
       end
     end
     # update selection sprite
@@ -625,7 +625,7 @@ class BagWindowEBDX
       cmd = [2, 3, 5, 7]
       cmd = [2, 1, 4, 5] if Settings.bag_pocket_names.length == 6
       self.drawPocket(cmd[@index], @index)
-      @sprites["sel"].target(@back ? @sprites["pocket5"] : @items["#{@item}"])
+      @sprites["sel"].target(@back ? @sprites["pocket5"] : @items[@item.to_s])
     else
       @selPocket = 0
       @page = -1

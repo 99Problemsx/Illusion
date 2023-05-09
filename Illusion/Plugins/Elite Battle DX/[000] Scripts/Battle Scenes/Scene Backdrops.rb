@@ -592,17 +592,17 @@ class BattleSceneRoom
   def drawImg(key)
     data = @data[key]
     if data.try_key?(:scrolling) # simple scrolling panorama
-      @sprites["#{key}"] = ScrollingSprite.new(@viewport)
+      @sprites[key.to_s] = ScrollingSprite.new(@viewport)
     elsif data.try_key?(:sheet) # simple animated sprite sheets
-      @sprites["#{key}"] = SpriteSheet.new(@viewport,data.get_key(:frames).nil? ? 1 : data[:frames])
+      @sprites[key.to_s] = SpriteSheet.new(@viewport,data.get_key(:frames).nil? ? 1 : data[:frames])
     elsif data.try_key?(:animated) # EBS styled sprite sheets
-      @sprites["#{key}"] = SpriteEBDX.new(@viewport)
+      @sprites[key.to_s] = SpriteEBDX.new(@viewport)
     elsif data.try_key?(:rainbow) # hue changing sprite
-      @sprites["#{key}"] = RainbowSprite.new(@viewport)
+      @sprites[key.to_s] = RainbowSprite.new(@viewport)
     else # regular sprite
-      @sprites["#{key}"] = Sprite.new(@viewport)
+      @sprites[key.to_s] = Sprite.new(@viewport)
     end
-    @sprites["#{key}"].default!; keys = data.keys;
+    @sprites[key.to_s].default!; keys = data.keys;
     if keys.include?(:bitmap) # prioritizes bitmap key from sorted array
       keys.delete(:bitmap); keys.insert(0,:bitmap)
     end
@@ -611,21 +611,21 @@ class BattleSceneRoom
       if k == :bitmap # applies bitmap
         path = pbResolveBitmap(data[m]) ? data[m] : "Graphics/EBDX/Battlebacks/elements/" + data[m]
         if data.try_key?(:scrolling) || data.try_key?(:animated) || data.try_key?(:rainbow) || data.try_key?(:sheet)
-          @sprites["#{key}"].setBitmap(path,((data.try_key?(:animated) || data.try_key?(:rainbow)) ? 1 : data.get_key(:vertical)))
+          @sprites[key.to_s].setBitmap(path,((data.try_key?(:animated) || data.try_key?(:rainbow)) ? 1 : data.get_key(:vertical)))
         else
-          @sprites["#{key}"].bitmap = pbBitmap(path)
+          @sprites[key.to_s].bitmap = pbBitmap(path)
         end; next
       end # otherwise applies parameter data
-      @sprites["#{key}"].send("#{k}=",data[m]) if @sprites["#{key}"].respond_to?(k)
+      @sprites[key.to_s].send("#{k}=",data[m]) if @sprites[key.to_s].respond_to?(k)
     end
-    @sprites["#{key}"].z = 40 if @sprites["#{key}"].z > 40 # caps Z value
-    @sprites["#{key}"].bottom! if @sprites["#{key}"].bitmap && !data.try_key?(:ox) && !data.try_key?(:oy) # sets the anchor to bottom middle, unless otherwise defined
+    @sprites[key.to_s].z = 40 if @sprites[key.to_s].z > 40 # caps Z value
+    @sprites[key.to_s].bottom! if @sprites[key.to_s].bitmap && !data.try_key?(:ox) && !data.try_key?(:oy) # sets the anchor to bottom middle, unless otherwise defined
     # check if should apply color
     if data.try_key?(:colorize)
-      self.setColor(@sprites["bg"], @sprites["#{key}"]) if data[:colorize] == true
-      @sprites["#{key}"].colorize(data[:colorize], data[:colorize].alpha) if data[:colorize].is_a?(Color)
+      self.setColor(@sprites["bg"], @sprites[key.to_s]) if data[:colorize] == true
+      @sprites[key.to_s].colorize(data[:colorize], data[:colorize].alpha) if data[:colorize].is_a?(Color)
     end
-    @sprites["#{key}"].memorize_bitmap # saves the sprite's bitmap just in case
+    @sprites[key.to_s].memorize_bitmap # saves the sprite's bitmap just in case
   end
   #-----------------------------------------------------------------------------
   # loads the animated elements for PWT styled base lights
@@ -932,7 +932,7 @@ class BattleSceneRoom
         n = dat.length - 1 if n >= dat.length
         m = dat.length - 1 if m >= dat.length
         n = 0 if n < 0; m = 0 if m < 0
-        k = [:X, :Y].include?(param) ? "E#{param.to_s}" : param.to_s
+        k = [:X, :Y].include?(param) ? "E#{param}" : param.to_s
         @sprites["battler#{j}"].send("#{k.downcase}=", dat[n])
         @sprites["trainer_#{j}"].send("#{k.downcase}=", dat[m])
       end

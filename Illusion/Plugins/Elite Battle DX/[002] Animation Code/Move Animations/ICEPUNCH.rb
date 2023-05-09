@@ -12,16 +12,16 @@ EliteBattle.defineMoveAnimation(:ICEPUNCH) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.new(100,128,142))
   fp["bg"].opacity = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb248")
-    fp["#{i}"].src_rect.set(rand(2)*26,0,26,42)
-    fp["#{i}"].ox = 13
-    fp["#{i}"].oy = 21
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = (@targetIsPlayer ? 29 : 19)
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb248")
+    fp[i.to_s].src_rect.set(rand(2)*26,0,26,42)
+    fp[i.to_s].ox = 13
+    fp[i.to_s].oy = 21
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = (@targetIsPlayer ? 29 : 19)
     r = rand(101)
-    fp["#{i}"].zoom_x = (@targetSprite.zoom_x - r*0.0075*@targetSprite.zoom_x)
-    fp["#{i}"].zoom_y = (@targetSprite.zoom_y - r*0.0075*@targetSprite.zoom_y)
+    fp[i.to_s].zoom_x = (@targetSprite.zoom_x - r*0.0075*@targetSprite.zoom_x)
+    fp[i.to_s].zoom_y = (@targetSprite.zoom_y - r*0.0075*@targetSprite.zoom_y)
     rndx.push(rand(196))
     rndy.push(rand(196))
     angl.push((1+rand(3))*4*(rand(2)==0 ? 1 : -1))
@@ -58,18 +58,18 @@ EliteBattle.defineMoveAnimation(:ICEPUNCH) do
     pbSEPlay("EBDX/Anim/ice1",75) if i==40
     for j in 0...12
       next if i < 40
-      if fp["#{j}"].opacity == 0
-        fp["#{j}"].x = cx
-        fp["#{j}"].y = cy
+      if fp[j.to_s].opacity == 0
+        fp[j.to_s].x = cx
+        fp[j.to_s].y = cy
       end
       x2 = cx - 98*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
       y2 = cy - 98*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.2
-      fp["#{j}"].y += (y2 - y0)*0.2
-      fp["#{j}"].angle += angl[j]
-      fp["#{j}"].opacity += 32
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.2
+      fp[j.to_s].y += (y2 - y0)*0.2
+      fp[j.to_s].angle += angl[j]
+      fp[j.to_s].opacity += 32
     end
     fp["bg"].opacity += 4 if  i < 40
     if i >= 40
@@ -96,10 +96,10 @@ EliteBattle.defineMoveAnimation(:ICEPUNCH) do
   20.times do
     cx, cy = @targetSprite.getCenter(true)
     for j in 0...12
-      fp["#{j}"].x = cx - 98*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
-      fp["#{j}"].y = cy - 98*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
-      fp["#{j}"].angle += angl[j]
-      fp["#{j}"].opacity -= 13
+      fp[j.to_s].x = cx - 98*@targetSprite.zoom_x + rndx[j]*@targetSprite.zoom_x
+      fp[j.to_s].y = cy - 98*@targetSprite.zoom_y + rndy[j]*@targetSprite.zoom_y
+      fp[j.to_s].angle += angl[j]
+      fp[j.to_s].opacity -= 13
     end
     @scene.wait(1,true)
   end
