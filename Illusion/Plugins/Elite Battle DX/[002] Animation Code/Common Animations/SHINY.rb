@@ -11,18 +11,18 @@ EliteBattle.defineCommonAnimation(:SHINY) do
   #  set up sprites
   for i in 0...16
     cx, cy = @targetSprite.getCenter(true)
-    fp["#{i}"] = Sprite.new(@viewport)
+    fp[i.to_s] = Sprite.new(@viewport)
     str = "Graphics/EBDX/Animations/Moves/ebShiny1"
     str = "Graphics/EBDX/Animations/Moves/ebShiny2" if i >= 8
-    fp["#{i}"].bitmap = pbBitmap(str).clone
-    fp["#{i}"].bitmap.hue_change(180) if i < 8 && @battlers[@targetIndex].pokemon.superShiny?
-    fp["#{i}"].center!
-    fp["#{i}"].x = cx
-    fp["#{i}"].y = cy
-    fp["#{i}"].zoom_x = factor
-    fp["#{i}"].zoom_y = factor
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = @targetIsPlayer ? 29 : 19
+    fp[i.to_s].bitmap = pbBitmap(str).clone
+    fp[i.to_s].bitmap.hue_change(180) if i < 8 && @battlers[@targetIndex].pokemon.superShiny?
+    fp[i.to_s].center!
+    fp[i.to_s].x = cx
+    fp[i.to_s].y = cy
+    fp[i.to_s].zoom_x = factor
+    fp[i.to_s].zoom_y = factor
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = @targetIsPlayer ? 29 : 19
   end
   for j in 0...8
     fp["s#{j}"] = Sprite.new(@viewport)
@@ -51,24 +51,24 @@ EliteBattle.defineCommonAnimation(:SHINY) do
       r = @targetSprite.width*factor/2.5
       x = cx + r*Math.cos(a*(Math::PI/180))
       y = cy - r*Math.sin(a*(Math::PI/180))
-      x = (x - fp["#{j}"].x)*0.1
-      y = (y - fp["#{j}"].y)*0.1
-      fp["#{j}"].x += x
-      fp["#{j}"].y += y
-      fp["#{j}"].angle += 8
+      x = (x - fp[j.to_s].x)*0.1
+      y = (y - fp[j.to_s].y)*0.1
+      fp[j.to_s].x += x
+      fp[j.to_s].y += y
+      fp[j.to_s].angle += 8
       if j < 8
-        fp["#{j}"].opacity += 51 if i < 16
+        fp[j.to_s].opacity += 51 if i < 16
         if i >= 16
-          fp["#{j}"].opacity -= 16
-          fp["#{j}"].zoom_x -= 0.04*factor
-          fp["#{j}"].zoom_y -= 0.04*factor
+          fp[j.to_s].opacity -= 16
+          fp[j.to_s].zoom_x -= 0.04*factor
+          fp[j.to_s].zoom_y -= 0.04*factor
         end
       else
-        fp["#{j}"].opacity += 51 if i < 32
+        fp[j.to_s].opacity += 51 if i < 32
         if i >= 32
-          fp["#{j}"].opacity -= 16
-          fp["#{j}"].zoom_x -= 0.02*factor
-          fp["#{j}"].zoom_y -= 0.02*factor
+          fp[j.to_s].opacity -= 16
+          fp[j.to_s].zoom_x -= 0.02*factor
+          fp[j.to_s].zoom_y -= 0.02*factor
         end
       end
     end

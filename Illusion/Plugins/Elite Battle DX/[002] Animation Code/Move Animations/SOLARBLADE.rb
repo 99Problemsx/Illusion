@@ -19,12 +19,12 @@ EliteBattle.defineMoveAnimation(:SOLARBLADE_CHARGE) do
   fp["bg"].bitmap.fill_rect(0,0,fp["bg"].bitmap.width,fp["bg"].bitmap.height,Color.black)
   fp["bg"].opacity = 0
   for i in 0...12
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
-    fp["#{i}"].ox = fp["#{i}"].bitmap.width/2
-    fp["#{i}"].oy = fp["#{i}"].bitmap.height/2
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = 50
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
+    fp[i.to_s].ox = fp[i.to_s].bitmap.width/2
+    fp[i.to_s].oy = fp[i.to_s].bitmap.height/2
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = 50
   end
   k = 0
   c = [Tone.new(211,186,3),Tone.new(0,0,0)]
@@ -34,29 +34,29 @@ EliteBattle.defineMoveAnimation(:SOLARBLADE_CHARGE) do
   for i in 0...128
     cx, cy = @userSprite.getCenter
     for j in 0...12
-      if fp["#{j}"].opacity == 0
+      if fp[j.to_s].opacity == 0
         r = rand(2)
-        fp["#{j}"].zoom_x = factor*(r==0 ? 1 : 0.5)
-        fp["#{j}"].zoom_y = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].zoom_x = factor*(r==0 ? 1 : 0.5)
+        fp[j.to_s].zoom_y = factor*(r==0 ? 1 : 0.5)
         x, y = randCircleCord(64*factor)
-        fp["#{j}"].x = cx - 64*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
-        fp["#{j}"].y = cy - 64*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
+        fp[j.to_s].x = cx - 64*factor*@userSprite.zoom_x + x*@userSprite.zoom_x
+        fp[j.to_s].y = cy - 64*factor*@userSprite.zoom_y + y*@userSprite.zoom_y
       end
       next if j>(i/4)
       x2 = cx
       y2 = cy
-      x0 = fp["#{j}"].x
-      y0 = fp["#{j}"].y
-      fp["#{j}"].x += (x2 - x0)*0.1
-      fp["#{j}"].y += (y2 - y0)*0.1
-      fp["#{j}"].zoom_x -= fp["#{j}"].zoom_x*0.1
-      fp["#{j}"].zoom_y -= fp["#{j}"].zoom_y*0.1
+      x0 = fp[j.to_s].x
+      y0 = fp[j.to_s].y
+      fp[j.to_s].x += (x2 - x0)*0.1
+      fp[j.to_s].y += (y2 - y0)*0.1
+      fp[j.to_s].zoom_x -= fp[j.to_s].zoom_x*0.1
+      fp[j.to_s].zoom_y -= fp[j.to_s].zoom_y*0.1
       if i >= 96
-        fp["#{j}"].opacity -= 35
+        fp[j.to_s].opacity -= 35
       elsif (x2 - x0)*0.1 < 1 && (y2 - y0)*0.1 < 1
-        fp["#{j}"].opacity = 0
+        fp[j.to_s].opacity = 0
       else
-        fp["#{j}"].opacity += 35
+        fp[j.to_s].opacity += 35
       end
     end
     if i < 96
@@ -123,21 +123,21 @@ EliteBattle.defineMoveAnimation(:SOLARBLADE_ATK) do
   angl = []
   zoom = []
   for j in 0...12
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].z = @targetIsPlayer ? 29 : 19
-    fp["#{j}"].visible = false
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb195")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].z = @targetIsPlayer ? 29 : 19
+    fp[j.to_s].visible = false
     z = [1,1.25,0.75,0.5][rand(4)]
-    fp["#{j}"].zoom_x = @targetSprite.zoom_x*z
-    fp["#{j}"].zoom_y = @targetSprite.zoom_y*z
-    fp["#{j}"].angle = rand(360)
+    fp[j.to_s].zoom_x = @targetSprite.zoom_x*z
+    fp[j.to_s].zoom_y = @targetSprite.zoom_y*z
+    fp[j.to_s].angle = rand(360)
     posx.push(rand(128))
     posy.push(rand(64))
     angl.push((rand(2)==0 ? 1 : -1))
     zoom.push(z)
-    fp["#{j}"].opacity = (155+rand(100))
+    fp[j.to_s].opacity = (155+rand(100))
   end
   16.times do
     fp["bg"].opacity += 12
@@ -175,10 +175,10 @@ EliteBattle.defineMoveAnimation(:SOLARBLADE_ATK) do
     for j in 0...12
       next if i < 4
       next if j>(i-4)
-      fp["#{j}"].visible = true
-      fp["#{j}"].x = cx - 64*@targetSprite.zoom_x*zoom[j] + posx[j]*@targetSprite.zoom_x*zoom[j]
-      fp["#{j}"].y = cy - posy[j]*@targetSprite.zoom_y*zoom[j] - 48*@targetSprite.zoom_y*zoom[j]# - (i-4)*2*@targetSprite.zoom_y
-      fp["#{j}"].angle += angl[j]
+      fp[j.to_s].visible = true
+      fp[j.to_s].x = cx - 64*@targetSprite.zoom_x*zoom[j] + posx[j]*@targetSprite.zoom_x*zoom[j]
+      fp[j.to_s].y = cy - posy[j]*@targetSprite.zoom_y*zoom[j] - 48*@targetSprite.zoom_y*zoom[j]# - (i-4)*2*@targetSprite.zoom_y
+      fp[j.to_s].angle += angl[j]
     end
     @scene.wait
   end
@@ -188,12 +188,12 @@ EliteBattle.defineMoveAnimation(:SOLARBLADE_ATK) do
     cx, cy = @targetSprite.getCenter(true)
     k = 20 - i
     for j in 0...12
-      fp["#{j}"].x = cx - 64*@targetSprite.zoom_x*zoom[j] + posx[j]*@targetSprite.zoom_x*zoom[j]
-      fp["#{j}"].y = cy - posy[j]*@targetSprite.zoom_y*zoom[j] - 48*@targetSprite.zoom_y*zoom[j]# - (k)*2*@targetSprite.zoom_y
-      fp["#{j}"].opacity -= 16
-      fp["#{j}"].angle += angl[j]
-      fp["#{j}"].zoom_x = @targetSprite.zoom_x
-      fp["#{j}"].zoom_y = @targetSprite.zoom_y
+      fp[j.to_s].x = cx - 64*@targetSprite.zoom_x*zoom[j] + posx[j]*@targetSprite.zoom_x*zoom[j]
+      fp[j.to_s].y = cy - posy[j]*@targetSprite.zoom_y*zoom[j] - 48*@targetSprite.zoom_y*zoom[j]# - (k)*2*@targetSprite.zoom_y
+      fp[j.to_s].opacity -= 16
+      fp[j.to_s].angle += angl[j]
+      fp[j.to_s].zoom_x = @targetSprite.zoom_x
+      fp[j.to_s].zoom_y = @targetSprite.zoom_y
     end
   end
   16.times do

@@ -24,7 +24,7 @@ class Window_Quest < Window_DrawableCommand
     return if index>=self.top_row+self.page_item_max
     rect = Rect.new(rect.x+16,rect.y,rect.width-16,rect.height)
     name = $quest_data.getName(@quests[index].id)
-    name = "<b>" + "#{name}" + "</b>" if @quests[index].story
+    name = "<b>" + name.to_s + "</b>" if @quests[index].story
     base = self.baseColor
     shadow = self.shadowColor
     col = @quests[index].color
@@ -227,7 +227,7 @@ class QuestList_Scene
     # Quest name
     questName = $quest_data.getName(quest.id)
     pbDrawTextPositions(@sprites["overlay2"].bitmap,[
-      ["#{questName}",6,-2,0,Color.new(248,248,248),Color.new(0,0,0),true]
+      [questName.to_s,6,-2,0,Color.new(248,248,248),Color.new(0,0,0),true]
     ])
     # Quest description
     questDesc = "<c2=#{colorQuest("blue")}>Overview:</c2> #{$quest_data.getQuestDescription(quest.id)}"
@@ -277,9 +277,9 @@ class QuestList_Scene
     end
     textpos = [
       [sprintf("Stage %d/%d",quest.stage,questLength),38,38,0,@base,@shadow],
-      ["#{questGiver}",38,110,0,@base,@shadow],
-      ["#{originalMap}",38,182,0,@base,@shadow],
-      ["#{time}",38,254,0,@base,@shadow]
+      [questGiver.to_s,38,110,0,@base,@shadow],
+      [originalMap.to_s,38,182,0,@base,@shadow],
+      [time.to_s,38,254,0,@base,@shadow]
     ]
     drawFormattedTextEx(@sprites["overlay3"].bitmap,38,88,
       436,"<c2=#{colorQuest("cyan")}>Quest received from:</c2>",@base,@shadow)

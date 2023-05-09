@@ -99,7 +99,7 @@ module MGBW
 				y = 67 + ((i - @startnum).even? ? 58 : 186)
 				text << [string, x, y, 0, Color.new(0,0,0), Color.new(255,255,255)]
 				# Order
-				string = "#{i+1}"
+				string = (i+1).to_s
 				x = 12 + 240 * ((i - @startnum) / 2) + 10
 				y = 3 + ((i - @startnum).even? ? 58 : 186)
 				text << [string, x, y, 0, Color.new(255,255,255), Color.new(0,0,0)]

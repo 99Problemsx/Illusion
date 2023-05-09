@@ -23,18 +23,18 @@ class EBDustParticle
     @max = 16 + (width/16)
     # initializes all the particles
     for j in 0...@max
-      @fp["#{j}"] = Sprite.new(@viewport)
-      @fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebDustParticle")
-      @fp["#{j}"].ox = @fp["#{j}"].bitmap.width/2
-      @fp["#{j}"].oy = @fp["#{j}"].bitmap.height/2
-      @fp["#{j}"].opacity = 0
-      @fp["#{j}"].angle = rand(360)
-      @fp["#{j}"].x = @x - width*@factor + rand(width*2*@factor)
-      @fp["#{j}"].y = @y - 16*@factor + rand(32*@factor)
-      @fp["#{j}"].z = @z + (@fp["#{j}"].y < @y ? -1 : 1)
+      @fp[j.to_s] = Sprite.new(@viewport)
+      @fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/ebDustParticle")
+      @fp[j.to_s].ox = @fp[j.to_s].bitmap.width/2
+      @fp[j.to_s].oy = @fp[j.to_s].bitmap.height/2
+      @fp[j.to_s].opacity = 0
+      @fp[j.to_s].angle = rand(360)
+      @fp[j.to_s].x = @x - width*@factor + rand(width*2*@factor)
+      @fp[j.to_s].y = @y - 16*@factor + rand(32*@factor)
+      @fp[j.to_s].z = @z + (@fp[j.to_s].y < @y ? -1 : 1)
       zoom = [1,0.8,0.9,0.7][rand(4)]
-      @fp["#{j}"].zoom_x = zoom*@factor
-      @fp["#{j}"].zoom_y = zoom*@factor
+      @fp[j.to_s].zoom_x = zoom*@factor
+      @fp[j.to_s].zoom_y = zoom*@factor
     end
   end
   #-----------------------------------------------------------------------------
@@ -43,14 +43,14 @@ class EBDustParticle
   def update
     i = @index
     for j in 0...@max
-      @fp["#{j}"].opacity += 25.5 if i < 10
-      @fp["#{j}"].opacity -= 25.5 if i >= 14
-      if @fp["#{j}"].x >= @x
-        @fp["#{j}"].angle += 4
-        @fp["#{j}"].x += 2
+      @fp[j.to_s].opacity += 25.5 if i < 10
+      @fp[j.to_s].opacity -= 25.5 if i >= 14
+      if @fp[j.to_s].x >= @x
+        @fp[j.to_s].angle += 4
+        @fp[j.to_s].x += 2
       else
-        @fp["#{j}"].angle -= 4
-        @fp["#{j}"].x -= 2
+        @fp[j.to_s].angle -= 4
+        @fp[j.to_s].x -= 2
       end
     end
     @index += 1

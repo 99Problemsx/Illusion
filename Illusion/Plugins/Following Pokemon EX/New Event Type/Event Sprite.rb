@@ -42,7 +42,7 @@ class FollowerSprites
     end
     data = FollowingPkmn.get_data
     $map_factory.maps.each { |map|
-      map&.events[data.event_id]&.erase if data && data.original_map_id == data.current_map_id
+      map&.events&.[](data.event_id)&.erase if data && data.original_map_id == data.current_map_id
     }
     FollowingPkmn.refresh(false)
   end

@@ -27,23 +27,23 @@ EliteBattle.defineMoveAnimation(:LIQUIDATION) do
     fp["s#{j}"].visible = false
   end
   for j in 0...16
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb430_2")
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].angle = rand(360)
-    fp["#{j}"].ox = - 80*factor
-    fp["#{j}"].x = cx
-    fp["#{j}"].y = cy
-    fp["#{j}"].z = @targetSprite.z + 1
-    fp["#{j}"].opacity = 0
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb430_2")
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].angle = rand(360)
+    fp[j.to_s].ox = - 80*factor
+    fp[j.to_s].x = cx
+    fp[j.to_s].y = cy
+    fp[j.to_s].z = @targetSprite.z + 1
+    fp[j.to_s].opacity = 0
   end
   # play animation
   for i in 0...48
     for j in 0...16
       next if j>i
-      fp["#{j}"].opacity += 32
-      fp["#{j}"].ox += (80*factor/8).ceil
-      fp["#{j}"].visible = false if fp["#{j}"].ox >= 0
+      fp[j.to_s].opacity += 32
+      fp[j.to_s].ox += (80*factor/8).ceil
+      fp[j.to_s].visible = false if fp[j.to_s].ox >= 0
     end
     for j in 0...32
       next if j>i*2

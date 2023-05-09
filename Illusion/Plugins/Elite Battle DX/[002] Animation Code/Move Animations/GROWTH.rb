@@ -20,16 +20,16 @@ EliteBattle.defineMoveAnimation(:GROWTH) do
   fp = {}
   speed = []
   for j in 0...32
-    fp["#{j}"] = Sprite.new(@viewport)
-    fp["#{j}"].z = @userIsPlayer ? 29 : 19
-    fp["#{j}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb615_2")
-    fp["#{j}"].ox = fp["#{j}"].bitmap.width/2
-    fp["#{j}"].oy = fp["#{j}"].bitmap.height/2
-    fp["#{j}"].color = Color.new(255,255,255,255)
+    fp[j.to_s] = Sprite.new(@viewport)
+    fp[j.to_s].z = @userIsPlayer ? 29 : 19
+    fp[j.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb615_2")
+    fp[j.to_s].ox = fp[j.to_s].bitmap.width/2
+    fp[j.to_s].oy = fp[j.to_s].bitmap.height/2
+    fp[j.to_s].color = Color.new(255,255,255,255)
     z = [0.5,1.5,1,0.75,1.25][rand(5)]
-    fp["#{j}"].zoom_x = z
-    fp["#{j}"].zoom_y = z
-    fp["#{j}"].opacity = 0
+    fp[j.to_s].zoom_x = z
+    fp[j.to_s].zoom_y = z
+    fp[j.to_s].opacity = 0
     speed.push((rand(8)+1)*4)
   end
   for j in 0...8
@@ -56,17 +56,17 @@ EliteBattle.defineMoveAnimation(:GROWTH) do
     for j in 0...32
       next if i < 8
       next if j>(i-8)
-      if fp["#{j}"].opacity == 0 && fp["#{j}"].color.alpha == 255
-        fp["#{j}"].y = @userSprite.y + 8*@userSprite.zoom_y - rand(24)*@userSprite.zoom_y
-        fp["#{j}"].x = cx - 64*@userSprite.zoom_x + rand(128)*@userSprite.zoom_x
+      if fp[j.to_s].opacity == 0 && fp[j.to_s].color.alpha == 255
+        fp[j.to_s].y = @userSprite.y + 8*@userSprite.zoom_y - rand(24)*@userSprite.zoom_y
+        fp[j.to_s].x = cx - 64*@userSprite.zoom_x + rand(128)*@userSprite.zoom_x
       end
-      if fp["#{j}"].color.alpha <= 96
-        fp["#{j}"].opacity -= 32
+      if fp[j.to_s].color.alpha <= 96
+        fp[j.to_s].opacity -= 32
       else
-        fp["#{j}"].opacity += 32
+        fp[j.to_s].opacity += 32
       end
-      fp["#{j}"].color.alpha -= 16
-      fp["#{j}"].y -= speed[j]
+      fp[j.to_s].color.alpha -= 16
+      fp[j.to_s].y -= speed[j]
     end
     for j in 0...8
       next if i < 12

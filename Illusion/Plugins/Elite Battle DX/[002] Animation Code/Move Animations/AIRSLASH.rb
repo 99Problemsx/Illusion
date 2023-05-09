@@ -12,19 +12,19 @@ EliteBattle.defineMoveAnimation(:AIRSLASH) do
   cx, cy = @targetSprite.getCenter(true)
   da = []; dx = []; dy = []; doj = []
   for i in 0...32
-    fp["#{i}"] = Sprite.new(@viewport)
-    fp["#{i}"].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb159_2")
-    fp["#{i}"].ox = 12
-    fp["#{i}"].oy = 1
-    fp["#{i}"].opacity = 0
-    fp["#{i}"].z = @targetSprite.z + 1
+    fp[i.to_s] = Sprite.new(@viewport)
+    fp[i.to_s].bitmap = pbBitmap("Graphics/EBDX/Animations/Moves/eb159_2")
+    fp[i.to_s].ox = 12
+    fp[i.to_s].oy = 1
+    fp[i.to_s].opacity = 0
+    fp[i.to_s].z = @targetSprite.z + 1
     r = 128*factor
     z = [1,1.25,0.75,1.5][rand(4)]
-    fp["#{i}"].zoom_x = z
+    fp[i.to_s].zoom_x = z
     #fp["#{i}"].zoom_y = factor
-    fp["#{i}"].x = cx
-    fp["#{i}"].y = cy
-    fp["#{i}"].tone = Tone.new(255,255,255)
+    fp[i.to_s].x = cx
+    fp[i.to_s].y = cy
+    fp[i.to_s].tone = Tone.new(255,255,255)
     da.push(rand(2)==0 ? 1 : -1)
     dx.push(cx - r + rand(r*2))
     dy.push(cy - r + rand(r*2))
@@ -46,13 +46,13 @@ EliteBattle.defineMoveAnimation(:AIRSLASH) do
   for i in 0...48
     fp["slash"].src_rect.height += 48 if i < 8
     for j in 0...32
-      fp["#{j}"].angle += 32*da[j]
-      fp["#{j}"].tone.red -= 8 if fp["#{j}"].tone.red > 0
-      fp["#{j}"].tone.green -= 8 if fp["#{j}"].tone.green > 0
-      fp["#{j}"].tone.blue -= 8 if fp["#{j}"].tone.blue > 0
-      fp["#{j}"].opacity += 16*(i < 24 ? 4 : -1*doj[j])
-      fp["#{j}"].x -= (fp["#{j}"].x - dx[j])*0.05
-      fp["#{j}"].y -= (fp["#{j}"].y - dy[j])*0.05
+      fp[j.to_s].angle += 32*da[j]
+      fp[j.to_s].tone.red -= 8 if fp[j.to_s].tone.red > 0
+      fp[j.to_s].tone.green -= 8 if fp[j.to_s].tone.green > 0
+      fp[j.to_s].tone.blue -= 8 if fp[j.to_s].tone.blue > 0
+      fp[j.to_s].opacity += 16*(i < 24 ? 4 : -1*doj[j])
+      fp[j.to_s].x -= (fp[j.to_s].x - dx[j])*0.05
+      fp[j.to_s].y -= (fp[j.to_s].y - dy[j])*0.05
     end
     if i >= 4
       fp["slash"].tone.red += 16 if fp["slash"].tone.red < 255
