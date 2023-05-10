@@ -154,7 +154,7 @@ module Gem::Deprecate
                 ". It will be removed in Rubygems #{Gem::Deprecate.next_rubygems_major_version}.\n",
         ]
 
-        alert_warning "#{msg.join}" unless Gem::Deprecate.skip
+        alert_warning msg.join.to_s unless Gem::Deprecate.skip
       end
     end
   end

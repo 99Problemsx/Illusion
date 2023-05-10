@@ -413,12 +413,12 @@ class ERB
       end
 
       def percent_line(line, &block)
-        if @stag || line[0] != ?%
+        if @stag || line[0] != '%'
           return @scan_line.call(line, &block)
         end
 
         line[0] = ''
-        if line[0] == ?%
+        if line[0] == '%'
           @scan_line.call(line, &block)
         else
           yield(PercentLine.new(line.chomp))
@@ -644,7 +644,7 @@ class ERB
     def compile_content(stag, out)
       case stag
       when '<%'
-        if content[-1] == ?\n
+        if content[-1] == "\n"
           content.chop!
           out.push(content)
           out.cr

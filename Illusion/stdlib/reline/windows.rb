@@ -307,10 +307,8 @@ class Reline::Windows
   def self.empty_buffer?
     if not @@output_buf.empty?
       false
-    elsif @@kbhit.call == 0
-      true
     else
-      false
+      @@kbhit.call == 0
     end
   end
 

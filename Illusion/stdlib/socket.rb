@@ -803,7 +803,7 @@ class Socket < BasicSocket
       raise ArgumentError, "no sockets"
     end
     loop {
-      readable, _, _ = IO.select(sockets)
+      readable, = IO.select(sockets)
       readable.each {|r|
         sock, addr = r.accept_nonblock(exception: false)
         next if sock == :wait_readable
@@ -998,7 +998,7 @@ class Socket < BasicSocket
   #
   def self.udp_server_loop_on(sockets, &b) # :yield: msg, msg_src
     loop {
-      readable, _, _ = IO.select(sockets)
+      readable, = IO.select(sockets)
       udp_server_recv(readable, &b)
     }
   end

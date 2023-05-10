@@ -287,7 +287,7 @@ class RDoc::Parser::ChangeLog < RDoc::Parser
       def text
         case base
         when nil
-          "#{date}"
+          date.to_s
         when /%s/
           "{#{date}}[#{base % commit}]"
         else

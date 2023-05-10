@@ -40,7 +40,7 @@ class Reline::Config
     enable-bracketed-paste
     isearch-terminators
   }
-  VARIABLE_NAME_SYMBOLS = VARIABLE_NAMES.map { |v| :"#{v.tr(?-, ?_)}" }
+  VARIABLE_NAME_SYMBOLS = VARIABLE_NAMES.map { |v| :"#{v.tr('-', '_')}" }
   VARIABLE_NAME_SYMBOLS.each do |v|
     attr_accessor v
   end
@@ -323,7 +323,7 @@ class Reline::Config
     when 'emacs-mode-string'
       @emacs_mode_string = retrieve_string(value)
     when *VARIABLE_NAMES then
-      variable_name = :"@#{name.tr(?-, ?_)}"
+      variable_name = :"@#{name.tr('-', '_')}"
       instance_variable_set(variable_name, value.nil? || value == '1' || value == 'on')
     end
   end
@@ -342,7 +342,7 @@ class Reline::Config
     if func_name =~ /"(.*)"/
       func = parse_keyseq($1)
     else
-      func = func_name.tr(?-, ?_).to_sym # It must be macro.
+      func = func_name.tr('-', '_').to_sym # It must be macro.
     end
     [keyseq, func]
   end
@@ -350,33 +350,33 @@ class Reline::Config
   def key_notation_to_code(notation)
     case notation
     when /\\(?:C|Control)-([A-Za-z_])/
-      (1 + $1.downcase.ord - ?a.ord)
+      (1 + $1.downcase.ord - 'a'.ord)
     when /\\(?:M|Meta)-([0-9A-Za-z_])/
       modified_key = $1
       case $1
       when /[0-9]/
-        ?\M-0.bytes.first + (modified_key.ord - ?0.ord)
+        ?\M-0.bytes.first + (modified_key.ord - '0'.ord)
       when /[A-Z]/
-        ?\M-A.bytes.first + (modified_key.ord - ?A.ord)
+        ?\M-A.bytes.first + (modified_key.ord - 'A'.ord)
       when /[a-z]/
-        ?\M-a.bytes.first + (modified_key.ord - ?a.ord)
+        ?\M-a.bytes.first + (modified_key.ord - 'a'.ord)
       end
     when /\\(?:C|Control)-(?:M|Meta)-[A-Za-z_]/, /\\(?:M|Meta)-(?:C|Control)-[A-Za-z_]/
     # 129 M-^A
     when /\\(\d{1,3})/ then $1.to_i(8) # octal
     when /\\x(\h{1,2})/ then $1.to_i(16) # hexadecimal
-    when "\\e" then ?\e.ord
-    when "\\\\" then ?\\.ord
-    when "\\\"" then ?".ord
-    when "\\'" then ?'.ord
-    when "\\a" then ?\a.ord
-    when "\\b" then ?\b.ord
-    when "\\d" then ?\d.ord
-    when "\\f" then ?\f.ord
-    when "\\n" then ?\n.ord
-    when "\\r" then ?\r.ord
-    when "\\t" then ?\t.ord
-    when "\\v" then ?\v.ord
+    when "\\e" then "\e".ord
+    when "\\\\" then "\\".ord
+    when "\\\"" then '"'.ord
+    when "\\'" then "'".ord
+    when "\\a" then "\a".ord
+    when "\\b" then "\b".ord
+    when "\\d" then "\d".ord
+    when "\\f" then "\f".ord
+    when "\\n" then "\n".ord
+    when "\\r" then "\r".ord
+    when "\\t" then "\t".ord
+    when "\\v" then "\v".ord
     else notation.ord
     end
   end

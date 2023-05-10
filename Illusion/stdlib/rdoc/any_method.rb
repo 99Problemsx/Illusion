@@ -276,7 +276,7 @@ class RDoc::AnyMethod < RDoc::MethodAttr
     elsif @params then
       params = @params.gsub(/\s*\#.*/, '')
       params = params.tr_s("\n ", " ")
-      params = "(#{params})" unless params[0] == ?(
+      params = "(#{params})" unless params[0] == '('
     else
       params = ''
     end
@@ -287,7 +287,7 @@ class RDoc::AnyMethod < RDoc::MethodAttr
       params = params.sub(/,?\s*&\w+/, '')
 
       block = @block_params.tr_s("\n ", " ")
-      if block[0] == ?(
+      if block[0] == '('
         block = block.sub(/^\(/, '').sub(/\)/, '')
       end
       params << " { |#{block}| ... }"

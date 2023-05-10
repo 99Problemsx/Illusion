@@ -679,7 +679,7 @@ Usage: #{opt.program_name} [options] [names...]
 
       opt.banner += "\n  The following options are deprecated:\n\n"
 
-      name_length = DEPRECATED.keys.sort_by { |k| k.length }.last.length
+      name_length = DEPRECATED.keys.max_by { |k| k.length }.length
 
       DEPRECATED.sort_by { |k,| k }.each do |name, reason|
         opt.banner += "    %*1$2$s  %3$s\n" % [-name_length, name, reason]

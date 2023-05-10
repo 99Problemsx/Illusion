@@ -324,7 +324,7 @@ module Gem::Resolver::Molinillo
         binding_requirements = binding_requirements_for_conflict(current_conflict)
         unwind_details = unwind_options_for_requirements(binding_requirements)
 
-        last_detail_for_current_unwind = unwind_details.sort.last
+        last_detail_for_current_unwind = unwind_details.max
         current_detail = last_detail_for_current_unwind
 
         # Look for past conflicts that could be unwound to affect the

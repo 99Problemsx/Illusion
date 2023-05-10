@@ -212,8 +212,7 @@ module UnicodeNormalize  # :nodoc:
     "\u{1E944}-\u{1E94A}" \
     "]"
   ACCENTS = accents
-  REGEXP_D_STRING = "#{''  # composition starters and composition exclusions
-    }" \
+  REGEXP_D_STRING = "" \
     "[\u00C0-\u00C5" \
     "\u00C7-\u00CF" \
     "\u00D1-\u00D6" \
@@ -446,8 +445,7 @@ module UnicodeNormalize  # :nodoc:
     "\u{1D1BB}-\u{1D1C0}" \
     "\u{2F800}-\u{2FA1D}" \
     "]#{accents}*" \
-    "|#{''  # characters that can be the result of a composition, except composition starters
-    }" \
+    "|" \
     "[<->" \
     "A-P" \
     "R-Z" \
@@ -614,11 +612,9 @@ module UnicodeNormalize  # :nodoc:
     "\u{115B8}\u{115B9}" \
     "\u{11935}" \
     "]?#{accents}+" \
-    "|#{''  # precomposed Hangul syllables
-    }" \
+    "|" \
     "[\u{AC00}-\u{D7A4}]"
-  REGEXP_C_STRING = "#{''  # composition exclusions
-    }" \
+  REGEXP_C_STRING = "" \
     "[\u0340\u0341" \
     "\u0343\u0344" \
     "\u0374" \
@@ -693,8 +689,7 @@ module UnicodeNormalize  # :nodoc:
     "\u{1D1BB}-\u{1D1C0}" \
     "\u{2F800}-\u{2FA1D}" \
     "]#{accents}*" \
-    "|#{''  # composition starters and characters that can be the result of a composition
-    }" \
+    "|" \
     "[<->" \
     "A-P" \
     "R-Z" \
@@ -897,8 +892,7 @@ module UnicodeNormalize  # :nodoc:
     "\u{11935}" \
     "\u{11938}" \
     "]?#{accents}+" \
-    "|#{''  # Hangul syllables with separate trailer
-    }" \
+    "|" \
     "[\uAC00" \
     "\uAC1C" \
     "\uAC38" \
@@ -1299,8 +1293,7 @@ module UnicodeNormalize  # :nodoc:
     "\uD76C" \
     "\uD788" \
     "][\u11A8-\u11C2]" \
-    "|#{''  # decomposed Hangul syllables
-    }" \
+    "|" \
     "[\u1100-\u1112][\u1161-\u1175][\u11A8-\u11C2]?"
   REGEXP_K_STRING = "" \
     "[\u00A0" \

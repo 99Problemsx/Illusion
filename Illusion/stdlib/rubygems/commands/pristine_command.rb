@@ -148,7 +148,7 @@ extensions will be restored.
         say "Cached gem for #{spec.full_name} not found, attempting to fetch..."
 
         dep = Gem::Dependency.new spec.name, spec.version
-        found, _ = Gem::SpecFetcher.fetcher.spec_for_dependency dep
+        found, = Gem::SpecFetcher.fetcher.spec_for_dependency dep
 
         if found.empty?
           say "Skipped #{spec.full_name}, it was not found from cache and remote sources"

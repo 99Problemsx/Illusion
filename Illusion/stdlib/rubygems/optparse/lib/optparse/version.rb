@@ -6,7 +6,7 @@ class << Gem::OptionParser
     progname = ARGV.options.program_name
     result = false
     show = proc do |klass, cname, version|
-      str = "#{progname}"
+      str = progname.to_s
       unless klass == ::Object and cname == :VERSION
         version = version.join(".") if Array === version
         str << ": #{klass}" unless klass == Object
@@ -22,7 +22,7 @@ class << Gem::OptionParser
     end
     if pkgs.size == 1 and pkgs[0] == "all"
       self.search_const(::Object, /\AV(?:ERSION|ersion)\z/) do |klass, cname, version|
-        unless cname[1] == ?e and klass.const_defined?(:Version)
+        unless cname[1] == 'e' and klass.const_defined?(:Version)
           show.call(klass, cname.intern, version)
         end
       end

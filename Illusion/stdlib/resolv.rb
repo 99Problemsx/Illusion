@@ -1583,11 +1583,11 @@ class Resolv
           template.each_byte {|byte|
             byte = "%c" % byte
             case byte
-            when ?c, ?C
+            when 'c', 'C'
               len += 1
-            when ?n
+            when 'n'
               len += 2
-            when ?N
+            when 'N'
               len += 4
             else
               raise StandardError.new("unsupported template: '#{byte.chr}' in '#{template}'")

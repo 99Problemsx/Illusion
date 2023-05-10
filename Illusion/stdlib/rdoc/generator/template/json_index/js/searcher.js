@@ -89,7 +89,7 @@ Searcher.prototype = new function() {
     for (var i=1, l = regexps.length; i < l; i++) {
       if (!index.match(regexps[i]) && !longIndex.match(regexps[i]))
         return false;
-    };
+    }
     return true;
   }
 
@@ -102,7 +102,7 @@ Searcher.prototype = new function() {
     for (var i=1, l = regexps.length; i < l; i++) {
       if (!longIndex.match(regexps[i]))
         return false;
-    };
+    }
     return true;
   }
 
@@ -115,7 +115,7 @@ Searcher.prototype = new function() {
     for (var i=1, l = regexps.length; i < l; i++) {
       if (!index.match(regexps[i]) && !longIndex.match(regexps[i]))
         return false;
-    };
+    }
     return true;
   }
 
@@ -128,7 +128,7 @@ Searcher.prototype = new function() {
     for (var i=1, l = regexps.length; i < l; i++) {
       if (!index.match(regexps[i]) && !longIndex.match(regexps[i]))
         return false;
-    };
+    }
     return true;
   }
 
@@ -139,7 +139,7 @@ Searcher.prototype = new function() {
     for (var i=0, l = regexps.length; i < l; i++) {
       result.title = result.title.replace(regexps[i], highlighters[i]);
       result.namespace = result.namespace.replace(regexps[i], highlighters[i]);
-    };
+    }
     return result;
   }
 
@@ -161,7 +161,7 @@ Searcher.prototype = new function() {
     for (var i=1, l = regexps.length; i < l; i++) {
       result.title = result.title.replace(regexps[i], highlighters[i]);
       result.namespace = result.namespace.replace(regexps[i], highlighters[i]);
-    };
+    }
     return result;
   }
 
@@ -209,7 +209,7 @@ Searcher.prototype = new function() {
           result.push(hltFunc(info[i], queries, regexps, highlighters));
           state.limit--;
         }
-      };
+      }
       if (searchIndex.length <= i) {
         state.pass++;
         i = state.from = 0;

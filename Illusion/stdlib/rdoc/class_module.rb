@@ -210,7 +210,7 @@ class RDoc::ClassModule < RDoc::Context
                 normalize_comment comment
               end
 
-    comment = "#{@comment.to_s}\n---\n#{comment.to_s}" unless @comment.empty?
+    comment = "#{@comment}\n---\n#{comment}" unless @comment.empty?
 
     super comment
   end

@@ -267,7 +267,7 @@ module Win32
         if result.ok? then
           return encode_token(outputBuffer.token)
         else
-          raise "Error: #{result.to_s}"
+          raise "Error: #{result}"
         end
       end
 
@@ -300,7 +300,7 @@ module Win32
         if result.ok? then
           return encode_token(outputBuffer.token)
         else
-          raise "Error: #{result.to_s}"
+          raise "Error: #{result}"
         end
       ensure
         # need to make sure we don't clean up if we've already cleaned up.

@@ -124,7 +124,7 @@ module Bundler
     end
 
     def built_gem_path
-      Gem::Util.glob_files_in_dir("#{name}-*.gem", base).sort_by {|f| File.mtime(f) }.last
+      Gem::Util.glob_files_in_dir("#{name}-*.gem", base).max_by {|f| File.mtime(f) }
     end
 
     def git_push(remote = nil)

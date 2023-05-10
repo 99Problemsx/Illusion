@@ -42,11 +42,7 @@ module IRB
       if File.respond_to?(:absolute_path?)
         File.absolute_path?(p)
       else
-        if File.absolute_path(p) == p
-          true
-        else
-          false
-        end
+        File.absolute_path(p) == p
       end
     end
 

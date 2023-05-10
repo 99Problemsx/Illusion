@@ -116,8 +116,8 @@ module DidYouMean
   # TODO: Remove on 3.3:
   class DeprecatedMapping # :nodoc:
     def []=(key, value)
-      warn "Calling `DidYouMean::SPELL_CHECKERS[#{key.to_s}] = #{value.to_s}' has been deprecated. " \
-           "Please call `DidYouMean.correct_error(#{key.to_s}, #{value.to_s})' instead."
+      warn "Calling `DidYouMean::SPELL_CHECKERS[#{key}] = #{value}' has been deprecated. " \
+           "Please call `DidYouMean.correct_error(#{key}, #{value})' instead."
 
       DidYouMean.correct_error(key, value)
     end
