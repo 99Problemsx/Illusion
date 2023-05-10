@@ -116,7 +116,7 @@ Specific fields in the specification can be extracted in YAML format:
 
     if remote?
       dep.prerelease = options[:prerelease]
-      found, _ = Gem::SpecFetcher.fetcher.spec_for_dependency dep
+      found, = Gem::SpecFetcher.fetcher.spec_for_dependency dep
 
       specs.push(*found.map {|spec,| spec })
     end

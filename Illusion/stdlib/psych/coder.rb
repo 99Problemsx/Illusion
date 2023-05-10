@@ -24,7 +24,7 @@ module Psych
     def scalar *args
       if args.length > 0
         warn "#{caller[0]}: Coder#scalar(a,b,c) is deprecated" if $VERBOSE
-        @tag, @scalar, _ = args
+        @tag, @scalar, = args
         @type = :scalar
       end
       @scalar

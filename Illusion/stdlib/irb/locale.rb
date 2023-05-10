@@ -183,7 +183,7 @@ module IRB # :nodoc:
           yield "#{@lang}.#{@encoding_name}"
         end
         yield "#{@lang}@#{@modifier}" if @modifier
-        yield "#{@lang}"
+        yield @lang.to_s
       end
       yield nil
     end

@@ -178,7 +178,7 @@ class Logger
         end
       end
       @dev.close rescue nil
-      File.rename("#{@filename}", "#{@filename}.0")
+      File.rename(@filename.to_s, "#{@filename}.0")
       @dev = create_logfile(@filename)
       return true
     end
@@ -197,7 +197,7 @@ class Logger
         end
       end
       @dev.close rescue nil
-      File.rename("#{@filename}", age_file)
+      File.rename(@filename.to_s, age_file)
       @dev = create_logfile(@filename)
       return true
     end

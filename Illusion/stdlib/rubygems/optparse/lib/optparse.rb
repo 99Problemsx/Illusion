@@ -669,7 +669,7 @@ class Gem::OptionParser
           yield("--#{o}", desc.join(""))
           yield("--no-#{o}", desc.join(""))
         else
-          yield("#{opt}", desc.join(""))
+          yield(opt.to_s, desc.join(""))
         end
       end
     end
@@ -1340,7 +1340,7 @@ XXX
   #
   # Returns option summary string.
   #
-  def help; summarize("#{banner}".sub(/\n?\z/, "\n")) end
+  def help; summarize(banner.to_s.sub(/\n?\z/, "\n")) end
   alias to_s help
 
   def pretty_print(q)           # :nodoc:
@@ -1369,7 +1369,7 @@ XXX
   #
   # Returns option summary list.
   #
-  def to_a; summarize("#{banner}".split(/^/)) end
+  def to_a; summarize(banner.to_s.split(/^/)) end
 
   #
   # Checks if an argument is given twice, in which case an ArgumentError is

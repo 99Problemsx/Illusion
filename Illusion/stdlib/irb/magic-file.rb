@@ -27,7 +27,7 @@ module IRB
 
     private
     def detect_encoding(line)
-      return unless line[0] == ?#
+      return unless line[0] == '#'
       line = line[1..-1]
       line = $1 if line[/-\*-\s*(.*?)\s*-*-$/]
       return nil unless ENCODING_SPEC_RE =~ line

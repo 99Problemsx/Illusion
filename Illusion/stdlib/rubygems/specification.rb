@@ -1231,7 +1231,7 @@ class Gem::Specification < Gem::BasicSpecification
       remotes, = fetcher.search_for_dependency dependency
       remotes  = remotes.map {|n, _| n.version }
 
-      latest_remote = remotes.sort.last
+      latest_remote = remotes.max
 
       yield [local_spec, latest_remote] if
         latest_remote && local_spec.version < latest_remote

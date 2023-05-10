@@ -517,7 +517,7 @@ module OpenURI
     # It is downcased for canonicalization.
     # Content-Type parameters are stripped.
     def content_type
-      type, *_ = content_type_parse
+      type, = content_type_parse
       type || 'application/octet-stream'
     end
 

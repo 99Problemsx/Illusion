@@ -31,13 +31,13 @@ function showSource( e ) {
   if (typeof target !== "undefined" && target !== null) {
     target.classList.toggle('active-menu')
   }
-};
+}
 
 function hookSourceViews() {
   document.querySelectorAll('.method-heading').forEach(function (codeObject) {
     codeObject.addEventListener('click', showSource);
   });
-};
+}
 
 function hookSearch() {
   var input  = document.querySelector('#search-field');
@@ -76,7 +76,7 @@ function hookSearch() {
   }
 
   search.scrollIntoView = search.scrollInWindow;
-};
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   hookSourceViews();

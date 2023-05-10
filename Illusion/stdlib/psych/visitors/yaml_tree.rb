@@ -532,7 +532,7 @@ module Psych
 
       def dump_ivars target
         target.instance_variables.each do |iv|
-          @emitter.scalar("#{iv.to_s.sub(/^@/, '')}", nil, nil, true, false, Nodes::Scalar::ANY)
+          @emitter.scalar(iv.to_s.sub(/^@/, '').to_s, nil, nil, true, false, Nodes::Scalar::ANY)
           accept target.instance_variable_get(iv)
         end
       end

@@ -10,7 +10,7 @@ require 'shellwords'
 class String # :nodoc:
   # Wraps a string in escaped quotes if it contains whitespace.
   def quote
-    /\s/ =~ self ? "\"#{self}\"" : "#{self}"
+    /\s/ =~ self ? "\"#{self}\"" : (self).to_s
   end
 
   # Escape whitespaces for Makefile.
@@ -181,8 +181,8 @@ module MakeMakefile
         ['RUBYARCHDIR',   '$(extout)/$(arch)$(target_prefix)'],
         ['HDRDIR',        '$(extout)/include/ruby$(target_prefix)'],
         ['ARCHHDRDIR',    '$(extout)/include/$(arch)/ruby$(target_prefix)'],
-        ['extout',        "#$extout"],
-        ['extout_prefix', "#$extout_prefix"],
+        ['extout',        $extout.to_s],
+        ['extout_prefix', $extout_prefix.to_s],
       ]
     elsif $extmk
       dirs = [
@@ -503,13 +503,13 @@ MSG
   def link_config(ldflags, opt="", libpath=$DEFLIBPATH|$LIBPATH)
     librubyarg = $extmk ? $LIBRUBYARG_STATIC : "$(LIBRUBYARG)"
     conf = RbConfig::CONFIG.merge('hdrdir' => $hdrdir.quote,
-                                  'src' => "#{conftest_source}",
+                                  'src' => conftest_source.to_s,
                                   'arch_hdrdir' => $arch_hdrdir.quote,
                                   'top_srcdir' => $top_srcdir.quote,
-                                  'INCFLAGS' => "#$INCFLAGS",
-                                  'CPPFLAGS' => "#$CPPFLAGS",
-                                  'CFLAGS' => "#$CFLAGS",
-                                  'ARCH_FLAG' => "#$ARCH_FLAG",
+                                  'INCFLAGS' => $INCFLAGS.to_s,
+                                  'CPPFLAGS' => $CPPFLAGS.to_s,
+                                  'CFLAGS' => $CFLAGS.to_s,
+                                  'ARCH_FLAG' => $ARCH_FLAG.to_s,
                                   'LDFLAGS' => "#$LDFLAGS #{ldflags}",
                                   'LOCAL_LIBS' => "#$LOCAL_LIBS #$libs",
                                   'LIBS' => "#{librubyarg} #{opt} #$LIBS")
@@ -987,7 +987,7 @@ SRC
     a = r = nil
     Logging::postpone do
       r = yield
-      a = (fmt ? "#{fmt % r}" : r ? "yes" : "no")
+      a = (fmt ? (fmt % r).to_s : r ? "yes" : "no")
       "#{f}#{m}-------------------- #{a}\n\n"
     end
     message "%s\n", a
@@ -996,7 +996,7 @@ SRC
   end
 
   def checking_message(target, place = nil, opt = nil)
-    [["in", place], ["with", opt]].inject("#{target}") do |msg, (pre, noun)|
+    [["in", place], ["with", opt]].inject(target.to_s) do |msg, (pre, noun)|
       if noun
         [[:to_str], [:join, ","], [:to_s]].each do |meth, *args|
           if noun.respond_to?(meth)
@@ -1532,7 +1532,7 @@ SRC
   end
 
   def what_type?(type, member = nil, headers = nil, &b)
-    m = "#{type}"
+    m = type.to_s
     var = val = "*rbcv_var_"
     func = "rbcv_func_(void)"
     if member
@@ -2686,7 +2686,7 @@ MESSAGE
   $nmake = nil
   case
   when $mswin
-    $nmake = ?m if /nmake/i =~ make
+    $nmake = 'm' if /nmake/i =~ make
   end
   $ignore_error = $nmake ? '' : ' 2> /dev/null || true'
 

@@ -33,11 +33,7 @@ module Jacobian
     if aa == zero &&  bb == zero then
       true
     else
-      if ((a-b)/(aa+bb)).abs < e then
-        true
-      else
-        false
-      end
+      ((a-b)/(aa+bb)).abs < e
     end
   end
 

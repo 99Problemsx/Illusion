@@ -1316,7 +1316,7 @@ module URI
     # Destructive version of #normalize.
     #
     def normalize!
-      if path&.empty?
+      if path && path.empty?
         set_path('/')
       end
       if scheme && scheme != scheme.downcase
@@ -1499,7 +1499,7 @@ module URI
         when 0 # no proxy setting anyway.
           proxy_uri = nil
         when 1
-          k, _ = pairs.shift
+          k, = pairs.shift
           if k == 'http_proxy' && env[k.upcase] == nil
             # http_proxy is safe to use because ENV is case sensitive.
             proxy_uri = env[name]

@@ -496,9 +496,9 @@ module Racc
 
     # Sym#expand
     def compute_expand(t)
-      puts "expand> #{t.to_s}" if @debug_symbol
+      puts "expand> #{t}" if @debug_symbol
       t.expand = _compute_expand(t, ISet.new, [])
-      puts "expand< #{t.to_s}: #{t.expand.to_s}" if @debug_symbol
+      puts "expand< #{t}: #{t.expand}" if @debug_symbol
     end
 
     def _compute_expand(t, set, lock)
@@ -860,7 +860,7 @@ module Racc
     private
 
     def ptr_bug!
-      raise "racc: fatal: pointer not exist: self: #{to_s}"
+      raise "racc: fatal: pointer not exist: self: #{self}"
     end
 
   end   # class LocationPointer

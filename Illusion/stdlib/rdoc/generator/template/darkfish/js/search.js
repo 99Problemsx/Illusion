@@ -66,7 +66,7 @@ Search.prototype = Object.assign({}, Navigation, new function() {
       var item = this.renderItem.call(this, results[i]);
       item.setAttribute('id', 'search-result-' + target.childElementCount);
       target.appendChild(item);
-    };
+    }
 
     if (this.firstRun && results.length > 0) {
       this.firstRun = false;

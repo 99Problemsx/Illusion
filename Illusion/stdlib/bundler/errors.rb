@@ -5,7 +5,7 @@ module Bundler
     def self.status_code(code)
       define_method(:status_code) { code }
       if match = BundlerError.all_errors.find {|_k, v| v == code }
-        error, _ = match
+        error, = match
         raise ArgumentError,
           "Trying to register #{self} for status code #{code} but #{error} is already registered"
       end

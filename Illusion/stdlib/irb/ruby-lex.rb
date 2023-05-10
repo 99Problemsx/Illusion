@@ -762,26 +762,26 @@ class RubyLex
     case start_token&.event
     when :on_tstring_beg
       case start_token&.tok
-      when ?"      then ?"
-      when /^%.$/  then ?"
-      when /^%Q.$/ then ?"
-      when ?'      then ?'
-      when /^%q.$/ then ?'
+      when '"'      then '"'
+      when /^%.$/  then '"'
+      when /^%Q.$/ then '"'
+      when "'"      then "'"
+      when /^%q.$/ then "'"
       end
-    when :on_regexp_beg   then ?/
-    when :on_symbeg       then ?:
-    when :on_backtick     then ?`
-    when :on_qwords_beg   then ?]
-    when :on_words_beg    then ?]
-    when :on_qsymbols_beg then ?]
-    when :on_symbols_beg  then ?]
+    when :on_regexp_beg   then '/'
+    when :on_symbeg       then ':'
+    when :on_backtick     then '`'
+    when :on_qwords_beg   then ']'
+    when :on_words_beg    then ']'
+    when :on_qsymbols_beg then ']'
+    when :on_symbols_beg  then ']'
     when :on_heredoc_beg
       start_token&.tok =~ /<<[-~]?(['"`])[_a-zA-Z0-9]+\1/
       case $1
-      when ?" then ?"
-      when ?' then ?'
-      when ?` then ?`
-      else         ?"
+      when '"' then '"'
+      when "'" then "'"
+      when '`' then '`'
+      else         '"'
       end
     else
       nil

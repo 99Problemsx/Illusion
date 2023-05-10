@@ -243,7 +243,7 @@ class Set
   #     Set.new(1..5)                         #=> #<Set: {1, 2, 3, 4, 5}>
   #     Set.new([1, 2, 3]) { |x| x * x }      #=> #<Set: {1, 4, 9}>
   def initialize(enum = nil, &block) # :yields: o
-    @hash ||= Hash.new(false)
+    @hash = Hash.new(false)
 
     enum.nil? and return
 

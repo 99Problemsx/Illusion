@@ -291,19 +291,19 @@ module RDoc::Text
       if p >= ep
         p = ep
       else
-        while p > sp and txt[p] != ?\s
+        while p > sp and txt[p] != "\s"
           p -= 1
         end
         if p <= sp
           p = sp + line_len
-          while p < ep and txt[p] != ?\s
+          while p < ep and txt[p] != "\s"
             p += 1
           end
         end
       end
       res << txt[sp...p] << "\n"
       sp = p
-      sp += 1 while sp < ep and txt[sp] == ?\s
+      sp += 1 while sp < ep and txt[sp] == "\s"
     end
 
     res.join.strip

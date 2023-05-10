@@ -165,7 +165,7 @@ module FileUtils
   module_function :uptodate?
 
   def remove_trailing_slash(dir)   #:nodoc:
-    dir == '/' ? dir : dir.chomp(?/)
+    dir == '/' ? dir : dir.chomp('/')
   end
   private_module_function :remove_trailing_slash
 
@@ -1437,7 +1437,7 @@ module FileUtils
 
     def remove_dir1
       platform_support {
-        Dir.rmdir path().chomp(?/)
+        Dir.rmdir path().chomp('/')
       }
     end
 

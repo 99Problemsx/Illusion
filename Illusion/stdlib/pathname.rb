@@ -31,7 +31,7 @@ class Pathname
     SEPARATOR_LIST = "#{Regexp.quote File::ALT_SEPARATOR}#{Regexp.quote File::SEPARATOR}"
     SEPARATOR_PAT = /[#{SEPARATOR_LIST}]/
   else
-    SEPARATOR_LIST = "#{Regexp.quote File::SEPARATOR}"
+    SEPARATOR_LIST = Regexp.quote(File::SEPARATOR).to_s
     SEPARATOR_PAT = /#{Regexp.quote File::SEPARATOR}/
   end
 

@@ -512,10 +512,10 @@ class RDoc::Parser::RipperStateLex
     state = tk[:state]
     end_quote =
       case start_quote
-      when ?( then ?)
-      when ?[ then ?]
-      when ?{ then ?}
-      when ?< then ?>
+      when '(' then ')'
+      when '[' then ']'
+      when '{' then '}'
+      when '<' then '>'
       else start_quote
       end
     end_token = nil
