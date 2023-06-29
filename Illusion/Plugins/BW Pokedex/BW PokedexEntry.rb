@@ -254,8 +254,8 @@ class PokemonPokedexInfo_Scene
     @sprites["background"].setBitmap(_INTL("Graphics/Pictures/Pokedex/bg_area"))
     @sprites["infoverlay"].setBitmap(_INTL("Graphics/Pictures/Pokedex/map_overlay"))
     overlay = @sprites["overlay"].bitmap
-    base   = Color.new(88, 88, 80)
-    shadow = Color.new(168, 184, 184)
+    Color.new(88, 88, 80)
+    Color.new(168, 184, 184)
     @sprites["areahighlight"].bitmap.clear
     # Get all points to be shown as places where @species can be encountered
     points = pbGetEncounterPoints
