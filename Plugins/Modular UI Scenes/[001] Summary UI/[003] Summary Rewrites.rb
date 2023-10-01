@@ -115,7 +115,7 @@ class PokemonSummary_Scene
       when :forget   then commands[cmd] = _INTL("Forget Move")   if Settings::MECHANICS_GENERATION >= 9 && @pokemon.moves.length > 1
       when :tms      then commands[cmd] = _INTL("Use TM's")      if Settings::MECHANICS_GENERATION >= 9 && $bag.has_compatible_tm?(@pokemon)
       when :mark     then commands[cmd] = _INTL("Mark")
-      when String    then commands[cmd] = _INTL("#{cmd}")
+      when String    then commands[cmd] = _INTL(cmd.to_s)
       end
     end
     #---------------------------------------------------------------------------

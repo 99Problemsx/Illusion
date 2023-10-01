@@ -67,7 +67,7 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     delay = 5 if @showingTrainer
     batSprite = @sprites["pokemon_#{@battler.index}"]
     shaSprite = @sprites["shadow_#{@battler.index}"]
-    battlerY = batSprite.y
+    batSprite.y
     battler = addSprite(batSprite, PictureOrigin::BOTTOM)
     battler.setVisible(delay, true)
     battler.setZoomXY(delay, 100, 100)

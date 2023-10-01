@@ -1,7 +1,7 @@
 class Battle
   def pbGainExp
     values = []
-    moves  = {}
+    {}
     # Play wild victory music if it's the end of the battle (has to be here)
     @scene.pbWildBattleSuccess if wildBattle? && pbAllFainted?(1) && !pbAllFainted?(0)
     return if !@internalBattle || !@expGain
@@ -59,7 +59,7 @@ class Battle
         vr.push(t_v)
       end
       values = vr
-      s = Swdfm_Exp_Screen.new(values)
+      Swdfm_Exp_Screen.new(values)
       # Clear the participants array
       for i in 0...$player.party.size
         next if values[i] == 0
@@ -135,7 +135,7 @@ class Battle
     # Boost Exp gained with high affection
     if Settings::AFFECTION_EFFECTS && @internalBattle && pkmn.affection_level >= 4 && !pkmn.mega?
       exp = exp * 6 / 5
-      isOutsider = true   # To show the "boosted Exp" message
+      true   # To show the "boosted Exp" message
     end
     # Make sure Exp doesn't exceed the maximum
     expFinal = growth_rate.add_exp(pkmn.exp, exp)

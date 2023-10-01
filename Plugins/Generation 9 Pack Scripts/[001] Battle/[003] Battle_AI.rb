@@ -73,7 +73,7 @@ class Battle::AI
         category = (i < 2) ? move.physicalMove? : move.specialMove?
         category = !category if i.odd? && @battle.field.effects[PBEffects::WonderRoom] > 0
         mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-        mult *= 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.has_active_ability?(abil) && category
+        mult * 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.has_active_ability?(abil) && category
       end
     end
     # Ability effects that alter damage
@@ -346,7 +346,7 @@ class Battle::AI
   #-----------------------------------------------------------------------------
   def choose_best_revive_pokemon(idxBattler, party)
     reserves = []
-    idxPartyStart, idxPartyEnd = @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
+    @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
     party.each_with_index do |_p, i|
       reserves.push([i, 100]) if !_p.egg? && _p.fainted?
     end

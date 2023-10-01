@@ -135,7 +135,7 @@ class TilesetRearranger
   # Generate and save new tileset graphic.
   def save_tileset_graphic(height, filename)
     bitmap = Bitmap.new(TILESET_WIDTH, height * TILE_SIZE)
-    tile_rect = Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
+    Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
     for yy in 0...height
       for xx in 0...TILES_PER_ROW
         tile_id = @tile_ID_map[yy * TILES_PER_ROW + xx] || -1

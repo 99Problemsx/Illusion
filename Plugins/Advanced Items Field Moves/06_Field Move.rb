@@ -267,7 +267,7 @@ if !Item_Defog[:active]
 
   HiddenMoveHandlers::CanUseMove.add(:DEFOG, proc { |move, pkmn, showmsg|
     next false if !pbCanUseMove(Item_Defog)
-    move = :DEFOG
+    :DEFOG
     if $game_screen.weather_type == :None
       pbMessage(_INTL("There is no fog to clear.")) if showmsg
       next false

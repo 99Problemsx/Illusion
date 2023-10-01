@@ -61,7 +61,7 @@ class PokemonBoxIcon < IconSprite
   def update_21
     do_colours
     if releasing?
-      time_now = System.uptime
+      System.uptime
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
       self.opacity = lerp(255, 0, 1.5, @release_timer_start, System.uptime)
@@ -682,11 +682,11 @@ class PokemonStorageScreen
           else
             commands = []
             cmdMove     = -1
-            cmdSummary  = -1
-            cmdWithdraw = -1
-            cmdItem     = -1
-            cmdMark     = -1
-            cmdRelease  = -1
+            -1
+            -1
+            -1
+            -1
+            -1
             cmdDebug    = -1
             if heldpoke
               helptext = _INTL("{1} is selected.", heldpoke.name)

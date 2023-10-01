@@ -15,7 +15,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
         return false if tile_data.ledge
         # Allow Folllowers to surf freely
         return true if tile_data.can_surf
-        passage = this_map.passages[event.tile_id] || 0
+        this_map.passages[event.tile_id] || 0
         return true if tile_data.can_climb
         passage = this_map.passages[event.tile_id] || 0
         return false if passage & bit != 0
@@ -34,7 +34,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
           return false if tile_data.ledge
           # Allow Folllowers to surf freely
           return true if tile_data.can_surf
-          passage = this_map.passages[tile_id] || 0
+          this_map.passages[tile_id] || 0
           return true if tile_data.can_climb
           passage = this_map.passages[tile_id] || 0
           return false if passage & bit != 0
@@ -55,7 +55,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
     alias __followingpkmn__fmRockClimb fmRockClimb unless defined?(__followingpkmn__fmRockClimb)
     def fmRockClimb(*args)
       $game_temp.no_follower_field_move = true
-      pkmn = $player.get_pokemon_with_move(:ROCKCLIMB)
+      $player.get_pokemon_with_move(:ROCKCLIMB)
       ret = __followingpkmn__fmRockClimb(*args)
       $game_temp.no_follower_field_move = false
       return ret
@@ -66,7 +66,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
     alias __followingpkmn__aifmVanish aifmVanish unless defined?(__followingpkmn__aifmVanish)
     def aifmVanish(*args)
       $game_temp.no_follower_field_move = true
-      pkmn = $player.get_pokemon_with_move(:CAMOUFLAGE)
+      $player.get_pokemon_with_move(:CAMOUFLAGE)
       ret = __followingpkmn__aifmVanish(*args)
       $game_temp.no_follower_field_move = false
       return ret
