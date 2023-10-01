@@ -1,0 +1,90 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map021]
+\rAh! \PN you're here.
+\rAh! \PN you're here.
+\rProfessor Maidenhair: Everyone is here.
+\rProfessor Maidenhair: Everyone is here.
+\bHello, I'm Jimmy. We battled before. I'm the strongest student in the Academia remember?
+\bHello, I'm Jimmy. We battled before. I'm the strongest student in the Academia remember?
+\rProfessor Maidenhair: I've also brought my deciple here, he has some data he wants to share.
+\rProfessor Maidenhair: I've also brought my deciple here, he has some data he wants to share.
+\bWell yes... As we all know, Rightful has been collecting legendaries these last few months.
+\bWell yes... As we all know, Rightful has been collecting legendaries these last few months.
+\bTwo days ago they broke into the league for an old relic that was stored in there.
+\bTwo days ago they broke into the league for an old relic that was stored in there.
+\bNormally anyone who breaks into the league gets immediately stopped by the strong trainers and of course the elite four present.
+\bNormally anyone who breaks into the league gets immediately stopped by the strong trainers and of course the elite four present.
+\bBut they had already captured Darkrai, so they managed to get away with it...
+\bBut they had already captured Darkrai, so they managed to get away with it...
+\bThe relic they stole was not some kind of ancient pot or something.
+\bThe relic they stole was not some kind of ancient pot or something.
+\bWhat they stole was something worth much more.
+\bWhat they stole was something worth much more.
+\ff[chain]\bThey stole a replica of the Red Chain made by Team Galactic about 20 years ago.
+\ff[chain]\bThey stole a replica of the Red Chain made by Team Galactic about 20 years ago.
+\bOtto: What makes this so important? It's just a necklace right? And it's not even the real deal.
+\bOtto: What makes this so important? It's just a necklace right? And it's not even the real deal.
+\bScientist: Well that is what we thought too. But apparently this replica was so well made that it works just as good.
+\bScientist: Well that is what we thought too. But apparently this replica was so well made that it works just as good.
+\rTeacher Maria: Well, what makes this chain so dangerous?
+\rTeacher Maria: Well, what makes this chain so dangerous?
+\bScientist: These chains resemble the gems in the legendary Lake Trio and they have the ability to control 2 of the creation trio legendaries.
+\bScientist: These chains resemble the gems in the legendary Lake Trio and they have the ability to control 2 of the creation trio legendaries.
+\rNina: I heard about them, the creation trio. Palkia, Dialga and Giratina. Together they have the power to overthrow Arceus.
+\rNina: I heard about them, the creation trio. Palkia, Dialga and Giratina. Together they have the power to overthrow Arceus.
+\bScientist: Exactly, it is not just a myth. But they still only have one of them. With just one necklace, the other legendary will just come to fix things.
+\bScientist: Exactly, it is not just a myth. But they still only have one of them. With just one necklace, the other legendary will just come to fix things.
+\bBut if they were to make another one...
+\bBut if they were to make another one...
+\rProfessor Maidenhair: And that is exactly what they are doing right now.
+\rProfessor Maidenhair: And that is exactly what they are doing right now.
+\rAnd that also means that they probably have a lot more legendaries over at their hideout.
+\rAnd that also means that they probably have a lot more legendaries over at their hideout.
+\bJimmy: Wait, how many can we say for sure.
+\bJimmy: Wait, how many can we say for sure.
+\rProfessor Maidenhair: They already have the Legendary Titans including Regigigas.
+\rProfessor Maidenhair: They already have the Legendary Titans including Regigigas.
+\rNina: \PN and me stopped them from obtaining Heatran, but we can not say for sure how long that will last.
+\rNina: \PN and me stopped them from obtaining Heatran, but we can not say for sure how long that will last.
+\rProfessor Maidenhair: And \PN encountered someone with a Jirachi.
+\rProfessor Maidenhair: And \PN encountered someone with a Jirachi.
+\bOtto: They also already have Xerneas and Yveltal.
+\bOtto: They also already have Xerneas and Yveltal.
+\bScientist: And seeing as they already have Darkrai, they probably also have obtained Cresselia.
+\bScientist: And seeing as they already have Darkrai, they probably also have obtained Cresselia.
+\bThat is already a lot, but if they are trying to make a copy of the chain, they will need the Lake Trio.
+\bThat is already a lot, but if they are trying to make a copy of the chain, they will need the Lake Trio.
+\bAnd to keep Giratina in control, they will need a bunch of other legendaries like the Weather Trio.
+\bAnd to keep Giratina in control, they will need a bunch of other legendaries like the Weather Trio.
+\bOtto: But you said you had data to share with us?
+\bOtto: But you said you had data to share with us?
+\bScientist: Right! There has been an enormous amount of energy spotted in the west of the region.
+\bScientist: Right! There has been an enormous amount of energy spotted in the west of the region.
+\bAnd these are not just any normal readings. They are similar to the aura emitted from the Tao Trio.
+\bAnd these are not just any normal readings. They are similar to the aura emitted from the Tao Trio.
+\rTeacher Maria: Reshiram, Zekrom and Kyurem.
+\rTeacher Maria: Reshiram, Zekrom and Kyurem.
+\rNina: This can not be any good at all.
+\rNina: This can not be any good at all.
+\bOtto: And this is where we come in play?
+\bOtto: And this is where we come in play?
+\rProfessor Maidenhair: I want to send the four of you to \bGreystone Cavern \rand check things out.
+\rProfessor Maidenhair: I want to send the four of you to \bGreystone Cavern \rand check things out.
+\bJimmy: The four of us?
+\bJimmy: The four of us?
+\rProfessor Maidenhair: Yes, I'll bring you guys over. I will be doing some tests while you four look for anything regarding the Tao Trio or Rightful.
+\rProfessor Maidenhair: Yes, I'll bring you guys over. I will be doing some tests while you four look for anything regarding the Tao Trio or Rightful.
+\rNina: I'm not sure if...
+\rNina: I'm not sure if...
+\bOtto: Are you afraid or something? Just some dragons.
+\bOtto: Are you afraid or something? Just some dragons.
+\rProfessor Maidenhair: Anyways... Meet me outside, I'll bring you guys there.
+\rProfessor Maidenhair: Anyways... Meet me outside, I'll bring you guys there.
+\bOtto: Let's get this over with.
+\bOtto: Let's get this over with.
+\rNina: An adventure.
+\rNina: An adventure.
+\bJimmy: A-Alrighty then...
+\bJimmy: A-Alrighty then...

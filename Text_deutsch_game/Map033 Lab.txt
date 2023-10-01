@@ -1,0 +1,10 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map033]
+Ich habe gerade etwas sehr interessantes über eine Attacke namens Zen Butthead gelesen. Hast du davon auch schon gehört?
+Ich habe gerade etwas sehr interessantes über eine Attacke namens Zen Butthead gelesen. Hast du davon auch schon gehört?
+Gehe niemals ohne kampffähiges Pokémon ins hohe Gras. Das könnte nach hinten los gehen. Kleiner Tipp am Rande.
+Gehe niemals ohne kampffähiges Pokémon ins hohe Gras. Das könnte nach hinten los gehen. Kleiner Tipp am Rande.
+Nimm dir ein Pokèmon.
+Nimm dir ein Pokèmon.

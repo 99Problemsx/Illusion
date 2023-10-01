@@ -1,0 +1,36 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map032]
+Immer verliere ich meinen blöden Schlüssel, wo ist dieses blöde Ding nur wieder …
+Immer verliere ich meinen blöden Schlüssel, wo ist dieses blöde Ding nur wieder …
+Haus von \PN
+Haus von \PN
+Ohne ein Pokemon kannst du nicht durch.
+Ohne ein Pokemon kannst du nicht durch.
+Skrrr
+Skrrr
+Professor Maidenhair's Lab
+Professor Maidenhair's Lab
+Meine Mama sagt, ich bin noch zu jung für ein eigenes Pokémon.
+Meine Mama sagt, ich bin noch zu jung für ein eigenes Pokémon.
+Viel Erfolg.
+Viel Erfolg.
+Ich liebe Siedlingen, die frische Luft, die saftigen Wiesen und die Idylle des Landlebens machen mich glücklich.
+Ich liebe Siedlingen, die frische Luft, die saftigen Wiesen und die Idylle des Landlebens machen mich glücklich.
+Boah, so viele coole Vogelpokémon hier!!!
+Boah, so viele coole Vogelpokémon hier!!!
+Ey!
+Ey!
+Willst du Kämpfen?
+Willst du Kämpfen?
+...
+...
+Nimm das!
+Nimm das!
+Rild
+Rild
+Ich bin David.
+Ich bin David.
+Du bist neu hiewr, stimmts? Deine Mum wawr voll nett vowrhin, hat immewrzu gelächelt und genickt. Sie wawr nur etwas still, ist gawr nicht wrichtig auf meine Fwrage eingegangen. Abewr egal. Ich geb diwr 'n heißen Tipp. Geh mal ins Lab vom Pwrof. Der hat nice Wawre, die wiwrd diwr gefallen. Dann stinkst du in Kämpfen vielleicht auch nicht mehwr so ab. Also dann, tschau Kakao!
+Du bist neu hiewr, stimmts? Deine Mum wawr voll nett vowrhin, hat immewrzu gelächelt und genickt. Sie wawr nur etwas still, ist gawr nicht wrichtig auf meine Fwrage eingegangen. Abewr egal. Ich geb diwr 'n heißen Tipp. Geh mal ins Lab vom Pwrof. Der hat nice Wawre, die wiwrd diwr gefallen. Dann stinkst du in Kämpfen vielleicht auch nicht mehwr so ab. Also dann, tschau Kakao!
