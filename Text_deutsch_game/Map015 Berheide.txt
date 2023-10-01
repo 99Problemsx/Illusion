@@ -1,0 +1,58 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map015]
+\bHey lass kämpfen du Hecht!
+\bHey lass kämpfen du Hecht!
+\bOh.. Da hab ich mich wohl überschätzt..
+\bOh.. Da hab ich mich wohl überschätzt..
+\rIch muss heute noch drei Ställe ausmisten. Keine Zeit für Smalltalk, sorry.
+\rIch muss heute noch drei Ställe ausmisten. Keine Zeit für Smalltalk, sorry.
+\rWarum shakert Miltank immer mit ihren Zitzen. Ist das nicht mega … naja … komisch?
+\rWarum shakert Miltank immer mit ihren Zitzen. Ist das nicht mega … naja … komisch?
+\rDas irritiert mich …
+\rDas irritiert mich …
+\rWie vermehren sich eigentlich Miltanks? Sie selbst sind doch immer weiblich.
+\rWie vermehren sich eigentlich Miltanks? Sie selbst sind doch immer weiblich.
+\rOb Tauros seine Hufe da im Spiel hat?"
+\rOb Tauros seine Hufe da im Spiel hat?"
+\bHowdy Partner! Lust auf ein Rodeo?
+\bHowdy Partner! Lust auf ein Rodeo?
+\bAutsch, da bin ich wohl auf dem Hintern gelandet.
+\bAutsch, da bin ich wohl auf dem Hintern gelandet.
+\rPampuli frisst kein Gras, auch wenn es manchmal den Anschein macht.
+\rPampuli frisst kein Gras, auch wenn es manchmal den Anschein macht.
+\rEs sucht im Gras nach freien Stellen, um direkt das Erdreich zu verspeisen.
+\rEs sucht im Gras nach freien Stellen, um direkt das Erdreich zu verspeisen.
+\rDabei sollte man es nicht stören, sonst bekommt man seinen Doppelkick zu spüren.
+\rDabei sollte man es nicht stören, sonst bekommt man seinen Doppelkick zu spüren.
+\bHa! Du bist mir ins Lasso gerannt. Jetzt gibt es ein Kämpfchen
+\bHa! Du bist mir ins Lasso gerannt. Jetzt gibt es ein Kämpfchen
+\bDas Seil konnte deiner Stärke nicht standhalten
+\bDas Seil konnte deiner Stärke nicht standhalten
+\bEgal Zeit zu kämpfen!
+\bEgal Zeit zu kämpfen!
+\bWas du nicht sagst.
+\bWas du nicht sagst.
+\rMoin, moin. Hast du schon die feine Milch von Miltank probiert?
+\rMoin, moin. Hast du schon die feine Milch von Miltank probiert?
+\rDie schmeckt echt fein und belebt Geist und Körper!
+\rDie schmeckt echt fein und belebt Geist und Körper!
+\bOh eine verlorene Seele
+\bOh eine verlorene Seele
+\bDie Seele war wohl doch nicht so verloren
+\bDie Seele war wohl doch nicht so verloren
+\rHowdy Partner. Ein herrlicher Tag heute, oder nicht?
+\rHowdy Partner. Ein herrlicher Tag heute, oder nicht?
+\bWenn ich groß bin möchte ich auch ein Pokémon Profi werden.
+\bWenn ich groß bin möchte ich auch ein Pokémon Profi werden.
+\bOhje da muss ich wohl noch viel Trainieren.
+\bOhje da muss ich wohl noch viel Trainieren.
+\bLass nicht lang schnacken und lass die Bälle knacken
+\bLass nicht lang schnacken und lass die Bälle knacken
+\bGuter Kampf!
+\bGuter Kampf!
+\bEy, Knirbs. Lust auf'n Tänzchen?
+\bEy, Knirbs. Lust auf'n Tänzchen?
+\bDa hat's mich ja glatt aus den Stiefeln gehauen.
+\bDa hat's mich ja glatt aus den Stiefeln gehauen.

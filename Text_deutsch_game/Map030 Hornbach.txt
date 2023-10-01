@@ -1,0 +1,54 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map030]
+\bMir wird ganz Bamelin wenn ich an den Arenaleiter von Hornfeld-City denke. Komm, lass uns unsere Kräfte messen!
+\bMir wird ganz Bamelin wenn ich an den Arenaleiter von Hornfeld-City denke. Komm, lass uns unsere Kräfte messen! 
+\bDu bist ein richtiger Barschuft!
+\bDu bist ein richtiger Barschuft!
+\bIDa hilft nur noch Piccolente.
+\bIDa hilft nur noch Piccolente.
+\bGrass-types and Bug-types share a lot of similarities but are very different!
+\bGrass-types and Bug-types share a lot of similarities but are very different!
+\bStrange right?!
+\bStrange right?!
+\rBist du auf dem Weg nach Hornfeld-City?
+\rBist du auf dem Weg nach Hornfeld-City? 
+\rWillst du gegen den Arenaleiter kämpfen?
+\rWillst du gegen den Arenaleiter kämpfen?
+\rDann solltest du dich gut gegen den Pokémontypen der Nacht wappnen.
+\rDann solltest du dich gut gegen den Pokémontypen der Nacht wappnen.
+\bHast du schon von den längst vergessenen Ruinen gehört? Dort sollen sehr starke Pokémon im Sand und in Höhlen versteckt leben.
+\bHast du schon von den längst vergessenen Ruinen gehört? Dort sollen sehr starke Pokémon im Sand und in Höhlen versteckt leben.
+\bIIch werde zum vergessenen Pfad aufbrechen und mir die Ruinen dort ansehen.
+\bIIch werde zum vergessenen Pfad aufbrechen und mir die Ruinen dort ansehen.
+\bHeute Morgen habe ich hier ein Ottaro auf dem Wasser gesehen. Leider ist es sofort abgetaucht, als es mich bemerkt hat.
+\bHeute Morgen habe ich hier ein Ottaro auf dem Wasser gesehen. Leider ist es sofort abgetaucht, als es mich bemerkt hat. 
+\bDu musst meine Laune wieder heben, also lass uns Kämpfen!
+\bDu musst meine Laune wieder heben, also lass uns Kämpfen!
+\bJetzt bin ich noch mies gelaunter als vorher.
+\bJetzt bin ich noch mies gelaunter als vorher.
+\bIch habe das Ottaro wiedergesehen!
+\bIch habe das Ottaro wiedergesehen!
+\bIch habe gerade eine Durststrecke.
+\bIch habe gerade eine Durststrecke.
+\bIch hätte jetzt so gerne eine Cola, aber so ein Typ hat mir meine Dose einfach weggenommen und mir dafür 'ne Spezi in die Hand gedrückt.
+\bIch hätte jetzt so gerne eine Cola, aber so ein Typ hat mir meine Dose einfach weggenommen und mir dafür 'ne Spezi in die Hand gedrückt.
+\bIch bin echt sauer..
+\bIch bin echt sauer..
+\bJetzt bin ich sauer und erschlagen. Wie Schlagsahne.
+\bJetzt bin ich sauer und erschlagen. Wie Schlagsahne.
+\bIm nächsten Laden werde ich diese Spezi gegen eine Cola eintauschen.
+\bIm nächsten Laden werde ich diese Spezi gegen eine Cola eintauschen.
+\bEs geht doch nichts über einen frischen Fang am Morgen. Willst du mal sehen was ich am Haken habe?
+\bEs geht doch nichts über einen frischen Fang am Morgen. Willst du mal sehen was ich am Haken habe?
+\bDieser Fang ist mir wohl entwischt.
+\bDieser Fang ist mir wohl entwischt.
+\bNa, was haben wir denn da geangelt? Ein knackiger Kampf. Bist du gegen Wasser gewappnet?
+\bNa, was haben wir denn da geangelt? Ein knackiger Kampf. Bist du gegen Wasser gewappnet?
+\bWer hat hier jetzt wen nass gemacht...
+\bWer hat hier jetzt wen nass gemacht...
+\bPetri Heil!
+\bPetri Heil!
+\bDiesen Fisch konnte ich nicht an Land ziehen.
+\bDiesen Fisch konnte ich nicht an Land ziehen.

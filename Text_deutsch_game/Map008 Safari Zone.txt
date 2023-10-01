@@ -1,0 +1,36 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map008]
+\rHello, my Abra can teleport you to anywhere in the Safari Zone.
+\rHello, my Abra can teleport you to anywhere in the Safari Zone.
+\rWould you like to travel anywhere?
+\rWould you like to travel anywhere?
+\rTo where?
+\rTo where?
+\rCome back another time!
+\rCome back another time!
+Murkrow: Durra!!
+Murkrow: Durra!!
+Murkrow dropped the key.
+Murkrow dropped the key.
+Yes
+Yes
+No
+No
+Swamp
+Swamp
+Sea
+Sea
+Low-Ground
+Low-Ground
+Show more...
+Show more...
+Desert
+Desert
+Mountain
+Mountain
+Snowy
+Snowy
+Show Less...
+Show Less...

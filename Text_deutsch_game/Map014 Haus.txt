@@ -1,0 +1,16 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map014]
+Du schaust müde aus
+Du schaust müde aus 
+Du solltest dich ausruhen
+Du solltest dich ausruhen
+Komm jederzeit wieder
+Komm jederzeit wieder
+\rFirst, you should restore your Pokémon to full health.
+\rFirst, you should restore your Pokémon to full health.
+\rYour Pokémon have been healed to perfect health.
+\rYour Pokémon have been healed to perfect health.
+\rWe hope you excel!
+\rWe hope you excel!

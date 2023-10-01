@@ -1,0 +1,24 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map007]
+\bIt's nice here.
+\bIt's nice here.
+\bThe scenery is just amazing.
+\bThe scenery is just amazing.
+\bThere are some amazing water type Pokémon out there!
+\bThere are some amazing water type Pokémon out there!
+\bUnfortunately, most of them are indangered.
+\bUnfortunately, most of them are indangered.
+\bLuckily a lot of Pokémon have found ways to fight back.
+\bLuckily a lot of Pokémon have found ways to fight back.
+\bHere, take this!
+\bHere, take this!
+\bSlowpoke their tails grow back after about a week.
+\bSlowpoke their tails grow back after about a week.
+\bTechnology is amazing!
+\bTechnology is amazing!
+\bMy bug will beat you!
+\bMy bug will beat you!
+\bYou VolBEAT my Volbeat.
+\bYou VolBEAT my Volbeat.

@@ -1,0 +1,54 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map035]
+\rAh, there you are! My husband was looking for you.
+\rAh, there you are!  My husband was looking for you.
+\rI'm the Day-Care Lady. We can raise Pokémon for you.
+\rI'm the Day-Care Lady.  We can raise Pokémon for you.
+\rWould you like us to raise your Pokémon?
+\rWould you like us to raise your Pokémon?
+\rOh? But you only have one Pokémon with you.
+\rOh?  But you only have one Pokémon with you.
+\rYou can't go off without a Pokémon. Come back another time.
+\rYou can't go off without a Pokémon.  Come back another time.
+\rWhich Pokémon should we raise for you?
+\rWhich Pokémon should we raise for you?
+\rOh, fine, then.\nCome again.
+\rOh, fine, then.\nCome again.
+\rIf you leave me that Pokémon, what are you gonna battle with?
+\rIf you leave me that Pokémon, what are you gonna battle with?
+\rCome back another time.
+\rCome back another time.
+\rFine, we'll raise your \v[3] for a while.
+\rFine, we'll raise your \v[3] for a while.
+\rCome back for it later.
+\rCome back for it later.
+\rWe can raise two of your Pokémon. Would you like us to raise another?
+\rWe can raise two of your Pokémon.  Would you like us to raise another?
+\rVery good. Come again.
+\rVery good.  Come again.
+\rAh, it's you! Good to see you. Now, about your Pokémon...
+\rAh, it's you!  Good to see you.  Now, about your Pokémon...
+\rBy level, your \v[3] has grown by about \v[4].
+\rBy level, your \v[3] has grown by about \v[4].
+\rDo you want your Pokémon back?
+\rDo you want your Pokémon back?
+\rYour Pokémon team is full. Make room, then come see me.
+\rYour Pokémon team is full.  Make room, then come see me.
+Which one do you want back?
+Which one do you want back?
+\G\rIf you want your \v[3] back, it will cost $\v[4].
+\G\rIf you want your \v[3] back, it will cost $\v[4].
+\G\rYou don't have enough money...
+\G\rYou don't have enough money...
+\G\rExcellent\nHere's your Pokémon.
+\G\rExcellent\nHere's your Pokémon.
+\PN took \v[3] back from the Day-Care Lady.
+\PN took \v[3] back from the Day-Care Lady.
+\rDo you want to take back the other one, too?
+\rDo you want to take back the other one, too?
+Yes
+Yes
+No
+No

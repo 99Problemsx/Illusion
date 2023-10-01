@@ -1,0 +1,32 @@
+﻿# To localize this text for a particular language, please
+# translate every second line of this file.
+#-------------------------------
+[Map016]
+Meine Tochter hat morgen Geburtstag. Ich kaufe ihr eine Hydropi-Puppe. Das ist ihr Lieblingspokémon.
+Meine Tochter hat morgen Geburtstag. Ich kaufe ihr eine Hydropi-Puppe. Das ist ihr Lieblingspokémon.
+Grüeziwohl und willkomme im Poké-Center. Söllemo dini Pokémon wider fit mache
+Grüeziwohl und willkomme im Poké-Center. Söllemo dini Pokémon wider fit mache
+Ok, denn nimi mir mol churz dini Pokémon id Obhuet, den zeigi dir gad emol wo de Bartli de Most holt.
+Ok, denn nimi mir mol churz dini Pokémon id Obhuet, den zeigi dir gad emol wo de Bartli de Most holt.
+Danke für dini Geduld, lek boby du sind dini Pokémon wieder fit.
+Danke für dini Geduld, lek boby du sind dini Pokémon wieder fit.
+\rFirst, you should restore your Pokémon to full health.
+\rFirst, you should restore your Pokémon to full health.
+\rYour Pokémon have been healed to perfect health.
+\rYour Pokémon have been healed to perfect health.
+\rWe hope you excel!
+\rWe hope you excel!
+Haben die gar keinen Hyperheiler?
+Haben die gar keinen Hyperheiler?
+Blissey: Blis blis!!
+Blissey: Blis blis!!
+Hast du schon die neuen Evoli Karten gesehen? Die sind voll cool!
+Hast du schon die neuen Evoli Karten gesehen? Die sind voll cool!
+Die Auswahl an Pokébällen hier ist erstaunlich groß.
+Die Auswahl an Pokébällen hier ist erstaunlich groß.
+Ein paar Tränke auf Vorrat zu haben, hat noch niemandem geschadet. Du solltest dir auch ein paar kaufen. Man weiß nie was im Gras lauert, oder welcher starker Trainer einem sich in den Weg stellt.
+Ein paar Tränke auf Vorrat zu haben, hat noch niemandem geschadet. Du solltest dir auch ein paar kaufen. Man weiß nie was im Gras lauert, oder welcher starker Trainer einem sich in den Weg stellt.
+Ja
+Ja
+Nein
+Nein

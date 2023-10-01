@@ -1,4 +1,0 @@
-Name         = DiegoWTs Starter Selection
-Version      = 1.3.0
-Essentials   = 20.1
-Credits      = DiegoWT
