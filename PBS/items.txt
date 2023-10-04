@@ -7835,3 +7835,11 @@ FieldUse = Direct
 Flags = KeyItem
 Description = A wizard used to own this.
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+[EXPALL]
+Name = EP-Teiler
+NamePlural = Ep-Teiler
+Pocket = 8
+Price = 0
+Flags = KeyItem
+Description = Für die faulen
