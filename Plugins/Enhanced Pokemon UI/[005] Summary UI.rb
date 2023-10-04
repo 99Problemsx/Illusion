@@ -47,14 +47,14 @@ class PokemonSummary_Scene
   # Aliased to add a toggle for the Enhanced Stats display.
   #-----------------------------------------------------------------------------
   alias enhanced_pbPageCustomUse pbPageCustomUse
-  def pbPageCustomUse(page_id, inbattle)
+  def pbPageCustomUse(page_id)
     if page_id == :page_skills && $game_switches[Settings::ENHANCED_STATS_SWITCH]
       @statToggle = !@statToggle
       drawPage(:page_skills)
       pbPlayDecisionSE
       return true
     end
-    return enhanced_pbPageCustomUse(page_id, inbattle)
+    return enhanced_pbPageCustomUse(page_id)
   end
 
   #-----------------------------------------------------------------------------

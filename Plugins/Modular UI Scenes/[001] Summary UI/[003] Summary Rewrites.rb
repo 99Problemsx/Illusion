@@ -121,11 +121,13 @@ class PokemonSummary_Scene
     #---------------------------------------------------------------------------
     # Opens move selection if on the moves page and no options are available.
     #---------------------------------------------------------------------------
-    if commands.empty? && @page_id == :page_moves
-      pbMoveSelection
-      @sprites["pokemon"].visible = true
-      @sprites["pokeicon"].visible = false
-      return true
+    if @page_id == :page_moves
+      if commands.empty? || @inbattle
+        pbMoveSelection
+        @sprites["pokemon"].visible = true
+        @sprites["pokeicon"].visible = false
+        return true
+      end
     end
     #---------------------------------------------------------------------------
     commands[:cancel] = _INTL("Cancel")
@@ -250,8 +252,8 @@ class PokemonSummary_Scene
         pbPlayCloseMenuSE
         break
       elsif Input.trigger?(Input::USE)
-        ret = pbPageCustomUse(@page_id, @inbattle)
-        if !ret
+        dorefresh = pbPageCustomUse(@page_id)
+        if !dorefresh
           case @page_id
           when :page_moves
             pbPlayDecisionSE
@@ -266,8 +268,6 @@ class PokemonSummary_Scene
               dorefresh = pbOptions
             end
           end
-        else
-          dorefresh = true
         end
       elsif Input.repeat?(Input::UP)
         oldindex = @partyindex
