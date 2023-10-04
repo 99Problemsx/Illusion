@@ -314,3 +314,15 @@ GameData::Evolution.each do |evo|
   when :CollectItems                           then evo.description = _INTL("with atleast 999x {2} in the bag")
   end
 end
+
+#-------------------------------------------------------------------------------
+# Fix for shiny icon sprites.
+#-------------------------------------------------------------------------------
+class PokemonSpeciesIconSprite < Sprite
+  alias shinyfix_initialize initialize
+  def initialize(species, viewport = nil)
+    shinyfix_initialize(species, viewport)
+    @shiny = false
+    refresh
+  end
+end

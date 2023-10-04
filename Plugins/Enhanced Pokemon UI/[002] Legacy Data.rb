@@ -36,9 +36,9 @@ end
 
 class Battle::Battler
   alias legacy_pbConsumeItem pbConsumeItem
-  def pbConsumeItem
+  def pbConsumeItem(*args)
     @pokemon.legacy_data[:item_count] += 1
-    legacy_pbConsumeItem
+    legacy_pbConsumeItem(*args)
   end
 end
 

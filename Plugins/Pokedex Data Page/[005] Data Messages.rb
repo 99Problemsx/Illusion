@@ -346,9 +346,12 @@ class PokemonPokedexInfo_Scene
           index = 0
           evos.each do |evo|
             next if evo[0] != species.species
-            text += " " if index > 0
-            data = GameData::Evolution.get(evo[1])
+            if species.species == :URSHIFU && evo[1] == :Item
+              next if evo[2] != [:SCROLLOFDARKNESS, :SCROLLOFWATERS][species.form]
+            end
             spec = ($player.seen?(prevo_data.id)) ? prevo_data.id : nil
+            data = GameData::Evolution.get(evo[1])
+            text += " " if index > 0
             text += data.description(spec, evo[0], evo[2], nil_or_empty?(text), true, t)
             break if index > 0
             index += 1

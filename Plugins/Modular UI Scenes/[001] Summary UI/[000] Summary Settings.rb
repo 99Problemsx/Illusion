@@ -67,12 +67,10 @@ class PokemonSummary_Scene
   # If so, the Options menu will not appear, and this command run instead.
   #-----------------------------------------------------------------------------
   # "page_id" refers to the symbol ID of the particular page (ex. :page_memo).
-  # "inbattle" is a boolean which refers to whether or not this function is 
-  # applicable while viewing this summary page while in battle.
   #-----------------------------------------------------------------------------
   # This method must return true if your custom code properly runs.
   #-----------------------------------------------------------------------------
-  def pbPageCustomUse(page_id, inbattle)
+  def pbPageCustomUse(page_id)
     #---------------------------------------------------------------------------
     # Example
     #---------------------------------------------------------------------------
