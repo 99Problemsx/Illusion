@@ -185,7 +185,7 @@ class VoltseonsPauseMenu < Component
       @sprites[key] = nil
       @sprites.delete(key)
     end
-    middle = @disp_indices.length / 2
+    @disp_indices.length / 2
     @disp_indices.length.times do |i|
       @sprites["icon_#{i}"]    = IconSprite.new(0, 0, @viewport)
       @sprites["icon_#{i}"].y  = Graphics.height - 42

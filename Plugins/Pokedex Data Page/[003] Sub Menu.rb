@@ -255,7 +255,7 @@ class PokemonPokedexInfo_Scene
     if page > 0
       imagepos.push([path + "page_cursor", 392, 242, 76, 70, 76, 32])
     end
-    t = DATA_TEXT_TAGS
+    DATA_TEXT_TAGS
     s2 = GameData::Species.get_species_form(@species, @form)
     case cursor
     when :stats   then data_text = pbDataTextStats(path, species_data, overlay, s2)

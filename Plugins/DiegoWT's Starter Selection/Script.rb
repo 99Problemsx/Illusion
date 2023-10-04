@@ -554,8 +554,8 @@ class DiegoWTsStarterSelection
       @type = "Fairy"
       typeColor = Tone.new(136.75,41.5,73.0)
     end
-    return typeColor              if type = @pokemon.types[0]
-    return type2Color = typeColor if type = @pokemon.types[1]
+    return typeColor              if @pokemon.types[0]
+    return typeColor if @pokemon.types[1]
   end
   
   def pbChooseBall

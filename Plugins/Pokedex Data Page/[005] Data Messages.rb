@@ -76,7 +76,7 @@ class PokemonPokedexInfo_Scene
           if chance
             f = ((chance / 256.0) * 100).round
             m = (100 - f)
-            text += t[2] + "Male #{m.to_s}% " + t[1] + "Female #{f.to_s}%"
+            text += t[2] + "Male #{m}% " + t[1] + "Female #{f}%"
           else
             text += "????"
           end
@@ -210,15 +210,15 @@ class PokemonPokedexInfo_Scene
       if groups.include?(:None)
         data = GameData::EggGroup.get(:Ditto)
         name = (Settings::ALT_EGG_GROUP_NAMES) ? data.alt_name : data.name
-        text += "is genderless, and may only breed with species in the " + t[1] + "#{name}" + t[0] + " group."
+        text += "is genderless, and may only breed with species in the " + t[1] + name.to_s + t[0] + " group."
       elsif groups.include?(:Ditto)
         data = GameData::EggGroup.get(:Ditto)
         name = (Settings::ALT_EGG_GROUP_NAMES) ? data.alt_name : data.name
-        text += "is in the " + t[1] + "#{name}" + t[0] + " group, and may breed with species in all other groups."
+        text += "is in the " + t[1] + name.to_s + t[0] + " group, and may breed with species in all other groups."
       elsif groups.include?(:Undiscovered) || groups.empty?
         data = GameData::EggGroup.get(:Undiscovered)
         name = (Settings::ALT_EGG_GROUP_NAMES) ? data.alt_name : data.name
-        text += "is in the " + t[1] + "#{name}" + t[0] + " group, and is incapable of breeding."
+        text += "is in the " + t[1] + name.to_s + t[0] + " group, and is incapable of breeding."
       else
         text += "may only breed with species in the "
         groups.each_with_index do |group, i|
@@ -307,28 +307,28 @@ class PokemonPokedexInfo_Scene
       end
       if gmax
         text = t[0] + "Gigantamax Method\n"
-        text += t[0] + "Occurs when Dynamax is triggered and " + t[1] + "#{spname}" + t[0]
+        text += t[0] + "Occurs when Dynamax is triggered and " + t[1] + spname.to_s + t[0]
         text += " has " + t[2] + "G-Max Factor" + t[0] + "."
       elsif ultra
         text = t[0] + "Ultra Burst Method\n"
-        text += t[0] + "Available when " + t[1] + "#{spname}" + t[0]
+        text += t[0] + "Available when " + t[1] + spname.to_s + t[0]
         param = GameData::Item.get(@data_hash[:item][0].first).name
-        text += " triggers its held " + t[2] + "#{param}" + t[0] + "."
+        text += " triggers its held " + t[2] + param.to_s + t[0] + "."
       elsif primal
         text = t[0] + "Primal Reversion Method\n"
-        text += t[0] + "Occurs when " + t[1] + "#{spname}"
+        text += t[0] + "Occurs when " + t[1] + spname.to_s
         text += t[0] + " enters battle and triggers "
         param = GameData::Item.get(@data_hash[:item][0].first).name
-        text += "its held " + t[2] + "#{param}" + t[0] + "."
+        text += "its held " + t[2] + param.to_s + t[0] + "."
       else
         text = t[0] + "Mega Evolution Method\n"
-        text += t[0] + "Available when " + t[1] + "#{spname}" + t[0]
+        text += t[0] + "Available when " + t[1] + spname.to_s + t[0]
         if species.mega_stone
           param = GameData::Item.get(@data_hash[:item][0].first).name
-          text += " triggers its held Mega Stone, " + t[2] + "#{param}" + t[0] + "."
+          text += " triggers its held Mega Stone, " + t[2] + param.to_s + t[0] + "."
         else
           param = GameData::Move.get(species.mega_move).name
-          text += " has the move " + t[2] + "#{param}" + t[0] + "."
+          text += " has the move " + t[2] + param.to_s + t[0] + "."
         end
       end
     else
@@ -339,7 +339,7 @@ class PokemonPokedexInfo_Scene
         prevo_data = GameData::Species.get_species_form(prevo, form)
         evos = prevo_data.get_evolutions
         if species.species == :ALCREMIE
-          name = t[1] + "#{prevo_data.name}" + t[0]
+          name = t[1] + prevo_data.name.to_s + t[0]
           text = t[0] + "Use various " + t[2] + "Sweets" + t[0] + " on #{name}."
         else
           text = ""

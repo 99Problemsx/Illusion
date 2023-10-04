@@ -103,7 +103,7 @@ class VoltseonsPauseMenu_Scene
     end
     @components.each_with_index do |component, i|
       sprites = component.sprites
-      cname = @component_names[i]
+      @component_names[i]
       sprites.each_value do |sprite|
         if sprite.y >= (Graphics.height / 2)
           sprite.y += (Graphics.height / 2)
@@ -240,7 +240,7 @@ class VoltseonsPauseMenu_Scene
     @sprites["location"].bitmap = Bitmap.new(bmp.width, bmp.height)
     @sprites["location"].bitmap.blt(0, 0, bmp, Rect.new(0, 0, bmp.width, bmp.height))
     bmp.dispose
-    mapname = $game_map.name
+    $game_map.name
     base_color = $PokemonSystem.from_current_menu_theme(LOCATION_TEXTCOLOR, Color.new(248, 248, 248))
     shdw_color = $PokemonSystem.from_current_menu_theme(LOCATION_TEXTOUTLINE, Color.new(48, 48, 48))
     x_offset = @sprites["location"].bitmap.width - 64
@@ -346,7 +346,7 @@ class PokemonSystem
   def from_current_menu_theme(data, default = nil)
     default = data if default.nil?
     if data.is_a?(String)
-      path = MENU_FILE_PATH
+      MENU_FILE_PATH
       file = "Theme #{$PokemonSystem.current_menu_theme + 1}/#{default}"
       return file if pbResolveBitmap(MENU_FILE_PATH + file)
       return default

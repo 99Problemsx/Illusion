@@ -141,7 +141,7 @@ class StorageGrabber
   def pour(count)
     return if count == 0
     to_del = get_new_carried_mons(0)
-	to_del = to_del.sort{ |a, b| a[0] <=> b[0] }
+	to_del.sort{ |a, b| a[0] <=> b[0] }
 	ret = @carried_mons.clone
 	count.times do
 	  ret.pop

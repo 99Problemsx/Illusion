@@ -140,6 +140,6 @@ class Swdfm_Exp_Screen
 	  :Align   => 2,
 	  :Outline => true
 	}
-	bmp = Swdfm_Bitmap.text(@levels[i].to_s, hash, @sprites["level_#{i}"].bitmap)
+	Swdfm_Bitmap.text(@levels[i].to_s, hash, @sprites["level_#{i}"].bitmap)
   end
 end

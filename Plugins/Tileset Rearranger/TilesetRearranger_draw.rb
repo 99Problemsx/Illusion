@@ -168,7 +168,7 @@ class TilesetRearranger
         # Draw selected tiles
         sel_x = (@mode == :move_row) ? 0 : @selected_x
         sel_width = (@mode == :move_row) ? TILES_PER_ROW : @selected_width
-        tile_rect = Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
+        Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
         start_x = (bitmap.width - sel_width * TILE_SIZE) / 2
         start_y = (bitmap.height - @selected_height * TILE_SIZE) / 2
         for yy in 0...@selected_height

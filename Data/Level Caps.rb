@@ -57,7 +57,7 @@ def pbGainExpOne(idxParty,defeatedBattler,numPartic,expShare,expAll,showMessages
     end
 #========EXP CHANGING SCRIPT======================================================================#
     if defined?(pkmn) #check if the pkmn variable exist, for v18 and v19 compatibility
-        thispoke = pkmn
+        pkmn
     end
     if $game_switches[63]
           levelCap=LEVEL_CAPS[$game_variables[32]]
@@ -67,7 +67,7 @@ def pbGainExpOne(idxParty,defeatedBattler,numPartic,expShare,expAll,showMessages
           exp=Settings::LEVEL_CAP_EXP_2 if pkmn.level>=levelCap
 
     else
-      levelCap=GameData::GrowthRate.max_level
+      GameData::GrowthRate.max_level
     end
 #==================================================================================================#
 

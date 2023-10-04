@@ -558,7 +558,7 @@ if Item_WeatherGadget[:active]
   EventHandlers.add(:on_leave_map, :end_weather,
   proc { |new_map_id, new_map|
     next if new_map_id == 0
-    old_map_metadata = $game_map.metadata
+    $game_map.metadata
     #next if !old_map_metadata || !old_map_metadata.weather
     map_infos = pbLoadMapInfos
     if $game_map.name == map_infos[new_map_id].name
@@ -812,7 +812,7 @@ if Item_Surf[:active]
       return false
     end
     if pbConfirmMessage(_INTL("The water is a deep blue...\nWould you like to surf on it?"))
-      used_item_name = GameData::Item.get(Item_Surf[:internal_name]).name
+      GameData::Item.get(Item_Surf[:internal_name]).name
       pbMessage(_INTL("{1} used the {2}!", $player.name, item_name))
       pbCancelVehicles
       surfbgm = GameData::Metadata.get.surf_BGM

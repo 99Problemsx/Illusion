@@ -56,7 +56,7 @@ class Battle
       strength = ((baseMult * atkMult / defMult) * dmgMult).floor
       effective_types[strength] << type
     end
-    best_types = (effective_types.empty?) ? all_types : effective_types.sort.last[1]
+    best_types = (effective_types.empty?) ? all_types : effective_types.max[1]
     bestType = pbCalcOptimalType(user, target, move, best_types, target_types, check_type)
     return bestType
   end
@@ -144,7 +144,7 @@ class Battle
         strength = move.pbCalcTypeModSingle(target_type, type, user, target)
         effectiveness[strength] << type
       end
-      effective_types = effectiveness.sort.first[1].clone
+      effective_types = effectiveness.min[1].clone
       break if effective_types.length == 1
     end
     return check_type if effective_types.include?(check_type)
@@ -251,7 +251,7 @@ class Battle::Scene::Animation::ArceusTransform < Battle::Scene::Animation
 
   def createProcesses
     batSprite = @sprites["pokemon_#{@index}"]
-    ballPos = Battle::Scene.pbBattlerPosition(@index, batSprite.sideSize)
+    Battle::Scene.pbBattlerPosition(@index, batSprite.sideSize)
     delay = 0
     battlerX = batSprite.x
     battlerY = batSprite.y-100
