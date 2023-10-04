@@ -12,7 +12,7 @@ module Settings
   #-----------------------------------------------------------------------------
   # The switch number used to unlock the Data page in the Pokedex.
   #-----------------------------------------------------------------------------
-  POKEDEX_DATA_PAGE_SWITCH = 331
+  POKEDEX_DATA_PAGE_SWITCH = 60
   
   #-----------------------------------------------------------------------------
   # Toggles whether or not alternative Egg Group names should be displayed.
