@@ -433,7 +433,7 @@ class Battle::AI
         end
       end
       # Immunity because of Commander
-      return true if target.has_active_ability?(:COMMANDER) && target.isCommander?
+      return true if user.has_active_ability?(:COMMANDER) && target.isCommander?
       # Good As Gold Pokémon immunity to status moves
       return true if @move.statusMove?  && @target.has_active_ability?(:GOODASGOLD) && 
                                           !(@user.has_active_ability?(:MYCELIUMMIGHT))
