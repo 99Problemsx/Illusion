@@ -13,7 +13,7 @@ TMs & HMs
 Berries
 Beeren
 Mail
-Mail
+Cp Items
 Battle Items
 Kampf Items
 Key Items
