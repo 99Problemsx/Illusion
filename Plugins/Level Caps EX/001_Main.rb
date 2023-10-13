@@ -6,7 +6,7 @@ class Pokemon
     validate value => Integer
     if value < 1 || value > GameData::GrowthRate.max_level
       max_lvl = GameData::GrowthRate.max_level
-      limit = (value < 1)? ["below the minimum  of level 1", "1"] : ["above the maximum of level #{max_lvl}", "#{max_lvl}"]
+      limit = (value < 1)? ["below the minimum  of level 1", "1"] : ["above the maximum of level #{max_lvl}", max_lvl.to_s]
       echoln _INTL("Level {1} for {2} is not a valid level as it goes {3}. The level has been reset to {4}",
                     value, self, limit[0], limit[1])
       value.clamp(1, GameData::GrowthRate.max_level)
