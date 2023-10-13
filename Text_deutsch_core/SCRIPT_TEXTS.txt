@@ -4519,7 +4519,7 @@ There's no more room for Pokémon!
 The Pokémon Boxes are full and can't accept any more!
 The Pokémon Boxes are full and can't accept any more!
 {1} obtained {2}!
-{1} erhält {2}!
+{1} erhältst {2}!
 {1} received a Pokémon from {2}.
 {1} received a Pokémon from {2}.
 {1} received a Pokémon.
