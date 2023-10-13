@@ -23755,7 +23755,7 @@ Page #1
 Conditions
 None
 
-Graphic: RIVALE_David_2
+Graphic: David
 
 Autonomous Movement
 Type: Fixed
@@ -23890,7 +23890,87 @@ List of Event Commands:
  :              : $>Turn Left
 @>Wait for Move's Completion
 @>Set Move Route: [David]
+ :              : $>Turn Up
+@>Wait for Move's Completion
+@>Script: pbCallBub(2, 12)
+@>Text: Jo, du kommmst genau im wrichtigen Moment. Die Beiden Pimpfs wollen mich nicht duwrch lassen. Zeigen wiwr ihnen was stawrke Twrainer sind.
+@>Script: pbRegisterPartner(:RIVALE_David_2, 
+:       : "David", 3)
+@>Set Move Route: [David]
+ :              : $>Turn Right
+@>Script: pbCallBub(2, 12)
+@>Text: Euch zeigen wiwrs, wie Wegweisewr!
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel", 1, :TEAMSPEZI_M, "Rüpel", 2)
+ @>Script: pbCallBub(2, 14)
+ @>Text: Das zahlen wir euch heim!
+ @>Script: pbCallBub(2, 13)
+ @>Text: Wir sehn uns wieder!
+ @>Play SE: 'Exit Door', 80, 100
+ @>Change Screen Color Tone: (-255,-255,-255,0), @6
+ @>Wait: 8 frame(s)
+ @>Control Switches: [0501: Rockets Wanderweg] = ON
+ @>Change Screen Color Tone: (0,0,0,0), @6
+ @>Set Move Route: [David]
+  :              : $>Turn Up
+ @>Wait for Move's Completion
+ @>Script: pbCallBub(2, 12)
+ @>Text: Tja, gwroße Klappe, nichts dahintewr. Danke füwr die Hilfe. Ich mach mich auf zuwr nächsten Awrena, man sieht sich dort, vor Ort, hoffentlich geschieht kein Mord.
+ @>Script: pbCallBub(2, 12)
+ @>Text: Wawrum klang das so clean?
+ @>Script: pbDeregisterPartner
+ @>Set Move Route: [David]
+  :              : $>Through ON
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Down
+  :              : $>Move Down
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Graphic: (None)
+ @>Wait for Move's Completion
+ @>Control Self Switch: A =ON
+ @>
+: Else
+ @>
+: Branch End
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 016
+Event Name: EV016
+(X,Y): (048,038)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Script: pbCallBub(2, 14)
+@>Text: Ey, spinnst du, alter? Die gute Spezi! Pass doch auf wo du hintrittst, du Trampel!
+@>Script: pbCallBub(2, 13)
+@>Text: Da kommt noch so Einer. Ich glaub es wird Zeit für eine Abreibung! Legt euch nicht mit Team Spezi an! Das ist jetzt unsere Region!
+@>Set Move Route: Player
+ :              : $>Move Right
+ :              : $>Move Right
+ :              : $>Move Right
+ :              : $>Move Right
+@>Set Move Route: [EV013_2]
+ :              : $>Move Right
  :              : $>Turn Left
+@>Wait for Move's Completion
+@>Set Move Route: [David]
+ :              : $>Turn Up
 @>Wait for Move's Completion
 @>Script: pbCallBub(2, 12)
 @>Text: Jo, du kommmst genau im wrichtigen Moment. Die Beiden Pimpfs wollen mich nicht duwrch lassen. Zeigen wiwr ihnen was stawrke Twrainer sind.
