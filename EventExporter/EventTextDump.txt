@@ -23304,6 +23304,723 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 
 #==============================================================================
+Map ID: 095
+Map Name: Wanderweg
+Tileset: 023: Ovr
+Width: 60, Height: 60
+Auto-Change BGM: Wanderweg_Theme
+
+#------------------------------------------------------------------------------
+Event ID: 001
+Event Name: EV001
+(X,Y): (019,036)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbItemBall(:TM40)
+@>Control Self Switch: A =ON
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 002
+Event Name: EV002
+(X,Y): (008,026)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbItemBall(:SUPERPOTION)
+@>Control Self Switch: A =ON
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 003
+Event Name: EV003
+(X,Y): (045,025)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbItemBall(:LEAFSTONE)
+@>Control Self Switch: A =ON
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 004
+Event Name: EV004
+(X,Y): (007,017)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Play SE: 'Exit Door', 80, 100
+@>Change Screen Color Tone: (-255,-255,-255,0), @6
+@>Wait: 8 frame(s)
+@>Transfer Player:[135: Gate], (026,007), No Fade
+@>Change Screen Color Tone: (0,0,0,0), @6
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 005
+Event Name: EV005
+(X,Y): (007,016)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Play SE: 'Exit Door', 80, 100
+@>Change Screen Color Tone: (-255,-255,-255,0), @6
+@>Wait: 8 frame(s)
+@>Transfer Player:[135: Gate], (026,007), No Fade
+@>Change Screen Color Tone: (0,0,0,0), @6
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 006
+Event Name: EV006
+(X,Y): (007,015)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Play SE: 'Exit Door', 80, 100
+@>Change Screen Color Tone: (-255,-255,-255,0), @6
+@>Wait: 8 frame(s)
+@>Transfer Player:[135: Gate], (026,007), No Fade
+@>Change Screen Color Tone: (0,0,0,0), @6
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 007
+Event Name: Trainer(3)
+(X,Y): (018,015)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS_141
+
+Autonomous Movement
+Type: Custom
+Custom Move Route:
+(Repeat Action)
+$>Move Animation ON
+$>Move Down
+$>Move Down
+$>Move Down
+$>Move Down
+$>Move Down
+$>Move Down
+$>Move Down
+$>Move Down
+$>Turn Right
+$>Move Right
+$>Move Right
+$>Move Right
+$>Turn Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Move Up
+$>Turn Left
+$>Move Left
+$>Move Left
+$>Move Left
+
+Speed: 3: Slow
+Freq: 6: Highest
+Options Enabled
+Move Animation
+Trigger: Event Touch
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 7)
+@>Text: \bEy! Lust auf ein schnelles Kämpfchen?
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:CAMPER, "Robin", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Graphic: HGSS_141
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 7)
+@>Text: \bPuhh, jetzt brauch ich erstmal eine Pause.
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 008
+Event Name: Trainer(4)
+(X,Y): (029,009)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS_184
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Event Touch
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 8)
+@>Text: \bEy! Zeit für ein Duell. Zeig mir deine stärksten 
+ :    : Pokémon!
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:POKEMANIAC, "Wooky", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Graphic: HGSS_184
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 8)
+@>Text: \bJetzt bin ich geplättet.
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 009
+Event Name: Trainer(3)
+(X,Y): (036,027)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS27
+
+Autonomous Movement
+Type: Custom
+Custom Move Route:
+(Repeat Action)
+$>Move Animation ON
+$>Move Left
+$>Move Left
+$>Move Left
+$>Turn Right
+$>Move Right
+$>Move Right
+$>Move Right
+$>Turn Left
+
+Speed: 3: Slow
+Freq: 6: Highest
+Options Enabled
+Move Animation
+Trigger: Event Touch
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 9)
+@>Text: \bHalt! Stopp! Jetzt wird gekämpft!
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:COOLTRAINER_M, "Patte521", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Graphic: HGSS27
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 9)
+@>Text: \bNach dem Kampf: "Hau ab!
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 010
+Event Name: EV010
+(X,Y): (009,026)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS25
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 10)
+@>Text: \rUff war das anstrengend diese verdammten 
+ :    : Treppe hoch zu rennen.
+@>Script: pbCallBub(2, 10)
+@>Text: \rJetzt brauch ich erstmal ne 
+ :    : Spezi... Wo bleiben den die anderen?
+@>Script: pbCallBub(2, 10)
+@>Text: \rTrinken die jetzt alles ohne mich oder was?
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 011
+Event Name: EV011
+(X,Y): (011,016)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS01
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 11)
+@>Text: \rPass auf dich auf. Da unten hängen komische 
+ :    : Typen ab.
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 012
+Event Name: David
+(X,Y): (052,039)
+
+Page #1
+Conditions
+None
+
+Graphic: David
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+Page #2
+Conditions
+Switch 0501: Rockets Wanderweg is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 013
+Event Name: EV013_2
+(X,Y): (052,038)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS_174
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+Page #2
+Conditions
+Switch 0501: Rockets Wanderweg is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 014
+Event Name: EV014_1
+(X,Y): (053,039)
+
+Page #1
+Conditions
+None
+
+Graphic: HGSS_174
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+Page #2
+Conditions
+Switch 0501: Rockets Wanderweg is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 015
+Event Name: EV015
+(X,Y): (048,037)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Script: pbCallBub(2, 14)
+@>Text: Ey, spinnst du, alter? Die gute Spezi! Pass doch auf wo du hintrittst, du Trampel!
+@>Script: pbCallBub(2, 13)
+@>Text: Da kommt noch so Einer. Ich glaub es wird Zeit für eine Abreibung! Legt euch nicht mit Team Spezi an! Das ist jetzt unsere Region!
+@>Set Move Route: Player
+ :              : $>Move Right
+ :              : $>Move Right
+ :              : $>Move Down
+ :              : $>Move Right
+ :              : $>Move Right
+@>Set Move Route: [EV013_2]
+ :              : $>Move Right
+ :              : $>Turn Left
+@>Wait for Move's Completion
+@>Set Move Route: [David]
+ :              : $>Turn Up
+@>Wait for Move's Completion
+@>Script: pbCallBub(2, 12)
+@>Text: Jo, du kommmst genau im wrichtigen Moment. Die Beiden Pimpfs wollen mich nicht duwrch lassen. Zeigen wiwr ihnen was stawrke Twrainer sind.
+@>Script: pbRegisterPartner(:RIVALE_David_2, 
+:       : "David", 3)
+@>Set Move Route: [David]
+ :              : $>Turn Right
+@>Script: pbCallBub(2, 12)
+@>Text: Euch zeigen wiwrs, wie Wegweisewr!
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel", 1, :TEAMSPEZI_M, "Rüpel", 2)
+ @>Script: pbCallBub(2, 14)
+ @>Text: Das zahlen wir euch heim!
+ @>Script: pbCallBub(2, 13)
+ @>Text: Wir sehn uns wieder!
+ @>Play SE: 'Exit Door', 80, 100
+ @>Change Screen Color Tone: (-255,-255,-255,0), @6
+ @>Wait: 8 frame(s)
+ @>Control Switches: [0501: Rockets Wanderweg] = ON
+ @>Change Screen Color Tone: (0,0,0,0), @6
+ @>Set Move Route: [David]
+  :              : $>Turn Up
+ @>Wait for Move's Completion
+ @>Script: pbCallBub(2, 12)
+ @>Text: Tja, gwroße Klappe, nichts dahintewr. Danke füwr die Hilfe. Ich mach mich auf zuwr nächsten Awrena, man sieht sich dort, vor Ort, hoffentlich geschieht kein Mord.
+ @>Script: pbCallBub(2, 12)
+ @>Text: Wawrum klang das so clean?
+ @>Script: pbDeregisterPartner
+ @>Set Move Route: [David]
+  :              : $>Through ON
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Down
+  :              : $>Move Down
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Graphic: (None)
+ @>Wait for Move's Completion
+ @>Control Self Switch: A =ON
+ @>
+: Else
+ @>
+: Branch End
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 016
+Event Name: EV016
+(X,Y): (048,038)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Script: pbCallBub(2, 14)
+@>Text: Ey, spinnst du, alter? Die gute Spezi! Pass doch auf wo du hintrittst, du Trampel!
+@>Script: pbCallBub(2, 13)
+@>Text: Da kommt noch so Einer. Ich glaub es wird Zeit für eine Abreibung! Legt euch nicht mit Team Spezi an! Das ist jetzt unsere Region!
+@>Set Move Route: Player
+ :              : $>Move Right
+ :              : $>Move Right
+ :              : $>Move Right
+ :              : $>Move Right
+@>Set Move Route: [EV013_2]
+ :              : $>Move Right
+ :              : $>Turn Left
+@>Wait for Move's Completion
+@>Set Move Route: [David]
+ :              : $>Turn Up
+@>Wait for Move's Completion
+@>Script: pbCallBub(2, 12)
+@>Text: Jo, du kommmst genau im wrichtigen Moment. Die Beiden Pimpfs wollen mich nicht duwrch lassen. Zeigen wiwr ihnen was stawrke Twrainer sind.
+@>Script: pbRegisterPartner(:RIVALE_David_2, 
+:       : "David", 3)
+@>Set Move Route: [David]
+ :              : $>Turn Right
+@>Script: pbCallBub(2, 12)
+@>Text: Euch zeigen wiwrs, wie Wegweisewr!
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel", 1, :TEAMSPEZI_M, "Rüpel", 2)
+ @>Script: pbCallBub(2, 14)
+ @>Text: Das zahlen wir euch heim!
+ @>Script: pbCallBub(2, 13)
+ @>Text: Wir sehn uns wieder!
+ @>Play SE: 'Exit Door', 80, 100
+ @>Change Screen Color Tone: (-255,-255,-255,0), @6
+ @>Wait: 8 frame(s)
+ @>Control Switches: [0501: Rockets Wanderweg] = ON
+ @>Change Screen Color Tone: (0,0,0,0), @6
+ @>Set Move Route: [David]
+  :              : $>Turn Up
+ @>Wait for Move's Completion
+ @>Script: pbCallBub(2, 12)
+ @>Text: Tja, gwroße Klappe, nichts dahintewr. Danke füwr die Hilfe. Ich mach mich auf zuwr nächsten Awrena, man sieht sich dort, vor Ort, hoffentlich geschieht kein Mord.
+ @>Script: pbCallBub(2, 12)
+ @>Text: Wawrum klang das so clean?
+ @>Script: pbDeregisterPartner
+ @>Set Move Route: [David]
+  :              : $>Through ON
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Down
+  :              : $>Move Down
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Move Right
+  :              : $>Graphic: (None)
+ @>Wait for Move's Completion
+ @>Control Self Switch: A =ON
+ @>
+: Else
+ @>
+: Branch End
+@>
+
+#------------------------------------------------------------------------------
+
+#==============================================================================
 Map ID: 096
 Map Name: PokéCenter
 Tileset: 025: Ins
