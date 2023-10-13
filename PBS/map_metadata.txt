@@ -10,8 +10,8 @@ ShowArea = true
 MapPosition = 0,13,12
 BattleBack = field
 #-------------------------------
-[003]
-Name = \PN's house
+[003]   # Liliko'i
+Name = Du's house
 HealingSpot = 2,8,8
 MapPosition = 0,13,12
 #-------------------------------
@@ -440,7 +440,6 @@ BattleBack = cavenew
 Name = Frostfeld
 Outdoor = true
 ShowArea = true
-Weather = Snow,100
 MapPosition = 0,6,16
 #-------------------------------
 [086]   # Schwalbenweg
@@ -472,6 +471,7 @@ MapPosition = 0,29,19
 Name = Wanderweg
 Outdoor = true
 ShowArea = true
+Weather = Fog,100
 MapPosition = 0,2,9
 #-------------------------------
 [097]

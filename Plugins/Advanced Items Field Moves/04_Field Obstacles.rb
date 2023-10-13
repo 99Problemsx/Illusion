@@ -12,14 +12,14 @@ def pbSmashEvent(event)
     pbSEPlay("Ice Smash", 80)
   end
   pbMoveRoute(event,[
-    PBMoveRoute::Wait, 2,
-    PBMoveRoute::TurnLeft,
-    PBMoveRoute::Wait, 2,
-    PBMoveRoute::TurnRight,
-    PBMoveRoute::Wait, 2,
-    PBMoveRoute::TurnUp,
-    PBMoveRoute::Wait, 2])
-    pbWait(Graphics.frame_rate * 5 / 10)  # Fixed so Strength Event can be push over Smash Event
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_LEFT,
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_RIGHT,
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_UP,
+    PBMoveRoute::WAIT, 2])
+    pbWait(0.4)  # Fixed so Strength Event can be push over Smash Event
     event.erase
     $PokemonMap&.addErasedEvent(event.id)
 end

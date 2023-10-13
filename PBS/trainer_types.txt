@@ -406,6 +406,12 @@ Gender = Male
 BaseMoney = 100
 BattleBGM = Daevid_Theme
 #-------------------------------
+[RIVALE_David_2]
+Name = Rivale
+Gender = Male
+BaseMoney = 100
+BattleBGM = Daevid_Theme
+#-------------------------------
 [KID_M]
 Name = Schulkind
 Gender = Male

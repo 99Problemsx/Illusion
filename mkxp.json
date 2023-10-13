@@ -132,7 +132,7 @@
     // Whether to apply Lanczos3 interpolation when the game screen is upscaled
     // (typically higher quality than the linear smoothScaling).
     //
-    // "lanczos3Scaling": false,
+    // "lanczos3Scaling": true,
 
     // Workaround for buggy graphics drivers that don't properly synchronize
     // texture access. This is most apparent when text doesn't show up or the

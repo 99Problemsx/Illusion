@@ -36,11 +36,11 @@ class Game_FollowingPkmn < Game_Follower
       @anime_count = 0
       return
     end
-    frames_per_pattern = Game_Map::REAL_RES_X / (512.0 / 0.5)
-    frames_per_pattern *= 2 if move_speed > 5
-    return if @anime_count < frames_per_pattern
+    pattern_time = pattern_update_speed / 4   # 4 frames per cycle in a charset
+    return if @anime_count < pattern_time
+    # Advance to the next animation frame
     @pattern = (@pattern + 1) % 4
-    @anime_count -= frames_per_pattern
+    @anime_count -= pattern_time
   end
   #-----------------------------------------------------------------------------
   # Don't turn off walk animation when sliding on ice if the following pokemon

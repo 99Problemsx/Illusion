@@ -9,31 +9,31 @@ Pokemon = BONSLY,11
 Items = FULLRESTORE,FULLRESTORE
 LoseText = Very good.
 Pokemon = GEODUDE,12
-    Gender = male
     Moves = DEFENSECURL,HEADSMASH,ROCKPOLISH,ROCKTHROW
     AbilityIndex = 0
+    Gender = male
     IV = 20,20,20,20,20,20
 Pokemon = ONIX,14
     Name = Rocky
-    Gender = male
-    Shiny = yes
     Moves = HEADSMASH,ROCKTHROW,RAGE,ROCKTOMB
     AbilityIndex = 0
     Item = SITRUSBERRY
+    Gender = male
     IV = 20,20,20,20,20,20
+    Shiny = true
     Ball = HEAVYBALL
 #-------------------------------
 [TEAMROCKET_M,Grunt,1]
 LoseText = You're too good for me!
 Pokemon = WEEPINBELL,21
-    Shadow = yes
+    Shadow = true
 #-------------------------------
 [TEAMROCKET_F,Grunt,1]
 LoseText = You're too good for me!
 Pokemon = BURMY,19
 Pokemon = WINGULL,19
 Pokemon = ELECTABUZZ,20
-    Shadow = yes
+    Shadow = true
 #-------------------------------
 [YOUNGSTER,Ben]
 LoseText = Aww, I lost.
@@ -599,10 +599,10 @@ Pokemon = LUDICOLO,26
 [BACKPACKER_M,Azunyan,1]
 LoseText = ...
 Pokemon = MILTANK,29
-    Gender = female
     Moves = HEADBUTT,BULLDOZE,ATTRACT,AMNESIA
     AbilityIndex = 0
     Item = SILKSCARF
+    Gender = female
     IV = 20,20,20,20,20,20
     Ball = POKEBALL
 Pokemon = SKIDDO,32
@@ -653,9 +653,9 @@ Pokemon = DODRIO,34
 [POLICE_M,Trainer1,1]
 LoseText = ...
 Pokemon = THIEVUL,28
-    Gender = male
     Moves = UTURN,POISONFANG,SUCKERPUNCH,TAUNT
     Ability = STAKEOUT
+    Gender = male
     Nature = JOLLY
     IV = 20,20,20,20,20,20
     Ball = DUSKBALL
@@ -803,11 +803,11 @@ Pokemon = SYLVEON,35
 [BACKPACKER_M,Evezockt,1]
 LoseText = ...
 Pokemon = UMBREON,34
-    Shiny = yes
     Moves = HELPINGHAND,REFLECT,LIGHTSCREEN,FOULPLAY
     AbilityIndex = 0
     Nature = CAREFUL
     IV = 20,20,20,20,20,20
+    Shiny = true
     Ball = LUXURYBALL
 Pokemon = VAPOREON,35
     Moves = ROUND,SCALD,ICYWIND,PROTECT
@@ -967,14 +967,14 @@ Pokemon = ARMALDO,38
 [SWIMMER_M,fABi,1]
 LoseText = ...
 Pokemon = LUVDISC,37
-    Gender = female
-    Shiny = yes
     Moves = PROTECT,ATTRACT,DRAININGKISS,HYDROPUMP
     Ability = MOODY
     Item = LEFTOVERS
+    Gender = female
     Nature = MODEST
     IV = 25,25,25,25,25,25
     EV = 72,0,28,0,0,0
+    Shiny = true
     Ball = DIVEBALL
 Pokemon = HUNTAIL,37
     Moves = SUCKERPUNCH,ROCKSLIDE,WHIRLPOOL,DIVE
@@ -995,10 +995,10 @@ Pokemon = FLAPPLE,38
 [Ninja_1,Ushioni,1]
 LoseText = ...
 Pokemon = BRUXISH,38
-    Gender = female
     Moves = PSYCHICFANGS,WATERFALL,FLIPTURN,ATTRACT
     AbilityIndex = 2
     Item = TERRAINEXTENDER
+    Gender = female
     Nature = ADAMANT
     IV = 25,25,25,25,25,25
     EV = 48,48,0,4,0,0
@@ -1010,13 +1010,13 @@ Pokemon = CLAWITZER,39
     IV = 25,25,25,25,25,25
     EV = 0,0,0,0,100,0
 Pokemon = JYNX,39
-    Gender = female
-    Shiny = yes
     Moves = LOVELYKISS,FREEZINGGLARE,ICEBEAM,SWEETKISS
     AbilityIndex = 2
+    Gender = female
     Nature = TIMID
     IV = 25,25,25,25,25,25
     EV = 4,0,0,48,48,0
+    Shiny = true
     Ball = DIVEBALL
 Pokemon = NIDOQUEEN,39
     Moves = THUNDERBOLT,MUDBOMB,FLATTER,COUNTER
@@ -1037,30 +1037,30 @@ Pokemon = GLIMMORA,39
     EV = 100,0,0,0,0,0
     Ball = DIVEBALL
 Pokemon = LUMINEON,40
-    Gender = female
     Moves = DIVE,BRICKBREAK,SPIRITBREAK,ATTRACT
     AbilityIndex = 2
     Item = MYSTICWATER
+    Gender = female
     Nature = JOLLY
     IV = 25,25,25,25,25,25
     EV = 0,40,0,0,0,60
     Ball = DIVEBALL
 Pokemon = CRAMORANT,40
-    Shiny = yes
     Moves = SURF,DRILLPECK,SEEDFLARE,NASTYPLOT
     Item = SCOPELENS
     Nature = NAIVE
     IV = 25,25,25,25,25,25
     EV = 0,48,0,48,48,0
+    Shiny = true
     Ball = DIVEBALL
 Pokemon = SQUAWKABILLY,41
-    Shiny = yes
     Moves = FACADE,SEEDBOMB,TAUNT,FLY
     AbilityIndex = 2
     Item = FLAMEORB
     Nature = JOLLY
     IV = 25,25,25,25,25,25
     EV = 0,48,0,48,0,60
+    Shiny = true
     Ball = DIVEBALL
 #-------------------------------
 [ARENALEITER_Sirlo,Sirlo,1]
@@ -1106,13 +1106,13 @@ Pokemon = PAWMOT,43
     EV = 0,160,0,0,0,0
     Ball = DIVEBALL
 Pokemon = GRENINJA,45
-    Shiny = yes
     Moves = WATERSHURIKEN,DARKPULSE,ICEBEAM,CONFUSERAY
     AbilityIndex = 2
     Item = MYSTICWATER
     Nature = MODEST
     IV = 25,25,25,25,25,25
     EV = 0,0,0,60,100,0
+    Shiny = true
     Ball = DIVEBALL
 #-------------------------------
 [HIKER,Toxicboss,1]
@@ -1159,3 +1159,17 @@ Pokemon = BULBASAUR,10
 LoseText = ...
 Pokemon = BULBASAUR,10
 Pokemon = BULBASAUR,10
+#-------------------------------
+[TEAMSPEZI_M,Rüpel,1]
+LoseText = ...
+Pokemon = RATICATE,15
+Pokemon = PIDGEOTTO,15
+#-------------------------------
+[TEAMSPEZI_M,Rüpel,2]
+LoseText = ...
+Pokemon = GOLDUCK,15
+Pokemon = MAROWAK,15
+#-------------------------------
+[RIVALE_David_2,David,3]
+LoseText = "Zu rild"
+Pokemon = ESPURR,15
