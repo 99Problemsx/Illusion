@@ -77,7 +77,7 @@ module EventExport
     else
       filename = EXPORTDIRNAME + "/" + EXPORTFILENAME + ".txt"
     end
-    f = File.open(filename, "w"){|f|
+    File.open(filename, "w"){|f|
       @@f = f
       @@system = load_data("Data/System.rxdata")
       @@actors = load_data("Data/Actors.rxdata")
@@ -200,7 +200,7 @@ module EventExport
             if page.condition.turn_a == 0 && page.condition.turn_b != 0
               conditions += "#{page.condition.turn_b}X"
             else
-              conditions += "#{page.condition.turn_a}"
+              conditions += page.condition.turn_a.to_s
               conditions += "+#{page.condition.turn_b}X" if page.condition.turn_b != 0
             end
             conditions += "\n"
@@ -675,7 +675,7 @@ module EventExport
       end
       text += " "
       if @@params[2] == 0 # constant
-        text += "#{@@params[3]}"
+        text += (@@params[3]).to_s
       else # variable
         text += "Variable " + getVarIDName(@@params[3])
       end
@@ -851,7 +851,7 @@ module EventExport
     text += "= "
     case @@params[3]
     when 0  # invariable
-      text += "#{@@params[4]}"
+      text += (@@params[4]).to_s
     when 1  # variable
       text += "Variable " + getVarIDName(@@params[4])
     when 2  # random number
@@ -989,7 +989,7 @@ module EventExport
   def self.command_125
     text = getIndent + "@>Change Gold: " + ["+", "-"][@@params[0]] + " "
     if @@params[1] == 0 # constant
-      text += "#{@@params[2]}"
+      text += (@@params[2]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[2])
     end
@@ -1002,7 +1002,7 @@ module EventExport
     text = getIndent + "@>Change Items: [" + @@items[@@params[0]].name + "], "
     text += ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # constant
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1015,7 +1015,7 @@ module EventExport
     text = getIndent + "@>Change Weapons: [" + @@weapons[@@params[0]].name + "] "
     text += ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # constant
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1028,7 +1028,7 @@ module EventExport
     text = getIndent + "@>Change Armor: [" + @@armors[@@params[0]].name + "] "
     text += ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # constant
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1235,9 +1235,9 @@ module EventExport
       when 13
         text = "1 Step Backward"
       when 14
-        jump_x = "#{i.parameters[0]}"
+        jump_x = (i.parameters[0]).to_s
         jump_x = "+" + jump_x if i.parameters[0] >= 0
-        jump_y = "#{i.parameters[1]}"
+        jump_y = (i.parameters[1]).to_s
         jump_y = "+" + jump_y if i.parameters[1] >= 0
         text = "Jump: " + jump_x + "," + jump_y
       when 15
@@ -1555,7 +1555,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1576,7 +1576,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1619,7 +1619,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1637,7 +1637,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1651,7 +1651,7 @@ module EventExport
     text += "], " + ["MaxHP", "MaxSP", "STR", "DEX", "AGI", "INT"][@@params[1]]
     text += " " + ["+", "-"][@@params[2]] + " "
     if @@params[3] == 0 # invariable
-      text += "#{@@params[4]}"
+      text += (@@params[4]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[4])
     end
@@ -1719,7 +1719,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1740,7 +1740,7 @@ module EventExport
     end
     text += ", " + ["+", "-"][@@params[1]] + " "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
@@ -1825,7 +1825,7 @@ module EventExport
     end
     text += ", "
     if @@params[2] == 0 # invariable
-      text += "#{@@params[3]}"
+      text += (@@params[3]).to_s
     else # variable
       text += "Variable " + getVarIDName(@@params[3])
     end
