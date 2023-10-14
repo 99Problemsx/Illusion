@@ -11158,7 +11158,7 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 024
 Event Name: EV024
-(X,Y): (013,039)
+(X,Y): (000,053)
 
 Page #1
 Conditions
@@ -11182,13 +11182,13 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 025
 Event Name: EV025
-(X,Y): (014,039)
+(X,Y): (001,053)
 
 Page #1
 Conditions
 None
 
-Graphic: NPC_160_Gym_Leader_Jasmine
+Graphic: ABOMASNOW
 
 Autonomous Movement
 Type: Fixed
@@ -11199,32 +11199,7 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
-@>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 10
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 026
-Event Name: EV026
-(X,Y): (015,039)
-
-Page #1
-Conditions
-None
-
-Graphic: NPC_160_Gym_Leader_Jasmine
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 2
-@>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 15
+@>Script: pbItemBall(:SURFITEM)
 @>
 
 #------------------------------------------------------------------------------
@@ -20193,7 +20168,7 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>Text: ---> Insel
+@>Text: ---> Liliko'i
 @>
 
 #------------------------------------------------------------------------------
@@ -20214,7 +20189,7 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>Text: ---> Insel
+@>Text: ---> Liliko'i
 @>
 
 #------------------------------------------------------------------------------
@@ -20378,6 +20353,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20401,6 +20377,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20424,6 +20401,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20471,6 +20449,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20699,6 +20678,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20722,6 +20702,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -20888,29 +20869,6 @@ Trigger: Action Button
 List of Event Commands:
 @>Script: pbCallBub(2, 27)
 @>Text: Ich habe heute zum Jahrestag ganz besondere Blumen für meine Frau gekauft. Diese gibt es nur in Hagerode. Die Menschen dort sind hervorragende Floristen.
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 028
-Event Name: EV028
-(X,Y): (040,036)
-
-Page #1
-Conditions
-None
-
-Graphic: ABOMASNOW
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbItemBall(:SURFITEM)
 @>
 
 #------------------------------------------------------------------------------
@@ -22216,6 +22174,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -22242,6 +22201,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -22268,6 +22228,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -22294,6 +22255,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -22320,6 +22282,7 @@ Speed: 3: Slow
 Freq: 4: High
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -22853,28 +22816,6 @@ List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
-Event ID: 055
-Event Name: EV055
-(X,Y): (066,040)
-
-Page #1
-Conditions
-None
-
-Graphic: ALAKAZAM
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
 
 #==============================================================================
 Map ID: 091
@@ -23113,7 +23054,7 @@ List of Event Commands:
 @>Play SE: 'Exit Door', 80, 100
 @>Change Screen Color Tone: (-255,-255,-255,0), @6
 @>Wait: 8 frame(s)
-@>Transfer Player:[078: Gallenstedt], (014,037), No Fade
+@>Transfer Player:[078: Gallenstedt], (032,010), No Fade
 @>Change Screen Color Tone: (0,0,0,0), @6
 @>
 
@@ -23170,6 +23111,7 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
+@>Script: pbCallBub(2, 2)
 @>Text: Manche Pokémon erscheinen nur morgens, andere hingegen sieht man nur nachts.
 @>
 
@@ -23214,6 +23156,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -25100,7 +25043,7 @@ Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 5)
-@>Text: ich bin gespannt wie du dich schlagen wirst.
+@>Text: Ich bin gespannt wie du dich schlagen wirst.
 @>
 
 #------------------------------------------------------------------------------
@@ -25333,6 +25276,7 @@ List of Event Commands:
 Page #2
 Conditions
 Switch 0102: Krabu in Arena is ON
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 1 or above
 
 Graphic: Krabu
 
@@ -25379,6 +25323,54 @@ List of Event Commands:
 
 Page #3
 Conditions
+Switch 0102: Krabu in Arena is ON
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 2 or above
+
+Graphic: Krabu
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 11)
+@>Text: Yo Bro! Cool das du hergefunden hast. Lass keine 
+ :    : Zeit verschwenden. Zeig mir was du drauf hast!“
+@>Set Move Route: [Schiggy]
+                  (Ignore If Can't Move)
+ :              : $>Graphic: "SQUIRTLE_2', 0, 4, 0
+ :              : $>Move Left
+ :              : $>Move Up
+ :              : $>Through ON
+ :              : $>Jump: +0,-1
+ :              : $>Move Up
+ :              : $>Move Up
+ :              : $>Through OFF
+ :              : $>Move Left
+ :              : $>Move Left
+@>Wait for Move's Completion
+@>Show Animation: [Schiggy], [Angry bubble]
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Krabu, "Krabu", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(0)
+ :       : $player.badges[0] = true
+ @>Script: pbCallBub(2, 11)
+ @>Text: Boah krass! Ich sehe deinen Kampfgeist, wenn du bock hast
+  :    : kannst du gerne mal in meinem Gym trainieren kommen wenn du
+  :    : Glück hast triffst du sogar den Champ.
+ @>Control Switches: [0103: Krabu besiegt] = ON
+ @>Control Switches: [0203: Ep Teiler] = ON
+ @>
+: Branch End
+@>Script: pbTrainerEnd
+@>
+
+Page #4
+Conditions
 Switch 0103: Krabu besiegt is ON
 
 Graphic: Krabu
@@ -25396,87 +25388,9 @@ List of Event Commands:
 @>Text: Es war mir eine Ehre.
 @>
 
-Page #4
+Page #5
 Conditions
 Switch 0109:  is ON
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 012
-Event Name: Trainer(5)
-(X,Y): (012,011)
-
-Page #1
-Conditions
-None
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Player Touch
-
-List of Event Commands:
-@>Script: pbCallBub(2, 8)
-@>Text: Der Chef ist nicht da.
-@>Set Move Route: Player
- :              : $>Move Down
-@>
-
-Page #2
-Conditions
-Switch 0102: Krabu in Arena is ON
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 013
-Event Name: Trainer(5)
-(X,Y): (011,011)
-
-Page #1
-Conditions
-None
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Player Touch
-
-List of Event Commands:
-@>Script: pbCallBub(2, 8)
-@>Text: Der Chef ist nicht da.
-@>Set Move Route: Player
- :              : $>Move Down
-@>
-
-Page #2
-Conditions
-Switch 0102: Krabu in Arena is ON
 
 Autonomous Movement
 Type: Fixed
@@ -25700,9 +25614,8 @@ List of Event Commands:
 @>Script: pbCallBub(2, 1)
 @>Text: Willkommen im Käruterladen! Hier findest du wirkungsvolle und preiswerte Medizin.
 @>Script: pbCallBub(2, 1)
-@>Text: Gibt es noch etwas womit ich dienen kann?
+@>Text: Derzeit verkaufen wir nichts.
 @>Script: pbCallBub(2, 1)
-@>Text: Auf bald.
 @>
 
 #------------------------------------------------------------------------------
@@ -25742,13 +25655,6 @@ List of Event Commands:
   @>Control Switches: [0002: Seen Pokérus in Poké Center] = ON
   @>
  : Else
-  @>Script: pbCallBub(2, 2)
-  @>Text: Danke für deine Geduld, deine Pokémon sind wieder fit.
-  @>Set Move Route: This event
-   :              : $>Graphic: "HGSS_133', 0, 8, 3
-   :              : $>Wait: 10 frame(s)
-   :              : $>Graphic: "HGSS_133', 0, 2, 1
-  @>Wait for Move's Completion
   @>Script: pbCallBub(2, 2)
   @>Text: Danke für deine Geduld, deine Pokémon sind wieder fit.
   @>
@@ -26182,6 +26088,29 @@ List of Event Commands:
  @>Show Choices: Ja, Nein
  (When Cancel: Choice 2)
  : When [Ja]
+  @>Text: Unser Spiel hat ein eigenes Level Cap System, 
+   :    : möchtest du es verwenden?
+  @>Show Choices: Level Cap aktivieren, Ohne Level Cap spielen
+  (When Cancel: Choice 2)
+  : When [Level Cap aktivieren]
+   @>Text: Unser System hat zwei EInstellungen, einmal, Hard Cap - Das Pokemon kann nicht aufleveln/ Erfahrung sammeln falls es das Level Cap erreicht hat.
+    :    : Die andere Einstellung ist EXP Cap - Das Pokémon  wird reduzierte Erfahrungspunkte erhalten wenn es das Level Cap erreicht hat.
+   @>Text: Wähle eine Einstellung
+   @>Show Choices: Hard Cap, EXP Cap
+   (When Cancel: Choice 2)
+   : When [Hard Cap]
+    @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
+    @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 15
+    @>
+   : When [EXP Cap]
+    @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 2
+    @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 15
+    @>
+   : Branch End
+   @>
+  : When [Ohne Level Cap spielen]
+   @>
+  : Branch End
   @>Text: \bAls welches Geschlecht möchtest du spielen?
   @>Show Choices: Schlingel, Schlingeline
   (When Cancel: Disallow)
@@ -32566,7 +32495,7 @@ List of Event Commands:
 @>Play SE: 'Exit Door', 80, 100
 @>Change Screen Color Tone: (-255,-255,-255,0), @6
 @>Wait: 8 frame(s)
-@>Transfer Player:[618: Hornfeld City], (020,057), Down, No Fade
+@>Transfer Player:[017: Hornfeld City], (020,057), Down, No Fade
 @>Change Screen Color Tone: (0,0,0,0), @6
 @>
 
@@ -32591,7 +32520,7 @@ List of Event Commands:
 @>Play SE: 'Exit Door', 80, 100
 @>Change Screen Color Tone: (-255,-255,-255,0), @6
 @>Wait: 8 frame(s)
-@>Transfer Player:[618: Hornfeld City], (020,057), Down, No Fade
+@>Transfer Player:[017: Hornfeld City], (020,057), Down, No Fade
 @>Change Screen Color Tone: (0,0,0,0), @6
 @>
 
@@ -36322,212 +36251,6 @@ Graphic: MORELULL
 
 Autonomous Movement
 Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-
-#==============================================================================
-Map ID: 620
-Map Name: MAP620
-Tileset: 046: Goodvale
-Width: 85, Height: 70
-
-#------------------------------------------------------------------------------
-Event ID: 001
-Event Name: EV001
-(X,Y): (062,043)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 002
-Event Name: EV002
-(X,Y): (022,045)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 003
-Event Name: EV003
-(X,Y): (066,044)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 004
-Event Name: EV004
-(X,Y): (023,016)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 005
-Event Name: EV005
-(X,Y): (061,020)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 006
-Event Name: EV006
-(X,Y): (017,038)
-
-Page #1
-Conditions
-None
-
-Graphic: CUTIEFLY
-
-Autonomous Movement
-Type: Random
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 007
-Event Name: EV007
-(X,Y): (036,037)
-
-Page #1
-Conditions
-None
-
-Graphic: RIBOMBEE
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 008
-Event Name: EV008
-(X,Y): (038,015)
-
-Page #1
-Conditions
-None
-
-Graphic: RIBOMBEE
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 009
-Event Name: EV009
-(X,Y): (059,019)
-
-Page #1
-Conditions
-None
-
-Graphic: RIBOMBEE
-
-Autonomous Movement
-Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
