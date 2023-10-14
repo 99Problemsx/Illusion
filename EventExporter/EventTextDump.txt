@@ -16587,7 +16587,7 @@ Event Name: Trainer(2)
 
 Page #1
 Conditions
-None
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 1 or above
 
 Graphic: Sirlo
 
@@ -16615,6 +16615,35 @@ List of Event Commands:
 @>
 
 Page #2
+Conditions
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 2 or above
+
+Graphic: Sirlo
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 5)
+@>Text: \bSchmeichelhaft das du es bis hierhin geschafft 
+ :    : hast. Zeig mir was du kannst, wenn du mich 
+ :    : besiegen lass ich dich zu Sirlo
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Sirlo, "Sirlo", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #3
 Conditions
 Self Switch A is ON
 
@@ -25204,6 +25233,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -25276,6 +25306,55 @@ List of Event Commands:
 Page #2
 Conditions
 Switch 0102: Krabu in Arena is ON
+
+Graphic: Krabu
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 11)
+@>Text: Yo Bro! Cool das du hergefunden hast. Lass keine 
+ :    : Zeit verschwenden. Zeig mir was du drauf hast!“
+@>Set Move Route: [Schiggy]
+                  (Ignore If Can't Move)
+ :              : $>Graphic: "SQUIRTLE_2', 0, 4, 0
+ :              : $>Move Left
+ :              : $>Move Up
+ :              : $>Through ON
+ :              : $>Jump: +0,-1
+ :              : $>Move Up
+ :              : $>Move Up
+ :              : $>Through OFF
+ :              : $>Move Left
+ :              : $>Move Left
+@>Wait for Move's Completion
+@>Show Animation: [Schiggy], [Angry bubble]
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Krabu, "Krabu", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(0)
+ :       : $player.badges[0] = true
+ @>Script: pbCallBub(2, 11)
+ @>Text: Boah krass! Ich sehe deinen Kampfgeist, wenn du bock hast
+  :    : kannst du gerne mal in meinem Gym trainieren kommen wenn du
+  :    : Glück hast triffst du sogar den Champ.
+ @>Control Switches: [0103: Krabu besiegt] = ON
+ @>Control Switches: [0203: Ep Teiler] = ON
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 23
+ @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
+ @>
+: Branch End
+@>Script: pbTrainerEnd
+@>
+
+Page #3
+Conditions
+Switch 0102: Krabu in Arena is ON
 Variable 0027: LEVEL_CAP_MODE_VARIABLE is 1 or above
 
 Graphic: Krabu
@@ -25316,12 +25395,13 @@ List of Event Commands:
   :    : Glück hast triffst du sogar den Champ.
  @>Control Switches: [0103: Krabu besiegt] = ON
  @>Control Switches: [0203: Ep Teiler] = ON
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 23
  @>
 : Branch End
 @>Script: pbTrainerEnd
 @>
 
-Page #3
+Page #4
 Conditions
 Switch 0102: Krabu in Arena is ON
 Variable 0027: LEVEL_CAP_MODE_VARIABLE is 2 or above
@@ -25364,12 +25444,13 @@ List of Event Commands:
   :    : Glück hast triffst du sogar den Champ.
  @>Control Switches: [0103: Krabu besiegt] = ON
  @>Control Switches: [0203: Ep Teiler] = ON
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 23
  @>
 : Branch End
 @>Script: pbTrainerEnd
 @>
 
-Page #4
+Page #5
 Conditions
 Switch 0103: Krabu besiegt is ON
 
@@ -25388,7 +25469,7 @@ List of Event Commands:
 @>Text: Es war mir eine Ehre.
 @>
 
-Page #5
+Page #6
 Conditions
 Switch 0109:  is ON
 
@@ -29280,12 +29361,84 @@ List of Event Commands:
  @>Text: Der Blättchenpopo-Orden steht dir ausgezeichnet! Komm mich doch gerne mal wieder besuchen, mein Blättervorhang ist für dich immer geöffnet! Auf bald, mein 
   :    : Freund.
  @>Control Switches: [0005: Defeated Gym 2] = ON
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 34
+ @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
  @>Control Self Switch: A =ON
  @>
 : Branch End
 @>
 
 Page #2
+Conditions
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 1 or above
+
+Graphic: Wootze
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 7)
+@>Text: Hallöchen Popöchen! Mega cool, dass du da bist und Herzlich Willkommen in meiner Blättchen-Arena. Hier gibt es nicht nur wunderschöne Pflanzenpokémon und 
+ :    : herzerwärmende Damen, nein hier gibt es auch knackige Kämpfe, so wie die Blätterpopöchen! Also nimm dich in Acht, sie können auch Rasierblätterscharf sein! 
+ :    : Zeig mir, ob du meine Ranken bändigen kann, oder ob du von den Venuflibis verspeist wirst!
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Wootze, "Wootze", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(1)
+ :       : $player.badges[1] = true
+ @>Script: pbCallBub(2, 7)
+ @>Text: Meeeega. Der Kampf war wootzetastisch! hier, der ist für dich.
+ @>Script: pbCallBub(2, 7)
+ @>Text: Der Blättchenpopo-Orden steht dir ausgezeichnet! Komm mich doch gerne mal wieder besuchen, mein Blättervorhang ist für dich immer geöffnet! Auf bald, mein 
+  :    : Freund.
+ @>Control Switches: [0005: Defeated Gym 2] = ON
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 34
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #3
+Conditions
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 2 or above
+
+Graphic: Wootze
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbCallBub(2, 7)
+@>Text: Hallöchen Popöchen! Mega cool, dass du da bist und Herzlich Willkommen in meiner Blättchen-Arena. Hier gibt es nicht nur wunderschöne Pflanzenpokémon und 
+ :    : herzerwärmende Damen, nein hier gibt es auch knackige Kämpfe, so wie die Blätterpopöchen! Also nimm dich in Acht, sie können auch Rasierblätterscharf sein! 
+ :    : Zeig mir, ob du meine Ranken bändigen kann, oder ob du von den Venuflibis verspeist wirst!
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Wootze, "Wootze", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(1)
+ :       : $player.badges[1] = true
+ @>Script: pbCallBub(2, 7)
+ @>Text: Meeeega. Der Kampf war wootzetastisch! hier, der ist für dich.
+ @>Script: pbCallBub(2, 7)
+ @>Text: Der Blättchenpopo-Orden steht dir ausgezeichnet! Komm mich doch gerne mal wieder besuchen, mein Blättervorhang ist für dich immer geöffnet! Auf bald, mein 
+  :    : Freund.
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 34
+ @>Control Switches: [0005: Defeated Gym 2] = ON
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #4
 Conditions
 Self Switch A is ON
 
@@ -32817,12 +32970,82 @@ List of Event Commands:
  @>Script: pbCallBub(2, 12)
  @>Text: AAACH du meine Güte, du hast gut gekämpft das sollten wir mal wiederholen, 
   :    : vielleicht in einem Metronom Battle. Nimm den Orden, den hast du dir verdient.“
+ @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 45
  @>Control Self Switch: A =ON
  @>
 : Branch End
 @>
 
 Page #2
+Conditions
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 1 or above
+
+Graphic: Raizor
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 12)
+@>Text: \bHAAAALLLLLLLLOOOOOOO mein lieber Pokemonfreund. Mal schauen ob du 
+ :    : gegen meine Unlicht Power ankommst.
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Raizor, "Raizor", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(2)
+ :       : $player.badges[2] = true
+ @>Script: pbCallBub(2, 12)
+ @>Text: AAACH du meine Güte, du hast gut gekämpft das sollten wir mal wiederholen, 
+  :    : vielleicht in einem Metronom Battle. Nimm den Orden, den hast du dir verdient.“
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 45
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #3
+Conditions
+Variable 0027: LEVEL_CAP_MODE_VARIABLE is 2 or above
+
+Graphic: Raizor
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Play BGM: 'encounter', 100, 100
+@>Script: pbNoticePlayer(get_self)
+@>Script: pbCallBub(2, 12)
+@>Text: \bHAAAALLLLLLLLOOOOOOO mein lieber Pokemonfreund. Mal schauen ob du 
+ :    : gegen meine Unlicht Power ankommst.
+@>Script: setBattleRule("outcome", 0)
+@>Conditional Branch: Script: TrainerBattle.start(:ARENALEITER_Raizor, "Raizor", 1)
+ @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Script: $stats.set_time_to_badge(2)
+ :       : $player.badges[2] = true
+ @>Script: pbCallBub(2, 12)
+ @>Text: AAACH du meine Güte, du hast gut gekämpft das sollten wir mal wiederholen, 
+  :    : vielleicht in einem Metronom Battle. Nimm den Orden, den hast du dir verdient.“
+ @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 45
+ @>Control Self Switch: A =ON
+ @>
+: Branch End
+@>
+
+Page #4
 Conditions
 Self Switch A is ON
 
