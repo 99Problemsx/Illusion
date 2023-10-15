@@ -144,58 +144,68 @@ Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbSetPokemonCenter
-@>Text: Hallo und willkommen im Pokemon Center von Gallenstadt. Sollen wir deine Pokémon wieder fit machen?
+@>Script: pbCallBub(2, 2)
+@>Text: Hallo und willkommen im Pokemon Center von 
+ :    : Hornfeld City. Sollen wir deine Pokémon wieder fit 
+ :    : machen?
 @>Show Choices: Ja, Nein
 (When Cancel: Choice 2)
 : When [Ja]
- @>Text: Ok, dann nehme ich kurz deine Pokémon in meine Obhut.
+ @>Script: $stats.poke_center_count += 1
  @>Recover All: Entire Party
+ @>Comment: Nurse turns to face the healing machine.
  @>Set Move Route: This event
-  :              : $>Turn Left
+  :              : $>Turn Up
   :              : $>Wait: 2 frame(s)
  @>Wait for Move's Completion
- @>Wait: 4 frame(s)
- @>Set Move Route: This event
-  :              : $>Turn Up
- @>Set Move Route: [Nurse]
-  :              : $>Turn Up
- @>Wait for Move's Completion
- @>Wait: 4 frame(s)
+ @>Comment: Nurse places Poké Balls on the healing machine one at 
+  :       : a time.
+ @>Control Variables: [0001: Temp Pokemon Choice] = Party Members
  @>Control Variables: [0006: Poké Center healing ball count] = 0
- @>Script: count = $player.pokemon_count
- :       : for i in 1..count
- :       :   pbSet(6, i)
- :       :   pbSEPlay("Battle ball shake")
- :       :   pbWait(16)
- :       : end
- @>Set Move Route: [Blissey]
+ @>Label: Place ball
+ @>Control Variables: [0006: Poké Center healing ball count] += 1
+ @>Play SE: 'Battle ball shake', 80, 100
+ @>Wait: 8 frame(s)
+ @>Conditional Branch: Variable [0006: Poké Center healing ball count] < Variable [0001: Temp Pokemon Choice]
+  @>Jump to Label: Place ball
+  @>
+ : Branch End
+ @>Comment: Healing animation and ME jingle.
+ @>Set Move Route: [Healing balls]
   :              : $>Stop Animation ON
  @>Play ME: 'Pkmn healing', 100, 100
  @>Wait: 58 frame(s)
+ @>Comment: Poké Balls are removed from healing machine, nurse 
+  :       : turns to face the player.
  @>Control Variables: [0006: Poké Center healing ball count] = 0
+ @>Script: get_character(4).pattern = 0
+ @>Set Move Route: [Healing balls]
+  :              : $>Stop Animation OFF
  @>Set Move Route: This event
   :              : $>Wait: 15 frame(s)
   :              : $>Turn Down
  @>Wait for Move's Completion
- @>Script: get_character(4).pattern = 0
- @>Set Move Route: [Nurse]
-  :              : $>Turn Down
+ @>Comment: Pokérus check.
  @>Conditional Branch: Script: pbPokerus?
+  @>Text: \rYour Pokémon may be infected by Pokérus.
+  @>Text: \rLittle is known about the Pokérus except that they 
+   :    : are microscopic life-forms that attach to Pokémon.
+  @>Text: \rWhile infected, Pokémon are said to grow 
+   :    : exceptionally well.
   @>Control Switches: [0002: Seen Pokérus in Poké Center] = ON
   @>
  : Else
-  @>Set Move Route: This event
-   :              : $>Graphic: "HGSS_133', 0, 8, 3
-   :              : $>Wait: 10 frame(s)
-   :              : $>Graphic: "HGSS_133', 0, 2, 1
+  @>Comment: Nurse bows.
   @>Wait for Move's Completion
-  @>Text: Danke für deine Geduld, du und deine Pokémon sind wieder fit.
-  @>Script: FollowingPkmn.start_following(7)
+  @>Script: pbCallBub(2, 2)
+  @>Text: Danke für deine Geduld, deine Pokémon sind wieder 
+   :    : fit.
   @>
  : Branch End
  @>
 : When [Nein]
- @>Text: Viel Erfolg.
+ @>Script: pbCallBub(2, 2)
+ @>Text: Dann halt nicht.
  @>
 : Branch End
 @>
@@ -371,8 +381,8 @@ Graphic: HGSS_192
 
 Autonomous Movement
 Type: Random
-Speed: 4: Fast
-Freq: 4: High
+Speed: 3: Slow
+Freq: 3: Low
 Options Enabled
 Move Animation
 Trigger: Action Button
@@ -395,13 +405,14 @@ Graphic: HGSS_126
 
 Autonomous Movement
 Type: Random
-Speed: 4: Fast
-Freq: 4: High
+Speed: 3: Slow
+Freq: 3: Low
 Options Enabled
 Move Animation
 Trigger: Action Button
 
 List of Event Commands:
+@>Script: pbCallBub(2, 6)
 @>Text: Die Auswahl an Pokébällen hier ist erstaunlich groß.
 @>
 
@@ -608,6 +619,41 @@ List of Event Commands:
 @>Wait: 8 frame(s)
 @>Transfer Player:[017: Hornfeld City], (063,031), Down, No Fade
 @>Change Screen Color Tone: (0,0,0,0), @6
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 010
+Event Name: EV010
+(X,Y): (019,030)
+
+Page #1
+Conditions
+Switch 0332: raizor Heal is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>
+
+Page #2
+Conditions
+Switch 0329: Spezi Überfall Vorbei is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
@@ -892,7 +938,7 @@ Trigger: Event Touch
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
 @>Script: pbNoticePlayer(get_self)
-@>Script: pbCallBub(2, 6)
+@>Script: pbCallBub(2, 24)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
 @>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
@@ -915,25 +961,6 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>
-
-Page #3
-Conditions
-Self Switch A is ON
-
-Graphic: HGSS_142
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbCallBub(2, 6)
-@>Text: \bDu bist echt fies!!! Du … du Doofmann
 @>
 
 #------------------------------------------------------------------------------
@@ -958,7 +985,7 @@ Trigger: Event Touch
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
 @>Script: pbNoticePlayer(get_self)
-@>Script: pbCallBub(2, 6)
+@>Script: pbCallBub(2, 25)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
 @>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
@@ -981,25 +1008,6 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>
-
-Page #3
-Conditions
-Self Switch A is ON
-
-Graphic: HGSS_142
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbCallBub(2, 6)
-@>Text: \bDu bist echt fies!!! Du … du Doofmann
 @>
 
 #------------------------------------------------------------------------------
@@ -1024,7 +1032,7 @@ Trigger: Event Touch
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
 @>Script: pbNoticePlayer(get_self)
-@>Script: pbCallBub(2, 6)
+@>Script: pbCallBub(2, 26)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
 @>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
@@ -1047,25 +1055,6 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>
-
-Page #3
-Conditions
-Self Switch A is ON
-
-Graphic: HGSS_142
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbCallBub(2, 6)
-@>Text: \bDu bist echt fies!!! Du … du Doofmann
 @>
 
 #------------------------------------------------------------------------------
@@ -1090,7 +1079,7 @@ Trigger: Event Touch
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
 @>Script: pbNoticePlayer(get_self)
-@>Script: pbCallBub(2, 6)
+@>Script: pbCallBub(2, 27)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
 @>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
@@ -1113,25 +1102,6 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>
-
-Page #3
-Conditions
-Self Switch A is ON
-
-Graphic: HGSS_142
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbCallBub(2, 6)
-@>Text: \bDu bist echt fies!!! Du … du Doofmann
 @>
 
 #------------------------------------------------------------------------------
@@ -1297,7 +1267,7 @@ List of Event Commands:
 
 Page #4
 Conditions
-None
+Switch 0328: Spezi Überfall is ON
 
 Graphic: HGSS_175
 
@@ -1349,7 +1319,42 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 029
 Event Name: EV029
-(X,Y): (019,030)
+(X,Y): (020,030)
+
+Page #1
+Conditions
+Switch 0332: raizor Heal is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>
+
+Page #2
+Conditions
+Switch 0329: Spezi Überfall Vorbei is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 030
+Event Name: PC
+(X,Y): (025,021)
 
 Page #1
 Conditions
@@ -1361,32 +1366,10 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Autorun
-
-List of Event Commands:
-@>Scroll Map: Up, 14, 4
-@>Scroll Map: Left, 8, 4
-@>Wait for Move's Completion
-@>Script: pbCallBub(2, 28)
-@>Text: Mach hinne.
-@>Scroll Map: Right, 8, 4
-@>Scroll Map: Down, 14, 4
-@>Control Self Switch: A =ON
-@>
-
-Page #2
-Conditions
-Self Switch A is ON
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
 Trigger: Action Button
 
 List of Event Commands:
+@>Script: pbPokeCenterPC
 @>
 
 #------------------------------------------------------------------------------
@@ -7574,9 +7557,10 @@ Graphic: PIDOVE
 Autonomous Movement
 Type: Random
 Speed: 3: Slow
-Freq: 5: Higher
+Freq: 6: Highest
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7596,9 +7580,10 @@ Graphic: PIDOVE
 Autonomous Movement
 Type: Random
 Speed: 3: Slow
-Freq: 5: Higher
+Freq: 6: Highest
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7621,6 +7606,7 @@ Speed: 3: Slow
 Freq: 6: Highest
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -8182,6 +8168,23 @@ List of Event Commands:
 @>Change Screen Color Tone: (0,0,0,0), @6
 @>
 
+Page #2
+Conditions
+Switch 0328: Spezi Überfall is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Text: Weiter gehs im nächsten patch, dumbie hat von Spät 
+ :    : auf Frühschicht.
+@>
+
 #------------------------------------------------------------------------------
 Event ID: 033
 Event Name: EV033
@@ -8189,7 +8192,7 @@ Event Name: EV033
 
 Page #1
 Conditions
-None
+Switch 0332: raizor Heal is ON
 
 Graphic: Raizor
 
@@ -8217,6 +8220,7 @@ List of Event Commands:
  :              : $>Move Down
  :              : $>Move Down
  :              : $>Graphic: (None)
+@>Wait for Move's Completion
 @>Control Self Switch: A =ON
 @>
 
@@ -8242,7 +8246,7 @@ Event Name: EV034
 
 Page #1
 Conditions
-None
+Switch 0328: Spezi Überfall is ON
 
 Autonomous Movement
 Type: Fixed
@@ -8295,6 +8299,21 @@ Trigger: Action Button
 List of Event Commands:
 @>
 
+Page #3
+Conditions
+Switch 0329: Spezi Überfall Vorbei is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
 #------------------------------------------------------------------------------
 Event ID: 035
 Event Name: Zivilist
@@ -8302,9 +8321,25 @@ Event Name: Zivilist
 
 Page #1
 Conditions
-None
+Switch 0328: Spezi Überfall is ON
 
 Graphic: NPC_091
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Text: Oh nein.
+@>
+
+Page #2
+Conditions
+Switch 0329: Spezi Überfall Vorbei is ON
 
 Autonomous Movement
 Type: Fixed
@@ -32972,6 +33007,7 @@ List of Event Commands:
   :    : vielleicht in einem Metronom Battle. Nimm den Orden, den hast du dir verdient.“
  @>Control Variables: [0027: LEVEL_CAP_MODE_VARIABLE] = 1
  @>Control Variables: [0026: LEVEL_CAP_VARIABLE] = 45
+ @>Control Switches: [0328: Spezi Überfall] = ON
  @>Control Self Switch: A =ON
  @>
 : Branch End
