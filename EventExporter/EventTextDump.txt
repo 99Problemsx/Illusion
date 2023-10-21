@@ -1111,7 +1111,7 @@ Event Name: EV028
 
 Page #1
 Conditions
-None
+Switch 0328: Spezi Überfall is ON
 
 Graphic: HGSS_175
 
@@ -3964,6 +3964,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -3987,6 +3988,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4010,6 +4012,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4033,6 +4036,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4056,6 +4060,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4075,10 +4080,11 @@ Graphic: YAMPER
 
 Autonomous Movement
 Type: Random
-Speed: 4: Fast
+Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4102,6 +4108,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4125,6 +4132,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4148,6 +4156,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4171,6 +4180,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4194,6 +4204,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4217,6 +4228,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4240,6 +4252,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4263,6 +4276,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4286,6 +4300,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4309,6 +4324,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4332,6 +4348,7 @@ Speed: 4: Fast
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4355,6 +4372,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4378,6 +4396,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4401,6 +4420,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4424,6 +4444,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4470,6 +4491,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4493,6 +4515,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4516,6 +4539,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4539,6 +4563,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4562,6 +4587,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4585,6 +4611,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4608,6 +4635,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4631,6 +4659,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4654,6 +4683,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4677,6 +4707,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -4700,6 +4731,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -6139,6 +6171,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7311,6 +7344,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7333,6 +7367,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7355,6 +7390,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7377,6 +7413,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7399,6 +7436,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7421,6 +7459,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7443,6 +7482,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -7485,6 +7525,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
+Stop Animation
 Trigger: Action Button
 
 List of Event Commands:
@@ -23945,6 +23986,21 @@ List of Event Commands:
 : Branch End
 @>
 
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
 #------------------------------------------------------------------------------
 Event ID: 016
 Event Name: EV016
@@ -27172,7 +27228,7 @@ Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 4)
-@>Text: \bIch habe keine wie mein Freund da rüber 
+@>Text: \bIch habe keine Ahnung wie mein Freund da rüber 
  :    : gekommen ist. Er meinte, er hätte etwas Glitzerndes 
  :    : gesehen …
 @>

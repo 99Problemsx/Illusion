@@ -26,7 +26,7 @@ ShowArea = true
 MapPosition = 0,13,11
 BattleBack = field
 #-------------------------------
-[006]
+[006]   # Hornbach
 Name = Route 1
 MapPosition = 0,13,11
 #-------------------------------
@@ -512,6 +512,7 @@ Outdoor = true
 ShowArea = true
 Bicycle = true
 MapPosition = 0,15,10
+BattleBack = Wald
 #-------------------------------
 [203]   # Hagerode
 Name = Hagerode
@@ -600,6 +601,6 @@ MapPosition = 0,20,14
 Name = Feuchtgrotte
 MapPosition = 0,15,5
 #-------------------------------
-[618]   # Hornfeld City
+[618]
 Name = Hornfeld City
 MapPosition = 0,21,6
