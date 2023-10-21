@@ -33157,6 +33157,29 @@ List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
+Event ID: 013
+Event Name: EV013
+(X,Y): (028,032)
+
+Page #1
+Conditions
+None
+
+Graphic: Object_Bag
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbItemBall(:ESCAPEROPE)
+@>
+
+#------------------------------------------------------------------------------
 
 #==============================================================================
 Map ID: 450
