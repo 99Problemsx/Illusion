@@ -32644,7 +32644,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 1)
@@ -32710,7 +32710,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 2)
@@ -32914,7 +32914,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Text: \bPuh das war krass. Guter kampf, du scheinst es 
@@ -32968,7 +32968,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 10)
@@ -33020,7 +33020,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Text: \b... Nein leider siehst du wirklich so aus. Naja gut, 
@@ -33154,6 +33154,29 @@ Trigger: Event Touch
 List of Event Commands:
 @>Script: pbCallBub(2, 12)
 @>Text: \b... Unfair.
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 013
+Event Name: EV013
+(X,Y): (028,032)
+
+Page #1
+Conditions
+None
+
+Graphic: Object_Bag
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Script: pbItemBall(:ESCAPEROPE)
 @>
 
 #------------------------------------------------------------------------------
