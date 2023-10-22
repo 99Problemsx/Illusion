@@ -8157,7 +8157,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8303,13 +8303,12 @@ List of Event Commands:
 @>Set Move Route: [Zivilist]
  :              : $>Move Left
  :              : $>Move Left
- :              : $>Move Up
+ :              : $>Turn Up
 @>Wait for Move's Completion
 @>Script: pbCallBub(2, 35)
 @>Text: Oh nein! Team Spezi überfällt den Supermarkt!
  :    : Ihre verdammte Spezi sucht treibt uns alle noch in den Ruin!
 @>Set Move Route: [Zivilist]
- :              : $>Move Down
  :              : $>Move Down
  :              : $>Move Right
  :              : $>Move Right
@@ -8405,7 +8404,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8444,7 +8443,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8483,7 +8482,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8522,7 +8521,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8561,7 +8560,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8600,7 +8599,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8639,7 +8638,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8678,7 +8677,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8717,7 +8716,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8795,7 +8794,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8834,7 +8833,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled
@@ -8873,7 +8872,7 @@ None
 Graphic: NPC_120_Director
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -8895,7 +8894,7 @@ None
 Graphic: NPC_091
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -8917,7 +8916,7 @@ None
 Graphic: NPC_075
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -8939,7 +8938,7 @@ None
 Graphic: NPC_076
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -8963,7 +8962,7 @@ None
 Graphic: NPC 15
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -8985,7 +8984,7 @@ None
 Graphic: NPC_062
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9009,7 +9008,7 @@ None
 Graphic: NPC_021_Cameraman
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9033,7 +9032,7 @@ None
 Graphic: NPC_022_Reporter
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9057,7 +9056,7 @@ None
 Graphic: NPC_088_Policeman
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9081,7 +9080,7 @@ None
 Graphic: NPC_069_Guitarist
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9105,7 +9104,7 @@ None
 Graphic: NPC 17
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9127,7 +9126,7 @@ None
 Graphic: NPC_068_Fisherman
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -9150,7 +9149,7 @@ None
 Graphic: NPC_090
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
@@ -33149,7 +33148,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbCallBub(2, 12)
