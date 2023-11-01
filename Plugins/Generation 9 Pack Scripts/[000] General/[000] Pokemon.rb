@@ -5,17 +5,28 @@
 ################################################################################
 
 
-#-------------------------------------------------------------------------------
-# Edited so that moves can be set as learnable at Lvl -1.
-# This is used for Move Reminder-exclusive moves.
-#-------------------------------------------------------------------------------
 module GameData
   class Species
+    #---------------------------------------------------------------------------
+    # Aliased so that moves can be set as learnable at Lvl -1.
+    # This is used for Move Reminder-exclusive moves.
+    #---------------------------------------------------------------------------
     Species.singleton_class.alias_method :paldea_schema, :schema
     def self.schema(compiling_forms = false)
       ret = self.paldea_schema(compiling_forms)
       ret["Moves"] = [:moves, "*ie", nil, :Move]
       return ret
+    end
+	
+    #---------------------------------------------------------------------------
+    # Aliased so that Incense is no longer required for hatching baby Pokemon.
+    #---------------------------------------------------------------------------
+    alias paldea_get_baby_species get_baby_species
+    def get_baby_species(*args)
+      if Settings::MECHANICS_GENERATION >= 9
+        return paldea_get_baby_species(false, nil, nil)
+      end
+      return paldea_get_baby_species(*args)
     end
   end
 end
@@ -370,12 +381,22 @@ MultipleForms.register(:PALKIA, {
 #-------------------------------------------------------------------------------
 MultipleForms.register(:GIRATINA, {
   "getForm" => proc { |pkmn|
-    next 1 if pkmn.hasItem?(:GRISEOUSORB) || pkmn.hasItem?(:GRISEOUSCORE)
+    next 1 if pkmn.hasItem?(:GRISEOUSCORE)
+    next 1 if Settings::MECHANICS_GENERATION < 9 && pkmn.hasItem?(:GRISEOUSORB)
     if $game_map &&
        GameData::MapMetadata.try_get($game_map.map_id)&.has_flag?("DistortionWorld")
       next 1
     end
     next 0
+  }
+})
+
+#-------------------------------------------------------------------------------
+# Shaymin - Sky Forme.
+#-------------------------------------------------------------------------------
+MultipleForms.register(:SHAYMIN, {
+  "getForm" => proc { |pkmn|
+    next 0 if pkmn.fainted? || [:FROZEN, :FROSTBITE].include?(pkmn.status) || PBDayNight.isNight?
   }
 })
 
@@ -428,5 +449,34 @@ MultipleForms.register(:SQUAWKABILLY, {
 MultipleForms.register(:PALAFIN, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if endBattle
+  }
+})
+
+#-------------------------------------------------------------------------------
+# Poltchageist/Sinistcha - Unremarkable/Masterpiece forms.
+#-------------------------------------------------------------------------------
+MultipleForms.copy(:SINISTEA, :POLTEAGEIST, :POLTCHAGEIST, :SINISTCHA)
+
+#-------------------------------------------------------------------------------
+# Ogerpon - Masked forms.
+#-------------------------------------------------------------------------------
+MultipleForms.register(:OGERPON, {
+  "getForm" => proc { |pkmn|
+    next 1 if pkmn.hasItem?(:WELLSPRINGMASK)
+    next 2 if pkmn.hasItem?(:HEARTHFLAMEMASK)
+    next 3 if pkmn.hasItem?(:CORNERSTONEMASK)
+    next 0
+  },
+  "getFormOnEnteringBattle" => proc { |pkmn, wild|
+    next pkmn.form + 4 if pkmn.form <= 3
+  },
+  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+    next pkmn.form - 4 if pkmn.form > 3 && endBattle
+  },
+  "getTerastalForm" => proc { |pkmn|
+    next pkmn.form + 4
+  },
+  "getUnTerastalForm" => proc { |pkmn|
+    next pkmn.form - 4
   }
 })

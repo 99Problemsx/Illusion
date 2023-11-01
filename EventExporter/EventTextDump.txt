@@ -8755,7 +8755,7 @@ Switch 0328: Spezi Überfall is ON
 Graphic: HGSS_174
 
 Autonomous Movement
-Type: Random
+Type: Fixed
 Speed: 3: Slow
 Freq: 4: High
 Options Enabled

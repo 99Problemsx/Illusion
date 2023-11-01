@@ -13,21 +13,14 @@ module PBEffects
   DoubleShock     = 404 # Used for removing the user's Electric typing after using Double Shock.
   GlaiveRush      = 405 # Used to count the remaining rounds until vulnerability from Glaive Rush wares off.
   ParadoxStat     = 406 # Used to reference which stat is being boosted by Protosynthesis/Quark Drive.
-  Protean         = 407 # Used to flag a battler's Protean/Libero abilities to only trigger once per switch-in.
+  OneUseAbility   = 407 # Used to flag a battler's ability to only trigger once per switch-in.
   SaltCure        = 408 # Used to flag a battler as under the effects of Salt Cure.
   SilkTrap        = 409 # Used to flag a battler as under the protection effects of Silk Trap.
   Splinters       = 410 # Used to flag a battler as under the splinters effect.
   SplintersType   = 411 # Used to determine the type effectiveness of splinters damage.
-  SuccessiveMove  = 412 # Used to flag Gigaton Hammer as unselectable by a battler on consecutive turns.
+  SuccessiveMove  = 412 # Used to flag a move as unselectable by a battler on consecutive turns.
   SupremeOverlord = 413 # Used to trigger the effects of the Supreme Overlord ability.
-end
-
-#-------------------------------------------------------------------------------
-# Allows certain Gen 9 effects to be edited mid-battle with Essentials Deluxe.
-#-------------------------------------------------------------------------------
-if PluginManager.installed?("Essentials Deluxe")
-  $DELUXE_BATTLE_EFFECTS[:battler_default_false] += [PBEffects::BoosterEnergy, PBEffects::DoubleShock, PBEffects::SaltCure]
-  $DELUXE_BATTLE_EFFECTS[:battler_default_zero]  += [PBEffects::CudChew, PBEffects::GlaiveRush, PBEffects::Splinters, PBEffects::SupremeOverlord]
+  Syrupy          = 414 # Used to track the remaining number of turns until Syrup Bomb's effect wares off.
 end
 
 #-------------------------------------------------------------------------------
@@ -45,4 +38,5 @@ module Battle::DebugVariables
   BATTLER_EFFECTS[PBEffects::Splinters]          = { name: "Splinters number of rounds remaining",          default: 0 }
   BATTLER_EFFECTS[PBEffects::SplintersType]      = { name: "Splinters damage typing",                       default: nil, type: :type }
   BATTLER_EFFECTS[PBEffects::SupremeOverlord]    = { name: "Supreme Overlord multiplier 1 + 0.1*x (0-5)",   default: 0, max: 5 }
+  BATTLER_EFFECTS[PBEffects::Syrupy]             = { name: "Syrupy turns remaining",                        default: 0 }
 end

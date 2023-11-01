@@ -20,13 +20,14 @@ class Battle::Battler
     @effects[PBEffects::DoubleShock]     = false
     @effects[PBEffects::GlaiveRush]      = 0
     @effects[PBEffects::ParadoxStat]     = nil
-    @effects[PBEffects::Protean]         = nil
+    @effects[PBEffects::OneUseAbility]   = nil
     @effects[PBEffects::SaltCure]        = false
     @effects[PBEffects::Splinters]       = 0
     @effects[PBEffects::SplintersType]   = nil
     @effects[PBEffects::SilkTrap]        = false
     @effects[PBEffects::SuccessiveMove]  = nil
     @effects[PBEffects::SupremeOverlord] = 0
+	@effects[PBEffects::Syrupy]          = 0
     @proteanTrigger  = false
     @mirrorHerbUsed  = false
     @legendPlateType = nil
@@ -221,7 +222,11 @@ class Battle::Battler
       :COMMANDER,
       :PROTOSYNTHESIS,
       :QUARKDRIVE,	  
-      :ZEROTOHERO
+      :ZEROTOHERO,
+      :EMBODYASPECT,
+      :EMBODYASPECT_1,
+      :EMBODYASPECT_2,
+      :EMBODYASPECT_3
     ].include?(abil.id)
   end
   
@@ -261,7 +266,7 @@ class Battle::Battler
     return false if fainted? && !ignore_fainted
     if Settings::MECHANICS_GENERATION >= 9
       return true if !check_ability && self.ability == :BATTLEBOND
-      if @proteanTrigger && self.ability == @effects[PBEffects::Protean]
+      if @proteanTrigger && self.ability == @effects[PBEffects::OneUseAbility]
         return false if !check_ability || check_ability == self.ability
         return false if check_ability.is_a?(Array) && check_ability.include?(@ability_id)
       end
@@ -360,7 +365,7 @@ class Battle::Battler
   def pbFindTargets(choice, move, user)
     targets = paldea_pbFindTargets(choice, move, user)
     if !targets.empty?
-      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT))
+      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT)) if !@battle.moldBreaker
       @battle.moldBreaker = false if targets[0].hasActiveItem?(:ABILITYSHIELD)
     end
     return targets
@@ -370,7 +375,7 @@ class Battle::Battler
   def pbChangeTargets(move, user, targets)
     targets = paldea_pbChangeTargets(move, user, targets)
     if !targets.empty?
-      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT))
+      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT)) if !@battle.moldBreaker
       @battle.moldBreaker = false if targets[0].hasActiveItem?(:ABILITYSHIELD)
     end
     return targets
@@ -432,12 +437,12 @@ class Battle::Battler
   alias paldea_pbTransform pbTransform
   def pbTransform(target)
     paldea_pbTransform(target)
-    @battle.rage_hit_count[@index & 1][@pokemonIndex]
-    @battle.pbRageHitCount(target)
+    rage_counter = @battle.rage_hit_count[@index & 1][@pokemonIndex]
+    rage_counter = @battle.pbRageHitCount(target)
   end
   
   #-----------------------------------------------------------------------------
-  # Aliased so Gigaton Hammer can't be selected consecutively.
+  # Aliased so Gigaton Hammer/Blood Moon can't be selected consecutively.
   #-----------------------------------------------------------------------------
   alias paldea_pbCanChooseMove? pbCanChooseMove?
   def pbCanChooseMove?(move, commandPhase, showMessages = true, specialUsage = false)
@@ -458,7 +463,7 @@ class Battle::Battler
   #-----------------------------------------------------------------------------
   alias paldea_pbSuccessCheckAgainstTarget pbSuccessCheckAgainstTarget
   def pbSuccessCheckAgainstTarget(move, user, target, targets)
-    @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT))
+    @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT)) if !@battle.moldBreaker
     @battle.moldBreaker = false if target.hasActiveItem?(:ABILITYSHIELD)
     if !(user.hasActiveAbility?(:UNSEENFIST) && move.contactMove?)
       if move.canProtectAgainst?
@@ -479,13 +484,13 @@ class Battle::Battler
     end
     return paldea_pbSuccessCheckAgainstTarget(move, user, target, targets)
   end
+end
 
-  #-----------------------------------------------------------------------------
-  # -Aliased to add Snow mode check.
-  #-----------------------------------------------------------------------------
-  alias paldea_takesHailDamage? takesHailDamage?
-  def takesHailDamage?
-    return false if Settings::HAIL_WEATHER_TYPE == 1
-    return paldea_takesHailDamage?
-  end
+
+#===============================================================================
+# Safari Zone compatibility.
+#===============================================================================
+class Battle::FakeBattler
+  def isCommander?;     return false; end
+  def isCommanderHost?; return false; end
 end
