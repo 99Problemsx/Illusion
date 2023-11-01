@@ -298,7 +298,7 @@ class Battle::Move
       category = (i < 2) ? physicalMove? : specialMove?
       category = !category if i.odd? && @battle.field.effects[PBEffects::WonderRoom] > 0
       mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-      mult *= 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
+      mult * 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
     end
     if @battle.field.terrain == :Electric && user.affectedByTerrain? &&
        @function_code == "IncreasePowerWhileElectricTerrain"
@@ -358,7 +358,7 @@ class Battle::Scene
       cmdSwitch  = -1
       cmdBoxes   = -1
       cmdSelect  = -1
-      cmdSummary = -1
+      -1
       commands = []
       commands[cmdSwitch  = commands.length] = _INTL("Switch In") if mode == 0 && modParty[idxParty].able?
       commands[cmdBoxes   = commands.length] = _INTL("Send to Boxes") if mode == 1

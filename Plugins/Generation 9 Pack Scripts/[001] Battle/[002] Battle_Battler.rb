@@ -437,8 +437,8 @@ class Battle::Battler
   alias paldea_pbTransform pbTransform
   def pbTransform(target)
     paldea_pbTransform(target)
-    rage_counter = @battle.rage_hit_count[@index & 1][@pokemonIndex]
-    rage_counter = @battle.pbRageHitCount(target)
+    @battle.rage_hit_count[@index & 1][@pokemonIndex]
+    @battle.pbRageHitCount(target)
   end
   
   #-----------------------------------------------------------------------------
