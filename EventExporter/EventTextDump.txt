@@ -310,7 +310,7 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 004
 Event Name: EV004
-(X,Y): (020,031)
+(X,Y): (020,032)
 
 Page #1
 Conditions
@@ -322,7 +322,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Player Touch
+Trigger: Event Touch
 
 List of Event Commands:
 @>Play SE: 'Exit Door', 80, 100
@@ -342,10 +342,14 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Action Button
+Trigger: Event Touch
 
 List of Event Commands:
-@>Text: irgendetwas scheint die Tür von außen zu blockieren.
+@>Text: Irgendetwas scheint die Tür von außen zu 
+ :    : blockieren.
+@>Set Move Route: Player
+ :              : $>Move Up
+@>Wait for Move's Completion
 @>
 
 Page #3
@@ -381,7 +385,7 @@ Graphic: HGSS_192
 
 Autonomous Movement
 Type: Random
-Speed: 3: Slow
+Speed: 4: Fast
 Freq: 3: Low
 Options Enabled
 Move Animation
@@ -405,7 +409,7 @@ Graphic: HGSS_126
 
 Autonomous Movement
 Type: Random
-Speed: 3: Slow
+Speed: 4: Fast
 Freq: 3: Low
 Options Enabled
 Move Animation
@@ -563,7 +567,7 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 009
 Event Name: EV009
-(X,Y): (019,031)
+(X,Y): (019,032)
 
 Page #1
 Conditions
@@ -575,7 +579,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Player Touch
+Trigger: Event Touch
 
 List of Event Commands:
 @>Play SE: 'Exit Door', 80, 100
@@ -595,10 +599,14 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Action Button
+Trigger: Event Touch
 
 List of Event Commands:
-@>Text: irgendetwas scheint die Tür von außen zu blockieren.
+@>Text: Irgendetwas scheint die Tür von außen zu 
+ :    : blockieren.
+@>Set Move Route: Player
+ :              : $>Move Up
+@>Wait for Move's Completion
 @>
 
 Page #3
@@ -919,7 +927,7 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 024
 Event Name: Trainer(3)
-(X,Y): (029,021)
+(X,Y): (028,021)
 
 Page #1
 Conditions
@@ -933,7 +941,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
@@ -941,7 +949,7 @@ List of Event Commands:
 @>Script: pbCallBub(2, 24)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
-@>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel",5)
  @>Play BGM: 'locationGrassyRoute', 100, 100
  @>Control Self Switch: A =ON
  @>
@@ -980,7 +988,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
@@ -988,7 +996,7 @@ List of Event Commands:
 @>Script: pbCallBub(2, 25)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
-@>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel",6)
  @>Play BGM: 'locationGrassyRoute', 100, 100
  @>Control Self Switch: A =ON
  @>
@@ -1027,7 +1035,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
@@ -1035,7 +1043,7 @@ List of Event Commands:
 @>Script: pbCallBub(2, 26)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
-@>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel",3)
  @>Play BGM: 'locationGrassyRoute', 100, 100
  @>Control Self Switch: A =ON
  @>
@@ -1060,7 +1068,7 @@ List of Event Commands:
 #------------------------------------------------------------------------------
 Event ID: 027
 Event Name: Trainer(3)
-(X,Y): (010,021)
+(X,Y): (011,021)
 
 Page #1
 Conditions
@@ -1074,7 +1082,7 @@ Speed: 3: Slow
 Freq: 3: Low
 Options Enabled
 Move Animation
-Trigger: Event Touch
+Trigger: Action Button
 
 List of Event Commands:
 @>Play BGM: 'encounter', 100, 100
@@ -1082,7 +1090,7 @@ List of Event Commands:
 @>Script: pbCallBub(2, 27)
 @>Text: \bEy! Du siehst schwach aus. Kämpf gegen mich!
 @>Script: setBattleRule("outcome", 0)
-@>Conditional Branch: Script: TrainerBattle.start(:PICNICKER, "Schmiri", 1)
+@>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_M, "Rüpel", 4)
  @>Play BGM: 'locationGrassyRoute', 100, 100
  @>Control Self Switch: A =ON
  @>
@@ -1192,7 +1200,7 @@ List of Event Commands:
  @>Exit Event Processing
  @>
 : Else
- @>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_F,Rüpel,1", :TEAMSPEZI_M,Rüpel,3")
+ @>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_F,Rüpel,3", :TEAMSPEZI_M,Rüpel,4")
   @>Play BGM: 'locationGrassyRoute', 100, 100
   @>Control Self Switch: A =ON
   @>
@@ -1256,8 +1264,8 @@ List of Event Commands:
  @>Exit Event Processing
  @>
 : Else
- @>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_F,Rüpel,2", :TEAMSPEZI_M,Rüpel,5")
-  @>Play BGM: 'locationGrassyRoute', 100, 100
+ @>Conditional Branch: Script: TrainerBattle.start(:TEAMSPEZI_F,Rüpel,5", :TEAMSPEZI_M,Rüpel,6")
+  @>Recover All: Entire Party
   @>Control Self Switch: B =ON
   @>
  : Branch End
@@ -1267,7 +1275,7 @@ List of Event Commands:
 
 Page #4
 Conditions
-Switch 0328: Spezi Überfall is ON
+Self Switch B is ON
 
 Graphic: HGSS_175
 
@@ -1370,6 +1378,48 @@ Trigger: Action Button
 
 List of Event Commands:
 @>Script: pbPokeCenterPC
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 031
+Event Name: EV031
+(X,Y): (019,031)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Script: FollowingPkmn.refresh(false)
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 032
+Event Name: EV032
+(X,Y): (020,031)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Player Touch
+
+List of Event Commands:
+@>Script: FollowingPkmn.refresh(false)
 @>
 
 #------------------------------------------------------------------------------
@@ -8222,8 +8272,12 @@ Move Animation
 Trigger: Player Touch
 
 List of Event Commands:
-@>Text: Weiter gehs im nächsten patch, dumbie hat von Spät 
- :    : auf Frühschicht.
+@>Play SE: 'Exit Door', 80, 100
+@>Change Screen Color Tone: (-255,-255,-255,0), @6
+@>Wait: 8 frame(s)
+@>Transfer Player:[001: PokéCenter], (019,031), Up, No Fade
+@>Script: FollowingPkmn.refresh(false)
+@>Change Screen Color Tone: (0,0,0,0), @6
 @>
 
 #------------------------------------------------------------------------------
@@ -24078,6 +24132,21 @@ List of Event Commands:
 : Else
  @>
 : Branch End
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
