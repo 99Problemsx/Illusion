@@ -323,19 +323,6 @@ class Battle::Move::HitTwoToFiveTimes < Battle::Move
 end
 
 #===============================================================================
-# Scale Shot
-#===============================================================================
-# Adds Loaded Dice bonus to allow this move to always hit 4-5 times.
-#-------------------------------------------------------------------------------
-class Battle::Move::HitTwoToFiveTimesRaiseUserSpd1LowerUserDef1 < Battle::Move
-  alias paldea_pbNumHits pbNumHits
-  def pbNumHits(user, targets)
-    return 4 + rand(2) if user.hasActiveItem?(:LOADEDDICE)
-    return paldea_pbNumHits(user, targets)
-  end
-end
-
-#===============================================================================
 # Triple Kick
 #===============================================================================
 # Adds Loaded Dice bonus bypassing additional accuracy checks per hit.
@@ -600,5 +587,227 @@ class Battle::Move::TypeDependsOnUserPlate < Battle::Move
     else
       return paldea_pbBaseType(user)
     end
+  end
+end
+
+#===============================================================================
+# Feint
+#===============================================================================
+# Also negates the effects of Burning Bulwark.
+#-------------------------------------------------------------------------------
+class Battle::Move::RemoveProtections < Battle::Move
+  def pbEffectAgainstTarget(user, target)
+    target.effects[PBEffects::BurningBulwark]         = false
+    target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::KingsShield]            = false
+    target.effects[PBEffects::Obstruct]               = false
+    target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SpikyShield]            = false
+    target.pbOwnSide.effects[PBEffects::CraftyShield] = false
+    target.pbOwnSide.effects[PBEffects::MatBlock]     = false
+    target.pbOwnSide.effects[PBEffects::QuickGuard]   = false
+    target.pbOwnSide.effects[PBEffects::WideGuard]    = false
+  end
+end
+
+#===============================================================================
+# Hyperspace Fury
+#===============================================================================
+# Also negates the effects of Burning Bulwark.
+#-------------------------------------------------------------------------------
+class Battle::Move::HoopaRemoveProtectionsBypassSubstituteLowerUserDef1 < Battle::Move::StatDownMove
+  def pbEffectAgainstTarget(user, target)
+    target.effects[PBEffects::BurningBulwark]         = false
+    target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::KingsShield]            = false
+    target.effects[PBEffects::Obstruct]               = false
+    target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SpikyShield]            = false
+    target.pbOwnSide.effects[PBEffects::CraftyShield] = false
+    target.pbOwnSide.effects[PBEffects::MatBlock]     = false
+    target.pbOwnSide.effects[PBEffects::QuickGuard]   = false
+    target.pbOwnSide.effects[PBEffects::WideGuard]    = false
+  end
+end
+
+#===============================================================================
+# Shadow Force, Phantom Force
+#===============================================================================
+# Also negates the effects of Burning Bulwark.
+#-------------------------------------------------------------------------------
+class Battle::Move::TwoTurnAttackInvulnerableRemoveProtections < Battle::Move::TwoTurnMove
+  def pbAttackingTurnEffect(user, target)
+    target.effects[PBEffects::BurningBulwark]         = false
+    target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::KingsShield]            = false
+    target.effects[PBEffects::Obstruct]               = false
+    target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SpikyShield]            = false
+    target.pbOwnSide.effects[PBEffects::CraftyShield] = false
+    target.pbOwnSide.effects[PBEffects::MatBlock]     = false
+    target.pbOwnSide.effects[PBEffects::QuickGuard]   = false
+    target.pbOwnSide.effects[PBEffects::WideGuard]    = false
+  end
+end
+
+#===============================================================================
+# Sketch
+#===============================================================================
+# Updated blacklist to Gen 9 standards.
+#-------------------------------------------------------------------------------
+class Battle::Move::ReplaceMoveWithTargetLastMoveUsed < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "SleepTargetIfUserDarkrai",                            # Dark Void
+      "HoopaRemoveProtectionsBypassSubstituteLowerUserDef1", # Hyperspace Fury
+      "TypeDependsOnUserMorpekoFormRaiseUserSpeed1",         # Aura Wheel
+      "StarmobileBurnTarget",                                # Blazing Torque
+      "StarmobileParalyzeTarget",                            # Combat Torque
+      "StarmobileConfuseTarget",                             # Magical Torque
+      "StarmobilePoisonTarget",                              # Noxious Torque
+      "StarmobileSleepTarget",                               # Wicked Torque
+      "RevivePokemonHalfHP",                                 # Revival Blessing
+      "TerapagosCategoryDependsOnHigherDamage"               # Tera Starstorm
+    )
+  end
+end
+
+#===============================================================================
+# Copycat
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::UseLastMoveUsed < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",                  # Blazing Torque
+      "StarmobileParalyzeTarget",              # Combat Torque
+      "StarmobileConfuseTarget",               # Magical Torque
+      "StarmobilePoisonTarget",                # Noxious Torque
+      "StarmobileSleepTarget",                 # Wicked Torque
+      "ProtectUserBurningBulwark",             # Burning Bulwark
+      "TerapagosCategoryDependsOnHigherDamage" # Tera Starstorm
+    )
+  end
+end
+
+#===============================================================================
+# Assist
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",                  # Blazing Torque
+      "StarmobileParalyzeTarget",              # Combat Torque
+      "StarmobileConfuseTarget",               # Magical Torque
+      "StarmobilePoisonTarget",                # Noxious Torque
+      "StarmobileSleepTarget",                 # Wicked Torque
+      "ProtectUserBurningBulwark",             # Burning Bulwark
+      "TerapagosCategoryDependsOnHigherDamage" # Tera Starstorm
+    )
+  end
+end
+
+#===============================================================================
+# Mimic
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::ReplaceMoveThisBattleWithTargetLastMoveUsed < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",                  # Blazing Torque
+      "StarmobileParalyzeTarget",              # Combat Torque
+      "StarmobileConfuseTarget",               # Magical Torque
+      "StarmobilePoisonTarget",                # Noxious Torque
+      "StarmobileSleepTarget",                 # Wicked Torque
+      "TerapagosCategoryDependsOnHigherDamage" # Tera Starstorm
+    )
+  end
+end
+
+#===============================================================================
+# Encore
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",     # Blazing Torque
+      "StarmobileParalyzeTarget", # Combat Torque
+      "StarmobileConfuseTarget",  # Magical Torque
+      "StarmobilePoisonTarget",   # Noxious Torque
+      "StarmobileSleepTarget"     # Wicked Torque
+    )
+  end
+end
+
+#===============================================================================
+# Me First
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::UseMoveTargetIsAboutToUse < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",     # Blazing Torque
+      "StarmobileParalyzeTarget", # Combat Torque
+      "StarmobileConfuseTarget",  # Magical Torque
+      "StarmobilePoisonTarget",   # Noxious Torque
+      "StarmobileSleepTarget"     # Wicked Torque
+    )
+  end
+end
+
+#===============================================================================
+# Sleep Talk
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::UseRandomUserMoveIfAsleep < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",     # Blazing Torque
+      "StarmobileParalyzeTarget", # Combat Torque
+      "StarmobileConfuseTarget",  # Magical Torque
+      "StarmobilePoisonTarget",   # Noxious Torque
+      "StarmobileSleepTarget"     # Wicked Torque
+    )
+  end
+end
+
+#===============================================================================
+# Instruct
+#===============================================================================
+# Added several Gen 9 moves to blacklist.
+#-------------------------------------------------------------------------------
+class Battle::Move::TargetUsesItsLastUsedMoveAgain < Battle::Move
+  alias paldea_initialize initialize
+  def initialize(battle, move)
+    paldea_initialize(battle, move)
+    @moveBlacklist.push(
+      "StarmobileBurnTarget",     # Blazing Torque
+      "StarmobileParalyzeTarget", # Combat Torque
+      "StarmobileConfuseTarget",  # Magical Torque
+      "StarmobilePoisonTarget",   # Noxious Torque
+      "StarmobileSleepTarget"     # Wicked Torque
+    )
   end
 end

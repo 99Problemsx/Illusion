@@ -328,6 +328,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:COSTAR,
 #===============================================================================
 Battle::AbilityEffects::OnSwitchIn.add(:ZEROTOHERO,
   proc { |ability, battler, battle, switch_in|
+    next if !battler.isSpecies?(:PALAFIN)
     next if battler.form == 0 || battler.ability_triggered?
     battle.pbShowAbilitySplash(battler)
     battle.pbDisplay(_INTL("{1} underwent a heroic transformation!", battler.pbThis))
@@ -338,6 +339,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:ZEROTOHERO,
 
 Battle::AbilityEffects::OnSwitchOut.add(:ZEROTOHERO,
   proc { |ability, battler, endOfBattle|
+    next if !battler.isSpecies?(:PALAFIN)
     next if battler.form == 1 || endOfBattle
     PBDebug.log("[Ability triggered] #{battler.pbThis}'s #{battler.abilityName}")
     battler.pbChangeForm(1, "")
@@ -350,11 +352,13 @@ Battle::AbilityEffects::OnSwitchOut.add(:ZEROTOHERO,
 Battle::AbilityEffects::OnSwitchIn.add(:COMMANDER,
   proc { |ability, battler, battle, switch_in|
     next if battler.effects[PBEffects::Commander]
+    next if defined?(battler.dynamax?) && battler.dynamax?
     showAnim = true
     battler.allAllies.each{|b|
       next if !b || !b.near?(battler) || b.fainted?
       next if !b.isSpecies?(:DONDOZO)
       next if b.effects[PBEffects::Commander]
+      next if defined?(b.dynamax?) && b.dynamax?
       battle.pbShowAbilitySplash(battler)
       battle.pbClearChoice(battler.index)
       battle.pbDisplay(_INTL("{1} goes inside the mouth of {2}!", battler.pbThis, b.pbThis(true)))
@@ -449,6 +453,7 @@ Battle::AbilityEffects::DamageCalcFromUser.add(:HADRONENGINE,
 #===============================================================================
 Battle::AbilityEffects::OnSwitchIn.add(:PROTOSYNTHESIS,
   proc { |ability, battler, battle, switch_in|
+    next if battler.effects[PBEffects::Transform]
     case ability
     when :PROTOSYNTHESIS then field_check = [:Sun, :HarshSun].include?(battle.field.weather)
     when :QUARKDRIVE     then field_check = battle.field.terrain == :Electric
@@ -479,7 +484,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:PROTOSYNTHESIS,
         when :QUARKDRIVE     then cause = "Electric Terrain"
         end
         battle.pbDisplay(_INTL("The #{cause} activated {1}'s {2}!", battler.pbThis(true), battler.abilityName))
-      elsif battler.item == :BOOSTERENERGY
+      elsif battler.item_id == :BOOSTERENERGY
         battler.effects[PBEffects::BoosterEnergy] = true
         battle.pbDisplay(_INTL("{1} used its {2} to activate its {3}!", battler.pbThis, battler.itemName, battler.abilityName))
         battler.pbHeldItemTriggered(battler.item)
@@ -499,8 +504,11 @@ Battle::AbilityEffects::OnTerrainChange.add(:QUARKDRIVE,
   }
 )
 
+#-------------------------------------------------------------------------------
+# Damage calcs (User).
 Battle::AbilityEffects::DamageCalcFromUser.add(:PROTOSYNTHESIS,
   proc { |ability, user, target, move, mults, baseDmg, type|
+    next if user.effects[PBEffects::Transform]
     stat = user.effects[PBEffects::ParadoxStat]
     mults[:attack_multiplier] *= 1.3 if move.physicalMove? && stat == :ATTACK
     mults[:attack_multiplier] *= 1.3 if move.specialMove?  && stat == :SPECIAL_ATTACK
@@ -509,8 +517,11 @@ Battle::AbilityEffects::DamageCalcFromUser.add(:PROTOSYNTHESIS,
 
 Battle::AbilityEffects::DamageCalcFromUser.copy(:PROTOSYNTHESIS, :QUARKDRIVE)
 
+#-------------------------------------------------------------------------------
+# Damage calcs (Target).
 Battle::AbilityEffects::DamageCalcFromTarget.add(:PROTOSYNTHESIS,
   proc { |ability, user, target, move, mults, baseDmg, type|
+    next if target.effects[PBEffects::Transform]
     stat = target.effects[PBEffects::ParadoxStat]
     mults[:defense_multiplier] *= 1.3 if move.physicalMove? && stat == :DEFENSE
     mults[:defense_multiplier] *= 1.3 if move.specialMove?  && stat == :SPECIAL_DEFENSE
@@ -519,8 +530,11 @@ Battle::AbilityEffects::DamageCalcFromTarget.add(:PROTOSYNTHESIS,
 
 Battle::AbilityEffects::DamageCalcFromTarget.copy(:PROTOSYNTHESIS, :QUARKDRIVE)
 
+#-------------------------------------------------------------------------------
+# Speed calcs.
 Battle::AbilityEffects::SpeedCalc.add(:PROTOSYNTHESIS,
   proc { |ability, battler, mult, ret|
+    next mult if battler.effects[PBEffects::Transform]
     next mult * 1.5 if battler.effects[PBEffects::ParadoxStat] == :SPEED
   }
 )

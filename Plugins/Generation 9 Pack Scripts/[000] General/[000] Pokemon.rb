@@ -325,13 +325,12 @@ EventHandlers.add(:on_player_step_taken, :mirrorherb_step, proc {
 MultipleForms.copy(:RATTATA, :SANDSHREW, :VULPIX, :DIGLETT, :MEOWTH, :GEODUDE, :GRIMER,      # Alolan
                    :PONYTA, :FARFETCHD, :CORSOLA, :ZIGZAGOON, :DARUMAKA, :YAMASK, :STUNFISK, # Galarian                                   
                    :SLOWPOKE, :ARTICUNO, :ZAPDOS, :MOLTRES,                                  # Galarian (DLC)
-                   :PETILIL, :RUFFLET, :GOOMY, :BERGMITE,                                    # Hisuian
                    :WOOPER, :TAUROS                                                          # Paldean
-                  )                                                       
+                  )                                                
 
 #-------------------------------------------------------------------------------
 # Species with regional evolutions (Hisuian forms).
-#-------------------------------------------------------------------------------			  
+#-------------------------------------------------------------------------------              
 MultipleForms.register(:QUILAVA, {
   "getForm" => proc { |pkmn|
     next if pkmn.form_simple >= 2
@@ -343,7 +342,7 @@ MultipleForms.register(:QUILAVA, {
   }
 })
 
-MultipleForms.copy(:QUILAVA, :DEWOTT, :DARTRIX)
+MultipleForms.copy(:QUILAVA, :DEWOTT, :DARTRIX, :PETILIL, :RUFFLET, :GOOMY, :BERGMITE)
 
 #-------------------------------------------------------------------------------
 # Dundunsparce - Segment sizes.
@@ -418,6 +417,9 @@ MultipleForms.register(:BASCULEGION, {
 MultipleForms.register(:LECHONK, {
   "getForm" => proc { |pkmn|
     next pkmn.gender
+  },
+  "getFormOnCreation" => proc { |pkmn|
+    next pkmn.gender
   }
 })
 
@@ -478,5 +480,35 @@ MultipleForms.register(:OGERPON, {
   },
   "getUnTerastalForm" => proc { |pkmn|
     next pkmn.form - 4
+  },
+  # Compability for Pokedex Data Page plugin
+  "getDataPageInfo" => proc { |pkmn|
+    next if pkmn.form < 8
+    mask = nil
+    case pkmn.form
+    when 9  then mask = :WELLSPRINGMASK
+    when 10 then mask = :HEARTHFLAMEMASK
+    when 11 then mask = :CORNERSTONEMASK
+    end
+    next [pkmn.form, pkmn.form - 4, mask]
+  }
+})
+
+#-------------------------------------------------------------------------------
+# Terapagos - Terastal and Stellar form.
+#-------------------------------------------------------------------------------
+MultipleForms.register(:TERAPAGOS, {
+  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+    next 0 if pkmn.form > 0 && endBattle
+  },
+  "getTerastalForm" => proc { |pkmn|
+    next 2
+  },
+  "getUnTerastalForm" => proc { |pkmn|
+    next 1
+  },
+  "getDataPageInfo" => proc { |pkmn|
+    next if pkmn.form < 2
+    next [pkmn.form, 1]
   }
 })

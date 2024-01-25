@@ -30,7 +30,7 @@
 
     // Enable F1 to open the keybinding menu.
     //
-    "enableSettings": true,
+    // "enableSettings": true,
 
     // The names of each input, as seen in the F1 keybinding menu. The names
     // have no other use.
@@ -132,7 +132,7 @@
     // Whether to apply Lanczos3 interpolation when the game screen is upscaled
     // (typically higher quality than the linear smoothScaling).
     //
-    // "lanczos3Scaling": true,
+    // "lanczos3Scaling": false,
 
     // Workaround for buggy graphics drivers that don't properly synchronize
     // texture access. This is most apparent when text doesn't show up or the
@@ -151,9 +151,9 @@
     // refresh rate cannot be determined, this option is force-disabled. This
     // option may be force-disabled at build time.
     //
-    "syncToRefreshrate": false,
+    "syncToRefreshrate": true,
 
     // The game's frame rate, if "syncToRefreshrate" is false.
     //
-    "fixedFramerate": 60
+    // "fixedFramerate": 60,
 }

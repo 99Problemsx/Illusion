@@ -11,7 +11,7 @@ module StarterSelSettings
   STARTERL = 5
  
 # Interface style (1 for HGSS, 2 for BW):
-  INSTYLE = 2
+  INSTYLE = 1
 
 # Background choice (1 for lab's table, 2 for grass)
   STARTERBG = 1
@@ -27,9 +27,9 @@ module StarterSelSettings
   STARTER3SHINY = 0 # Third Starter
 
 # Whether if each Starter species will have random IVs or not, 0 is random, 1 is 31 IVs for each status:
-  STARTER1IV = 1 # First Starter
-  STARTER2IV = 1 # Second Starter
-  STARTER3IV = 1 # Third Starter
+  STARTER1IV = 0 # First Starter
+  STARTER2IV = 0 # Second Starter
+  STARTER3IV = 0 # Third Starter
 # You can also edit the Script to change the values to something other than 31, lines: 79, 93 and 107
 
 # Item of each Starter species (nil is nothing):

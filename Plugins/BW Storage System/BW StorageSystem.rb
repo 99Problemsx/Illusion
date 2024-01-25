@@ -31,7 +31,7 @@ class PokemonBoxIcon < IconSprite
     super
     self.color = Color.new(0, 0, 0, 0)
     if releasing?
-      System.uptime
+      time_now = System.uptime
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
       self.opacity = lerp(255, 0, 1.5, @release_timer_start, System.uptime)
@@ -1328,8 +1328,8 @@ class PokemonStorageScene
     msgwindow.text           = msg
     msgwindow.resizeHeightToFit(msg, Graphics.width - 180)
     pbBottomRight(msgwindow)
-    Color.new(248, 248, 248)
-    Color.new(80, 80, 80)
+    base   = Color.new(248, 248, 248)
+    shadow = Color.new(80, 80, 80)
     pokemon = heldpoke
     if heldpoke
       pokemon = heldpoke
@@ -1552,11 +1552,11 @@ class PokemonStorageScreen
           else
             commands = []
             cmdMove     = -1
-            -1
-            -1
-            -1
-            -1
-            -1
+            cmdSummary  = -1
+            cmdWithdraw = -1
+            cmdItem     = -1
+            cmdMark     = -1
+            cmdRelease  = -1
             cmdDebug    = -1
             if heldpoke
               helptext = _INTL("{1} is selected.", heldpoke.name)

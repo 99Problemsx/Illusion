@@ -87,7 +87,7 @@ class Battle
   end
 
   #-----------------------------------------------------------------------------
-  # Aliased to add Syrupy effect
+  # Aliased to add Syrupy effect.
   #-----------------------------------------------------------------------------
   alias paldea_pbEOREndBattlerSelfEffects pbEOREndBattlerSelfEffects
   def pbEOREndBattlerSelfEffects(battler)
@@ -136,7 +136,8 @@ class Battle
   def pbEndOfRoundPhase
     paldea_pbEndOfRoundPhase
     allBattlers.each_with_index do |battler, i|
-	  battler.effects[PBEffects::AllySwitch]  = false
+	  battler.effects[PBEffects::AllySwitch]     = false
+	  battler.effects[PBEffects::BurningBulwark] = false
       if Settings::MECHANICS_GENERATION >= 9
         battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
       end
@@ -206,6 +207,21 @@ class Battle::Move
       if user.hasActiveAbility?(:MINDSEYE) && defType == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
+    end
+    return ret
+  end
+
+  #-----------------------------------------------------------------------------
+  # Aliased to add Tera Shell effect.
+  #-----------------------------------------------------------------------------  
+  alias paldea_pbCalcTypeMod pbCalcTypeMod
+  def pbCalcTypeMod(moveType, user, target)
+    ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
+    return ret if !moveType
+    ret = paldea_pbCalcTypeMod(moveType, user, target)
+    if target.abilityActive?
+      ret = Battle::AbilityEffects.triggerModifyTypeEffectiveness(
+	    target.ability, user, target, self, @battle, ret)
     end
     return ret
   end
@@ -294,11 +310,12 @@ class Battle::Move
   #-----------------------------------------------------------------------------
   alias paldea_pbCalcDamageMultipliers pbCalcDamageMultipliers
   def pbCalcDamageMultipliers(user, target, numTargets, type, baseDmg, multipliers)
+    # "of Ruin" abilities
     [:TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN].each_with_index do |abil, i|
       category = (i < 2) ? physicalMove? : specialMove?
       category = !category if i.odd? && @battle.field.effects[PBEffects::WonderRoom] > 0
       mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-      mult * 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
+      mult *= 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
     end
     if @battle.field.terrain == :Electric && user.affectedByTerrain? &&
        @function_code == "IncreasePowerWhileElectricTerrain"
@@ -315,12 +332,15 @@ class Battle::Move
         multipliers[:defense_multiplier] *= 1.5
       end
     end
+    # Frostbite
     if user.status == :FROSTBITE && specialMove?
       multipliers[:final_damage_multiplier] /= 2
     end
+    # Drowsy
     if target.status == :DROWSY
       multipliers[:final_damage_multiplier] *= 4 / 3.0
     end
+    # Glaive Rush
     multipliers[:final_damage_multiplier] *= 2 if target.effects[PBEffects::GlaiveRush] > 0
     paldea_pbCalcDamageMultipliers(user, target, numTargets, type, baseDmg, multipliers)
   end
@@ -358,7 +378,7 @@ class Battle::Scene
       cmdSwitch  = -1
       cmdBoxes   = -1
       cmdSelect  = -1
-      -1
+      cmdSummary = -1
       commands = []
       commands[cmdSwitch  = commands.length] = _INTL("Switch In") if mode == 0 && modParty[idxParty].able?
       commands[cmdBoxes   = commands.length] = _INTL("Send to Boxes") if mode == 1
@@ -393,5 +413,20 @@ class Battle::Scene
     target = target[0] if target.is_a?(Array)
     return if target && target.isCommander?
     paldea_pbCommonAnimation(animName, user, target)  
+  end
+end
+
+################################################################################
+# 
+# Battle::DamageState class changes.
+# 
+################################################################################
+class Battle::DamageState
+  attr_accessor :terashell # Tera Shell ability used
+
+  alias paldea_reset reset
+  def reset
+    @terashell = false
+    paldea_reset
   end
 end

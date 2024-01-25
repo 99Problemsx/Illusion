@@ -6,7 +6,7 @@ class Battle::Scene::PokemonDataBox
     @types_bitmap = AnimatedBitmap.new("Graphics/UI/Battle/icon_types")
     @types_sprite = Sprite.new(viewport)
     height = @types_bitmap.height / GameData::Type.count
-    @types_y = (@battler.opposes?(0)) ? 35 : 40
+    @types_y = -height
     @types_sprite.bitmap = Bitmap.new(@databoxBitmap.width - @types_x, height)
     @sprites["types_sprite"] = @types_sprite
     __types__initializeOtherGraphics(*args)

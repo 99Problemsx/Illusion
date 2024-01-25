@@ -11,12 +11,15 @@ class Battle::AI
     8  => [:THERMALEXCHANGE],
     7  => [:EARTHEATER, :TOXICDEBRIS, :PROTOSYNTHESIS, :QUARKDRIVE, :SUPERSWEETSYRUP, :MINDSEYE],
     6  => [:SUPREMEOVERLORD, :SEEDSOWER, :OPPORTUNIST],
-    5  => [:ARMORTAIL, :ROCKYPAYLOAD, :SHARPNESS, :LINGERINGAROMA, :CUDCHEW, :TOXICCHAIN],
+    5  => [:ARMORTAIL, :ROCKYPAYLOAD, :SHARPNESS, :LINGERINGAROMA, :CUDCHEW, 
+           :TOXICCHAIN, :POISONPUPPETEER],
     4  => [:PURIFYINGSALT, :WELLBAKEDBODY, :ANGERSHELL, :ELECTROMORPHOSIS, :WINDPOWER],
     3  => [:WINDRIDER, :HOSPITALITY,
            :TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN
           ],
-    1  => [:EMBODYASPECT, :EMBODYASPECT_1, :EMBODYASPECT_2, :EMBODYASPECT_3]
+    1  => [:EMBODYASPECT, :EMBODYASPECT_1, :EMBODYASPECT_2, :EMBODYASPECT_3,
+           :TERASHIFT, :TERASHELL, :TERAFORMZERO
+          ]
 
   }
 
@@ -97,11 +100,12 @@ class Battle::AI
       end
     end
     if @ai.trainer.medium_skill?
-      [:TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN].each_with_index do |abil, i|
-        category = (i < 2) ? move.physicalMove? : move.specialMove?
-        category = !category if i.odd? && @battle.field.effects[PBEffects::WonderRoom] > 0
+      [:TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN].each_with_index do |ability, i|
+        next if !@ai.battle.pbCheckGlobalAbility(ability)
+        category = (i < 2) ? physicalMove?(calc_type) : specialMove?(calc_type)
+        category = !category if i.odd? && @ai.battle.field.effects[PBEffects::WonderRoom] > 0
         mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-        mult * 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.has_active_ability?(abil) && category
+        mult *= 0.75 if !user.has_active_ability?(ability) && category
       end
     end
     # Ability effects that alter damage
@@ -257,8 +261,12 @@ class Battle::AI
         case calc_type
         when :FIRE
           multipliers[:final_damage_multiplier] *= 1.5
-        when :WATER                                  # Added for Hydro Steam
-          multipliers[:final_damage_multiplier] /= 2 if function_code != "IncreasePowerInSunWeather"
+        when :WATER
+          if function_code == "IncreasePowerInSunWeather" # Added for Hydro Steam
+            multipliers[:final_damage_multiplier] *= 1.5
+          else
+            multipliers[:final_damage_multiplier] /= 2
+          end
         end
       when :Rain, :HeavyRain
         case calc_type
@@ -311,7 +319,7 @@ class Battle::AI
     #---------------------------------------------------------------------------
     # Added for Drowsy
     #---------------------------------------------------------------------------
-    if @ai.trainer.high_skill? && user.status == :DROWSY
+    if @ai.trainer.high_skill? && target.status == :DROWSY
       multipliers[:final_damage_multiplier] *= 4 / 3.0
     end
     #---------------------------------------------------------------------------
@@ -374,7 +382,7 @@ class Battle::AI
   #-----------------------------------------------------------------------------
   def choose_best_revive_pokemon(idxBattler, party)
     reserves = []
-    @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
+    idxPartyStart, idxPartyEnd = @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
     party.each_with_index do |_p, i|
       reserves.push([i, 100]) if !_p.egg? && _p.fainted?
     end
@@ -546,5 +554,21 @@ class Battle::AI::AIBattler
       }
     end
     return paldea_wants_ability?(ability)
+  end
+end
+
+#===============================================================================
+# AIMove
+#===============================================================================
+# Add Glaive Rush to accuracy calculation
+#-------------------------------------------------------------------------------
+class Battle::AI::AIMove
+  # Full accuracy calculation.
+  alias paldea_rough_accuracy rough_accuracy
+  def rough_accuracy
+    if @ai.trainer.medium_skill?
+      return 100 if @ai.target.effects[PBEffects::GlaiveRush] > 0
+    end
+    return paldea_rough_accuracy
   end
 end
