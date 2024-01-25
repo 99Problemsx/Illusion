@@ -42,9 +42,9 @@ module GameData
     attr_reader :mega_message
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "species.dat"
-    PBS_BASE_FILENAME = ["pokemon", "pokemon_forms"]
+    DATA = {}.freeze
+    DATA_FILENAME = "species.dat".freeze
+    PBS_BASE_FILENAME = ["pokemon", "pokemon_forms"].freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -57,7 +57,7 @@ module GameData
         ret["SectionName"]    = [:id,                 "m"]
         ret["Name"]           = [:real_name,          "s"]
       end
-      ret["FormName"]         = [:real_form_name,     "q"]
+      ret["FormName"] = [:real_form_name, "q"]
       if compiling_forms
         ret["PokedexForm"]    = [:pokedex_form,       "u"]
         ret["MegaStone"]      = [:mega_stone,         "e", :Item]
@@ -112,9 +112,9 @@ module GameData
 
     def self.editor_properties
       return [
-        ["ID",                ReadOnlyProperty,                   _INTL("The ID of the Pokémon.")],
+        ["ID",                ReadOnlyProperty, _INTL("The ID of the Pokémon.")],
         ["Name",              LimitStringProperty.new(Pokemon::MAX_NAME_SIZE), _INTL("Name of the Pokémon.")],
-        ["FormName",          StringProperty,                     _INTL("Name of this form of the Pokémon.")],
+        ["FormName",          StringProperty, _INTL("Name of this form of the Pokémon.")],
         ["Types",             GameDataPoolProperty.new(:Type, false), _INTL("The Pokémon's type(s).")],
         ["BaseStats",         BaseStatsProperty,                  _INTL("Base stats of the Pokémon.")],
         ["GenderRatio",       GameDataProperty.new(:GenderRatio), _INTL("Proportion of males to females for this species.")],
@@ -330,9 +330,7 @@ module GameData
     # This takes into account whether other_species is evolved.
     def breeding_can_produce?(other_species)
       other_family = GameData::Species.get(other_species).get_family_species
-      if @offspring.length > 0
-        return (other_family & @offspring).length > 0
-      end
+      return (other_family & @offspring).length > 0 if @offspring.length > 0
       return other_family.include?(@species)
     end
 
@@ -442,11 +440,11 @@ module GameData
       end
       if writing_form && !ret.nil?
         base_form = GameData::Species.get(@species)
-        if !["WildItemCommon", "WildItemUncommon", "WildItemRare"].include?(key) ||
+        if (!["WildItemCommon", "WildItemUncommon", "WildItemRare"].include?(key) ||
            (base_form.wild_item_common == @wild_item_common &&
            base_form.wild_item_uncommon == @wild_item_uncommon &&
-           base_form.wild_item_rare == @wild_item_rare)
-          ret = nil if base_form.get_property_for_PBS(key) == ret
+           base_form.wild_item_rare == @wild_item_rare)) && (base_form.get_property_for_PBS(key) == ret)
+          ret = nil
         end
       end
       return ret

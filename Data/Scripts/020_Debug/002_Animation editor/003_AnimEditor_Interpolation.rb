@@ -118,14 +118,13 @@ module BattleAnimationEditor
 
     def addPoint(x, y)
       @points.push([x, y])
-      if @points.length > 1
-        len = @points.length
-        dx = @points[len - 2][0] - @points[len - 1][0]
-        dy = @points[len - 2][1] - @points[len - 1][1]
-        dist = Math.sqrt((dx * dx) + (dy * dy))
-        @distances.push(dist)
-        @totaldist += dist
-      end
+      return unless @points.length > 1
+      len = @points.length
+      dx = @points[len - 2][0] - @points[len - 1][0]
+      dy = @points[len - 2][1] - @points[len - 1][1]
+      dist = Math.sqrt((dx * dx) + (dy * dy))
+      @distances.push(dist)
+      @totaldist += dist
     end
 
     def clear
@@ -135,7 +134,7 @@ module BattleAnimationEditor
     end
 
     def smoothPointPath(frames, roundValues = false)
-      raise ArgumentError.new("frames out of range: #{frames}") if frames < 0
+      raise ArgumentError, "frames out of range: #{frames}" if frames < 0
       ret = PointPath.new
       return ret if @points.length == 0
       step = 1.0 / frames
@@ -154,9 +153,7 @@ module BattleAnimationEditor
     end
 
     def pointOnPath(t)
-      if t < 0 || t > 1
-        raise ArgumentError.new("t out of range for pointOnPath: #{t}")
-      end
+      raise ArgumentError, "t out of range for pointOnPath: #{t}" if t < 0 || t > 1
       return nil if @points.length == 0
       ret = @points[@points.length - 1].clone
       return ret if @points.length == 1
@@ -285,15 +282,11 @@ module BattleAnimationEditor
         loop do
           Graphics.update
           Input.update
-          if Input.trigger?(Input::BACK)
-            break
-          end
+          break if Input.trigger?(Input::BACK)
           if Input.trigger?(Input::MOUSELEFT)
             4.times do |j|
               next if !curve[j].hittest?
-              if [1, 2].include?(j) && (!curve[0].visible || !curve[3].visible)
-                next
-              end
+              next if [1, 2].include?(j) && (!curve[0].visible || !curve[3].visible)
               curve[j].visible = true
               4.times do |k|
                 curve[k].dragging = (k == j)
@@ -322,15 +315,14 @@ module BattleAnimationEditor
             end
             showline = true
           end
-          if showline
-            step = 1.0 / (points.length - 1)
-            t = 0.0
-            points.length.times do |j|
-              point = getCurvePoint(curve, t)
-              points[j].x = point[0]
-              points[j].y = point[1]
-              t += step
-            end
+          next unless showline
+          step = 1.0 / (points.length - 1)
+          t = 0.0
+          points.length.times do |j|
+            point = getCurvePoint(curve, t)
+            points[j].x = point[0]
+            points[j].y = point[1]
+            t += step
           end
         end
         window.dispose
@@ -341,7 +333,7 @@ module BattleAnimationEditor
         points.clear
         if showline
           path = curveToPointPath(curve, sliderwin2.value(0))
-#          File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
+          #          File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
           path.each do |point|
             points.push(PointSprite.new(point[0], point[1], canvas.viewport))
           end
@@ -369,9 +361,7 @@ module BattleAnimationEditor
             canceled = true
             break
           end
-          if Input.trigger?(Input::MOUSELEFT)
-            break
-          end
+          break if Input.trigger?(Input::MOUSELEFT)
           mousepos = Mouse.getMousePos(true)
           window.text = (mousepos) ? sprintf("(%d,%d)", mousepos[0], mousepos[1]) : "(??,??)"
         end
@@ -384,9 +374,7 @@ module BattleAnimationEditor
           window.text = (mousepos) ? sprintf("(%d,%d)", mousepos[0], mousepos[1]) : "(??,??)"
           Graphics.update
           Input.update
-          if Input.triggerex?(:ESCAPE) || Input.time?(Input::MOUSELEFT) == 0
-            break
-          end
+          break if Input.triggerex?(:ESCAPE) || Input.time?(Input::MOUSELEFT) == 0
         end
         window.dispose
         # dispose temporary path
@@ -400,15 +388,13 @@ module BattleAnimationEditor
         path.each do |point|
           points.push(PointSprite.new(point[0], point[1], canvas.viewport))
         end
-#        File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
+        #        File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
         sliderwin2.visible = true
         next
       elsif sliderwin2.changed?(okbutton) && path
-#        File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
+        #        File.open("pointpath.txt", "wb") { |f| f.write(path.inspect) }
         neededsize = canvas.currentframe + sliderwin2.value(0)
-        if neededsize > canvas.animation.length
-          canvas.animation.resize(neededsize)
-        end
+        canvas.animation.resize(neededsize) if neededsize > canvas.animation.length
         thiscel = canvas.currentCel
         celnumber = canvas.currentcel
         (canvas.currentframe...neededsize).each do |j|

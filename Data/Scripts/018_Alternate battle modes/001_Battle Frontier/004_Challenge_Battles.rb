@@ -83,9 +83,7 @@ def pbOrganizedBattleEx(opponent, challengedata)
   end
   # Save the record of the battle
   $game_temp.last_battle_record = nil
-  if [1, 2, 5].include?(decision)   # if win, loss or draw
-    $game_temp.last_battle_record = battle.pbDumpRecord
-  end
+  $game_temp.last_battle_record = battle.pbDumpRecord if [1, 2, 5].include?(decision) # if win, loss or draw
   case decision
   when 1   # Won
     $stats.trainer_battles_won += 1

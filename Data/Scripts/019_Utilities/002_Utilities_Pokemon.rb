@@ -2,16 +2,15 @@
 # Nicknaming and storing Pokémon
 #===============================================================================
 def pbBoxesFull?
-  return ($player.party_full? && $PokemonStorage.full?)
+  return $player.party_full? && $PokemonStorage.full?
 end
 
 def pbNickname(pkmn)
   return if $PokemonSystem.givenicknames != 0
   species_name = pkmn.speciesName
-  if pbConfirmMessage(_INTL("Would you like to give a nickname to {1}?", species_name))
-    pkmn.name = pbEnterPokemonName(_INTL("{1}'s nickname?", species_name),
-                                   0, Pokemon::MAX_NAME_SIZE, "", pkmn)
-  end
+  return unless pbConfirmMessage(_INTL("Would you like to give a nickname to {1}?", species_name))
+  pkmn.name = pbEnterPokemonName(_INTL("{1}'s nickname?", species_name),
+                                 0, Pokemon::MAX_NAME_SIZE, "", pkmn)
 end
 
 def pbStorePokemon(pkmn)

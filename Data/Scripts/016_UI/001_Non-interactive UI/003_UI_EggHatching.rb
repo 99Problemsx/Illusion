@@ -15,7 +15,7 @@ class PokemonEggHatch_Scene
     @pokemon = pokemon
     @nicknamed = false
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     # Create background image
     addBackgroundOrColoredPlane(@sprites, "background", "hatch_bg",
                                 Color.new(248, 248, 248), @viewport)
@@ -219,50 +219,49 @@ def pbHatch(pokemon)
   pokemon.obtain_method  = 1   # hatched from egg
   pokemon.hatched_map    = $game_map.map_id
   pokemon.record_first_moves
-  if !pbHatchAnimation(pokemon)
-    pbMessage(_INTL("Huh?") + "\1")
-    pbMessage(_INTL("...") + "\1")
-    pbMessage(_INTL("... .... .....") + "\1")
-    pbMessage(_INTL("{1} hatched from the Egg!", speciesname))
-    was_owned = $player.owned?(pokemon.species)
-    $player.pokedex.register(pokemon)
-    $player.pokedex.set_owned(pokemon.species)
-    $player.pokedex.set_seen_egg(pokemon.species)
-    # Show Pokédex entry for new species if it hasn't been owned before
-    if Settings::SHOW_NEW_SPECIES_POKEDEX_ENTRY_MORE_OFTEN && !was_owned &&
-       $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
-      pbMessage(_INTL("{1}'s data was added to the Pokédex.", speciesname))
-      $player.pokedex.register_last_seen(pokemon)
-      pbFadeOutIn do
-        scene = PokemonPokedexInfo_Scene.new
-        screen = PokemonPokedexInfoScreen.new(scene)
-        screen.pbDexEntry(pokemon.species)
-      end
+  return if pbHatchAnimation(pokemon)
+  pbMessage(_INTL("Huh?") + "\1")
+  pbMessage(_INTL("...") + "\1")
+  pbMessage(_INTL("... .... .....") + "\1")
+  pbMessage(_INTL("{1} hatched from the Egg!", speciesname))
+  was_owned = $player.owned?(pokemon.species)
+  $player.pokedex.register(pokemon)
+  $player.pokedex.set_owned(pokemon.species)
+  $player.pokedex.set_seen_egg(pokemon.species)
+  # Show Pokédex entry for new species if it hasn't been owned before
+  if Settings::SHOW_NEW_SPECIES_POKEDEX_ENTRY_MORE_OFTEN && !was_owned &&
+     $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+    pbMessage(_INTL("{1}'s data was added to the Pokédex.", speciesname))
+    $player.pokedex.register_last_seen(pokemon)
+    pbFadeOutIn do
+      scene = PokemonPokedexInfo_Scene.new
+      screen = PokemonPokedexInfoScreen.new(scene)
+      screen.pbDexEntry(pokemon.species)
     end
-    # Nickname the Pokémon
-    if $PokemonSystem.givenicknames == 0 &&
-       pbConfirmMessage(_INTL("Would you like to nickname the newly hatched {1}?", speciesname))
-      nickname = pbEnterPokemonName(_INTL("{1}'s nickname?", speciesname),
-                                    0, Pokemon::MAX_NAME_SIZE, "", pokemon)
-      pokemon.name = nickname
-    end
+  end
+  # Nickname the Pokémon
+  if $PokemonSystem.givenicknames == 0 &&
+     pbConfirmMessage(_INTL("Would you like to nickname the newly hatched {1}?", speciesname))
+    nickname = pbEnterPokemonName(_INTL("{1}'s nickname?", speciesname),
+                                  0, Pokemon::MAX_NAME_SIZE, "", pokemon)
+    pokemon.name = nickname
   end
 end
 
 EventHandlers.add(:on_player_step_taken, :hatch_eggs,
-  proc {
-    $player.party.each do |egg|
-      next if egg.steps_to_hatch <= 0
-      egg.steps_to_hatch -= 1
-      $player.pokemon_party.each do |pkmn|
-        next if !pkmn.ability&.has_flag?("FasterEggHatching")
-        egg.steps_to_hatch -= 1
-        break
-      end
-      if egg.steps_to_hatch <= 0
-        egg.steps_to_hatch = 0
-        pbHatch(egg)
-      end
-    end
-  }
+                  proc {
+                    $player.party.each do |egg|
+                      next if egg.steps_to_hatch <= 0
+                      egg.steps_to_hatch -= 1
+                      $player.pokemon_party.each do |pkmn|
+                        next if !pkmn.ability&.has_flag?("FasterEggHatching")
+                        egg.steps_to_hatch -= 1
+                        break
+                      end
+                      if egg.steps_to_hatch <= 0
+                        egg.steps_to_hatch = 0
+                        pbHatch(egg)
+                      end
+                    end
+                  }
 )

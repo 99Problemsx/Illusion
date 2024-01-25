@@ -363,12 +363,9 @@ def pbDecideWinner(party0, party1, rating0, rating1)
   rating1 = (rating1 * 15.0 / 100).round
   score0 = pbDecideWinnerScore(party0, party1, rating0)
   score1 = pbDecideWinnerScore(party1, party0, rating1)
-  if score0 == score1
-    return 5 if rating0 == rating1
-    return (rating0 > rating1) ? 1 : 2
-  else
-    return (score0 > score1) ? 1 : 2
-  end
+  return (score0 > score1) ? 1 : 2 unless score0 == score1
+  return 5 if rating0 == rating1
+  return (rating0 > rating1) ? 1 : 2
 end
 
 #===============================================================================

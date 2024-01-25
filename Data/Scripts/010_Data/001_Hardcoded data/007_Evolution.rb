@@ -11,7 +11,7 @@ module GameData
     attr_reader :event_proc
     attr_reader :after_evolution_proc
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -21,7 +21,7 @@ module GameData
 
     def initialize(hash)
       @id                   = hash[:id]
-      @real_name            = hash[:id].to_s      || "Unnamed"
+      @real_name            = hash[:id].to_s || "Unnamed"
       @parameter            = hash[:parameter]
       @any_level_up         = hash[:any_level_up] || false
       @level_up_proc        = hash[:level_up_proc]

@@ -40,14 +40,10 @@ class Battle::Battler
     case move.pbTarget(user).id   # Curse can change its target type
     when :NearAlly
       targetBattler = (preTarget >= 0) ? @battle.battlers[preTarget] : nil
-      if !pbAddTarget(targets, user, targetBattler, move)
-        pbAddTargetRandomAlly(targets, user, move)
-      end
+      pbAddTargetRandomAlly(targets, user, move) if !pbAddTarget(targets, user, targetBattler, move)
     when :UserOrNearAlly
       targetBattler = (preTarget >= 0) ? @battle.battlers[preTarget] : nil
-      if !pbAddTarget(targets, user, targetBattler, move, true, true)
-        pbAddTarget(targets, user, user, move, true, true)
-      end
+      pbAddTarget(targets, user, user, move, true, true) if !pbAddTarget(targets, user, targetBattler, move, true, true)
     when :AllAllies
       @battle.allSameSideBattlers(user.index).each do |b|
         pbAddTarget(targets, user, b, move, false, true) if b.index != user.index
@@ -185,9 +181,8 @@ class Battle::Battler
       next if nearOnly && !user.near?(b)
       pbAddTarget(choices, user, b, move, nearOnly)
     end
-    if choices.length > 0
-      pbAddTarget(targets, user, choices[@battle.pbRandom(choices.length)], move, nearOnly)
-    end
+    return unless choices.length > 0
+    pbAddTarget(targets, user, choices[@battle.pbRandom(choices.length)], move, nearOnly)
   end
 
   def pbAddTargetRandomFoe(targets, user, move, nearOnly = true)
@@ -196,8 +191,7 @@ class Battle::Battler
       next if nearOnly && !user.near?(b)
       pbAddTarget(choices, user, b, move, nearOnly)
     end
-    if choices.length > 0
-      pbAddTarget(targets, user, choices[@battle.pbRandom(choices.length)], move, nearOnly)
-    end
+    return unless choices.length > 0
+    pbAddTarget(targets, user, choices[@battle.pbRandom(choices.length)], move, nearOnly)
   end
 end

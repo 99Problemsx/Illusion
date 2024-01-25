@@ -118,7 +118,7 @@ module Battle::AI::Handlers
   end
 
   def self.apply_general_move_score_modifiers(score, *args)
-    GeneralMoveScore.each do |id, score_proc|
+    GeneralMoveScore.each_value do |score_proc|
       new_score = score_proc.call(score, *args)
       score = new_score if new_score
     end
@@ -126,7 +126,7 @@ module Battle::AI::Handlers
   end
 
   def self.apply_general_move_against_target_score_modifiers(score, *args)
-    GeneralMoveAgainstTargetScore.each do |id, score_proc|
+    GeneralMoveAgainstTargetScore.each_value do |score_proc|
       new_score = score_proc.call(score, *args)
       score = new_score if new_score
     end
@@ -135,7 +135,7 @@ module Battle::AI::Handlers
 
   def self.should_switch?(*args)
     ret = false
-    ShouldSwitch.each do |id, switch_proc|
+    ShouldSwitch.each_value do |switch_proc|
       ret ||= switch_proc.call(*args)
       break if ret
     end
@@ -144,7 +144,7 @@ module Battle::AI::Handlers
 
   def self.should_not_switch?(*args)
     ret = false
-    ShouldNotSwitch.each do |id, switch_proc|
+    ShouldNotSwitch.each_value do |switch_proc|
       ret ||= switch_proc.call(*args)
       break if ret
     end

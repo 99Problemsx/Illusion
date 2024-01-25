@@ -11,20 +11,20 @@ class GameStats < GameStats
   attr_accessor :rockclimb_descend_count
   attr_accessor :ice_smash_count
   attr_accessor :defog_count
-  attr_accessor :wg_clear_count      #Clear Sky | None
-  attr_accessor :wg_sunny_count      #Sunny
-  attr_accessor :wg_rain_count       #Rain
-  attr_accessor :wg_hail_count       #Hail
-  attr_accessor :wg_sandstorm_count  #Sandstorm
-  attr_accessor :wg_fog_count        #Fog
-  attr_accessor :wg_count            #Count
+  attr_accessor :wg_clear_count      # Clear Sky | None
+  attr_accessor :wg_sunny_count      # Sunny
+  attr_accessor :wg_rain_count       # Rain
+  attr_accessor :wg_hail_count       # Hail
+  attr_accessor :wg_sandstorm_count  # Sandstorm
+  attr_accessor :wg_fog_count        # Fog
+  attr_accessor :wg_count            # Count
   attr_accessor :camouflage_count
-  attr_accessor :wg_none             #Clear Sky | None
-  attr_accessor :wg_sunny            #Sunny
-  attr_accessor :wg_rain             #Rain
-  attr_accessor :wg_hail             #Snow
-  attr_accessor :wg_sandstorm        #Sandstorm
-  attr_accessor :wg_fog              #Fog
+  attr_accessor :wg_none             # Clear Sky | None
+  attr_accessor :wg_sunny            # Sunny
+  attr_accessor :wg_rain             # Rain
+  attr_accessor :wg_hail             # Snow
+  attr_accessor :wg_sandstorm        # Sandstorm
+  attr_accessor :wg_fog              # Fog
   attr_accessor :temp_count
 
   alias advanceditemsfieldmoves_init initialize
@@ -63,8 +63,8 @@ def showStats
 end
 
 def aiTestPlus
-  return false if $stats.temp_count  == -1
-  $stats.temp_count  += 1
+  return false if $stats.temp_count == -1
+  $stats.temp_count += 1
 end
 
 #===============================================================================
@@ -72,11 +72,11 @@ end
 #===============================================================================
 
 class Game_Player < Game_Character
-    attr_accessor :camouflage
+  attr_accessor :camouflage
 
-    alias camouflage_initialize initialize
-    def initialize(*arg)
-      camouflage_initialize
-      @camouflage     = false
-    end
+  alias camouflage_initialize initialize
+  def initialize(*arg)
+    camouflage_initialize
+    @camouflage = false
+  end
 end

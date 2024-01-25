@@ -23,30 +23,28 @@ class Battle
   end
 
   def pbJudgeCheckpoint(user, move = nil)
-    if pbAllFainted?(0) && pbAllFainted?(1)
-      if @rules["drawclause"]   # NOTE: Also includes Life Orb (not implemented)
-        if !(move && move.function_code == "HealUserByHalfOfDamageDone")
-          # Not a draw if fainting occurred due to Liquid Ooze
-          @decision = (user.opposes?) ? 1 : 2   # win / loss
-        end
-      elsif @rules["modifiedselfdestructclause"]
-        if move && move.function_code == "UserFaintsExplosive"   # Self-Destruct
-          @decision = (user.opposes?) ? 1 : 2   # win / loss
-        end
+    return unless pbAllFainted?(0) && pbAllFainted?(1)
+    if @rules["drawclause"]   # NOTE: Also includes Life Orb (not implemented)
+      if !(move && move.function_code == "HealUserByHalfOfDamageDone")
+        # Not a draw if fainting occurred due to Liquid Ooze
+        @decision = (user.opposes?) ? 1 : 2   # win / loss
+      end
+    elsif @rules["modifiedselfdestructclause"]
+      if move && move.function_code == "UserFaintsExplosive"   # Self-Destruct
+        @decision = (user.opposes?) ? 1 : 2   # win / loss
       end
     end
   end
 
   def pbEndOfRoundPhase
     __clauses__pbEndOfRoundPhase
-    if @rules["suddendeath"] && @decision == 0
-      p1able = pbAbleCount(0)
-      p2able = pbAbleCount(1)
-      if p1able > p2able
-        @decision = 1   # loss
-      elsif p1able < p2able
-        @decision = 2   # win
-      end
+    return unless @rules["suddendeath"] && @decision == 0
+    p1able = pbAbleCount(0)
+    p2able = pbAbleCount(1)
+    if p1able > p2able
+      @decision = 1   # loss
+    elsif p1able < p2able
+      @decision = 2   # win
     end
   end
 end
@@ -64,12 +62,10 @@ class Battle::Battler
   end
 
   def pbCanSleep?(user, showMessages, move = nil, ignoreStatus = false)
-    selfsleep = (user && user.index == @index)
-    if ((@battle.rules["modifiedsleepclause"]) || (!selfsleep && @battle.rules["sleepclause"])) &&
+    selfsleep = user && user.index == @index
+    if (@battle.rules["modifiedsleepclause"] || (!selfsleep && @battle.rules["sleepclause"])) &&
        pbHasStatusPokemon?(:SLEEP)
-      if showMessages
-        @battle.pbDisplay(_INTL("But {1} couldn't sleep!", pbThis(true)))
-      end
+      @battle.pbDisplay(_INTL("But {1} couldn't sleep!", pbThis(true))) if showMessages
       return false
     end
     return __clauses__pbCanSleep?(user, showMessages, move, ignoreStatus)
@@ -84,9 +80,7 @@ class Battle::Battler
   end
 
   def pbCanFreeze?(*arg)
-    if @battle.rules["freezeclause"] && pbHasStatusPokemon?(:FROZEN)
-      return false
-    end
+    return false if @battle.rules["freezeclause"] && pbHasStatusPokemon?(:FROZEN)
     return __clauses__pbCanFreeze?(*arg)
   end
 
@@ -105,9 +99,7 @@ end
 # Double Team
 #===============================================================================
 class Battle::Move::RaiseUserEvasion1
-  unless method_defined?(:__clauses__pbMoveFailed?)
-    alias __clauses__pbMoveFailed? pbMoveFailed?
-  end
+  alias __clauses__pbMoveFailed? pbMoveFailed? unless method_defined?(:__clauses__pbMoveFailed?)
 
   def pbMoveFailed?(user, targets)
     if !damagingMove? && @battle.rules["evasionclause"]
@@ -122,9 +114,7 @@ end
 # Minimize
 #===============================================================================
 class Battle::Move::RaiseUserEvasion2MinimizeUser
-  unless method_defined?(:__clauses__pbMoveFailed?)
-    alias __clauses__pbMoveFailed? pbMoveFailed?
-  end
+  alias __clauses__pbMoveFailed? pbMoveFailed? unless method_defined?(:__clauses__pbMoveFailed?)
 
   def pbMoveFailed?(user, targets)
     if !damagingMove? && @battle.rules["evasionclause"]
@@ -139,9 +129,7 @@ end
 # Skill Swap
 #===============================================================================
 class Battle::Move::UserTargetSwapAbilities
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["skillswapclause"]
@@ -156,9 +144,7 @@ end
 # Sonic Boom
 #===============================================================================
 class Battle::Move::FixedDamage20
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["sonicboomclause"]
@@ -173,9 +159,7 @@ end
 # Dragon Rage
 #===============================================================================
 class Battle::Move::FixedDamage40
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["sonicboomclause"]
@@ -190,9 +174,7 @@ end
 #
 #===============================================================================
 class Battle::Move::OHKO
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["ohkoclause"]
@@ -207,9 +189,7 @@ end
 #
 #===============================================================================
 class Battle::Move::OHKOIce
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["ohkoclause"]
@@ -224,9 +204,7 @@ end
 #
 #===============================================================================
 class Battle::Move::OHKOHitsUndergroundTarget
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["ohkoclause"]
@@ -241,9 +219,7 @@ end
 # Self-Destruct
 #===============================================================================
 class Battle::Move::UserFaintsExplosive
-  unless method_defined?(:__clauses__pbMoveFailed?)
-    alias __clauses__pbMoveFailed? pbMoveFailed?
-  end
+  alias __clauses__pbMoveFailed? pbMoveFailed? unless method_defined?(:__clauses__pbMoveFailed?)
 
   def pbMoveFailed?(user, targets)
     if @battle.rules["selfkoclause"]
@@ -273,9 +249,7 @@ end
 # Perish Song
 #===============================================================================
 class Battle::Move::StartPerishCountsForAllBattlers
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["perishsongclause"] &&
@@ -291,9 +265,7 @@ end
 # Destiny Bond
 #===============================================================================
 class Battle::Move::AttackerFaintsIfUserFaints
-  unless method_defined?(:__clauses__pbFailsAgainstTarget?)
-    alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget?
-  end
+  alias __clauses__pbFailsAgainstTarget? pbFailsAgainstTarget? unless method_defined?(:__clauses__pbFailsAgainstTarget?)
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if @battle.rules["perishsongclause"] &&

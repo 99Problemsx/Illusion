@@ -2,9 +2,7 @@ module Compiler
   module_function
 
   def compile_PBS_file_generic(game_data, *paths)
-    if game_data.const_defined?(:OPTIONAL) && game_data::OPTIONAL
-      return if paths.none? { |p| FileTest.exist?(p) }
-    end
+    return if game_data.const_defined?(:OPTIONAL) && game_data::OPTIONAL && paths.none? { |p| FileTest.exist?(p) }
     game_data::DATA.clear
     schema = game_data.schema
     # Read from PBS file(s)
@@ -76,8 +74,7 @@ module Compiler
     end
   end
 
-  def validate_compiled_town_map(hash)
-  end
+  def validate_compiled_town_map(hash); end
 
   def validate_all_compiled_town_maps
     # Get town map names and descriptions for translating
@@ -122,13 +119,21 @@ module Compiler
         end
         case record[1]
         when "N"
-          raise _INTL("North side of first map must connect with south side of second map.") + "\n" + FileLineData.linereport if record[4] != "S"
+          if record[4] != "S"
+            raise _INTL("North side of first map must connect with south side of second map.") + "\n" + FileLineData.linereport
+          end
         when "S"
-          raise _INTL("South side of first map must connect with north side of second map.") + "\n" + FileLineData.linereport if record[4] != "N"
+          if record[4] != "N"
+            raise _INTL("South side of first map must connect with north side of second map.") + "\n" + FileLineData.linereport
+          end
         when "E"
-          raise _INTL("East side of first map must connect with west side of second map.") + "\n" + FileLineData.linereport if record[4] != "W"
+          if record[4] != "W"
+            raise _INTL("East side of first map must connect with west side of second map.") + "\n" + FileLineData.linereport
+          end
         when "W"
-          raise _INTL("West side of first map must connect with east side of second map.") + "\n" + FileLineData.linereport if record[4] != "E"
+          if record[4] != "E"
+            raise _INTL("West side of first map must connect with east side of second map.") + "\n" + FileLineData.linereport
+          end
         end
         records.push(record)
       end
@@ -184,8 +189,7 @@ module Compiler
     end
   end
 
-  def validate_compiled_ability(hash)
-  end
+  def validate_compiled_ability(hash); end
 
   def validate_all_compiled_abilities
     # Get abilty names/descriptions for translating
@@ -238,8 +242,7 @@ module Compiler
     end
   end
 
-  def validate_compiled_item(hash)
-  end
+  def validate_compiled_item(hash); end
 
   def validate_all_compiled_items
     # Get item names/descriptions for translating
@@ -271,11 +274,9 @@ module Compiler
     end
   end
 
-  def validate_compiled_berry_plant(hash)
-  end
+  def validate_compiled_berry_plant(hash); end
 
-  def validate_all_compiled_berry_plants
-  end
+  def validate_all_compiled_berry_plants; end
 
   #=============================================================================
   # Compile Pokémon data
@@ -319,14 +320,11 @@ module Compiler
       end
     end
     # Record all evolutions as not being prevolutions
-    if hash[:evolutions].is_a?(Array)
-      hash[:evolutions].each { |evo| evo[3] = false }
-    end
+    hash[:evolutions].each { |evo| evo[3] = false } if hash[:evolutions].is_a?(Array)
     # Remove duplicate types
-    if hash[:types].is_a?(Array)
-      hash[:types].uniq!
-      hash[:types].compact!
-    end
+    return unless hash[:types].is_a?(Array)
+    hash[:types].uniq!
+    hash[:types].compact!
   end
 
   def validate_all_compiled_pokemon
@@ -337,9 +335,7 @@ module Compiler
       offspring.each_with_index do |sp, i|
         offspring[i] = cast_csv_value(sp, "e", :Species)
       end
-    end
-    # Enumerate all evolution species and parameters (this couldn't be done earlier)
-    GameData::Species.each do |species|
+      # Enumerate all evolution species and parameters (this couldn't be done earlier)
       FileLineData.setSection(species.id.to_s, "Evolutions", nil)   # For error reporting
       species.evolutions.each do |evo|
         evo[0] = cast_csv_value(evo[0], "e", :Species)
@@ -359,8 +355,6 @@ module Compiler
       species.evolutions.each do |evo|
         all_evos[evo[0]] = [species.species, evo[1], evo[2], true] if !all_evos[evo[0]]
       end
-    end
-    GameData::Species.each do |species|   # Distribute prevolutions
       species.evolutions.push(all_evos[species.species].clone) if all_evos[species.species]
     end
     # Get species names/descriptions for translating
@@ -505,12 +499,10 @@ module Compiler
       species.evolutions.each do |evo|
         next if evo[3]
         all_evos[evo[0]] = [species.species, evo[1], evo[2], true] if !all_evos[evo[0]]
-        if species.form > 0
-          all_evos[[evo[0], species.form]] = [species.species, evo[1], evo[2], true] if !all_evos[[evo[0], species.form]]
-        end
+        if species.form > 0 && !all_evos[[evo[0], species.form]]
+          all_evos[[evo[0], species.form]] = [species.species, evo[1], evo[2], true]
+         end
       end
-    end
-    GameData::Species.each do |species|   # Distribute prevolutions
       prevo_data = all_evos[[species.species, species.base_form]] || all_evos[species.species]
       next if !prevo_data
       # Record what species evolves from
@@ -548,19 +540,17 @@ module Compiler
 
   def validate_compiled_pokemon_metrics(hash)
     # Split species and form into their own values, generate compound ID from them
-    if hash[:id].is_a?(Array)
-      hash[:species] = hash[:id][0]
-      hash[:form] = hash[:id][1] || 0
-      if hash[:form] == 0
-        hash[:id] = hash[:species]
-      else
-        hash[:id] = sprintf("%s_%d", hash[:species].to_s, hash[:form]).to_sym
-      end
+    return unless hash[:id].is_a?(Array)
+    hash[:species] = hash[:id][0]
+    hash[:form] = hash[:id][1] || 0
+    if hash[:form] == 0
+      hash[:id] = hash[:species]
+    else
+      hash[:id] = sprintf("%s_%d", hash[:species].to_s, hash[:form]).to_sym
     end
   end
 
-  def validate_all_compiled_pokemon_metrics
-  end
+  def validate_all_compiled_pokemon_metrics; end
 
   #=============================================================================
   # Compile Shadow Pokémon data
@@ -573,19 +563,17 @@ module Compiler
 
   def validate_compiled_shadow_pokemon(hash)
     # Split species and form into their own values, generate compound ID from them
-    if hash[:id].is_a?(Array)
-      hash[:species] = hash[:id][0]
-      hash[:form] = hash[:id][1] || 0
-      if hash[:form] == 0
-        hash[:id] = hash[:species]
-      else
-        hash[:id] = sprintf("%s_%d", hash[:species].to_s, hash[:form]).to_sym
-      end
+    return unless hash[:id].is_a?(Array)
+    hash[:species] = hash[:id][0]
+    hash[:form] = hash[:id][1] || 0
+    if hash[:form] == 0
+      hash[:id] = hash[:species]
+    else
+      hash[:id] = sprintf("%s_%d", hash[:species].to_s, hash[:form]).to_sym
     end
   end
 
-  def validate_all_compiled_shadow_pokemon
-  end
+  def validate_all_compiled_shadow_pokemon; end
 
   #=============================================================================
   # Compile Regional Dexes
@@ -637,8 +625,7 @@ module Compiler
     end
   end
 
-  def validate_compiled_ribbon(hash)
-  end
+  def validate_compiled_ribbon(hash); end
 
   def validate_all_compiled_ribbons
     # Get ribbon names/descriptions for translating
@@ -731,13 +718,13 @@ module Compiler
           # Check if line is an encounter method name or not
           values = line.split(",").collect! { |v| v.strip }
           current_type = (values[0] && !values[0].empty?) ? values[0].to_sym : nil
-          if current_type && GameData::EncounterType.exists?(current_type)   # Start of a new encounter method
-            step_chances[current_type] = values[1].to_i if values[1] && !values[1].empty?
-            step_chances[current_type] ||= GameData::EncounterType.get(current_type).trigger_chance
-            encounter_hash[:types][current_type] = []
-          else
+          unless current_type && GameData::EncounterType.exists?(current_type)
             raise _INTL("Undefined encounter type \"{1}\" for map '{2}'.", line, encounter_hash[:map]) + "\n" + FileLineData.linereport
-          end
+end
+          step_chances[current_type] = values[1].to_i if values[1] && !values[1].empty?
+          step_chances[current_type] ||= GameData::EncounterType.get(current_type).trigger_chance
+          encounter_hash[:types][current_type] = []
+
         end
       end
       # Add last map's encounter data to records
@@ -773,8 +760,7 @@ module Compiler
     end
   end
 
-  def validate_compiled_trainer_type(hash)
-  end
+  def validate_compiled_trainer_type(hash); end
 
   def validate_all_compiled_trainer_types
     # Get trainer type names for translating
@@ -825,9 +811,7 @@ module Compiler
           current_pkmn = nil
         elsif line[/^\s*(\w+)\s*=\s*(.*)$/]
           # XXX=YYY lines
-          if !data_hash
-            raise _INTL("Expected a section at the beginning of the file.") + "\n" + FileLineData.linereport
-          end
+          raise _INTL("Expected a section at the beginning of the file.") + "\n" + FileLineData.linereport if !data_hash
           key = $~[1]
           if schema[key]   # Property of the trainer
             property_value = get_csv_record($~[2], schema[key])
@@ -841,9 +825,7 @@ module Compiler
               data_hash[schema[key][0]] = property_value
             end
           elsif sub_schema[key]   # Property of a Pokémon
-            if !current_pkmn
-              raise _INTL("Pokémon hasn't been defined yet!") + "\n" + FileLineData.linereport
-            end
+            raise _INTL("Pokémon hasn't been defined yet!") + "\n" + FileLineData.linereport if !current_pkmn
             current_pkmn[sub_schema[key][0]] = get_csv_record($~[2], sub_schema[key])
           end
         end
@@ -914,16 +896,13 @@ module Compiler
         end
       end
       # Ensure valid happiness
-      if pkmn[:happiness]
-        if pkmn[:happiness] > 255
-          raise _INTL("Bad happiness: {1} (must be 0-255).", pkmn[:happiness]) + "\n" + FileLineData.linereport
+      if pkmn[:happiness] && (pkmn[:happiness] > 255)
+        raise _INTL("Bad happiness: {1} (must be 0-255).", pkmn[:happiness]) + "\n" + FileLineData.linereport
         end
-      end
       # Ensure valid Poké Ball
-      if pkmn[:poke_ball]
-        if !GameData::Item.get(pkmn[:poke_ball]).is_poke_ball?
-          raise _INTL("Value '{1}' isn't a defined Poké Ball.", pkmn[:poke_ball]) + "\n" + FileLineData.linereport
-        end
+      next unless pkmn[:poke_ball]
+      if !GameData::Item.get(pkmn[:poke_ball]).is_poke_ball?
+        raise _INTL("Value '{1}' isn't a defined Poké Ball.", pkmn[:poke_ball]) + "\n" + FileLineData.linereport
       end
     end
   end
@@ -986,12 +965,8 @@ module Compiler
           record = get_csv_record(section[key], schema)
           rsection[schema[0]] = record
         end
-        if !rsection[0]
-          raise _INTL("No trainer data file given in section {1}.", name) + "\n" + FileLineData.linereport
-        end
-        if !rsection[1]
-          raise _INTL("No trainer data file given in section {1}.", name) + "\n" + FileLineData.linereport
-        end
+        raise _INTL("No trainer data file given in section {1}.", name) + "\n" + FileLineData.linereport if !rsection[0]
+        raise _INTL("No trainer data file given in section {1}.", name) + "\n" + FileLineData.linereport if !rsection[1]
         rsection[3] = rsection[0]
         rsection[4] = rsection[1]
         rsection[5] = (name == "DefaultTrainerList")
@@ -1144,13 +1119,11 @@ module Compiler
   end
 
   def validate_compiled_global_metadata(hash)
-    if hash[:home].nil?
-      raise _INTL("The entry 'Home' is required in metadata.txt section 0.") + "\n" + FileLineData.linereport
-    end
+    return unless hash[:home].nil?
+    raise _INTL("The entry 'Home' is required in metadata.txt section 0.") + "\n" + FileLineData.linereport
   end
 
-  def validate_compiled_player_metadata(hash)
-  end
+  def validate_compiled_player_metadata(hash); end
 
   # Should be used to check both global metadata and player character metadata.
   def validate_all_compiled_metadata
@@ -1178,9 +1151,8 @@ module Compiler
 
   def validate_compiled_map_metadata(hash)
     # Give the map its RMXP map name if it doesn't define its own
-    if nil_or_empty?(hash[:real_name])
-      hash[:real_name] = pbLoadMapInfos[hash[:id]].name
-    end
+    return unless nil_or_empty?(hash[:real_name])
+    hash[:real_name] = pbLoadMapInfos[hash[:id]].name
   end
 
   def validate_all_compiled_map_metadata
@@ -1199,11 +1171,9 @@ module Compiler
     end
   end
 
-  def validate_compiled_dungeon_tileset(hash)
-  end
+  def validate_compiled_dungeon_tileset(hash); end
 
-  def validate_all_compiled_dungeon_tilesets
-  end
+  def validate_all_compiled_dungeon_tilesets; end
 
   #=============================================================================
   # Compile dungeon parameters data
@@ -1223,13 +1193,11 @@ module Compiler
     else
       hash[:id] = sprintf("%s_%d", hash[:area].to_s, hash[:version]).to_sym
     end
-    if GameData::DungeonParameters.exists?(hash[:id])
-      raise _INTL("Version {1} of dungeon area {2} is defined twice.", hash[:version], hash[:area]) + "\n" + FileLineData.linereport
-    end
+    return unless GameData::DungeonParameters.exists?(hash[:id])
+    raise _INTL("Version {1} of dungeon area {2} is defined twice.", hash[:version], hash[:area]) + "\n" + FileLineData.linereport
   end
 
-  def validate_all_compiled_dungeon_parameters
-  end
+  def validate_all_compiled_dungeon_parameters; end
 
   #=============================================================================
   # Compile phone messages
@@ -1275,36 +1243,36 @@ module Compiler
     Console.echo_li(_INTL("Compiling animations..."))
     begin
       pbanims = load_data("Data/PkmnAnimations.rxdata")
-    rescue
+    rescue StandardError
       pbanims = PBAnimations.new
     end
     changed = false
     move2anim = [{}, {}]
-#    anims = load_data("Data/Animations.rxdata")
-#    for anim in anims
-#      next if !anim || anim.frames.length == 1
-#      found = false
-#      for i in 0...pbanims.length
-#        if pbanims[i] && pbanims[i].id == anim.id
-#          found = true if pbanims[i].array.length > 1
-#          break
-#        end
-#      end
-#      pbanims[anim.id] = pbConvertRPGAnimation(anim) if !found
-#    end
+    #    anims = load_data("Data/Animations.rxdata")
+    #    for anim in anims
+    #      next if !anim || anim.frames.length == 1
+    #      found = false
+    #      for i in 0...pbanims.length
+    #        if pbanims[i] && pbanims[i].id == anim.id
+    #          found = true if pbanims[i].array.length > 1
+    #          break
+    #        end
+    #      end
+    #      pbanims[anim.id] = pbConvertRPGAnimation(anim) if !found
+    #    end
     idx = 0
     pbanims.length.times do |i|
       echo "." if idx % 100 == 0
       Graphics.update if idx % 500 == 0
       idx += 1
       next if !pbanims[i]
-      if pbanims[i].name[/^OppMove\:\s*(.*)$/]
+      if pbanims[i].name[/^OppMove:\s*(.*)$/]
         if GameData::Move.exists?($~[1])
           moveid = GameData::Move.get($~[1]).id
           changed = true if !move2anim[0][moveid] || move2anim[1][moveid] != i
           move2anim[1][moveid] = i
         end
-      elsif pbanims[i].name[/^Move\:\s*(.*)$/]
+      elsif pbanims[i].name[/^Move:\s*(.*)$/]
         if GameData::Move.exists?($~[1])
           moveid = GameData::Move.get($~[1]).id
           changed = true if !move2anim[0][moveid] || move2anim[0][moveid] != i

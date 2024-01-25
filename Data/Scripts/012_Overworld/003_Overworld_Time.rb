@@ -20,21 +20,21 @@ module PBDayNight
     Tone.new(-40, -50, -35, 50),   # Day/morning
     Tone.new(-40, -50, -35, 50),   # Day/morning
     Tone.new(-20, -25, -15, 20),   # Day/morning
-    Tone.new(  0,   0,   0,  0),   # Day
-    Tone.new(  0,   0,   0,  0),   # Day
-    Tone.new(  0,   0,   0,  0),   # Day             # Noon
-    Tone.new(  0,   0,   0,  0),   # Day
-    Tone.new(  0,   0,   0,  0),   # Day/afternoon
-    Tone.new(  0,   0,   0,  0),   # Day/afternoon
-    Tone.new(  0,   0,   0,  0),   # Day/afternoon
-    Tone.new(  0,   0,   0,  0),   # Day/afternoon
-    Tone.new( -5, -30, -20,  0),   # Day/evening     # 6PM
+    Tone.new(0,   0,   0,  0),   # Day
+    Tone.new(0,   0,   0,  0),   # Day
+    Tone.new(0,   0,   0,  0),   # Day             # Noon
+    Tone.new(0,   0,   0,  0),   # Day
+    Tone.new(0,   0,   0,  0),   # Day/afternoon
+    Tone.new(0,   0,   0,  0),   # Day/afternoon
+    Tone.new(0,   0,   0,  0),   # Day/afternoon
+    Tone.new(0,   0,   0,  0),   # Day/afternoon
+    Tone.new(-5, -30, -20,  0),   # Day/evening     # 6PM
     Tone.new(-15, -60, -10, 20),   # Day/evening
     Tone.new(-15, -60, -10, 20),   # Day/evening
     Tone.new(-40, -75,   5, 40),   # Night
     Tone.new(-70, -90,  15, 55),   # Night
     Tone.new(-70, -90,  15, 55)    # Night
-  ]
+  ].freeze
   CACHED_TONE_LIFETIME = 30   # In seconds; recalculates overworld tone once per this time
   @cachedTone = nil
   @dayNightToneLastUpdate = nil
@@ -43,31 +43,31 @@ module PBDayNight
   # Returns true if it's day.
   def self.isDay?(time = nil)
     time = pbGetTimeNow if !time
-    return (time.hour >= 5 && time.hour < 20)
+    return time.hour >= 5 && time.hour < 20
   end
 
   # Returns true if it's night.
   def self.isNight?(time = nil)
     time = pbGetTimeNow if !time
-    return (time.hour >= 20 || time.hour < 5)
+    return time.hour >= 20 || time.hour < 5
   end
 
   # Returns true if it's morning.
   def self.isMorning?(time = nil)
     time = pbGetTimeNow if !time
-    return (time.hour >= 5 && time.hour < 10)
+    return time.hour >= 5 && time.hour < 10
   end
 
   # Returns true if it's the afternoon.
   def self.isAfternoon?(time = nil)
     time = pbGetTimeNow if !time
-    return (time.hour >= 14 && time.hour < 17)
+    return time.hour >= 14 && time.hour < 17
   end
 
   # Returns true if it's the evening.
   def self.isEvening?(time = nil)
     time = pbGetTimeNow if !time
-    return (time.hour >= 17 && time.hour < 20)
+    return time.hour >= 17 && time.hour < 20
   end
 
   # Gets a number representing the amount of daylight (0=full night, 255=full day).
@@ -218,11 +218,15 @@ def pbIsSeason(seasonVariable, *arg)
   return ret
 end
 
-def pbIsSpring; return pbIsSeason(0, 0); end # Jan, May, Sep
-def pbIsSummer; return pbIsSeason(0, 1); end # Feb, Jun, Oct
-def pbIsAutumn; return pbIsSeason(0, 2); end # Mar, Jul, Nov
+# Jan, May, Sep
+def pbIsSpring; return pbIsSeason(0, 0); end
+# Feb, Jun, Oct
+def pbIsSummer; return pbIsSeason(0, 1); end
+# Mar, Jul, Nov
+def pbIsAutumn; return pbIsSeason(0, 2); end
 def pbIsFall; return pbIsAutumn; end
-def pbIsWinter; return pbIsSeason(0, 3); end # Apr, Aug, Dec
+# Apr, Aug, Dec
+def pbIsWinter; return pbIsSeason(0, 3); end
 
 def pbGetSeasonName(season)
   return [_INTL("Spring"),

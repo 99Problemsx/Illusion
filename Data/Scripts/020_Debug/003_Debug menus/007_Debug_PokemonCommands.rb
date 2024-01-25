@@ -254,9 +254,7 @@ MenuHandlers.add(:pokemon_debug_menu, :hidden_values, {
             end
           else   # (Max) Randomise all
             evTotalTarget = Pokemon::EV_LIMIT
-            if cmd2 == evcommands.length - 2   # Randomize all (not max)
-              evTotalTarget = rand(Pokemon::EV_LIMIT)
-            end
+            evTotalTarget = rand(Pokemon::EV_LIMIT) if cmd2 == evcommands.length - 2 # Randomize all (not max)
             GameData::Stat.each_main { |s| pkmn.ev[s.id] = 0 }
             while evTotalTarget > 0
               r = rand(ev_id.length)
@@ -591,9 +589,7 @@ MenuHandlers.add(:pokemon_debug_menu, :set_item, {
         item = pbChooseItemList(pkmn.item_id)
         if item && item != pkmn.item_id
           pkmn.item = item
-          if GameData::Item.get(item).is_mail?
-            pkmn.mail = Mail.new(item, _INTL("Text"), $player.name)
-          end
+          pkmn.mail = Mail.new(item, _INTL("Text"), $player.name) if GameData::Item.get(item).is_mail?
           screen.pbRefreshSingle(pkmnid)
         end
       when 1   # Remove item
@@ -718,14 +714,10 @@ MenuHandlers.add(:pokemon_debug_menu, :set_gender, {
         case cmd
         when 0   # Make male
           pkmn.makeMale
-          if !pkmn.male?
-            screen.pbDisplay(_INTL("{1}'s gender couldn't be changed.", pkmn.name))
-          end
+          screen.pbDisplay(_INTL("{1}'s gender couldn't be changed.", pkmn.name)) if !pkmn.male?
         when 1   # Make female
           pkmn.makeFemale
-          if !pkmn.female?
-            screen.pbDisplay(_INTL("{1}'s gender couldn't be changed.", pkmn.name))
-          end
+          screen.pbDisplay(_INTL("{1}'s gender couldn't be changed.", pkmn.name)) if !pkmn.female?
         when 2   # Reset
           pkmn.gender = nil
         end
@@ -815,7 +807,11 @@ MenuHandlers.add(:pokemon_debug_menu, :set_shininess, {
   "effect" => proc { |pkmn, pkmnid, heldpoke, settingUpBattle, screen|
     cmd = 0
     loop do
-      msg_idx = pkmn.shiny? ? (pkmn.super_shiny? ? 1 : 0) : 2
+      msg_idx = if pkmn.shiny?
+                  pkmn.super_shiny? ? 1 : 0
+                else
+                  2
+end
       msg = [_INTL("Is shiny."), _INTL("Is super shiny."), _INTL("Is normal (not shiny).")][msg_idx]
       cmd = screen.pbShowCommands(msg, [_INTL("Make shiny"), _INTL("Make super shiny"),
                                         _INTL("Make normal"), _INTL("Reset")], cmd)
@@ -1022,7 +1018,7 @@ MenuHandlers.add(:pokemon_debug_menu, :set_egg, {
       when 0   # Make egg
         if !pkmn.egg? && (pbHasEgg?(pkmn.species) ||
            screen.pbConfirm(_INTL("{1} cannot legally be an egg. Make egg anyway?", pkmn.speciesName)))
-          pkmn.level          = Settings::EGG_LEVEL
+          pkmn.level = Settings::EGG_LEVEL
           pkmn.calc_stats
           pkmn.name           = _INTL("Egg")
           pkmn.steps_to_hatch = pkmn.species_data.hatch_steps
@@ -1112,9 +1108,7 @@ MenuHandlers.add(:pokemon_debug_menu, :duplicate, {
       screen.pbDisplay(_INTL("The Pokémon was duplicated."))
     when PokemonStorageScreen
       if screen.storage.pbMoveCaughtToParty(clonedpkmn)
-        if pkmnid[0] != -1
-          screen.pbDisplay(_INTL("The duplicated Pokémon was moved to your party."))
-        end
+        screen.pbDisplay(_INTL("The duplicated Pokémon was moved to your party.")) if pkmnid[0] != -1
       else
         oldbox = screen.storage.currentBox
         newbox = screen.storage.pbStoreCaught(clonedpkmn)

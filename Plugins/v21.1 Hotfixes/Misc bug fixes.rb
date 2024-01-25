@@ -73,8 +73,8 @@ class PngAnimatedBitmap
     panorama = RPG::Cache.load_bitmap(dir, filename, hue)
     if filename[/^\[(\d+)(?:,(\d+))?\]/]   # Starts with 1 or 2 numbers in brackets
       # File has a frame count
-      numFrames = $1.to_i
-      duration  = $2.to_i   # In 1/20ths of a second
+      numFrames = ::Regexp.last_match(1).to_i
+      duration  = ::Regexp.last_match(2).to_i   # In 1/20ths of a second
       duration  = 5 if duration == 0
       raise "Invalid frame count in #{filename}" if numFrames <= 0
       raise "Invalid frame duration in #{filename}" if duration <= 0
@@ -175,12 +175,10 @@ class PokemonRegionMap_Scene
       @sprites["mapbottom"].maplocation = pbGetMapLocation(@map_x, @map_y)
       @sprites["mapbottom"].mapdetails  = pbGetMapDetails(@map_x, @map_y)
       if Input.trigger?(Input::BACK)
-        if @editor && @changed
-          pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
-          break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
-        else
-          break
-        end
+        break unless @editor && @changed
+        pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
+        break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
+
       elsif Input.trigger?(Input::USE) && @mode == 1   # Choosing an area to fly to
         healspot = pbGetHealingSpot(@map_x, @map_y)
         if healspot && ($PokemonGlobal.visitedMaps[healspot[0]] ||
@@ -223,7 +221,7 @@ class Translation
         @game_messages = load_data(game_filename)
         @game_messages = nil if !@game_messages.is_a?(Array)
       end
-    rescue
+    rescue StandardError
       @core_messages = nil
       @game_messages = nil
     end
@@ -269,8 +267,16 @@ class Game_Player < Game_Character
     # If event is running
     return result if $game_system.map_interpreter.running?
     # Calculate front event coordinates
-    new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-    new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+    new_x = @x + (if @direction == 6
+                    1
+                  else
+                    @direction == 4 ? -1 : 0
+end)
+    new_y = @y + (if @direction == 2
+                    1
+                  else
+                    @direction == 8 ? -1 : 0
+end)
     return false if !$game_map.valid?(new_x, new_y)
     # All event loops
     $game_map.events.each_value do |event|
@@ -285,8 +291,16 @@ class Game_Player < Game_Character
     # If fitting event is not found
     if result == false && $game_map.counter?(new_x, new_y)
       # Calculate coordinates of 1 tile further away
-      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+      new_x += (if @direction == 6
+                  1
+                else
+                  @direction == 4 ? -1 : 0
+end)
+      new_y += (if @direction == 2
+                  1
+                else
+                  @direction == 8 ? -1 : 0
+end)
       return false if !$game_map.valid?(new_x, new_y)
       # All event loops
       $game_map.events.each_value do |event|
@@ -306,8 +320,16 @@ class Game_Player < Game_Character
     result = false
     return result if $game_system.map_interpreter.running?
     # All event loops
-    x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
-    y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
+    x_offset = if dir == 4
+                 -1
+               else
+                 (dir == 6) ? 1 : 0
+end
+    y_offset = if dir == 8
+                 -1
+               else
+                 (dir == 2) ? 1 : 0
+end
     $game_map.events.each_value do |event|
       next if ![1, 2].include?(event.trigger)   # Player touch, event touch
       # If event coordinates and triggers are consistent
@@ -374,17 +396,15 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     end
     @lastchar = @curchar
     # Keep displaying more text
-    if show_more_characters
-      @display_timer += delta_t
-      if curcharSkip
-        if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
-          @scroll_timer_start = time_now
-        elsif @textchars[@curchar] == "\1"
-          @pausing = true if @curchar < @numtextchars - 1
-          self.startPause
-          refresh
-        end
-      end
+    return unless show_more_characters
+    @display_timer += delta_t
+    return unless curcharSkip
+    if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+      @scroll_timer_start = time_now
+    elsif @textchars[@curchar] == "\1"
+      @pausing = true if @curchar < @numtextchars - 1
+      self.startPause
+      refresh
     end
   end
 end

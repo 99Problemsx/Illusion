@@ -14,9 +14,9 @@ module GameData
     attr_reader :bicycle_BGM
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "metadata.dat"
-    PBS_BASE_FILENAME = "metadata"
+    DATA = {}.freeze
+    DATA_FILENAME = "metadata.dat".freeze
+    PBS_BASE_FILENAME = "metadata".freeze
 
     SCHEMA = {
       "SectionName"       => [:id,                   "u"],
@@ -31,7 +31,7 @@ module GameData
       "WildCaptureME"     => [:wild_capture_ME,      "s"],
       "SurfBGM"           => [:surf_BGM,             "s"],
       "BicycleBGM"        => [:bicycle_BGM,          "s"]
-    }
+    }.freeze
 
     extend ClassMethodsIDNumbers
     include InstanceMethods
@@ -69,7 +69,7 @@ module GameData
       @wild_capture_ME      = hash[:wild_capture_ME]
       @surf_BGM             = hash[:surf_BGM]
       @bicycle_BGM          = hash[:bicycle_BGM]
-      @pbs_file_suffix      = hash[:pbs_file_suffix]    || ""
+      @pbs_file_suffix      = hash[:pbs_file_suffix] || ""
     end
 
     # @return [String] the translated name of the Pokémon Storage creator

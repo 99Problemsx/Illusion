@@ -26,9 +26,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "dungeon_parameters.dat"
-    PBS_BASE_FILENAME = "dungeon_parameters"
+    DATA = {}.freeze
+    DATA_FILENAME = "dungeon_parameters.dat".freeze
+    PBS_BASE_FILENAME = "dungeon_parameters".freeze
 
     SCHEMA = {
       "SectionName"      => [:id,                      "mV"],
@@ -47,7 +47,7 @@ module GameData
       "VoidDecorations"  => [:void_decorations,        "uu"],
       "RNGSeed"          => [:rng_seed,                "u"],
       "Flags"            => [:flags,                   "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -68,7 +68,7 @@ module GameData
     def initialize(hash)
       @id                             = hash[:id]
       @area                           = hash[:area]
-      @version                        = hash[:version]                 || 0
+      @version                        = hash[:version] || 0
       @cell_count_x                   = (hash[:dungeon_size]) ? hash[:dungeon_size][0] : 5
       @cell_count_y                   = (hash[:dungeon_size]) ? hash[:dungeon_size][1] : 5
       @cell_width                     = (hash[:cell_size]) ? hash[:cell_size][0] : 10
@@ -77,7 +77,7 @@ module GameData
       @room_min_height                = (hash[:min_room_size]) ? hash[:min_room_size][1] : 5
       @room_max_width                 = (hash[:max_room_size]) ? hash[:max_room_size][0] : @cell_width - 1
       @room_max_height                = (hash[:max_room_size]) ? hash[:max_room_size][1] : @cell_height - 1
-      @corridor_width                 = hash[:corridor_width]          || 2
+      @corridor_width                 = hash[:corridor_width] || 2
       @random_corridor_shift          = hash[:random_corridor_shift]
       @node_layout                    = hash[:node_layout]             || :full
       @room_layout                    = hash[:room_layout]             || :full
@@ -107,13 +107,9 @@ module GameData
 
     def rand_room_size
       width = @room_min_width
-      if @room_max_width > @room_min_width
-        width = rand(@room_min_width..@room_max_width)
-      end
+      width = rand(@room_min_width..@room_max_width) if @room_max_width > @room_min_width
       height = @room_min_height
-      if @room_max_height > @room_min_height
-        height = rand(@room_min_height..@room_max_height)
-      end
+      height = rand(@room_min_height..@room_max_height) if @room_max_height > @room_min_height
       return width, height
     end
 

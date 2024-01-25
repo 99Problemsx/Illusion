@@ -4,7 +4,7 @@
 class PokemonPauseMenu_Scene
   def pbStartScene
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["cmdwindow"] = Window_CommandPokemon.new([])
     @sprites["cmdwindow"].visible = false
@@ -237,9 +237,9 @@ MenuHandlers.add(:pause_menu, :town_map, {
 })
 
 MenuHandlers.add(:pause_menu, :trainer_card, {
-  "name"      => proc { next $player.name },
-  "order"     => 50,
-  "effect"    => proc { |menu|
+  "name"   => proc { next $player.name },
+  "order"  => 50,
+  "effect" => proc { |menu|
     pbPlayDecisionSE
     pbFadeOutIn do
       scene = PokemonTrainerCard_Scene.new
@@ -272,9 +272,9 @@ MenuHandlers.add(:pause_menu, :save, {
 })
 
 MenuHandlers.add(:pause_menu, :options, {
-  "name"      => _INTL("Options"),
-  "order"     => 70,
-  "effect"    => proc { |menu|
+  "name"   => _INTL("Options"),
+  "order"  => 70,
+  "effect" => proc { |menu|
     pbPlayDecisionSE
     pbFadeOutIn do
       scene = PokemonOption_Scene.new
@@ -302,9 +302,9 @@ MenuHandlers.add(:pause_menu, :debug, {
 })
 
 MenuHandlers.add(:pause_menu, :quit_game, {
-  "name"      => _INTL("Quit Game"),
-  "order"     => 90,
-  "effect"    => proc { |menu|
+  "name"   => _INTL("Quit Game"),
+  "order"  => 90,
+  "effect" => proc { |menu|
     menu.pbHideMenu
     if pbConfirmMessage(_INTL("Are you sure you want to quit the game?"))
       scene = PokemonSave_Scene.new

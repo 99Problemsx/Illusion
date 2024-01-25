@@ -5,7 +5,7 @@ module GameData
     attr_reader :type   # :land, :cave, :water, :fishing, :contest, :none
     attr_reader :trigger_chance
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -141,18 +141,18 @@ GameData::EncounterType.register({
 })
 
 GameData::EncounterType.register({
-  :id             => :OldRod,
-  :type           => :fishing
+  :id   => :OldRod,
+  :type => :fishing
 })
 
 GameData::EncounterType.register({
-  :id             => :GoodRod,
-  :type           => :fishing
+  :id   => :GoodRod,
+  :type => :fishing
 })
 
 GameData::EncounterType.register({
-  :id             => :SuperRod,
-  :type           => :fishing
+  :id   => :SuperRod,
+  :type => :fishing
 })
 
 GameData::EncounterType.register({
@@ -162,13 +162,13 @@ GameData::EncounterType.register({
 })
 
 GameData::EncounterType.register({
-  :id             => :HeadbuttLow,
-  :type           => :none
+  :id   => :HeadbuttLow,
+  :type => :none
 })
 
 GameData::EncounterType.register({
-  :id             => :HeadbuttHigh,
-  :type           => :none
+  :id   => :HeadbuttHigh,
+  :type => :none
 })
 
 GameData::EncounterType.register({

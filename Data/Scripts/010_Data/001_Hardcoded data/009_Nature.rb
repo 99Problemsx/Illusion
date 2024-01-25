@@ -4,7 +4,7 @@ module GameData
     attr_reader :real_name
     attr_reader :stat_changes
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -28,8 +28,8 @@ end
 #===============================================================================
 
 GameData::Nature.register({
-  :id           => :HARDY,
-  :name         => _INTL("Hardy")
+  :id   => :HARDY,
+  :name => _INTL("Hardy")
 })
 
 GameData::Nature.register({
@@ -63,8 +63,8 @@ GameData::Nature.register({
 })
 
 GameData::Nature.register({
-  :id           => :DOCILE,
-  :name         => _INTL("Docile")
+  :id   => :DOCILE,
+  :name => _INTL("Docile")
 })
 
 GameData::Nature.register({
@@ -98,8 +98,8 @@ GameData::Nature.register({
 })
 
 GameData::Nature.register({
-  :id           => :SERIOUS,
-  :name         => _INTL("Serious")
+  :id   => :SERIOUS,
+  :name => _INTL("Serious")
 })
 
 GameData::Nature.register({
@@ -133,8 +133,8 @@ GameData::Nature.register({
 })
 
 GameData::Nature.register({
-  :id           => :BASHFUL,
-  :name         => _INTL("Bashful")
+  :id   => :BASHFUL,
+  :name => _INTL("Bashful")
 })
 
 GameData::Nature.register({
@@ -168,6 +168,6 @@ GameData::Nature.register({
 })
 
 GameData::Nature.register({
-  :id           => :QUIRKY,
-  :name         => _INTL("Quirky")
+  :id   => :QUIRKY,
+  :name => _INTL("Quirky")
 })

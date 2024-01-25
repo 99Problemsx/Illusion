@@ -46,7 +46,7 @@ class Battle::Scene
       ret[0] += [-48, 48, 32, -32][index]
       ret[1] += [  0,  0, 16, -16][index]
     when 3
-      ret[0] += [-80, 80,  0,  0, 80, -80][index]
+      ret[0] += [-80, 80,  0, 0, 80, -80][index]
       ret[1] += [  0,  0,  8, -8, 16, -16][index]
     end
     return ret
@@ -67,8 +67,8 @@ class Battle::Scene
       ret[0] += [-48, 48, 32, -32][(2 * index) + side]
       ret[1] += [  0,  0,  0, -16][(2 * index) + side]
     when 3
-      ret[0] += [-80, 80,  0,  0, 80, -80][(2 * index) + side]
-      ret[1] += [  0,  0,  0, -8,  0, -16][(2 * index) + side]
+      ret[0] += [-80, 80,  0, 0, 80, -80][(2 * index) + side]
+      ret[1] += [  0,  0,  0, -8, 0, -16][(2 * index) + side]
     end
     return ret
   end
@@ -102,10 +102,9 @@ class Battle::Scene
 
   def pbInputUpdate
     Input.update
-    if Input.trigger?(Input::BACK) && @abortable && !@aborted
-      @aborted = true
-      @battle.pbAbort
-    end
+    return unless Input.trigger?(Input::BACK) && @abortable && !@aborted
+    @aborted = true
+    @battle.pbAbort
   end
 
   def pbFrameUpdate(cw = nil)
@@ -312,18 +311,18 @@ class Battle::Scene
   #=============================================================================
   def pbAddSprite(id, x, y, filename, viewport)
     sprite = @sprites[id] || IconSprite.new(x, y, viewport)
-    if filename
-      sprite.setBitmap(filename) rescue nil
-    end
+    begin
+      sprite.setBitmap(filename)
+    rescue StandardError
+      nil
+    end if filename
     @sprites[id] = sprite
     return sprite
   end
 
   def pbAddPlane(id, filename, viewport)
     sprite = AnimatedPlane.new(viewport)
-    if filename
-      sprite.setBitmap(filename)
-    end
+    sprite.setBitmap(filename) if filename
     @sprites[id] = sprite
     return sprite
   end

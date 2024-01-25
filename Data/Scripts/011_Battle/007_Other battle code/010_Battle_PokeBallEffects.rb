@@ -9,12 +9,12 @@ module Battle::PokeBallEffects
 
   def self.isUnconditional?(ball, battle, battler)
     ret = IsUnconditional.trigger(ball, battle, battler)
-    return (!ret.nil?) ? ret : false
+    return (ret.nil?) ? false : ret
   end
 
   def self.modifyCatchRate(ball, catchRate, battle, battler)
     ret = ModifyCatchRate.trigger(ball, catchRate, battle, battler)
-    return (!ret.nil?) ? ret : catchRate
+    return (ret.nil?) ? catchRate : ret
   end
 
   def self.onCatch(ball, battle, pkmn)
@@ -64,9 +64,7 @@ Battle::PokeBallEffects::ModifyCatchRate.add(:DIVEBALL, proc { |ball, catchRate,
 })
 
 Battle::PokeBallEffects::ModifyCatchRate.add(:NESTBALL, proc { |ball, catchRate, battle, battler|
-  if battler.level <= 30
-    catchRate *= [(41 - battler.level) / 10.0, 1].max
-  end
+  catchRate *= [(41 - battler.level) / 10.0, 1].max if battler.level <= 30
   next catchRate
 })
 
@@ -162,9 +160,7 @@ Battle::PokeBallEffects::ModifyCatchRate.add(:MOONBALL, proc { |ball, catchRate,
   #       family can evolve with the Moon Stone, not whether the target itself
   #       can immediately evolve with the Moon Stone.
   moon_stone = GameData::Item.try_get(:MOONSTONE)
-  if moon_stone && battler.pokemon.species_data.family_item_evolutions_use_item?(moon_stone.id)
-    catchRate *= 4
-  end
+  catchRate *= 4 if moon_stone && battler.pokemon.species_data.family_item_evolutions_use_item?(moon_stone.id)
   next [catchRate, 255].min
 })
 

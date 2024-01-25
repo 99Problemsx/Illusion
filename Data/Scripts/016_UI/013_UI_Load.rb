@@ -83,7 +83,7 @@ class PokemonLoadPanel < Sprite
           textpos.push([@trainer.name, 112, 70, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         end
         mapname = pbGetMapNameFromId(@mapid)
-        mapname.gsub!(/\\PN/, @trainer.name)
+        mapname.gsub!("\\PN", @trainer.name)
         textpos.push([mapname, 386, 16, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
       else
         textpos.push([@title, 32, 14, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
@@ -102,7 +102,7 @@ class PokemonLoad_Scene
     @commands = commands
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99998
+    @viewport.z = 99_998
     addBackgroundOrColoredPlane(@sprites, "background", "Load/bg", Color.new(248, 248, 248), @viewport)
     y = 32
     commands.length.times do |i|
@@ -126,39 +126,46 @@ class PokemonLoad_Scene
   def pbStartDeleteScene
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99998
+    @viewport.z = 99_998
     addBackgroundOrColoredPlane(@sprites, "background", "Load/bg", Color.new(248, 248, 248), @viewport)
   end
 
   def pbUpdate
-    oldi = @sprites["cmdwindow"].index rescue 0
+    oldi = begin
+      @sprites["cmdwindow"].index
+    rescue StandardError
+      0
+    end
     pbUpdateSpriteHash(@sprites)
-    newi = @sprites["cmdwindow"].index rescue 0
-    if oldi != newi
-      @sprites["panel#{oldi}"].selected = false
-      @sprites["panel#{oldi}"].pbRefresh
-      @sprites["panel#{newi}"].selected = true
-      @sprites["panel#{newi}"].pbRefresh
-      while @sprites["panel#{newi}"].y > Graphics.height - 80
-        @commands.length.times do |i|
-          @sprites["panel#{i}"].y -= 48
-        end
-        6.times do |i|
-          break if !@sprites["party#{i}"]
-          @sprites["party#{i}"].y -= 48
-        end
-        @sprites["player"].y -= 48 if @sprites["player"]
+    newi = begin
+      @sprites["cmdwindow"].index
+    rescue StandardError
+      0
+    end
+    return unless oldi != newi
+    @sprites["panel#{oldi}"].selected = false
+    @sprites["panel#{oldi}"].pbRefresh
+    @sprites["panel#{newi}"].selected = true
+    @sprites["panel#{newi}"].pbRefresh
+    while @sprites["panel#{newi}"].y > Graphics.height - 80
+      @commands.length.times do |i|
+        @sprites["panel#{i}"].y -= 48
       end
-      while @sprites["panel#{newi}"].y < 32
-        @commands.length.times do |i|
-          @sprites["panel#{i}"].y += 48
-        end
-        6.times do |i|
-          break if !@sprites["party#{i}"]
-          @sprites["party#{i}"].y += 48
-        end
-        @sprites["player"].y += 48 if @sprites["player"]
+      6.times do |i|
+        break if !@sprites["party#{i}"]
+        @sprites["party#{i}"].y -= 48
       end
+      @sprites["player"].y -= 48 if @sprites["player"]
+    end
+    while @sprites["panel#{newi}"].y < 32
+      @commands.length.times do |i|
+        @sprites["panel#{i}"].y += 48
+      end
+      6.times do |i|
+        break if !@sprites["party#{i}"]
+        @sprites["party#{i}"].y += 48
+      end
+      @sprites["player"].y += 48 if @sprites["player"]
     end
   end
 
@@ -175,14 +182,14 @@ class PokemonLoad_Scene
       charheight = @sprites["player"].bitmap.height
       @sprites["player"].x = 112 - (charwidth / 8)
       @sprites["player"].y = 112 - (charheight / 8)
-      @sprites["player"].z = 99999
+      @sprites["player"].z = 99_999
     end
     trainer.party.each_with_index do |pkmn, i|
       @sprites["party#{i}"] = PokemonIconSprite.new(pkmn, @viewport)
       @sprites["party#{i}"].setOffset(PictureOrigin::CENTER)
       @sprites["party#{i}"].x = 334 + (66 * (i % 2))
       @sprites["party#{i}"].y = 112 + (50 * (i / 2))
-      @sprites["party#{i}"].z = 99999
+      @sprites["party#{i}"].z = 99_999
     end
   end
 
@@ -192,9 +199,7 @@ class PokemonLoad_Scene
       Graphics.update
       Input.update
       pbUpdate
-      if Input.trigger?(Input::USE)
-        return @sprites["cmdwindow"].index
-      end
+      return @sprites["cmdwindow"].index if Input.trigger?(Input::USE)
     end
   end
 
@@ -298,9 +303,7 @@ class PokemonLoadScreen
     show_continue = !@save_data.empty?
     if show_continue
       commands[cmd_continue = commands.length] = _INTL("Continue")
-      if @save_data[:player].mystery_gift_unlocked
-        commands[cmd_mystery_gift = commands.length] = _INTL("Mystery Gift")
-      end
+      commands[cmd_mystery_gift = commands.length] = _INTL("Mystery Gift") if @save_data[:player].mystery_gift_unlocked
     end
     commands[cmd_new_game = commands.length]  = _INTL("New Game")
     commands[cmd_options = commands.length]   = _INTL("Options")

@@ -14,7 +14,7 @@ class Battle::Scene
   def pbStartBattle(battle)
     @battle   = battle
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @lastCmd  = Array.new(@battle.battlers.length, 0)
     @lastMove = Array.new(@battle.battlers.length, 0)
     pbInitSprites
@@ -59,9 +59,7 @@ class Battle::Scene
         ball.visible = false
       end
       # Ability splash bars
-      if USE_ABILITY_SPLASH
-        @sprites["abilityBar_#{side}"] = AbilitySplashBar.new(side, @viewport)
-      end
+      @sprites["abilityBar_#{side}"] = AbilitySplashBar.new(side, @viewport) if USE_ABILITY_SPLASH
     end
     # Player's and partner trainer's back sprite
     @battle.player.each_with_index do |p, i|
@@ -80,14 +78,13 @@ class Battle::Scene
       pbCreatePokemonSprite(i)
     end
     # Wild battle, so set up the Pokémon sprite(s) accordingly
-    if @battle.wildBattle?
-      @battle.pbParty(1).each_with_index do |pkmn, i|
-        index = (i * 2) + 1
-        pbChangePokemon(index, pkmn)
-        pkmnSprite = @sprites["pokemon_#{index}"]
-        pkmnSprite.tone    = Tone.new(-80, -80, -80)
-        pkmnSprite.visible = true
-      end
+    return unless @battle.wildBattle?
+    @battle.pbParty(1).each_with_index do |pkmn, i|
+      index = (i * 2) + 1
+      pbChangePokemon(index, pkmn)
+      pkmnSprite = @sprites["pokemon_#{index}"]
+      pkmnSprite.tone    = Tone.new(-80, -80, -80)
+      pkmnSprite.visible = true
     end
   end
 
@@ -103,26 +100,18 @@ class Battle::Scene
     messageFilename = @battle.backdrop
     if time
       trialName = sprintf("%s_%s", backdropFilename, time)
-      if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_bg", trialName))
-        backdropFilename = trialName
-      end
+      backdropFilename = trialName if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_bg", trialName))
       trialName = sprintf("%s_%s", baseFilename, time)
-      if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_base0", trialName))
-        baseFilename = trialName
-      end
+      baseFilename = trialName if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_base0", trialName))
       trialName = sprintf("%s_%s", messageFilename, time)
-      if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_message", trialName))
-        messageFilename = trialName
-      end
+      messageFilename = trialName if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_message", trialName))
     end
     if !pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_base0", baseFilename)) &&
        @battle.backdropBase
       baseFilename = @battle.backdropBase
       if time
         trialName = sprintf("%s_%s", baseFilename, time)
-        if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_base0", trialName))
-          baseFilename = trialName
-        end
+        baseFilename = trialName if pbResolveBitmap(sprintf("Graphics/Battlebacks/%s_base0", trialName))
       end
     end
     # Finalise filenames

@@ -122,8 +122,6 @@ class Battle
           pbDisplayPaused(_INTL("{1} prevents escape with {2}!", b.pbThis, b.abilityName))
           return 0
         end
-      end
-      allOtherSideBattlers(idxBattler).each do |b|
         next if !b.itemActive?
         if Battle::ItemEffects.triggerTrappingByTarget(b.item, battler, b, self)
           pbDisplayPaused(_INTL("{1} prevents escape with {2}!", b.pbThis, b.itemName))

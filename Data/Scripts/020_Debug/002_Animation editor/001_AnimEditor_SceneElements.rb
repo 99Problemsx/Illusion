@@ -70,7 +70,7 @@ module BattleAnimationEditor
     mousepos = Mouse.getMousePos
     return -1 if !mousepos
     menuwindow = Window_Menu.new(commands, mousepos[0], mousepos[1])
-    menuwindow.z = 99999
+    menuwindow.z = 99_999
     loop do
       Graphics.update
       Input.update
@@ -86,9 +86,7 @@ module BattleAnimationEditor
         menuwindow.dispose
         return hit
       end
-      if Input.trigger?(Input::BACK)   # Escape
-        break
-      end
+      break if Input.trigger?(Input::BACK) # Escape
     end
     menuwindow.dispose
     return -1
@@ -158,7 +156,7 @@ module BattleAnimationEditor
       @contents.blt(0, 0, @arrows.bitmap, Rect.new(0, 0, arrowwidth, 96))
       @contents.blt(arrowwidth + (NUMFRAMES * 96), 0, @arrows.bitmap,
                     Rect.new(arrowwidth, 0, arrowwidth, 96))
-      havebitmap = (self.animbitmap && !self.animbitmap.disposed?)
+      havebitmap = self.animbitmap && !self.animbitmap.disposed?
       if havebitmap
         rect = Rect.new(0, 0, 0, 0)
         rectdst = Rect.new(0, 0, 0, 0)
@@ -220,15 +218,14 @@ module BattleAnimationEditor
         refresh
       end
       # Right arrow
-      if right.contains?(mousepos[0], mousepos[1])
-        if repeattime > 0.75
-          @start += 3
-        else
-          @start += 1
-        end
-        @start = maxindex if @start >= maxindex
-        refresh
+      return unless right.contains?(mousepos[0], mousepos[1])
+      if repeattime > 0.75
+        @start += 3
+      else
+        @start += 1
       end
+      @start = maxindex if @start >= maxindex
+      refresh
     end
   end
 
@@ -272,10 +269,9 @@ module BattleAnimationEditor
 
     # Redraws the sprite only if it is invalid, and then revalidates the sprite
     def repaint
-      if self.invalid?
-        refresh
-        validate
-      end
+      return unless self.invalid?
+      refresh
+      validate
     end
 
     # Redraws the sprite.  This method should not check whether
@@ -333,9 +329,17 @@ module BattleAnimationEditor
 
     def refresh
       @contents.clear
-      self.z = (@previous) ? 49 : (@selected) ? 51 : 50
+      self.z = if @previous
+                 49
+               else
+                 (@selected) ? 51 : 50
+end
       # Draw frame
-      color = (@previous) ? @prevcolor : (@selected) ? @selcolor : @unselcolor
+      color = if @previous
+                @prevcolor
+              else
+                (@selected) ? @selcolor : @unselcolor
+end
       @contents.fill_rect(0, 0, 64, 1, color)
       @contents.fill_rect(0, 63, 64, 1, color)
       @contents.fill_rect(0, 0, 1, 64, color)
@@ -345,10 +349,9 @@ module BattleAnimationEditor
       bmrect = Rect.new((@id % 10) * 16, yoffset + ((@id / 10) * 16), 16, 16)
       @contents.blt(0, 0, @iconbitmap.bitmap, bmrect)
       # Draw padlock if frame is locked
-      if @locked && !@previous
-        bmrect = Rect.new(0, NUM_ROWS * 16, 16, 16)
-        @contents.blt(16, 0, @iconbitmap.bitmap, bmrect)
-      end
+      return unless @locked && !@previous
+      bmrect = Rect.new(0, NUM_ROWS * 16, 16, 16)
+      @contents.blt(16, 0, @iconbitmap.bitmap, bmrect)
     end
   end
 
@@ -415,7 +418,7 @@ module BattleAnimationEditor
         begin
           @animbitmap = AnimatedBitmap.new("Graphics/Animations/" + @animation.graphic,
                                            @animation.hue).deanimate
-        rescue
+        rescue StandardError
           @animbitmap = nil
         end
       end
@@ -449,65 +452,64 @@ module BattleAnimationEditor
     end
 
     def play(oppmove = false)
-      if !@playing
-        @sprites["pokemon_0"] = Sprite.new(@viewport)
-        @sprites["pokemon_0"].bitmap = @user
-        @sprites["pokemon_0"].z = 21
-        @sprites["pokemon_1"] = Sprite.new(@viewport)
-        @sprites["pokemon_1"].bitmap = @target
-        @sprites["pokemon_1"].z = 16
-        pbSpriteSetAnimFrame(@sprites["pokemon_0"],
-                             pbCreateCel(Battle::Scene::FOCUSUSER_X,
-                                         Battle::Scene::FOCUSUSER_Y, -1, 2),
-                             @sprites["pokemon_0"], @sprites["pokemon_1"])
-        pbSpriteSetAnimFrame(@sprites["pokemon_1"],
-                             pbCreateCel(Battle::Scene::FOCUSTARGET_X,
-                                         Battle::Scene::FOCUSTARGET_Y, -2, 1),
-                             @sprites["pokemon_0"], @sprites["pokemon_1"])
-        usersprite = @sprites["pokemon_#{oppmove ? 1 : 0}"]
-        targetsprite = @sprites["pokemon_#{oppmove ? 0 : 1}"]
-        olduserx = usersprite ? usersprite.x : 0
-        oldusery = usersprite ? usersprite.y : 0
-        oldtargetx = targetsprite ? targetsprite.x : 0
-        oldtargety = targetsprite ? targetsprite.y : 0
-        @player = PBAnimationPlayerX.new(@animation,
-                                         @battle.battlers[oppmove ? 1 : 0],
-                                         @battle.battlers[oppmove ? 0 : 1],
-                                         self, oppmove, true)
-        @player.setLineTransform(
-          Battle::Scene::FOCUSUSER_X, Battle::Scene::FOCUSUSER_Y,
-          Battle::Scene::FOCUSTARGET_X, Battle::Scene::FOCUSTARGET_Y,
-          olduserx, oldusery,
-          oldtargetx, oldtargety
-        )
-        @player.start
-        @playing = true
-        @sprites["pokemon_0"].x += BORDERSIZE
-        @sprites["pokemon_0"].y += BORDERSIZE
-        @sprites["pokemon_1"].x += BORDERSIZE
-        @sprites["pokemon_1"].y += BORDERSIZE
-        oldstate = []
-        PBAnimation::MAX_SPRITES.times do |i|
-          oldstate.push([@celsprites[i].visible, @framesprites[i].visible, @lastframesprites[i].visible])
-          @celsprites[i].visible = false
-          @framesprites[i].visible = false
-          @lastframesprites[i].visible = false
-        end
-        loop do
-          Graphics.update
-          self.update
-          break if !@playing
-        end
-        PBAnimation::MAX_SPRITES.times do |i|
-          @celsprites[i].visible = oldstate[i][0]
-          @framesprites[i].visible = oldstate[i][1]
-          @lastframesprites[i].visible = oldstate[i][2]
-        end
-        @sprites["pokemon_0"].dispose
-        @sprites["pokemon_1"].dispose
-        @player.dispose
-        @player = nil
+      return if @playing
+      @sprites["pokemon_0"] = Sprite.new(@viewport)
+      @sprites["pokemon_0"].bitmap = @user
+      @sprites["pokemon_0"].z = 21
+      @sprites["pokemon_1"] = Sprite.new(@viewport)
+      @sprites["pokemon_1"].bitmap = @target
+      @sprites["pokemon_1"].z = 16
+      pbSpriteSetAnimFrame(@sprites["pokemon_0"],
+                           pbCreateCel(Battle::Scene::FOCUSUSER_X,
+                                       Battle::Scene::FOCUSUSER_Y, -1, 2),
+                           @sprites["pokemon_0"], @sprites["pokemon_1"])
+      pbSpriteSetAnimFrame(@sprites["pokemon_1"],
+                           pbCreateCel(Battle::Scene::FOCUSTARGET_X,
+                                       Battle::Scene::FOCUSTARGET_Y, -2, 1),
+                           @sprites["pokemon_0"], @sprites["pokemon_1"])
+      usersprite = @sprites["pokemon_#{oppmove ? 1 : 0}"]
+      targetsprite = @sprites["pokemon_#{oppmove ? 0 : 1}"]
+      olduserx = usersprite ? usersprite.x : 0
+      oldusery = usersprite ? usersprite.y : 0
+      oldtargetx = targetsprite ? targetsprite.x : 0
+      oldtargety = targetsprite ? targetsprite.y : 0
+      @player = PBAnimationPlayerX.new(@animation,
+                                       @battle.battlers[oppmove ? 1 : 0],
+                                       @battle.battlers[oppmove ? 0 : 1],
+                                       self, oppmove, true)
+      @player.setLineTransform(
+        Battle::Scene::FOCUSUSER_X, Battle::Scene::FOCUSUSER_Y,
+        Battle::Scene::FOCUSTARGET_X, Battle::Scene::FOCUSTARGET_Y,
+        olduserx, oldusery,
+        oldtargetx, oldtargety
+      )
+      @player.start
+      @playing = true
+      @sprites["pokemon_0"].x += BORDERSIZE
+      @sprites["pokemon_0"].y += BORDERSIZE
+      @sprites["pokemon_1"].x += BORDERSIZE
+      @sprites["pokemon_1"].y += BORDERSIZE
+      oldstate = []
+      PBAnimation::MAX_SPRITES.times do |i|
+        oldstate.push([@celsprites[i].visible, @framesprites[i].visible, @lastframesprites[i].visible])
+        @celsprites[i].visible = false
+        @framesprites[i].visible = false
+        @lastframesprites[i].visible = false
       end
+      loop do
+        Graphics.update
+        self.update
+        break if !@playing
+      end
+      PBAnimation::MAX_SPRITES.times do |i|
+        @celsprites[i].visible = oldstate[i][0]
+        @framesprites[i].visible = oldstate[i][1]
+        @lastframesprites[i].visible = oldstate[i][2]
+      end
+      @sprites["pokemon_0"].dispose
+      @sprites["pokemon_1"].dispose
+      @player.dispose
+      @player = nil
     end
 
     def invalidate
@@ -531,16 +533,15 @@ module BattleAnimationEditor
     end
 
     def setFrame(i)
-      if @celsprites[i]
-        @framesprites[i].ox = 32
-        @framesprites[i].oy = 32
-        @framesprites[i].selected = (i == @currentcel)
-        @framesprites[i].locked = self.locked?(i)
-        @framesprites[i].x = @celsprites[i].x
-        @framesprites[i].y = @celsprites[i].y
-        @framesprites[i].visible = @celsprites[i].visible
-        @framesprites[i].repaint
-      end
+      return unless @celsprites[i]
+      @framesprites[i].ox = 32
+      @framesprites[i].oy = 32
+      @framesprites[i].selected = (i == @currentcel)
+      @framesprites[i].locked = self.locked?(i)
+      @framesprites[i].x = @celsprites[i].x
+      @framesprites[i].y = @celsprites[i].y
+      @framesprites[i].visible = @celsprites[i].visible
+      @framesprites[i].repaint
     end
 
     def setPreviousFrame(i)
@@ -564,28 +565,26 @@ module BattleAnimationEditor
     end
 
     def offsetFrame(frame, ox, oy)
-      if frame >= 0 && frame < @animation.length
-        PBAnimation::MAX_SPRITES.times do |i|
-          if !self.locked?(i) && @animation[frame][i]
-            @animation[frame][i][AnimFrame::X] += ox
-            @animation[frame][i][AnimFrame::Y] += oy
-          end
-          @dirty[i] = true if frame == @currentframe
+      return unless frame >= 0 && frame < @animation.length
+      PBAnimation::MAX_SPRITES.times do |i|
+        if !self.locked?(i) && @animation[frame][i]
+          @animation[frame][i][AnimFrame::X] += ox
+          @animation[frame][i][AnimFrame::Y] += oy
         end
+        @dirty[i] = true if frame == @currentframe
       end
     end
 
     # Clears all items in the frame except locked items
     def clearFrame(frame)
-      if frame >= 0 && frame < @animation.length
-        PBAnimation::MAX_SPRITES.times do |i|
-          if self.deletable?(i)
-            @animation[frame][i] = nil
-          else
-            pbResetCel(@animation[frame][i])
-          end
-          @dirty[i] = true if frame == @currentframe
+      return unless frame >= 0 && frame < @animation.length
+      PBAnimation::MAX_SPRITES.times do |i|
+        if self.deletable?(i)
+          @animation[frame][i] = nil
+        else
+          pbResetCel(@animation[frame][i])
         end
+        @dirty[i] = true if frame == @currentframe
       end
     end
 
@@ -694,24 +693,20 @@ module BattleAnimationEditor
     end
 
     def setBitmap(i, frame)
-      if @celsprites[i]
-        cel = @animation[frame][i]
-        @celsprites[i].bitmap = @animbitmap
-        if cel
-          @celsprites[i].bitmap = @user if cel[AnimFrame::PATTERN] == -1
-          @celsprites[i].bitmap = @target if cel[AnimFrame::PATTERN] == -2
-        end
-      end
+      return unless @celsprites[i]
+      cel = @animation[frame][i]
+      @celsprites[i].bitmap = @animbitmap
+      return unless cel
+      @celsprites[i].bitmap = @user if cel[AnimFrame::PATTERN] == -1
+      @celsprites[i].bitmap = @target if cel[AnimFrame::PATTERN] == -2
     end
 
     def setSpriteBitmap(sprite, cel)
-      if sprite && !sprite.disposed?
-        sprite.bitmap = @animbitmap
-        if cel
-          sprite.bitmap = @user if cel[AnimFrame::PATTERN] == -1
-          sprite.bitmap = @target if cel[AnimFrame::PATTERN] == -2
-        end
-      end
+      return unless sprite && !sprite.disposed?
+      sprite.bitmap = @animbitmap
+      return unless cel
+      sprite.bitmap = @user if cel[AnimFrame::PATTERN] == -1
+      sprite.bitmap = @target if cel[AnimFrame::PATTERN] == -2
     end
 
     def addSprite(x, y)
@@ -755,9 +750,7 @@ module BattleAnimationEditor
         spritex += xwidth / 2
         spritey += xheight / 2
       end
-      if !(x >= spritex && x <= spritex + width && y >= spritey && y <= spritey + height)
-        return false
-      end
+      return false if !(x >= spritex && x <= spritex + width && y >= spritey && y <= spritey + height)
       if usealpha
         # TODO: This should account for sprite.angle as well.
         bitmapX = sprite.src_rect.x
@@ -786,9 +779,7 @@ module BattleAnimationEditor
         selectedcel = -1
         usealpha = Input.press?(Input::ALT)
         PBAnimation::MAX_SPRITES.times do |j|
-          if pbSpriteHitTest(@celsprites[j], mousepos[0], mousepos[1], usealpha, false)
-            selectedcel = j
-          end
+          selectedcel = j if pbSpriteHitTest(@celsprites[j], mousepos[0], mousepos[1], usealpha, false)
         end
         if selectedcel < 0
           if @animbitmap && addSprite(mousepos[0] - BORDERSIZE, mousepos[1] - BORDERSIZE)
@@ -823,71 +814,66 @@ module BattleAnimationEditor
         cel[AnimFrame::Y] = mousepos[1] - BORDERSIZE + @selectOffsetY
         @dirty[@currentcel] = true
       end
-      if !Input.press?(Input::MOUSELEFT) && @selecting
-        @selecting = false
+      @selecting = false if !Input.press?(Input::MOUSELEFT) && @selecting
+      return unless cel
+      if (Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)) && self.deletable?(@currentcel)
+        @animation[@currentframe][@currentcel] = nil
+        @dirty[@currentcel] = true
+        return
       end
-      if cel
-        if (Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)) && self.deletable?(@currentcel)
-          @animation[@currentframe][@currentcel] = nil
-          @dirty[@currentcel] = true
-          return
-        end
-        if Input.triggerex?(:P) || Input.repeatex?(:P)   # Properties
-          BattleAnimationEditor.pbCellProperties(self)
-          @dirty[@currentcel] = true
-          return
-        end
-        if Input.triggerex?(:L) || Input.repeatex?(:L)   # Lock
-          cel[AnimFrame::LOCKED] = (cel[AnimFrame::LOCKED] == 0) ? 1 : 0
-          @dirty[@currentcel] = true
-        end
-        if Input.triggerex?(:R) || Input.repeatex?(:R)   # Rotate right
-          cel[AnimFrame::ANGLE] += 10
-          cel[AnimFrame::ANGLE] %= 360
-          @dirty[@currentcel] = true
-        end
-        if Input.triggerex?(:E) || Input.repeatex?(:E)   # Rotate left
-          cel[AnimFrame::ANGLE] -= 10
-          cel[AnimFrame::ANGLE] %= 360
-          @dirty[@currentcel] = true
-        end
-        if Input.triggerex?(:KP_PLUS) || Input.repeatex?(:KP_PLUS)   # Zoom in
-          cel[AnimFrame::ZOOMX] += 10
-          cel[AnimFrame::ZOOMX] = 1000 if cel[AnimFrame::ZOOMX] > 1000
-          cel[AnimFrame::ZOOMY] += 10
-          cel[AnimFrame::ZOOMY] = 1000 if cel[AnimFrame::ZOOMY] > 1000
-          @dirty[@currentcel] = true
-        end
-        if Input.triggerex?(:KP_MINUS) || Input.repeatex?(:KP_MINUS)   # Zoom out
-          cel[AnimFrame::ZOOMX] -= 10
-          cel[AnimFrame::ZOOMX] = 10 if cel[AnimFrame::ZOOMX] < 10
-          cel[AnimFrame::ZOOMY] -= 10
-          cel[AnimFrame::ZOOMY] = 10 if cel[AnimFrame::ZOOMY] < 10
-          @dirty[@currentcel] = true
-        end
-        if !self.locked?(@currentcel)
-          if Input.trigger?(Input::UP) || Input.repeat?(Input::UP)
-            increment = (Input.press?(Input::ALT)) ? 1 : 8
-            cel[AnimFrame::Y] -= increment
-            @dirty[@currentcel] = true
-          end
-          if Input.trigger?(Input::DOWN) || Input.repeat?(Input::DOWN)
-            increment = (Input.press?(Input::ALT)) ? 1 : 8
-            cel[AnimFrame::Y] += increment
-            @dirty[@currentcel] = true
-          end
-          if Input.trigger?(Input::LEFT) || Input.repeat?(Input::LEFT)
-            increment = (Input.press?(Input::ALT)) ? 1 : 8
-            cel[AnimFrame::X] -= increment
-            @dirty[@currentcel] = true
-          end
-          if Input.trigger?(Input::RIGHT) || Input.repeat?(Input::RIGHT)
-            increment = (Input.press?(Input::ALT)) ? 1 : 8
-            cel[AnimFrame::X] += increment
-            @dirty[@currentcel] = true
-          end
-        end
+      if Input.triggerex?(:P) || Input.repeatex?(:P)   # Properties
+        BattleAnimationEditor.pbCellProperties(self)
+        @dirty[@currentcel] = true
+        return
       end
+      if Input.triggerex?(:L) || Input.repeatex?(:L)   # Lock
+        cel[AnimFrame::LOCKED] = (cel[AnimFrame::LOCKED] == 0) ? 1 : 0
+        @dirty[@currentcel] = true
+      end
+      if Input.triggerex?(:R) || Input.repeatex?(:R)   # Rotate right
+        cel[AnimFrame::ANGLE] += 10
+        cel[AnimFrame::ANGLE] %= 360
+        @dirty[@currentcel] = true
+      end
+      if Input.triggerex?(:E) || Input.repeatex?(:E)   # Rotate left
+        cel[AnimFrame::ANGLE] -= 10
+        cel[AnimFrame::ANGLE] %= 360
+        @dirty[@currentcel] = true
+      end
+      if Input.triggerex?(:KP_PLUS) || Input.repeatex?(:KP_PLUS)   # Zoom in
+        cel[AnimFrame::ZOOMX] += 10
+        cel[AnimFrame::ZOOMX] = 1000 if cel[AnimFrame::ZOOMX] > 1000
+        cel[AnimFrame::ZOOMY] += 10
+        cel[AnimFrame::ZOOMY] = 1000 if cel[AnimFrame::ZOOMY] > 1000
+        @dirty[@currentcel] = true
+      end
+      if Input.triggerex?(:KP_MINUS) || Input.repeatex?(:KP_MINUS)   # Zoom out
+        cel[AnimFrame::ZOOMX] -= 10
+        cel[AnimFrame::ZOOMX] = 10 if cel[AnimFrame::ZOOMX] < 10
+        cel[AnimFrame::ZOOMY] -= 10
+        cel[AnimFrame::ZOOMY] = 10 if cel[AnimFrame::ZOOMY] < 10
+        @dirty[@currentcel] = true
+      end
+      return if self.locked?(@currentcel)
+      if Input.trigger?(Input::UP) || Input.repeat?(Input::UP)
+        increment = (Input.press?(Input::ALT)) ? 1 : 8
+        cel[AnimFrame::Y] -= increment
+        @dirty[@currentcel] = true
+      end
+      if Input.trigger?(Input::DOWN) || Input.repeat?(Input::DOWN)
+        increment = (Input.press?(Input::ALT)) ? 1 : 8
+        cel[AnimFrame::Y] += increment
+        @dirty[@currentcel] = true
+      end
+      if Input.trigger?(Input::LEFT) || Input.repeat?(Input::LEFT)
+        increment = (Input.press?(Input::ALT)) ? 1 : 8
+        cel[AnimFrame::X] -= increment
+        @dirty[@currentcel] = true
+      end
+      return unless Input.trigger?(Input::RIGHT) || Input.repeat?(Input::RIGHT)
+      increment = (Input.press?(Input::ALT)) ? 1 : 8
+      cel[AnimFrame::X] += increment
+      @dirty[@currentcel] = true
     end
 
     def update
@@ -902,8 +888,8 @@ module BattleAnimationEditor
         return
       end
       updateInput
-  #    @testscreen.update
-  #    self.bitmap = @testscreen.bitmap
+      #    @testscreen.update
+      #    self.bitmap = @testscreen.bitmap
       if @currentframe < @animation.length
         PBAnimation::MAX_SPRITES.times do |i|
           next if !@dirty[i]
@@ -945,17 +931,15 @@ module BattleAnimationEditor
     end
 
     def bitmapname=(value)
-      if @bitmapname != value
-        @bitmapname = value
-        refresh
-      end
+      return unless @bitmapname != value
+      @bitmapname = value
+      refresh
     end
 
     def hue=(value)
-      if @hue != value
-        @hue = value
-        refresh
-      end
+      return unless @hue != value
+      @hue = value
+      refresh
     end
 
     def refresh

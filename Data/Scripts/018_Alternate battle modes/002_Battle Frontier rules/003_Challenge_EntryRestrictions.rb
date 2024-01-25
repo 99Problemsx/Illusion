@@ -69,9 +69,7 @@ $babySpeciesData = {}
 
 class BabyRestriction
   def isValid?(pkmn)
-    if !$babySpeciesData[pkmn.species]
-      $babySpeciesData[pkmn.species] = pkmn.species_data.get_baby_species
-    end
+    $babySpeciesData[pkmn.species] = pkmn.species_data.get_baby_species if !$babySpeciesData[pkmn.species]
     return pkmn.species == $babySpeciesData[pkmn.species]
   end
 end
@@ -83,13 +81,9 @@ $canEvolve = {}
 
 class UnevolvedFormRestriction
   def isValid?(pkmn)
-    if !$babySpeciesData[pkmn.species]
-      $babySpeciesData[pkmn.species] = pkmn.species_data.get_baby_species
-    end
+    $babySpeciesData[pkmn.species] = pkmn.species_data.get_baby_species if !$babySpeciesData[pkmn.species]
     return false if pkmn.species != $babySpeciesData[pkmn.species]
-    if $canEvolve[pkmn.species].nil?
-      $canEvolve[pkmn.species] = (pkmn.species_data.get_evolutions(true).length > 0)
-    end
+    $canEvolve[pkmn.species] = (pkmn.species_data.get_evolutions(true).length > 0) if $canEvolve[pkmn.species].nil?
     return $canEvolve[pkmn.species]
   end
 end

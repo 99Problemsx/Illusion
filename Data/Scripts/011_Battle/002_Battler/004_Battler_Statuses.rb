@@ -9,22 +9,18 @@ class Battle::Battler
   #       "counts as having that status", which includes Comatose which can't be
   #       cured.
   def pbHasStatus?(checkStatus)
-    if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
-      return true
-    end
+    return true if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
     return @status == checkStatus
   end
 
   def pbHasAnyStatus?
-    if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, nil)
-      return true
-    end
+    return true if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, nil)
     return @status != :NONE
   end
 
   def pbCanInflictStatus?(newStatus, user, showMessages, move = nil, ignoreStatus = false)
     return false if fainted?
-    self_inflicted = (user && user.index == @index)   # Rest and Flame Orb/Toxic Orb only
+    self_inflicted = user && user.index == @index   # Rest and Flame Orb/Toxic Orb only
     # Already have that status problem
     if self.status == newStatus && !ignoreStatus
       if showMessages
@@ -61,9 +57,7 @@ class Battle::Battler
       case @battle.field.terrain
       when :Electric
         if newStatus == :SLEEP
-          if showMessages
-            @battle.pbDisplay(_INTL("{1} surrounds itself with electrified terrain!", pbThis(true)))
-          end
+          @battle.pbDisplay(_INTL("{1} surrounds itself with electrified terrain!", pbThis(true))) if showMessages
           return false
         end
       when :Misty
@@ -193,12 +187,8 @@ class Battle::Battler
     end
     return false if hasImmuneType
     # Ability immunity
-    if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, newStatus)
-      return false
-    end
-    if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
-      return false
-    end
+    return false if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, newStatus)
+    return false if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
     allAllies.each do |b|
       next if !b.abilityActive?
       next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, newStatus)
@@ -253,9 +243,7 @@ class Battle::Battler
     # Form change check
     pbCheckFormOnStatusChange
     # Synchronize
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnStatusInflicted(self.ability, self, user, newStatus)
-    end
+    Battle::AbilityEffects.triggerOnStatusInflicted(self.ability, self, user, newStatus) if abilityActive?
     # Status cures
     pbItemStatusCureCheck
     pbAbilityStatusCureCheck
@@ -264,10 +252,9 @@ class Battle::Battler
     #       asleep (i.e. it doesn't cancel Rollout/Uproar/other multi-turn
     #       moves, and it doesn't cancel any moves if self becomes frozen/
     #       disabled/anything else). This behaviour was tested in Gen 5.
-    if @status == :SLEEP && @effects[PBEffects::Outrage] > 0
-      @effects[PBEffects::Outrage] = 0
-      @currentMove = nil
-    end
+    return unless @status == :SLEEP && @effects[PBEffects::Outrage] > 0
+    @effects[PBEffects::Outrage] = 0
+    @currentMove = nil
   end
 
   #=============================================================================
@@ -283,21 +270,13 @@ class Battle::Battler
 
   def pbCanSleepYawn?
     return false if self.status != :NONE
-    if affectedByTerrain? && [:Electric, :Misty].include?(@battle.field.terrain)
-      return false
-    end
-    if !hasActiveAbility?(:SOUNDPROOF) && @battle.allBattlers.any? { |b| b.effects[PBEffects::Uproar] > 0 }
-      return false
-    end
-    if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, :SLEEP)
-      return false
-    end
+    return false if affectedByTerrain? && [:Electric, :Misty].include?(@battle.field.terrain)
+    return false if !hasActiveAbility?(:SOUNDPROOF) && @battle.allBattlers.any? { |b| b.effects[PBEffects::Uproar] > 0 }
+    return false if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, :SLEEP)
     # NOTE: Bulbapedia claims that Flower Veil shouldn't prevent sleep due to
     #       drowsiness, but I disagree because that makes no sense. Also, the
     #       comparable Sweet Veil does prevent sleep due to drowsiness.
-    if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, :SLEEP)
-      return false
-    end
+    return false if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, :SLEEP)
     allAllies.each do |b|
       next if !b.abilityActive?
       next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, :SLEEP)

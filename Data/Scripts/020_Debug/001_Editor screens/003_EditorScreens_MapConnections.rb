@@ -22,12 +22,8 @@ class MapSprite
     return nil if !Input.trigger?(Input::MOUSELEFT)
     mouse = Mouse.getMousePos(true)
     return nil if !mouse
-    if mouse[0] < @sprite.x || mouse[0] >= @sprite.x + @sprite.bitmap.width
-      return nil
-    end
-    if mouse[1] < @sprite.y || mouse[1] >= @sprite.y + @sprite.bitmap.height
-      return nil
-    end
+    return nil if mouse[0] < @sprite.x || mouse[0] >= @sprite.x + @sprite.bitmap.width
+    return nil if mouse[1] < @sprite.y || mouse[1] >= @sprite.y + @sprite.bitmap.height
     x = mouse[0] - @sprite.x
     y = mouse[1] - @sprite.y
     return [x / 4, y / 4]
@@ -121,12 +117,8 @@ class RegionMapSprite
     return nil if !Input.trigger?(Input::MOUSELEFT)
     mouse = Mouse.getMousePos(true)
     return nil if !mouse
-    if mouse[0] < @sprite.x || mouse[0] >= @sprite.x + @sprite.bitmap.width
-      return nil
-    end
-    if mouse[1] < @sprite.y || mouse[1] >= @sprite.y + @sprite.bitmap.height
-      return nil
-    end
+    return nil if mouse[0] < @sprite.x || mouse[0] >= @sprite.x + @sprite.bitmap.width
+    return nil if mouse[1] < @sprite.y || mouse[1] >= @sprite.y + @sprite.bitmap.height
     x = mouse[0] - @sprite.x
     y = mouse[1] - @sprite.y
     return [x / 8, y / 8]
@@ -143,9 +135,7 @@ class MapScreenScene
       @mapsprites[id].z = 0
       @mapsprites[id].bitmap = nil
     end
-    if !@mapsprites[id].bitmap || @mapsprites[id].bitmap.disposed?
-      @mapsprites[id].bitmap = createMinimap(id)
-    end
+    @mapsprites[id].bitmap = createMinimap(id) if !@mapsprites[id].bitmap || @mapsprites[id].bitmap.disposed?
     return @mapsprites[id]
   end
 
@@ -257,9 +247,7 @@ class MapScreenScene
     # Remove all connections containing any sprites on the canvas from the array
     keys.each do |i|
       removeOldConnections(ret, i)
-    end
-    # Rebuild connections
-    keys.each do |i|
+      # Rebuild connections
       refs = getDirectConnections(keys, i)
       refs.each do |refmap|
         othersprite = getMapSprite(i)
@@ -310,7 +298,7 @@ class MapScreenScene
     @mapsprites = {}
     @mapspritepos = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @lasthitmap = -1
     @lastclick = -1
     @oldmousex = nil
@@ -409,24 +397,24 @@ class MapScreenScene
   end
 
   def onRightClick(mapid, x, y)
-#   echoln "rightclick (#{mapid})"
+    #   echoln "rightclick (#{mapid})"
   end
 
   def onMouseUp(mapid)
-#   echoln "mouseup (#{mapid})"
+    #   echoln "mouseup (#{mapid})"
     @dragging = false if @dragging
   end
 
   def onRightMouseUp(mapid)
-#   echoln "rightmouseup (#{mapid})"
+    #   echoln "rightmouseup (#{mapid})"
   end
 
   def onMouseOver(mapid, x, y)
-#   echoln "mouseover (#{mapid},#{x},#{y})"
+    #   echoln "mouseover (#{mapid},#{x},#{y})"
   end
 
   def onMouseMove(mapid, x, y)
-#   echoln "mousemove (#{mapid},#{x},#{y})"
+    #   echoln "mousemove (#{mapid},#{x},#{y})"
     if @dragging
       if @dragmapid >= 0
         sprite = getMapSprite(@dragmapid)
@@ -548,15 +536,14 @@ class MapScreenScene
       Graphics.update
       Input.update
       update
-      if Input.trigger?(Input::BACK)
-        if pbConfirmMessage(_INTL("Save changes?"))
-          serializeConnectionData
-          MapFactoryHelper.clear
-        else
-          GameData::Encounter.load
-        end
-        break if pbConfirmMessage(_INTL("Exit from the editor?"))
+      next unless Input.trigger?(Input::BACK)
+      if pbConfirmMessage(_INTL("Save changes?"))
+        serializeConnectionData
+        MapFactoryHelper.clear
+      else
+        GameData::Encounter.load
       end
+      break if pbConfirmMessage(_INTL("Exit from the editor?"))
     end
   end
 end

@@ -55,9 +55,7 @@ module BattleAnimationEditor
         animwin.animbitmap = bitmap
         break
       end
-      if Input.trigger?(Input::BACK)
-        break
-      end
+      break if Input.trigger?(Input::BACK)
     end
     bmpwin.dispose
     cmdwin.dispose
@@ -80,9 +78,7 @@ module BattleAnimationEditor
         canvas.animation.resize(sliderwin2.value(0))
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
@@ -90,7 +86,7 @@ module BattleAnimationEditor
 
   def pbAnimName(animation, cmdwin)
     window = ControlWindow.new(320, 128, 320, 32 * 4)
-    window.z = 99999
+    window.z = 99_999
     window.addControl(TextField.new(_INTL("New Name:"), animation.name))
     Input.text_input = true
     okbutton = window.addButton(_INTL("OK"))
@@ -105,9 +101,7 @@ module BattleAnimationEditor
         animation.name = window.controls[0].text
         break
       end
-      if window.changed?(cancelbutton) || Input.triggerex?(:ESCAPE)
-        break
-      end
+      break if window.changed?(cancelbutton) || Input.triggerex?(:ESCAPE)
     end
     window.dispose
     Input.text_input = false
@@ -173,9 +167,7 @@ module BattleAnimationEditor
           end
         end
       end
-      if Input.trigger?(Input::BACK)
-        break
-      end
+      break if Input.trigger?(Input::BACK)
     end
     helpwindow.dispose
     maxsizewindow.dispose
@@ -188,7 +180,7 @@ module BattleAnimationEditor
   def pbChooseNum(cel)
     ret = cel
     sliderwin2 = ControlWindow.new(0, 0, 320, 32 * 5)
-    sliderwin2.z = 99999
+    sliderwin2.z = 99_999
     sliderwin2.addLabel(_INTL("Old Number: {1}", cel))
     sliderwin2.addSlider(_INTL("New Number:"), 2, PBAnimation::MAX_SPRITES, cel)
     okbutton = sliderwin2.addButton(_INTL("OK"))
@@ -212,7 +204,7 @@ module BattleAnimationEditor
 
   def pbSetTone(cel, previewsprite)
     sliderwin2 = ControlWindow.new(0, 0, 320, 320)
-    sliderwin2.z = 99999
+    sliderwin2.z = 99_999
     sliderwin2.addSlider(_INTL("Red Offset:"), -255, 255, cel[AnimFrame::TONERED])
     sliderwin2.addSlider(_INTL("Green Offset:"), -255, 255, cel[AnimFrame::TONEGREEN])
     sliderwin2.addSlider(_INTL("Blue Offset:"), -255, 255, cel[AnimFrame::TONEBLUE])
@@ -232,9 +224,7 @@ module BattleAnimationEditor
         cel[AnimFrame::TONEGRAY] = sliderwin2.value(3)
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
@@ -242,7 +232,7 @@ module BattleAnimationEditor
 
   def pbSetFlash(cel, previewsprite)
     sliderwin2 = ControlWindow.new(0, 0, 320, 320)
-    sliderwin2.z = 99999
+    sliderwin2.z = 99_999
     sliderwin2.addSlider(_INTL("Red:"), 0, 255, cel[AnimFrame::COLORRED])
     sliderwin2.addSlider(_INTL("Green:"), 0, 255, cel[AnimFrame::COLORGREEN])
     sliderwin2.addSlider(_INTL("Blue:"), 0, 255, cel[AnimFrame::COLORBLUE])
@@ -262,9 +252,7 @@ module BattleAnimationEditor
         cel[AnimFrame::COLORALPHA] = sliderwin2.value(3)
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
@@ -360,9 +348,7 @@ module BattleAnimationEditor
         thiscel[0, thiscel.length] = cel
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     previewwin.dispose
     previewsprite.dispose
@@ -502,8 +488,8 @@ module BattleAnimationEditor
   end
 
   def pbSelectSE(canvas, audio)
-    filename = (audio.name != "") ? audio.name : ""
-    displayname = (filename != "") ? filename : _INTL("<user's cry>")
+    filename = (audio.name == "") ? "" : audio.name
+    displayname = (filename == "") ? _INTL("<user's cry>") : filename
     animfiles = []
     ret = false
     pbRgssChdir(File.join("Audio", "SE", "Anim")) do
@@ -548,7 +534,7 @@ module BattleAnimationEditor
       break if maxsizewindow.changed?(6)   # Cancel
       if Input.trigger?(Input::USE) && animfiles.length > 0
         filename = (cmdwin.index == 0) ? "" : cmdwin.commands[cmdwin.index]
-        displayname = (filename != "") ? filename : _INTL("<user's cry>")
+        displayname = (filename == "") ? _INTL("<user's cry>") : filename
         maxsizewindow.controls[0].text = _INTL("File: \"{1}\"", displayname)
       elsif Input.trigger?(Input::BACK)
         break
@@ -568,9 +554,9 @@ module BattleAnimationEditor
     pbRgssChdir(File.join("Graphics", "Animations")) do
       animfiles.concat(Dir.glob("*.png"))
       animfiles.concat(Dir.glob("*.gif"))
-  #    animfiles.concat(Dir.glob("*.jpg"))
-  #    animfiles.concat(Dir.glob("*.jpeg"))
-  #    animfiles.concat(Dir.glob("*.bmp"))
+      #    animfiles.concat(Dir.glob("*.jpg"))
+      #    animfiles.concat(Dir.glob("*.jpeg"))
+      #    animfiles.concat(Dir.glob("*.bmp"))
     end
     animfiles.uniq!
     animfiles.sort! { |a, b| a.downcase <=> b.downcase }
@@ -668,9 +654,7 @@ module BattleAnimationEditor
         break
       end
       break if maxsizewindow.changed?(9)   # Cancel
-      if Input.trigger?(Input::BACK)
-        break
-      end
+      break if Input.trigger?(Input::BACK)
     end
     maxsizewindow.dispose
     return ret
@@ -715,9 +699,7 @@ module BattleAnimationEditor
         end
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
@@ -743,9 +725,7 @@ module BattleAnimationEditor
         end
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
@@ -802,9 +782,7 @@ module BattleAnimationEditor
               cel = pbCreateCel(0, 0, 0)
               canvas.animation[startframe + k][j] = cel
             end
-            if sliderwin2.value(set0) || !curcel
-              cel[AnimFrame::PATTERN] = startPattern + (diffPattern * k / frames)
-            end
+            cel[AnimFrame::PATTERN] = startPattern + (diffPattern * k / frames) if sliderwin2.value(set0) || !curcel
             if sliderwin2.value(set1) || !curcel
               cel[AnimFrame::X] = startX + (diffX * k / frames)
               cel[AnimFrame::Y] = startY + (diffY * k / frames)
@@ -821,9 +799,7 @@ module BattleAnimationEditor
         canvas.invalidate
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
   end
@@ -885,9 +861,7 @@ module BattleAnimationEditor
         canvas.invalidate
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin1.dispose
     sliderwin2.dispose
@@ -917,24 +891,22 @@ module BattleAnimationEditor
         end
         break
       end
-      if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
-        break
-      end
+      break if sliderwin2.changed?(cancelbutton) || Input.trigger?(Input::BACK)
     end
     sliderwin2.dispose
     return
   end
 
   def pbAnimEditorHelpWindow
-    helptext = "" +
-               "To add a cel to the scene, click on the canvas. The selected cel will have a black " +
-               "frame. After a cel is selected, you can modify its properties using the keyboard:\n" +
-               "E, R - Rotate left/right.\nP - Open properties screen.\nArrow keys - Move cel 8 pixels " +
-               "(hold ALT for 2 pixels).\n+/- : Zoom in/out.\nL - Lock a cel. Locking a cel prevents it " +
+    helptext = "" \
+               "To add a cel to the scene, click on the canvas. The selected cel will have a black " \
+               "frame. After a cel is selected, you can modify its properties using the keyboard:\n" \
+               "E, R - Rotate left/right.\nP - Open properties screen.\nArrow keys - Move cel 8 pixels " \
+               "(hold ALT for 2 pixels).\n+/- : Zoom in/out.\nL - Lock a cel. Locking a cel prevents it " \
                "from being moved or deleted.\nDEL - Deletes the cel.\nAlso press TAB to switch the selected cel."
     cmdwin = Window_UnformattedTextPokemon.newWithSize("", 0, 0, 640, 512)
     cmdwin.opacity = 224
-    cmdwin.z = 99999
+    cmdwin.z = 99_999
     cmdwin.text = helptext
     loop do
       Graphics.update
@@ -950,7 +922,7 @@ module BattleAnimationEditor
   #=============================================================================
   def animationEditorMain(animation)
     viewport = Viewport.new(0, 0, Settings::SCREEN_WIDTH + 288, Settings::SCREEN_HEIGHT + 288)
-    viewport.z = 99999
+    viewport.z = 99_999
     # Canvas
     canvas = AnimationCanvas.new(animation[animation.selected] || animation[0], viewport)
     # Right hand menu
@@ -992,9 +964,7 @@ module BattleAnimationEditor
       bottomwindow.update
       canvas.pattern = animwin.selected if animwin.changed?
       if Input.trigger?(Input::BACK)
-        if pbConfirmMessage(_INTL("Save changes?"))
-          save_data(animation, "Data/PkmnAnimations.rxdata")
-        end
+        save_data(animation, "Data/PkmnAnimations.rxdata") if pbConfirmMessage(_INTL("Save changes?"))
         if pbConfirmMessage(_INTL("Exit from the editor?"))
           $game_temp.battle_animations_data = nil
           break
@@ -1014,9 +984,7 @@ module BattleAnimationEditor
         hit = pbTrackPopupMenu(commands)
         case hit
         when 0 # Copy
-          if canvas.currentframe >= 0
-            Clipboard.setData(canvas.animation[canvas.currentframe], "PBAnimFrame")
-          end
+          Clipboard.setData(canvas.animation[canvas.currentframe], "PBAnimFrame") if canvas.currentframe >= 0
         when 1 # Paste
           canvas.pasteFrame(canvas.currentframe) if canvas.currentframe >= 0
         when 2 # Clear Frame
@@ -1080,9 +1048,7 @@ module BattleAnimationEditor
         end
         next
       end
-      if sliderwin.changed?(0)   # Current frame changed
-        canvas.currentframe = sliderwin.value(0) - 1
-      end
+      canvas.currentframe = sliderwin.value(0) - 1 if sliderwin.changed?(0) # Current frame changed
       if sliderwin.changed?(1)   # Change frame count
         pbChangeMaximum(canvas)
         if canvas.currentframe >= canvas.animation.length

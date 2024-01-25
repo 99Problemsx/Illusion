@@ -208,9 +208,7 @@ module RecordedBattlePlaybackModule
         else
           pbRegisterMove(i, @rounds[@roundindex][i][1])
         end
-        if @rounds[@roundindex][i][2]
-          pbRegisterTarget(i, @rounds[@roundindex][i][2])
-        end
+        pbRegisterTarget(i, @rounds[@roundindex][i][2]) if @rounds[@roundindex][i][2]
       when Commands::BAG
         pbRegisterItem(i, @rounds[@roundindex][i][1], @rounds[@roundindex][i][2], @rounds[@roundindex][i][3])
       when Commands::POKEMON

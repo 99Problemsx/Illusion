@@ -93,16 +93,14 @@ class Sprite_Shadow < RPG::Sprite
     self.angle = 57.3 * Math.atan2(@deltax, @deltay)
     @angle_trigo = self.angle + 90
     @angle_trigo += 360 if @angle_trigo < 0
-    if @anglemin != 0 || @anglemax != 0
-      if (@angle_trigo < @anglemin || @angle_trigo > @anglemax) && @anglemin < @anglemax
-        self.opacity = 0
-        return
-      end
-      if @angle_trigo < @anglemin && @angle_trigo > @anglemax && @anglemin > @anglemax
-        self.opacity = 0
-        return
-      end
+    return unless @anglemin != 0 || @anglemax != 0
+    if (@angle_trigo < @anglemin || @angle_trigo > @anglemax) && @anglemin < @anglemax
+      self.opacity = 0
+      return
     end
+    return unless @angle_trigo < @anglemin && @angle_trigo > @anglemax && @anglemin > @anglemax
+    self.opacity = 0
+    return
   end
 
   # From Near's Anti Lag Script, edited.
@@ -186,9 +184,7 @@ class Spriteset_Map
       params = XPML_read(map, "Shadow Source", ev, 4)
       @shadows.push([ev] + params) if params
     end
-    if warn == true
-      p "Warning : At least one event on this map uses the obsolete way to add shadows"
-    end
+    p "Warning : At least one event on this map uses the obsolete way to add shadows" if warn == true
     shadow_initialize(map)
     @character_sprites.each do |sprite|
       sprite.setShadows(map, @shadows)

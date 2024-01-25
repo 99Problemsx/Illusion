@@ -70,9 +70,7 @@ end
 def pbTrainerTypeCheck(trainer_type)
   return true if !$DEBUG
   return true if GameData::TrainerType.exists?(trainer_type)
-  if pbConfirmMessage(_INTL("Add new trainer type {1}?", trainer_type.to_s))
-    pbTrainerTypeEditorNew(trainer_type.to_s)
-  end
+  pbTrainerTypeEditorNew(trainer_type.to_s) if pbConfirmMessage(_INTL("Add new trainer type {1}?", trainer_type.to_s))
   pbMapInterpreter&.command_end
   return false
 end
@@ -109,9 +107,7 @@ def pbMissingTrainer(tr_type, tr_name, tr_version)
   tr_type_data = GameData::TrainerType.try_get(tr_type)
   raise _INTL("Trainer type {1} does not exist.", tr_type) if !tr_type_data
   tr_type = tr_type_data.id
-  if !$DEBUG
-    raise _INTL("Can't find trainer ({1}, {2}, ID {3})", tr_type.to_s, tr_name, tr_version)
-  end
+  raise _INTL("Can't find trainer ({1}, {2}, ID {3})", tr_type.to_s, tr_name, tr_version) if !$DEBUG
   message = ""
   if tr_version == 0
     message = _INTL("Add new trainer ({1}, {2})?", tr_type.to_s, tr_name)

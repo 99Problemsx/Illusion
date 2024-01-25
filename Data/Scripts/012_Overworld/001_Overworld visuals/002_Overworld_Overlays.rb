@@ -11,7 +11,7 @@ class LocationWindow
     @window.x        = 0
     @window.y        = -@window.height
     @window.viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @window.viewport.z = 99999
+    @window.viewport.z = 99_999
     @currentmap = $game_map.map_id
     @timer_start = System.uptime
     @delayed = !$game_temp.fly_destination.nil?
@@ -56,7 +56,7 @@ class DarknessSprite < Sprite
     @darkness = Bitmap.new(Graphics.width, Graphics.height)
     @radius = radiusMin
     self.bitmap = @darkness
-    self.z      = 99998
+    self.z      = 99_998
     refresh
   end
 
@@ -65,8 +65,10 @@ class DarknessSprite < Sprite
     super
   end
 
-  def radiusMin; return 64;  end   # Before using Flash
-  def radiusMax; return 176; end   # After using Flash
+  # Before using Flash
+  def radiusMin; return 64;  end
+  # After using Flash
+  def radiusMax; return 176; end
 
   def radius=(value)
     @radius = value.round
@@ -156,7 +158,11 @@ class LightEffect_Basic < LightEffect
   def update
     return if !@light || !@event
     super
-    if (Object.const_defined?(:ScreenPosHelper) rescue false)
+    if begin
+      Object.const_defined?(:ScreenPosHelper)
+    rescue StandardError
+      false
+    end
       @light.x      = ScreenPosHelper.pbScreenX(@event)
       @light.y      = ScreenPosHelper.pbScreenY(@event) - (@event.height * Game_Map::TILE_HEIGHT / 2)
       @light.zoom_x = ScreenPosHelper.pbScreenZoomX(@event)
@@ -191,21 +197,24 @@ class LightEffect_DayNight < LightEffect
       shade = 255 - (255 * (144 - shade) / (144 - 64))
     end
     @light.opacity = 255 - shade
-    if @light.opacity > 0
-      if (Object.const_defined?(:ScreenPosHelper) rescue false)
-        @light.x      = ScreenPosHelper.pbScreenX(@event)
-        @light.y      = ScreenPosHelper.pbScreenY(@event) - (@event.height * Game_Map::TILE_HEIGHT / 2)
-        @light.zoom_x = ScreenPosHelper.pbScreenZoomX(@event)
-        @light.zoom_y = ScreenPosHelper.pbScreenZoomY(@event)
-      else
-        @light.x = @event.screen_x
-        @light.y = @event.screen_y - (Game_Map::TILE_HEIGHT / 2)
-      end
-      @light.tone.set($game_screen.tone.red,
-                      $game_screen.tone.green,
-                      $game_screen.tone.blue,
-                      $game_screen.tone.gray)
+    return unless @light.opacity > 0
+    if begin
+      Object.const_defined?(:ScreenPosHelper)
+    rescue StandardError
+      false
     end
+      @light.x      = ScreenPosHelper.pbScreenX(@event)
+      @light.y      = ScreenPosHelper.pbScreenY(@event) - (@event.height * Game_Map::TILE_HEIGHT / 2)
+      @light.zoom_x = ScreenPosHelper.pbScreenZoomX(@event)
+      @light.zoom_y = ScreenPosHelper.pbScreenZoomY(@event)
+    else
+      @light.x = @event.screen_x
+      @light.y = @event.screen_y - (Game_Map::TILE_HEIGHT / 2)
+    end
+    @light.tone.set($game_screen.tone.red,
+                    $game_screen.tone.green,
+                    $game_screen.tone.blue,
+                    $game_screen.tone.gray)
   end
 end
 
@@ -213,20 +222,20 @@ end
 #
 #===============================================================================
 EventHandlers.add(:on_new_spriteset_map, :add_light_effects,
-  proc { |spriteset, viewport|
-    map = spriteset.map   # Map associated with the spriteset (not necessarily the current map)
-    map.events.each_key do |i|
-      if map.events[i].name[/^outdoorlight\((\w+)\)$/i]
-        filename = $~[1].to_s
-        spriteset.addUserSprite(LightEffect_DayNight.new(map.events[i], viewport, map, filename))
-      elsif map.events[i].name[/^outdoorlight$/i]
-        spriteset.addUserSprite(LightEffect_DayNight.new(map.events[i], viewport, map))
-      elsif map.events[i].name[/^light\((\w+)\)$/i]
-        filename = $~[1].to_s
-        spriteset.addUserSprite(LightEffect_Basic.new(map.events[i], viewport, map, filename))
-      elsif map.events[i].name[/^light$/i]
-        spriteset.addUserSprite(LightEffect_Basic.new(map.events[i], viewport, map))
-      end
-    end
-  }
+                  proc { |spriteset, viewport|
+                    map = spriteset.map   # Map associated with the spriteset (not necessarily the current map)
+                    map.events.each_key do |i|
+                      if map.events[i].name[/^outdoorlight\((\w+)\)$/i]
+                        filename = $~[1].to_s
+                        spriteset.addUserSprite(LightEffect_DayNight.new(map.events[i], viewport, map, filename))
+                      elsif map.events[i].name[/^outdoorlight$/i]
+                        spriteset.addUserSprite(LightEffect_DayNight.new(map.events[i], viewport, map))
+                      elsif map.events[i].name[/^light\((\w+)\)$/i]
+                        filename = $~[1].to_s
+                        spriteset.addUserSprite(LightEffect_Basic.new(map.events[i], viewport, map, filename))
+                      elsif map.events[i].name[/^light$/i]
+                        spriteset.addUserSprite(LightEffect_Basic.new(map.events[i], viewport, map))
+                      end
+                    end
+                  }
 )

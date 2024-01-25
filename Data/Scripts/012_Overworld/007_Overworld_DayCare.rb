@@ -23,9 +23,7 @@ class DayCare
       # Ensure mother is female, if the pair contains a female
       # Ensure father is male, if the pair contains a male
       # Ensure father is genderless, if the pair is a genderless with Ditto
-      if mother.male? || father.female? || mother.genderless?
-        mother, father = father, mother
-      end
+      mother, father = father, mother if mother.male? || father.female? || mother.genderless?
       mother_data = [mother, mother.species_data.egg_groups.include?(:Ditto)]
       father_data = [father, father.species_data.egg_groups.include?(:Ditto)]
       # Determine which parent the egg's species is based from
@@ -76,9 +74,7 @@ class DayCare
       # mother = [mother, mother_ditto, mother_in_family]
       # father = [father, father_ditto, father_in_family]
       # Inherit form from the parent that determined the egg's species
-      if species_parent.species_data.has_flag?("InheritFormFromMother")
-        egg.form = species_parent.form
-      end
+      egg.form = species_parent.form if species_parent.species_data.has_flag?("InheritFormFromMother")
       # Inherit form from a parent holding an Ever Stone
       [mother, father].each do |parent|
         next if !parent[2]   # Parent isn't a related species to the egg
@@ -176,8 +172,8 @@ class DayCare
       GameData::Stat.each_main { |s| stats.push(s.id) }
       # Get the number of stats to inherit (includes ones inherited via Power items)
       inherit_count = 3
-      if Settings::MECHANICS_GENERATION >= 6
-        inherit_count = 5 if mother.hasItem?(:DESTINYKNOT) || father.hasItem?(:DESTINYKNOT)
+      if Settings::MECHANICS_GENERATION >= 6 && (mother.hasItem?(:DESTINYKNOT) || father.hasItem?(:DESTINYKNOT))
+        inherit_count = 5
       end
       # Inherit IV because of Power items (if both parents have the same Power
       # item, then the parent that passes that Power item's stat down is chosen
@@ -399,9 +395,8 @@ class DayCare
       share_egg_move if @share_egg_moves && rand(100) < 50
     end
     # Day Care Pokémon gain Exp/moves
-    if @gain_exp
-      @slots.each { |slot| slot.add_exp }
-    end
+    return unless @gain_exp
+    @slots.each { |slot| slot.add_exp }
   end
 
   #-----------------------------------------------------------------------------
@@ -558,7 +553,7 @@ end
 # an egg.
 #===============================================================================
 EventHandlers.add(:on_player_step_taken, :update_day_care,
-  proc {
-    $PokemonGlobal.day_care.update_on_step_taken
-  }
+                  proc {
+                    $PokemonGlobal.day_care.update_on_step_taken
+                  }
 )

@@ -4,7 +4,7 @@
 class BattlePalaceBattle < Battle
   # Percentage chances of choosing attack, defense, support moves
   @@BattlePalaceUsualTable = {
-    :HARDY   => [61,  7, 32],
+    :HARDY   => [61, 7, 32],
     :LONELY  => [20, 25, 55],
     :BRAVE   => [70, 15, 15],
     :ADAMANT => [38, 31, 31],
@@ -12,22 +12,22 @@ class BattlePalaceBattle < Battle
     :BOLD    => [30, 20, 50],
     :DOCILE  => [56, 22, 22],
     :RELAXED => [25, 15, 60],
-    :IMPISH  => [69,  6, 25],
+    :IMPISH  => [69, 6, 25],
     :LAX     => [35, 10, 55],
     :TIMID   => [62, 10, 28],
     :HASTY   => [58, 37,  5],
     :SERIOUS => [34, 11, 55],
-    :JOLLY   => [35,  5, 60],
+    :JOLLY   => [35, 5, 60],
     :NAIVE   => [56, 22, 22],
     :MODEST  => [35, 45, 20],
-    :MILD    => [44, 50,  6],
+    :MILD    => [44, 50, 6],
     :QUIET   => [56, 22, 22],
     :BASHFUL => [30, 58, 12],
     :RASH    => [30, 13, 57],
     :CALM    => [40, 50, 10],
     :GENTLE  => [18, 70, 12],
-    :SASSY   => [88,  6,  6],
-    :CAREFUL => [42, 50,  8],
+    :SASSY   => [88, 6,  6],
+    :CAREFUL => [42, 50, 8],
     :QUIRKY  => [56, 22, 22]
   }
   @@BattlePalacePinchTable = {
@@ -35,26 +35,26 @@ class BattlePalaceBattle < Battle
     :LONELY  => [84,  8,  8],
     :BRAVE   => [32, 60,  8],
     :ADAMANT => [70, 15, 15],
-    :NAUGHTY => [70, 22,  8],
+    :NAUGHTY => [70, 22, 8],
     :BOLD    => [32, 58, 10],
     :DOCILE  => [56, 22, 22],
     :RELAXED => [75, 15, 10],
     :IMPISH  => [28, 55, 17],
-    :LAX     => [29,  6, 65],
+    :LAX     => [29, 6, 65],
     :TIMID   => [30, 20, 50],
-    :HASTY   => [88,  6,  6],
+    :HASTY   => [88, 6, 6],
     :SERIOUS => [29, 11, 60],
-    :JOLLY   => [35, 60,  5],
+    :JOLLY   => [35, 60, 5],
     :NAIVE   => [56, 22, 22],
-    :MODEST  => [34, 60,  6],
-    :MILD    => [34,  6, 60],
+    :MODEST  => [34, 60, 6],
+    :MILD    => [34, 6, 60],
     :QUIET   => [56, 22, 22],
     :BASHFUL => [30, 58, 12],
-    :RASH    => [27,  6, 67],
+    :RASH    => [27, 6, 67],
     :CALM    => [25, 62, 13],
-    :GENTLE  => [90,  5,  5],
+    :GENTLE  => [90, 5, 5],
     :SASSY   => [22, 20, 58],
-    :CAREFUL => [42,  5, 53],
+    :CAREFUL => [42, 5, 53],
     :QUIRKY  => [56, 22, 22]
   }
 
@@ -177,9 +177,7 @@ class Battle::AI
     @justswitched = [false, false, false, false]
   end
 
-  unless method_defined?(:_battlePalace_pbChooseToSwitchOut)
-    alias _battlePalace_pbChooseToSwitchOut pbChooseToSwitchOut
-  end
+  alias _battlePalace_pbChooseToSwitchOut pbChooseToSwitchOut unless method_defined?(:_battlePalace_pbChooseToSwitchOut)
 
   def pbChooseToSwitchOut(force_switch = false)
     return _battlePalace_pbChooseToSwitchOut(force_switch) if !@battlePalace

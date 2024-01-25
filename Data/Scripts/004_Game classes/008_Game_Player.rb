@@ -142,8 +142,16 @@ class Game_Player < Game_Character
     turn_generic(dir, true) if turn_enabled
     if !$game_temp.encounter_triggered
       if can_move_in_direction?(dir)
-        x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
-        y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
+        x_offset = if dir == 4
+                     -1
+                   else
+                     (dir == 6) ? 1 : 0
+end
+        y_offset = if dir == 8
+                     -1
+                   else
+                     (dir == 2) ? 1 : 0
+end
         # Jump over ledges
         if pbFacingTerrainTag.ledge
           if jumpForward(2)
@@ -179,10 +187,9 @@ class Game_Player < Game_Character
   def turn_generic(dir, keep_enc_indicator = false)
     old_direction = @direction
     super(dir)
-    if @direction != old_direction && !@move_route_forcing && !pbMapInterpreterRunning?
-      EventHandlers.trigger(:on_player_change_direction)
-      $game_temp.encounter_triggered = false if !keep_enc_indicator
-    end
+    return unless @direction != old_direction && !@move_route_forcing && !pbMapInterpreterRunning?
+    EventHandlers.trigger(:on_player_change_direction)
+    $game_temp.encounter_triggered = false if !keep_enc_indicator
   end
 
   def jump(x_plus, y_plus)
@@ -202,8 +209,16 @@ class Game_Player < Game_Character
   def pbFacingEvent(ignoreInterpreter = false)
     return nil if $game_system.map_interpreter.running? && !ignoreInterpreter
     # Check the tile in front of the player for events
-    new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-    new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+    new_x = @x + (if @direction == 6
+                    1
+                  else
+                    @direction == 4 ? -1 : 0
+end)
+    new_y = @y + (if @direction == 2
+                    1
+                  else
+                    @direction == 8 ? -1 : 0
+end)
     return nil if !$game_map.valid?(new_x, new_y)
     $game_map.events.each_value do |event|
       next if !event.at_coordinate?(new_x, new_y)
@@ -212,8 +227,16 @@ class Game_Player < Game_Character
     end
     # If the tile in front is a counter, check one tile beyond that for events
     if $game_map.counter?(new_x, new_y)
-      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+      new_x += (if @direction == 6
+                  1
+                else
+                  @direction == 4 ? -1 : 0
+end)
+      new_y += (if @direction == 2
+                  1
+                else
+                  @direction == 8 ? -1 : 0
+end)
       $game_map.events.each_value do |event|
         next if !event.at_coordinate?(new_x, new_y)
         next if event.jumping? || event.over_trigger?
@@ -237,8 +260,16 @@ class Game_Player < Game_Character
   #         * 0 = Determines if all directions are impassable (for jumping)
   def passable?(x, y, d, strict = false)
     # Get new coordinates
-    new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
-    new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+    new_x = x + (if d == 6
+                   1
+                 else
+                   d == 4 ? -1 : 0
+end)
+    new_y = y + (if d == 2
+                   1
+                 else
+                   d == 8 ? -1 : 0
+end)
     # If coordinates are outside of map
     return false if !$game_map.validLax?(new_x, new_y)
     if !$game_map.valid?(new_x, new_y)
@@ -268,10 +299,9 @@ class Game_Player < Game_Character
   # Make Encounter Count
   def make_encounter_count
     # Image of two dice rolling
-    if $game_map.map_id != 0
-      n = $game_map.encounter_step
-      @encounter_count = rand(n) + rand(n) + 1
-    end
+    return unless $game_map.map_id != 0
+    n = $game_map.encounter_step
+    @encounter_count = rand(n) + rand(n) + 1
   end
 
   def refresh
@@ -352,8 +382,16 @@ class Game_Player < Game_Character
     # If event is running
     return result if $game_system.map_interpreter.running?
     # Calculate front event coordinates
-    new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-    new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+    new_x = @x + (if @direction == 6
+                    1
+                  else
+                    @direction == 4 ? -1 : 0
+end)
+    new_y = @y + (if @direction == 2
+                    1
+                  else
+                    @direction == 8 ? -1 : 0
+end)
     return false if !$game_map.valid?(new_x, new_y)
     # All event loops
     $game_map.events.each_value do |event|
@@ -368,8 +406,16 @@ class Game_Player < Game_Character
     # If fitting event is not found
     if result == false && $game_map.counter?(new_x, new_y)
       # Calculate coordinates of 1 tile further away
-      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
+      new_x += (if @direction == 6
+                  1
+                else
+                  @direction == 4 ? -1 : 0
+end)
+      new_y += (if @direction == 2
+                  1
+                else
+                  @direction == 8 ? -1 : 0
+end)
       return false if !$game_map.valid?(new_x, new_y)
       # All event loops
       $game_map.events.each_value do |event|
@@ -390,8 +436,16 @@ class Game_Player < Game_Character
     result = false
     return result if $game_system.map_interpreter.running?
     # All event loops
-    x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
-    y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
+    x_offset = if dir == 4
+                 -1
+               else
+                 (dir == 6) ? 1 : 0
+end
+    y_offset = if dir == 8
+                 -1
+               else
+                 (dir == 2) ? 1 : 0
+end
     $game_map.events.each_value do |event|
       next if ![1, 2].include?(event.trigger)   # Player touch, event touch
       # If event coordinates and triggers are consistent
@@ -491,12 +545,10 @@ class Game_Player < Game_Character
     end
     was_jumping = jumping?
     super
-    if was_jumping && !jumping? && !@transparent && (@tile_id > 0 || @character_name != "")
-      if !$PokemonGlobal.surfing || $game_temp.ending_surf
-        spriteset = $scene.spriteset(map_id)
-        spriteset&.addUserAnimation(Settings::DUST_ANIMATION_ID, self.x, self.y, true, 1)
-      end
-    end
+    return unless was_jumping && !jumping? && !@transparent && (@tile_id > 0 || @character_name != "")
+    return unless !$PokemonGlobal.surfing || $game_temp.ending_surf
+    spriteset = $scene.spriteset(map_id)
+    spriteset&.addUserAnimation(Settings::DUST_ANIMATION_ID, self.x, self.y, true, 1)
   end
 
   def update_stop
@@ -543,14 +595,13 @@ class Game_Player < Game_Character
   def update_event_triggering
     return if moving? || jumping? || $PokemonGlobal.forced_movement?
     # Try triggering events upon walking into them/in front of them
-    if @moved_this_frame
-      $game_temp.followers.turn_followers
-      result = pbCheckEventTriggerFromDistance([2])
-      # Event determinant is via touch of same position event
-      result |= check_event_trigger_here([1, 2])
-      # No events triggered, try other event triggers upon finishing a step
-      pbOnStepTaken(result)
-    end
+    return unless @moved_this_frame
+    $game_temp.followers.turn_followers
+    result = pbCheckEventTriggerFromDistance([2])
+    # Event determinant is via touch of same position event
+    result |= check_event_trigger_here([1, 2])
+    # No events triggered, try other event triggers upon finishing a step
+    pbOnStepTaken(result)
   end
 end
 
@@ -566,9 +617,7 @@ def pbGetPlayerCharset(charset, trainer = nil, force = false)
                 $game_player.charsetData[2] == outfit
   $game_player.charsetData = [trainer.character_ID, charset, outfit] if $game_player
   ret = charset
-  if pbResolveBitmap("Graphics/Characters/" + ret + "_" + outfit.to_s)
-    ret = ret + "_" + outfit.to_s
-  end
+  ret = ret + "_" + outfit.to_s if pbResolveBitmap("Graphics/Characters/" + ret + "_" + outfit.to_s)
   return ret
 end
 

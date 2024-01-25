@@ -6,9 +6,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "abilities.dat"
-    PBS_BASE_FILENAME = "abilities"
+    DATA = {}.freeze
+    DATA_FILENAME = "abilities.dat".freeze
+    PBS_BASE_FILENAME = "abilities".freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -18,7 +18,7 @@ module GameData
       "Name"        => [:real_name,        "s"],
       "Description" => [:real_description, "q"],
       "Flags"       => [:flags,            "*s"]
-    }
+    }.freeze
 
     def initialize(hash)
       @id               = hash[:id]

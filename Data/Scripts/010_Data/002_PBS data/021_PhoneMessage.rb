@@ -8,9 +8,9 @@ module GameData
     attr_reader :end
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "phone.dat"
-    PBS_BASE_FILENAME = "phone"
+    DATA = {}.freeze
+    DATA_FILENAME = "phone.dat".freeze
+    PBS_BASE_FILENAME = "phone".freeze
 
     SCHEMA = {
       "SectionName"    => [:id,              "q"],
@@ -24,7 +24,7 @@ module GameData
       "BattleRequest"  => [:battle_request,  "^q"],
       "BattleRemind"   => [:battle_remind,   "^q"],
       "End"            => [:end,             "^q"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -73,7 +73,7 @@ module GameData
       @id              = hash[:id]
       @trainer_type    = hash[:trainer_type]
       @real_name       = hash[:real_name]
-      @version         = hash[:version]         || 0
+      @version         = hash[:version] || 0
       @intro           = hash[:intro]
       @intro_morning   = hash[:intro_morning]
       @intro_afternoon = hash[:intro_afternoon]

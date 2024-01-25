@@ -42,9 +42,7 @@ class Battle
     if battler.abilityActive? && Battle::AbilityEffects.triggerCertainSwitching(battler.ability, battler, self)
       return true
     end
-    if battler.itemActive? && Battle::ItemEffects.triggerCertainSwitching(battler.item, battler, self)
-      return true
-    end
+    return true if battler.itemActive? && Battle::ItemEffects.triggerCertainSwitching(battler.item, battler, self)
     # Other certain switching effects
     return true if Settings::MORE_TYPE_EFFECTS && battler.pbHasType?(:GHOST)
     # Other certain trapping effects
@@ -59,8 +57,6 @@ class Battle
         partyScene&.pbDisplay(_INTL("{1}'s {2} prevents switching!", b.pbThis, b.abilityName))
         return false
       end
-    end
-    allOtherSideBattlers(idxBattler).each do |b|
       next if !b.itemActive?
       if Battle::ItemEffects.triggerTrappingByTarget(b.item, battler, b, self)
         partyScene&.pbDisplay(_INTL("{1}'s {2} prevents switching!", b.pbThis, b.itemName))
@@ -118,9 +114,7 @@ class Battle
       elsif !pbCanSwitch?(idxBattler, idxParty, partyScene)
         next false
       end
-      if shouldRegister && (idxParty < 0 || !pbRegisterSwitch(idxBattler, idxParty))
-        next false
-      end
+      next false if shouldRegister && (idxParty < 0 || !pbRegisterSwitch(idxBattler, idxParty))
       ret = idxParty
       next true
     end
@@ -204,16 +198,13 @@ class Battle
   end
 
   def pbGetReplacementPokemonIndex(idxBattler, random = false)
-    if random
-      choices = []   # Find all Pokémon that can switch in
-      eachInTeamFromBattlerIndex(idxBattler) do |_pkmn, i|
-        choices.push(i) if pbCanSwitchIn?(idxBattler, i)
-      end
-      return -1 if choices.length == 0
-      return choices[pbRandom(choices.length)]
-    else
-      return pbSwitchInBetween(idxBattler, true)
+    return pbSwitchInBetween(idxBattler, true) unless random
+    choices = []   # Find all Pokémon that can switch in
+    eachInTeamFromBattlerIndex(idxBattler) do |_pkmn, i|
+      choices.push(i) if pbCanSwitchIn?(idxBattler, i)
     end
+    return -1 if choices.length == 0
+    return choices[pbRandom(choices.length)]
   end
 
   # Actually performs the recalling and sending out in all situations.
@@ -354,16 +345,12 @@ class Battle
       end
       pbEndPrimordialWeather   # Checking this again just in case
       # Items that trigger upon switching in (Air Balloon message)
-      if b.itemActive?
-        Battle::ItemEffects.triggerOnSwitchIn(b.item, b, self)
-      end
+      Battle::ItemEffects.triggerOnSwitchIn(b.item, b, self) if b.itemActive?
       # Berry check, status-curing ability check
       b.pbHeldItemTriggerCheck
       b.pbAbilityStatusCureCheck
-    end
-    # Check for triggering of Emergency Exit/Wimp Out/Eject Pack (only one will
-    # be triggered)
-    pbPriority(true).each do |b|
+      # Check for triggering of Emergency Exit/Wimp Out/Eject Pack (only one will
+      # be triggered)
       break if b.pbItemOnStatDropped
       break if b.pbAbilitiesOnDamageTaken
     end
@@ -384,10 +371,9 @@ class Battle
 
   def pbMessagesOnBattlerEnteringBattle(battler)
     # Introduce Shadow Pokémon
-    if battler.shadowPokemon?
-      pbCommonAnimation("Shadow", battler)
-      pbDisplay(_INTL("Oh!\nA Shadow Pokémon!")) if battler.opposes?
-    end
+    return unless battler.shadowPokemon?
+    pbCommonAnimation("Shadow", battler)
+    pbDisplay(_INTL("Oh!\nA Shadow Pokémon!")) if battler.opposes?
   end
 
   # Called when a Pokémon enters battle, and when Ally Switch is used.
@@ -406,19 +392,18 @@ class Battle
       end
     end
     # Lunar Dance
-    if position.effects[PBEffects::LunarDance]
-      full_pp = true
-      battler.eachMove { |m| full_pp = false if m.pp < m.total_pp }
-      if battler.canHeal? || battler.status != :NONE || !full_pp
-        pbCommonAnimation("LunarDance", battler)
-        pbDisplay(_INTL("{1} became cloaked in mystical moonlight!", battler.pbThis))
-        battler.pbRecoverHP(battler.totalhp)
-        battler.pbCureStatus(false)
-        battler.eachMove { |m| battler.pbSetPP(m, m.total_pp) }
-        position.effects[PBEffects::LunarDance] = false
-      elsif Settings::MECHANICS_GENERATION < 8
-        position.effects[PBEffects::LunarDance] = false
-      end
+    return unless position.effects[PBEffects::LunarDance]
+    full_pp = true
+    battler.eachMove { |m| full_pp = false if m.pp < m.total_pp }
+    if battler.canHeal? || battler.status != :NONE || !full_pp
+      pbCommonAnimation("LunarDance", battler)
+      pbDisplay(_INTL("{1} became cloaked in mystical moonlight!", battler.pbThis))
+      battler.pbRecoverHP(battler.totalhp)
+      battler.pbCureStatus(false)
+      battler.eachMove { |m| battler.pbSetPP(m, m.total_pp) }
+      position.effects[PBEffects::LunarDance] = false
+    elsif Settings::MECHANICS_GENERATION < 8
+      position.effects[PBEffects::LunarDance] = false
     end
   end
 

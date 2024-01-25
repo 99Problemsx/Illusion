@@ -12,7 +12,7 @@ end
 
 def pbListScreen(title, lister)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   list = pbListWindow([])
   list.viewport = viewport
   list.z        = 2
@@ -60,7 +60,7 @@ end
 
 def pbListScreenBlock(title, lister)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   list = pbListWindow([], Graphics.width / 2)
   list.viewport = viewport
   list.z        = 2
@@ -145,9 +145,9 @@ class GraphicsLister
     Dir.chdir(@folder) do
       Dir.glob("*.png") { |f| @commands.push(f) }
       Dir.glob("*.gif") { |f| @commands.push(f) }
-#      Dir.glob("*.jpg") { |f| @commands.push(f) }
-#      Dir.glob("*.jpeg") { |f| @commands.push(f) }
-#      Dir.glob("*.bmp") { |f| @commands.push(f) }
+      #      Dir.glob("*.jpg") { |f| @commands.push(f) }
+      #      Dir.glob("*.jpeg") { |f| @commands.push(f) }
+      #      Dir.glob("*.bmp") { |f| @commands.push(f) }
     end
     @commands.sort!
     @commands.length.times do |i|
@@ -522,13 +522,12 @@ class TrainerTypeLister
       else
         @sprite.setBitmap(nil)
       end
-    rescue
+    rescue StandardError
       @sprite.setBitmap(nil)
     end
-    if @sprite.bitmap
-      @sprite.ox = @sprite.bitmap.width / 2
-      @sprite.oy = @sprite.bitmap.height / 2
-    end
+    return unless @sprite.bitmap
+    @sprite.ox = @sprite.bitmap.width / 2
+    @sprite.oy = @sprite.bitmap.height / 2
   end
 end
 
@@ -622,7 +621,7 @@ class TrainerBattleLister
       else
         @sprite.setBitmap(nil)
       end
-    rescue
+    rescue StandardError
       @sprite.setBitmap(nil)
     end
     if @sprite.bitmap

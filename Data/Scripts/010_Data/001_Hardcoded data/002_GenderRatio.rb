@@ -8,7 +8,7 @@ module GameData
     attr_reader :real_name
     attr_reader :female_chance
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -38,18 +38,18 @@ end
 #===============================================================================
 
 GameData::GenderRatio.register({
-  :id            => :AlwaysMale,
-  :name          => _INTL("Always Male")
+  :id   => :AlwaysMale,
+  :name => _INTL("Always Male")
 })
 
 GameData::GenderRatio.register({
-  :id            => :AlwaysFemale,
-  :name          => _INTL("Always Female")
+  :id   => :AlwaysFemale,
+  :name => _INTL("Always Female")
 })
 
 GameData::GenderRatio.register({
-  :id            => :Genderless,
-  :name          => _INTL("Genderless")
+  :id   => :Genderless,
+  :name => _INTL("Genderless")
 })
 
 GameData::GenderRatio.register({

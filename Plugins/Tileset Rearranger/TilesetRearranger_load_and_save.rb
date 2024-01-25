@@ -28,9 +28,9 @@ class TilesetRearranger
     @tilesets_usage[@tileset_id].each do |id|
       map = load_data(sprintf("Data/Map%03d.rxdata", id))
       # Go through all map tiles
-      for y in 0...map.height
-        for x in 0...map.width
-          for z in 0...3
+      (0...map.height).each do |y|
+        (0...map.width).each do |x|
+          (0...3).each do |z|
             tile_id = map.data[x, y, z]
             tile_id = 0 if !tile_id
             @used_ids[tile_id] = true
@@ -51,11 +51,11 @@ class TilesetRearranger
           next if page.graphic.tile_id <= 0
           start_x = (page.graphic.tile_id - TILESET_START_ID) % TILES_PER_ROW
           start_y = (page.graphic.tile_id - TILESET_START_ID) / TILES_PER_ROW
-          for yy in 0...event_height
+          (0...event_height).each do |yy|
             break if start_y - yy < 0
-            for xx in 0...event_width
+            (0...event_width).each do |xx|
               next if start_x + xx >= TILES_PER_ROW
-              @used_ids[page.graphic.tile_id - yy * TILES_PER_ROW + xx] = true
+              @used_ids[page.graphic.tile_id - (yy * TILES_PER_ROW) + xx] = true
             end
           end
         end
@@ -103,8 +103,8 @@ class TilesetRearranger
     tileset_height = @height
     loop do
       used = false
-      for i in 0...TILES_PER_ROW
-        next if @tile_ID_map[tileset_height * TILES_PER_ROW - 1 - i] == -1
+      (0...TILES_PER_ROW).each do |i|
+        next if @tile_ID_map[(tileset_height * TILES_PER_ROW) - 1 - i] == -1
         used = true
         break
       end
@@ -136,9 +136,9 @@ class TilesetRearranger
   def save_tileset_graphic(height, filename)
     bitmap = Bitmap.new(TILESET_WIDTH, height * TILE_SIZE)
     Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
-    for yy in 0...height
-      for xx in 0...TILES_PER_ROW
-        tile_id = @tile_ID_map[yy * TILES_PER_ROW + xx] || -1
+    (0...height).each do |yy|
+      (0...TILES_PER_ROW).each do |xx|
+        tile_id = @tile_ID_map[(yy * TILES_PER_ROW) + xx] || -1
         tile_id += TILESET_START_ID if tile_id >= 0
         draw_tile_onto_bitmap(bitmap, xx * TILE_SIZE, yy * TILE_SIZE, tile_id)
       end
@@ -155,9 +155,9 @@ class TilesetRearranger
       map = load_data(filename)
       save_data(map, sprintf("Data/Map%03d_backup.rxdata", id))
       # Go through all tiles
-      for y in 0...map.height
-        for x in 0...map.width
-          for z in 0...3
+      (0...map.height).each do |y|
+        (0...map.width).each do |x|
+          (0...3).each do |z|
             old_tile_id = map.data[x, y, z] || 0
             if old_tile_id < TILESET_START_ID
               map.data[x, y, z] = old_tile_id   # Just in case it's nil somehow
@@ -182,11 +182,11 @@ class TilesetRearranger
   # Modify tileset data to reflect changes to tile IDs.
   def save_tileset_data(height)
     save_data(@tilesets_data, "Data/Tilesets_backup.rxdata")
-    new_passages = Table.new(TILESET_START_ID + height * TILES_PER_ROW)
-    new_priorities = Table.new(TILESET_START_ID + height * TILES_PER_ROW)
-    new_terrain_tags = Table.new(TILESET_START_ID + height * TILES_PER_ROW)
+    new_passages = Table.new(TILESET_START_ID + (height * TILES_PER_ROW))
+    new_priorities = Table.new(TILESET_START_ID + (height * TILES_PER_ROW))
+    new_terrain_tags = Table.new(TILESET_START_ID + (height * TILES_PER_ROW))
     # Fill in table data
-    for i in 0...TILESET_START_ID + height * TILES_PER_ROW
+    (0...TILESET_START_ID + (height * TILES_PER_ROW)).each do |i|
       old_id = i
       if i >= TILESET_START_ID
         old_id = @tile_ID_map[i - TILESET_START_ID] || -1

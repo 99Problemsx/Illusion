@@ -27,9 +27,8 @@ class MiningGameCounter < BitmapSprite
       value -= 6
     end
     startx -= 48
-    if value > 0
-      self.bitmap.blt(startx, 0, @image.bitmap, Rect.new(0, value * 52, 96, 52))
-    end
+    return unless value > 0
+    self.bitmap.blt(startx, 0, @image.bitmap, Rect.new(0, value * 52, 96, 52))
   end
 end
 
@@ -65,9 +64,8 @@ class MiningGameTile < BitmapSprite
 
   def update
     self.bitmap.clear
-    if @layer > 0
-      self.bitmap.blt(0, 0, @image.bitmap, Rect.new(0, 32 * (@layer - 1), 32, 32))
-    end
+    return unless @layer > 0
+    self.bitmap.blt(0, 0, @image.bitmap, Rect.new(0, 32 * (@layer - 1), 32, 32))
   end
 end
 
@@ -80,7 +78,7 @@ class MiningGameCursor < BitmapSprite
 
   HIT_FRAME_DURATION = 0.05   # In seconds
   TOOL_POSITIONS = [[1, 0], [1, 1], [1, 1], [0, 0], [0, 0],
-                    [0, 2], [0, 2], [0, 0], [0, 0], [0, 2], [0, 2]]   # Graphic, position
+                    [0, 2], [0, 2], [0, 0], [0, 0], [0, 2], [0, 2]].freeze   # Graphic, position
 
   # mode: 0=pick, 1=hammer.
   def initialize(position, mode, viewport)
@@ -135,9 +133,8 @@ class MiningGameCursor < BitmapSprite
         end
       end
     end
-    if !@hit_timer_start
-      self.bitmap.blt(x, y + 64, @cursorbitmap.bitmap, Rect.new(32 * @mode, 0, 32, 32))
-    end
+    return if @hit_timer_start
+    self.bitmap.blt(x, y + 64, @cursorbitmap.bitmap, Rect.new(32 * @mode, 0, 32, 32))
   end
 end
 
@@ -209,7 +206,7 @@ class MiningGameScene
     [:SPOOKYPLATE, 10, 4, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:IRONPLATE, 10, 8, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:SPLASHPLATE, 10, 12, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-  ]
+  ].freeze
   IRON = [   # Graphic x, graphic y, width, height, pattern
     [0, 0, 1, 4, [1, 1, 1, 1]],
     [1, 0, 2, 4, [1, 1, 1, 1, 1, 1, 1, 1]],
@@ -224,7 +221,7 @@ class MiningGameScene
     [8, 3, 2, 3, [0, 1, 1, 1, 1, 0]],
     [6, 6, 2, 3, [1, 0, 1, 1, 1, 0]],
     [8, 6, 2, 3, [0, 1, 1, 1, 0, 1]]
-  ]
+  ].freeze
 
   def update
     pbUpdateSpriteHash(@sprites)
@@ -233,7 +230,7 @@ class MiningGameScene
   def pbStartScene
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     addBackgroundPlane(@sprites, "bg", "Mining/bg", @viewport)
     @sprites["itemlayer"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     @sprites["itemlayer"].z = 10
@@ -277,19 +274,16 @@ class MiningGameScene
       ITEMS.length.times do |i|
         rnd -= ITEMS[i][1]
         if rnd < 0
-          if pbNoDuplicateItems(ITEMS[i][0])
-            until added
-              provx = rand(BOARD_WIDTH - ITEMS[i][4] + 1)
-              provy = rand(BOARD_HEIGHT - ITEMS[i][5] + 1)
-              if pbCheckOverlaps(false, provx, provy, ITEMS[i][4], ITEMS[i][5], ITEMS[i][6])
-                @items.push([i, provx, provy])
-                numitems -= 1
-                added = true
-              end
-            end
-          else
-            break
+          break unless pbNoDuplicateItems(ITEMS[i][0])
+          until added
+            provx = rand(BOARD_WIDTH - ITEMS[i][4] + 1)
+            provy = rand(BOARD_HEIGHT - ITEMS[i][5] + 1)
+            next unless pbCheckOverlaps(false, provx, provy, ITEMS[i][4], ITEMS[i][5], ITEMS[i][6])
+            @items.push([i, provx, provy])
+            numitems -= 1
+            added = true
           end
+
         end
         break if added
       end
@@ -425,7 +419,7 @@ class MiningGameScene
     end
     update
     Graphics.update
-    hititem = (@sprites["tile#{position}"].layer == 0 && pbIsItemThere?(position))
+    hititem = @sprites["tile#{position}"].layer == 0 && pbIsItemThere?(position)
     hittype = 1 if hititem
     @sprites["cursor"].animate(hittype)
     revealed = pbCheckRevealed
@@ -599,14 +593,13 @@ class MiningGameScene
   end
 
   def pbGiveItems
-    if @itemswon.length > 0
-      @itemswon.each do |i|
-        if $bag.add(i)
-          pbMessage(_INTL("One {1} was obtained.", GameData::Item.get(i).name) + "\\se[Mining item get]\\wtnp[30]")
-        else
-          pbMessage(_INTL("One {1} was found, but you have no room for it.",
-                          GameData::Item.get(i).name))
-        end
+    return unless @itemswon.length > 0
+    @itemswon.each do |i|
+      if $bag.add(i)
+        pbMessage(_INTL("One {1} was obtained.", GameData::Item.get(i).name) + "\\se[Mining item get]\\wtnp[30]")
+      else
+        pbMessage(_INTL("One {1} was found, but you have no room for it.",
+                        GameData::Item.get(i).name))
       end
     end
   end

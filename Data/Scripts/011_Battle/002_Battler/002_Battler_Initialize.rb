@@ -96,9 +96,7 @@ class Battle::Battler
       # reapplied
       @effects[PBEffects::LaserFocus] = (@effects[PBEffects::LaserFocus] > 0) ? 2 : 0
       @effects[PBEffects::LockOn]     = (@effects[PBEffects::LockOn] > 0) ? 2 : 0
-      if @effects[PBEffects::PowerTrick]
-        @attack, @defense = @defense, @attack
-      end
+      @attack, @defense = @defense, @attack if @effects[PBEffects::PowerTrick]
       # These effects are passed on if Baton Pass is used, but they need to be
       # cancelled in certain circumstances anyway
       @effects[PBEffects::Telekinesis] = 0 if isSpecies?(:GENGAR) && mega?
@@ -147,7 +145,7 @@ class Battle::Battler
     @lastRoundMoveFailed     = false
     @movesUsed               = []
     @turnCount               = 0
-    @effects[PBEffects::Attract]             = -1
+    @effects[PBEffects::Attract] = -1
     @battle.allBattlers.each do |b|   # Other battlers no longer attracted to self
       b.effects[PBEffects::Attract] = -1 if b.effects[PBEffects::Attract] == @index
     end
@@ -188,7 +186,7 @@ class Battle::Battler
     if hasActiveAbility?(:ILLUSION)
       idxLastParty = @battle.pbLastInTeam(@index)
       if idxLastParty >= 0 && idxLastParty != @pokemonIndex
-        @effects[PBEffects::Illusion]        = @battle.pbParty(@index)[idxLastParty]
+        @effects[PBEffects::Illusion] = @battle.pbParty(@index)[idxLastParty]
       end
     end
     @effects[PBEffects::Imprison]            = false
@@ -198,7 +196,7 @@ class Battle::Battler
     @battle.allBattlers.each do |b|   # Other battlers no longer blocked by self
       b.effects[PBEffects::JawLock] = -1 if b.effects[PBEffects::JawLock] == @index
     end
-    @effects[PBEffects::KingsShield]         = false
+    @effects[PBEffects::KingsShield] = false
     @battle.allBattlers.each do |b|   # Other battlers lose their lock-on against self
       next if b.effects[PBEffects::LockOn] == 0
       next if b.effects[PBEffects::LockOnPos] != @index
@@ -288,17 +286,15 @@ class Battle::Battler
     @level          = @pokemon.level
     @hp             = @pokemon.hp
     @totalhp        = @pokemon.totalhp
-    if !@effects[PBEffects::Transform]
-      @attack       = @pokemon.attack
-      @defense      = @pokemon.defense
-      @spatk        = @pokemon.spatk
-      @spdef        = @pokemon.spdef
-      @speed        = @pokemon.speed
-      if fullChange
-        @types      = @pokemon.types
-        @ability_id = @pokemon.ability_id
-      end
-    end
+    return if @effects[PBEffects::Transform]
+    @attack       = @pokemon.attack
+    @defense      = @pokemon.defense
+    @spatk        = @pokemon.spatk
+    @spdef        = @pokemon.spdef
+    @speed        = @pokemon.speed
+    return unless fullChange
+    @types      = @pokemon.types
+    @ability_id = @pokemon.ability_id
   end
 
   # Used to erase the battler of a Pokémon that has been caught.

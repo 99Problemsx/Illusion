@@ -47,7 +47,7 @@ class SpritePositioner
   def pbOpen
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     battlebg   = "Graphics/Battlebacks/indoor1_bg"
     playerbase = "Graphics/Battlebacks/indoor1_base0"
     enemybase  = "Graphics/Battlebacks/indoor1_base1"
@@ -145,13 +145,12 @@ class SpritePositioner
     new_back_y  = (bitmap1.height - (findBottom(bitmap1) + 1)) / 2
     new_front_y = (bitmap2.height - (findBottom(bitmap2) + 1)) / 2
     new_front_y += 4   # Just because
-    if new_back_y != old_back_y || new_front_y != old_front_y || old_front_altitude != 0
-      metrics_data.back_sprite[1]        = new_back_y
-      metrics_data.front_sprite[1]       = new_front_y
-      metrics_data.front_sprite_altitude = 0
-      @metricsChanged = true
-      refresh
-    end
+    return unless new_back_y != old_back_y || new_front_y != old_front_y || old_front_altitude != 0
+    metrics_data.back_sprite[1]        = new_back_y
+    metrics_data.front_sprite[1]       = new_front_y
+    metrics_data.front_sprite_altitude = 0
+    @metricsChanged = true
+    refresh
   end
 
   def pbChangeSpecies(species, form)

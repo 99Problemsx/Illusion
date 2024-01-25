@@ -62,9 +62,7 @@ class Player < Trainer
       species_id = GameData::Species.try_get(species)&.species
       return false if species_id.nil?
       @seen_forms[species_id] ||= [[[], []], [[], []]]
-      if shiny.nil?
-        return @seen_forms[species_id][gender][0][form] || @seen_forms[species_id][gender][1][form]
-      end
+      return @seen_forms[species_id][gender][0][form] || @seen_forms[species_id][gender][1][form] if shiny.nil?
       shin = (shiny) ? 1 : 0
       return @seen_forms[species_id][gender][shin][form] == true
     end
@@ -325,9 +323,7 @@ class Player < Trainer
       else   # Regional Dexes + National Dex
         dexes_count.times do |i|
           dex_list_to_check = (i == dexes_count - 1) ? -1 : i
-          if self.unlocked?(i) && self.seen_any?(dex_list_to_check)
-            @accessible_dexes.push(dex_list_to_check)
-          end
+          @accessible_dexes.push(dex_list_to_check) if self.unlocked?(i) && self.seen_any?(dex_list_to_check)
         end
       end
     end

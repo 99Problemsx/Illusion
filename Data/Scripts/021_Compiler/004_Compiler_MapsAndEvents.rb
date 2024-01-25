@@ -35,7 +35,7 @@ module Compiler
     ["pbCheckAble",                  "$player.has_other_able_pokemon?"],
     ["$PokemonTemp.lastbattle",      "$game_temp.last_battle_record"],
     ["calcStats",                    "calc_stats"]
-  ]
+  ].freeze
 
   module_function
 
@@ -49,7 +49,7 @@ module Compiler
     Dir.chdir("Data") do
       mapData = sprintf("Map*.rxdata")
       Dir.glob(mapData).each do |map|
-        mapfiles[$1.to_i(10)] = true if map[/map(\d+)\.rxdata/i]
+        mapfiles[::Regexp.last_match(1).to_i(10)] = true if map[/map(\d+)\.rxdata/i]
       end
     end
     mapinfos = pbLoadMapInfos
@@ -145,7 +145,7 @@ module Compiler
   end
 
   def push_comment(list, cmt, indent = 0)
-    textsplit2 = cmt.split(/\n/)
+    textsplit2 = cmt.split("\n")
     textsplit2.length.times do |i|
       list.push(RPG::EventCommand.new((i == 0) ? 108 : 408, indent, [textsplit2[i].gsub(/\s+$/, "")]))
     end
@@ -153,10 +153,10 @@ module Compiler
 
   def push_text(list, text, indent = 0)
     return if !text
-    textsplit = text.split(/\\m/)
+    textsplit = text.split("\\m")
     textsplit.each do |t|
       first = true
-      textsplit2 = t.split(/\n/)
+      textsplit2 = t.split("\n")
       textsplit2.length.times do |i|
         textchunk = textsplit2[i].gsub(/\s+$/, "")
         if textchunk && textchunk != ""
@@ -170,7 +170,7 @@ module Compiler
   def push_script(list, script, indent = 0)
     return if !script
     first = true
-    textsplit2 = script.split(/\n/)
+    textsplit2 = script.split("\n")
     textsplit2.length.times do |i|
       textchunk = textsplit2[i].gsub(/\s+$/, "")
       if textchunk && textchunk != ""
@@ -252,18 +252,18 @@ module Compiler
   #
   #=============================================================================
   def safequote(x)
-    x = x.gsub(/\"\#\'\\/) { |a| "\\" + a }
-    x = x.gsub(/\t/, "\\t")
-    x = x.gsub(/\r/, "\\r")
-    x = x.gsub(/\n/, "\\n")
+    x = x.gsub('\"#\\'\\') { |a| "\\" + a }
+    x = x.gsub("\t", "\\t")
+    x = x.gsub("\r", "\\r")
+    x = x.gsub("\n", "\\n")
     return x
   end
 
   def safequote2(x)
-    x = x.gsub(/\"\#\'\\/) { |a| "\\" + a }
-    x = x.gsub(/\t/, "\\t")
-    x = x.gsub(/\r/, "\\r")
-    x = x.gsub(/\n/, " ")
+    x = x.gsub('\"#\\'\\') { |a| "\\" + a }
+    x = x.gsub("\t", "\\t")
+    x = x.gsub("\r", "\\r")
+    x = x.gsub("\n", " ")
     return x
   end
 
@@ -317,7 +317,7 @@ module Compiler
       begin
         @maps[mapID] = load_data(mapFilename(mapID))
         return @maps[mapID]
-      rescue
+      rescue StandardError
         return nil
       end
     end
@@ -348,8 +348,8 @@ module Compiler
     def getTilesetPassages(map, mapID)
       begin
         return @tilesets[map.tileset_id].passages
-      rescue
-        raise "Tileset data for tileset number #{map.tileset_id} used on map #{mapID} was not found. " +
+      rescue StandardError
+        raise "Tileset data for tileset number #{map.tileset_id} used on map #{mapID} was not found. " \
               "The tileset was likely deleted, but one or more maps still use it."
       end
     end
@@ -357,8 +357,8 @@ module Compiler
     def getTilesetPriorities(map, mapID)
       begin
         return @tilesets[map.tileset_id].priorities
-      rescue
-        raise "Tileset data for tileset number #{map.tileset_id} used on map #{mapID} was not found. " +
+      rescue StandardError
+        raise "Tileset data for tileset number #{map.tileset_id} used on map #{mapID} was not found. " \
               "The tileset was likely deleted, but one or more maps still use it."
       end
     end
@@ -374,7 +374,7 @@ module Compiler
         return false if tile_id.nil?
         passage = passages[tile_id]
         if !passage
-          raise "The tile used on map #{mapID} at coordinates (#{x}, #{y}) on layer #{i + 1} doesn't exist in the tileset. " +
+          raise "The tile used on map #{mapID} at coordinates (#{x}, #{y}) on layer #{i + 1} doesn't exist in the tileset. " \
                 "It should be deleted to prevent errors."
         end
         return false if passage & 0x0f == 0x0f
@@ -392,7 +392,7 @@ module Compiler
         return false if tile_id.nil?
         passage = passages[tile_id]
         if !passage
-          raise "The tile used on map #{mapID} at coordinates (#{x}, #{y}) on layer #{i + 1} doesn't exist in the tileset. " +
+          raise "The tile used on map #{mapID} at coordinates (#{x}, #{y}) on layer #{i + 1} doesn't exist in the tileset. " \
                 "It should be deleted to prevent errors."
         end
         return true if passage & 0x80 == 0x80
@@ -425,7 +425,11 @@ module Compiler
     end
 
     def saveMap(mapID)
-      save_data(getMap(mapID), mapFilename(mapID)) rescue nil
+      begin
+        save_data(getMap(mapID), mapFilename(mapID))
+      rescue
+        nil
+      end
     end
 
     def saveTilesets
@@ -445,9 +449,9 @@ module Compiler
     def pbTrainerTypeCheck(trainer_type)
       return if !$DEBUG || @dontaskagain
       return if GameData::TrainerType.exists?(trainer_type)
-      if pbConfirmMessage(_INTL("Add new trainer type {1}?", trainer_type.to_s))
+      return unless pbConfirmMessage(_INTL("Add new trainer type {1}?", trainer_type.to_s))
         pbTrainerTypeEditorNew(trainer_type.to_s)
-      end
+      
     end
 
     def pbTrainerBattleCheck(tr_type, tr_name, tr_version)
@@ -460,10 +464,10 @@ module Compiler
       return if GameData::Trainer.exists?(tr_type, tr_name, tr_version)
       # Add new trainer
       cmd = pbMissingTrainer(tr_type, tr_name, tr_version)
-      if cmd == 2
+      return unless cmd == 2
         @dontaskagain = true
         Graphics.update
-      end
+      
     end
   end
 
@@ -484,7 +488,7 @@ module Compiler
         break if list[j].code != 408   # Comment (continuation line)
         command += "\r\n" + list[j].parameters[0]
       end
-      if command[/^(Battle\:|Type\:|Name\:|BattleID\:|DoubleBattle\:|Backdrop\:|EndSpeech\:|Outcome\:|Continue\:|EndBattle\:|EndIfSwitch\:|VanishIfSwitch\:|RegSpeech\:)/i]
+      if command[/^(Battle:|Type:|Name:|BattleID:|DoubleBattle:|Backdrop:|EndSpeech:|Outcome:|Continue:|EndBattle:|EndIfSwitch:|VanishIfSwitch:|RegSpeech:)/i]
         commands.push(command)
         isFirstCommand = true if i == 0
       end
@@ -502,7 +506,7 @@ module Compiler
       if !event.name[/trainer/i]
         ret.name = "Trainer(3)"
       elsif event.name[/^\s*trainer\s*\((\d+)\)\s*$/i]
-        ret.name = "Trainer(#{$1})"
+        ret.name = "Trainer(#{::Regexp.last_match(1)})"
       end
     end
     # Compile the trainer comments
@@ -521,45 +525,45 @@ module Compiler
     regspeech      = nil
     common_event   = 0
     commands.each do |command|
-      if command[/^Battle\:\s*([\s\S]+)$/i]
+      if command[/^Battle:\s*([\s\S]+)$/i]
         battles.push($~[1])
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^Type\:\s*([\s\S]+)$/i]
+      elsif command[/^Type:\s*([\s\S]+)$/i]
         trtype = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^Name\:\s*([\s\S]+)$/i]
+      elsif command[/^Name:\s*([\s\S]+)$/i]
         trname = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^BattleID\:\s*(\d+)$/i]
+      elsif command[/^BattleID:\s*(\d+)$/i]
         battleid = $~[1].to_i
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^DoubleBattle\:\s*([\s\S]+)$/i]
+      elsif command[/^DoubleBattle:\s*([\s\S]+)$/i]
         value = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         doublebattle = true if value.upcase == "TRUE" || value.upcase == "YES"
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^Continue\:\s*([\s\S]+)$/i]
+      elsif command[/^Continue:\s*([\s\S]+)$/i]
         value = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         continue = true if value.upcase == "TRUE" || value.upcase == "YES"
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^EndIfSwitch\:\s*([\s\S]+)$/i]
-        endifswitch.push(($~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")).to_i)
+      elsif command[/^EndIfSwitch:\s*([\s\S]+)$/i]
+        endifswitch.push($~[1].gsub(/^\s+/, "").gsub(/\s+$/, "").to_i)
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^VanishIfSwitch\:\s*([\s\S]+)$/i]
-        vanishifswitch.push(($~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")).to_i)
+      elsif command[/^VanishIfSwitch:\s*([\s\S]+)$/i]
+        vanishifswitch.push($~[1].gsub(/^\s+/, "").gsub(/\s+$/, "").to_i)
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^Backdrop\:\s*([\s\S]+)$/i]
+      elsif command[/^Backdrop:\s*([\s\S]+)$/i]
         backdrop = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^Outcome\:\s*(\d+)$/i]
+      elsif command[/^Outcome:\s*(\d+)$/i]
         outcome = $~[1].to_i
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^EndBattle\:\s*([\s\S]+)$/i]
+      elsif command[/^EndBattle:\s*([\s\S]+)$/i]
         endbattles.push($~[1].gsub(/^\s+/, "").gsub(/\s+$/, ""))
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^RegSpeech\:\s*([\s\S]+)$/i]
+      elsif command[/^RegSpeech:\s*([\s\S]+)$/i]
         regspeech = $~[1].gsub(/^\s+/, "").gsub(/\s+$/, "")
         push_comment(firstpage.list, command) if rewriteComments
-      elsif command[/^CommonEvent\:\s*(\d+)$/i]
+      elsif command[/^CommonEvent:\s*(\d+)$/i]
         common_event = $~[1].to_i
         push_comment(firstpage.list, command) if rewriteComments
       end
@@ -573,9 +577,7 @@ module Compiler
     if firstpage.graphic.character_name == "" && GameData::TrainerType.exists?(trtype)
       trainerid = GameData::TrainerType.get(trtype).id
       filename = GameData::TrainerType.charset_filename_brief(trainerid)
-      if FileTest.image_exist?("Graphics/Characters/" + filename)
-        firstpage.graphic.character_name = filename
-      end
+      firstpage.graphic.character_name = filename if FileTest.image_exist?("Graphics/Characters/" + filename)
     end
     # Create strings that will be used repeatedly
     safetrcombo = sprintf(":%s, \"%s\"", trtype, safequote(trname))   # :YOUNGSTER, "Joey"
@@ -777,13 +779,13 @@ module Compiler
     ret.pages = []
     itemName = ""
     hidden = false
-    if name[/^hiddenitem\:\s*(\w+)\s*$/i]
-      itemName = $1
+    if name[/^hiddenitem:\s*(\w+)\s*$/i]
+      itemName = ::Regexp.last_match(1)
       return nil if !GameData::Item.exists?(itemName)
       ret.name = "HiddenItem"
       hidden = true
-    elsif name[/^item\:\s*(\w+)\s*$/i]
-      itemName = $1
+    elsif name[/^item:\s*(\w+)\s*$/i]
+      itemName = ::Regexp.last_match(1)
       return nil if !GameData::Item.exists?(itemName)
       ret.name = "Item"
     else
@@ -922,7 +924,7 @@ module Compiler
     if thisEvent.pages[0].graphic.character_name == "" &&
        thisEvent.pages[0].list.length <= 12 &&
        thisEvent.pages[0].list.any? { |cmd| cmd.code == 201 } &&   # Transfer Player
-#       mapData.isPassable?(mapID,thisEvent.x,thisEvent.y+1) &&
+       #       mapData.isPassable?(mapID,thisEvent.x,thisEvent.y+1) &&
        mapData.isPassable?(mapID, thisEvent.x, thisEvent.y) &&
        !mapData.isPassable?(mapID, thisEvent.x - 1, thisEvent.y) &&
        !mapData.isPassable?(mapID, thisEvent.x + 1, thisEvent.y) &&
@@ -951,7 +953,7 @@ module Compiler
   def replace_scripts(script)
     ret = false
     SCRIPT_REPLACEMENTS.each { |pair| ret = true if script.gsub!(pair[0], pair[1]) }
-    ret = true if script.gsub!(/\$game_variables\[(\d+)\](?!\s*(?:\=|\!|<|>))/) { |m| "pbGet(" + $~[1] + ")" }
+    ret = true if script.gsub!(/\$game_variables\[(\d+)\](?!\s*(?:=|!|<|>))/) { |m| "pbGet(" + $~[1] + ")" }
     ret = true if script.gsub!(/\$player\.party\[\s*pbGet\((\d+)\)\s*\]/) { |m| "pbGetPokemon(" + $~[1] + ")" }
     return ret
   end
@@ -998,23 +1000,21 @@ module Compiler
     changed = false
     script = list[index].parameters[1]
     if script[/^\s*pbWildBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       list[index].parameters[1] = sprintf("WildBattle.start(#{battle_params[0]}, #{battle_params[1]})")
       old_indent = list[index].indent
       new_events = []
       if battle_params[3] && battle_params[3][/false/]
         push_script(new_events, "setBattleRule(\"cannotRun\")", old_indent)
       end
-      if battle_params[4] && battle_params[4][/true/]
-        push_script(new_events, "setBattleRule(\"canLose\")", old_indent)
-      end
+      push_script(new_events, "setBattleRule(\"canLose\")", old_indent) if battle_params[4] && battle_params[4][/true/]
       if battle_params[2] && battle_params[2] != "1"
         push_script(new_events, "setBattleRule(\"outcome\", #{battle_params[2]})", old_indent)
       end
       list[index, 0] = new_events if new_events.length > 0
       changed = true
     elsif script[/^\s*pbDoubleWildBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       pkmn1 = "#{battle_params[0]}, #{battle_params[1]}"
       pkmn2 = "#{battle_params[2]}, #{battle_params[3]}"
       list[index].parameters[1] = sprintf("WildBattle.start(#{pkmn1}, #{pkmn2})")
@@ -1023,16 +1023,14 @@ module Compiler
       if battle_params[5] && battle_params[5][/false/]
         push_script(new_events, "setBattleRule(\"cannotRun\")", old_indent)
       end
-      if battle_params[6] && battle_params[6][/true/]
-        push_script(new_events, "setBattleRule(\"canLose\")", old_indent)
-      end
+      push_script(new_events, "setBattleRule(\"canLose\")", old_indent) if battle_params[6] && battle_params[6][/true/]
       if battle_params[4] && battle_params[4] != "1"
         push_script(new_events, "setBattleRule(\"outcome\", #{battle_params[4]})", old_indent)
       end
       list[index, 0] = new_events if new_events.length > 0
       changed = true
     elsif script[/^\s*pbTripleWildBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       pkmn1 = "#{battle_params[0]}, #{battle_params[1]}"
       pkmn2 = "#{battle_params[2]}, #{battle_params[3]}"
       pkmn3 = "#{battle_params[4]}, #{battle_params[5]}"
@@ -1042,38 +1040,32 @@ module Compiler
       if battle_params[7] && battle_params[7][/false/]
         push_script(new_events, "setBattleRule(\"cannotRun\")", old_indent)
       end
-      if battle_params[8] && battle_params[8][/true/]
-        push_script(new_events, "setBattleRule(\"canLose\")", old_indent)
-      end
+      push_script(new_events, "setBattleRule(\"canLose\")", old_indent) if battle_params[8] && battle_params[8][/true/]
       if battle_params[6] && battle_params[6] != "1"
         push_script(new_events, "setBattleRule(\"outcome\", #{battle_params[6]})", old_indent)
       end
       list[index, 0] = new_events if new_events.length > 0
       changed = true
     elsif script[/^\s*pbTrainerBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       trainer1 = "#{battle_params[0]}, #{battle_params[1]}"
       trainer1 += ", #{battle_params[4]}" if battle_params[4] && battle_params[4] != "nil"
       list[index].parameters[1] = "TrainerBattle.start(#{trainer1})"
       old_indent = list[index].indent
       new_events = []
       if battle_params[2] && !battle_params[2].empty? && battle_params[2] != "nil"
-        speech = battle_params[2].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[2].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech: #{speech.strip}", old_indent)
       end
-      if battle_params[3] && battle_params[3][/true/]
-        push_script(new_events, "setBattleRule(\"double\")", old_indent)
-      end
-      if battle_params[5] && battle_params[5][/true/]
-        push_script(new_events, "setBattleRule(\"canLose\")", old_indent)
-      end
+      push_script(new_events, "setBattleRule(\"double\")", old_indent) if battle_params[3] && battle_params[3][/true/]
+      push_script(new_events, "setBattleRule(\"canLose\")", old_indent) if battle_params[5] && battle_params[5][/true/]
       if battle_params[6] && battle_params[6] != "1"
         push_script(new_events, "setBattleRule(\"outcome\", #{battle_params[6]})", old_indent)
       end
       list[index, 0] = new_events if new_events.length > 0
       changed = true
     elsif script[/^\s*pbDoubleTrainerBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       trainer1 = "#{battle_params[0]}, #{battle_params[1]}"
       trainer1 += ", #{battle_params[2]}" if battle_params[2] && battle_params[2] != "nil"
       trainer2 = "#{battle_params[4]}, #{battle_params[5]}"
@@ -1082,23 +1074,21 @@ module Compiler
       old_indent = list[index].indent
       new_events = []
       if battle_params[3] && !battle_params[3].empty? && battle_params[3] != "nil"
-        speech = battle_params[3].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[3].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech1: #{speech.strip}", old_indent)
       end
       if battle_params[7] && !battle_params[7].empty? && battle_params[7] != "nil"
-        speech = battle_params[7].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[7].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech2: #{speech.strip}", old_indent)
       end
-      if battle_params[8] && battle_params[8][/true/]
-        push_script(new_events, "setBattleRule(\"canLose\")", old_indent)
-      end
+      push_script(new_events, "setBattleRule(\"canLose\")", old_indent) if battle_params[8] && battle_params[8][/true/]
       if battle_params[9] && battle_params[9] != "1"
         push_script(new_events, "setBattleRule(\"outcome\", #{battle_params[9]})", old_indent)
       end
       list[index, 0] = new_events if new_events.length > 0
       changed = true
     elsif script[/^\s*pbTripleTrainerBattle\((.+)\)\s*$/]
-      battle_params = split_string_with_quotes($1)   # Split on commas
+      battle_params = split_string_with_quotes(::Regexp.last_match(1))   # Split on commas
       trainer1 = "#{battle_params[0]}, #{battle_params[1]}"
       trainer1 += ", #{battle_params[2]}" if battle_params[2] && battle_params[2] != "nil"
       trainer2 = "#{battle_params[4]}, #{battle_params[5]}"
@@ -1109,15 +1099,15 @@ module Compiler
       old_indent = list[index].indent
       new_events = []
       if battle_params[3] && !battle_params[3].empty? && battle_params[3] != "nil"
-        speech = battle_params[3].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[3].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech1: #{speech.strip}", old_indent)
       end
       if battle_params[7] && !battle_params[7].empty? && battle_params[7] != "nil"
-        speech = battle_params[7].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[7].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech2: #{speech.strip}", old_indent)
       end
       if battle_params[11] && !battle_params[11].empty? && battle_params[11] != "nil"
-        speech = battle_params[11].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/\"\s*\)\s*$/, "")
+        speech = battle_params[11].gsub(/^\s*_I\(\s*"\s*/, "").gsub(/"\s*\)\s*$/, "")
         push_comment(new_events, "EndSpeech3: #{speech.strip}", old_indent)
       end
       if battle_params[12] && battle_params[12][/true/]
@@ -1146,7 +1136,7 @@ module Compiler
       while i < list.length
         params = list[i].parameters
         case list[i].code
-#        when 655   # Script (continuation line)
+        #        when 655   # Script (continuation line)
         when 355   # Script (first line)
           lastScript = i
           if !params[0].is_a?(String)
@@ -1191,9 +1181,9 @@ module Compiler
           end
         when 108   # Comment (first line)
           # Replace a "SellItem:POTION,200" comment with event commands that do so
-          if params[0][/SellItem\s*\(\s*(\w+)\s*\,\s*(\d+)\s*\)/]
-            itemname = $1
-            cost     = $2.to_i
+          if params[0][/SellItem\s*\(\s*(\w+)\s*,\s*(\d+)\s*\)/]
+            itemname = ::Regexp.last_match(1)
+            cost     = ::Regexp.last_match(2).to_i
             if GameData::Item.exists?(itemname)
               oldIndent = list[i].indent
               list.delete_at(i)
@@ -1229,108 +1219,107 @@ module Compiler
           end
         when 201   # Transfer Player
           if list.length <= 8
-=begin
-            if params[0]==0
-              # Look for another event just above the position this Transfer
-              # Player command will transfer to - it may be a door, in which case
-              # this command should transfer the player onto the door instead of
-              # in front of it.
-              e = mapData.getEventFromXY(params[1],params[2],params[3]-1)
-              # This bit of code is just in case Switch 22 has been renamed/
-              # repurposed, which is highly unlikely. It changes the Switch used
-              # in the found event's condition to whichever is named
-              # 's:tsOff?("A")'.
-              if e && e.pages.length>=2 &&
-                 e.pages[e.pages.length-1].condition.switch1_valid &&
-                 e.pages[e.pages.length-1].condition.switch1_id==22 &&
-                 mapData.switchName(e.pages[e.pages.length-1].condition.switch1_id)!='s:tsOff?("A")' &&
-                 e.pages[e.pages.length-1].list.length>5 &&
-                 e.pages[e.pages.length-1].list[0].code==111   # Conditional Branch
-                e.pages[e.pages.length-1].condition.switch1_id = mapData.registerSwitch('s:tsOff?("A")')
-                mapData.saveMap(params[1])
-                changed = true
-              end
-              # Checks if the found event is a simple Transfer Player one nestled
-              # between tiles that aren't passable - it is likely a door, so give
-              # it a second page with an "is player on me?" check.
-              if likely_passage?(e,params[1],mapData)   # Checks the first page
-                add_passage_list(e,mapData)
-                mapData.saveMap(params[1])
-                changed = true
-              end
-              # If the found event's last page's Switch condition uses a Switch
-              # named 's:tsOff?("A")', it really does look like a door. Make this
-              # command transfer the player on top of it rather than in front of
-              # it.
-              if e && e.pages.length>=2 &&
-                 e.pages[e.pages.length-1].condition.switch1_valid &&
-                 mapData.switchName(e.pages[e.pages.length-1].condition.switch1_id)=='s:tsOff?("A")'
-                # If this is really a door, move transfer target to it
-                params[3] -= 1   # Move this command's destination up 1 tile (onto the found event)
-                params[5]  = 1   # No fade (the found event should take care of that)
-                changed = true
-              end
-              deletedRoute = nil
-              deleteMoveRouteAt = proc { |list,i|
-                arr = []
-                if list[i] && list[i].code==209   # Set Move Route
-                  arr.push(list[i])
-                  list.delete_at(i)
-                  while i<list.length
-                    break if !list[i] || list[i].code!=509   # Set Move Route (continuation line)
-                    arr.push(list[i])
-                    list.delete_at(i)
-                  end
-                end
-                next arr
-              }
-              insertMoveRouteAt = proc { |list,i,route|
-                j = route.length-1
-                while j>=0
-                  list.insert(i,route[j])
-                  j -= 1
-                end
-              }
-              # If the next event command is a Move Route that moves the player,
-              # check whether all it does is turn the player in a direction (or
-              # its first item is to move the player in a direction). If so, this
-              # Transfer Player command may as well set the player's direction
-              # instead; make it do so and delete that Move Route.
-              if params[4]==0 &&   # Retain direction
-                 i+1<list.length && list[i+1].code==209 && list[i+1].parameters[0]==-1   # Set Move Route
-                route = list[i+1].parameters[1]
-                if route && route.list.length<=2
-                  # Delete superfluous move route command if necessary
-                  if route.list[0].code==16      # Player Turn Down
-                    deleteMoveRouteAt.call(list,i+1)
-                    params[4] = 2
-                    changed = true
-                  elsif route.list[0].code==17   # Player Turn Left
-                    deleteMoveRouteAt.call(list,i+1)
-                    params[4] = 4
-                    changed = true
-                  elsif route.list[0].code==18   # Player Turn Right
-                    deleteMoveRouteAt.call(list,i+1)
-                    params[4] = 6
-                    changed = true
-                  elsif route.list[0].code==19   # Player Turn Up
-                    deleteMoveRouteAt.call(list,i+1)
-                    params[4] = 8
-                    changed = true
-                  elsif (route.list[0].code==1 || route.list[0].code==2 ||   # Player Move (4-dir)
-                     route.list[0].code==3 || route.list[0].code==4) && list.length==4
-                    params[4] = [0,2,4,6,8][route.list[0].code]
-                    deletedRoute = deleteMoveRouteAt.call(list,i+1)
-                    changed = true
-                  end
-                end
-              # If an event command before this one is a Move Route that just
-              # turns the player, delete it and make this Transfer Player command
-              # set the player's direction instead.
-              # (I don't know if it makes sense to do this, as there could be a
-              # lot of commands between then and this Transfer Player which this
-              # code can't recognise and deal with, so I've quoted this code out.)
-              elsif params[4]==0 && i>3   # Retain direction
+#             if params[0]==0
+#               # Look for another event just above the position this Transfer
+#               # Player command will transfer to - it may be a door, in which case
+#               # this command should transfer the player onto the door instead of
+#               # in front of it.
+#               e = mapData.getEventFromXY(params[1],params[2],params[3]-1)
+#               # This bit of code is just in case Switch 22 has been renamed/
+#               # repurposed, which is highly unlikely. It changes the Switch used
+#               # in the found event's condition to whichever is named
+#               # 's:tsOff?("A")'.
+#               if e && e.pages.length>=2 &&
+#                  e.pages[e.pages.length-1].condition.switch1_valid &&
+#                  e.pages[e.pages.length-1].condition.switch1_id==22 &&
+#                  mapData.switchName(e.pages[e.pages.length-1].condition.switch1_id)!='s:tsOff?("A")' &&
+#                  e.pages[e.pages.length-1].list.length>5 &&
+#                  e.pages[e.pages.length-1].list[0].code==111   # Conditional Branch
+#                 e.pages[e.pages.length-1].condition.switch1_id = mapData.registerSwitch('s:tsOff?("A")')
+#                 mapData.saveMap(params[1])
+#                 changed = true
+#               end
+#               # Checks if the found event is a simple Transfer Player one nestled
+#               # between tiles that aren't passable - it is likely a door, so give
+#               # it a second page with an "is player on me?" check.
+#               if likely_passage?(e,params[1],mapData)   # Checks the first page
+#                 add_passage_list(e,mapData)
+#                 mapData.saveMap(params[1])
+#                 changed = true
+#               end
+#               # If the found event's last page's Switch condition uses a Switch
+#               # named 's:tsOff?("A")', it really does look like a door. Make this
+#               # command transfer the player on top of it rather than in front of
+#               # it.
+#               if e && e.pages.length>=2 &&
+#                  e.pages[e.pages.length-1].condition.switch1_valid &&
+#                  mapData.switchName(e.pages[e.pages.length-1].condition.switch1_id)=='s:tsOff?("A")'
+#                 # If this is really a door, move transfer target to it
+#                 params[3] -= 1   # Move this command's destination up 1 tile (onto the found event)
+#                 params[5]  = 1   # No fade (the found event should take care of that)
+#                 changed = true
+#               end
+#               deletedRoute = nil
+#               deleteMoveRouteAt = proc { |list,i|
+#                 arr = []
+#                 if list[i] && list[i].code==209   # Set Move Route
+#                   arr.push(list[i])
+#                   list.delete_at(i)
+#                   while i<list.length
+#                     break if !list[i] || list[i].code!=509   # Set Move Route (continuation line)
+#                     arr.push(list[i])
+#                     list.delete_at(i)
+#                   end
+#                 end
+#                 next arr
+#               }
+#               insertMoveRouteAt = proc { |list,i,route|
+#                 j = route.length-1
+#                 while j>=0
+#                   list.insert(i,route[j])
+#                   j -= 1
+#                 end
+#               }
+#               # If the next event command is a Move Route that moves the player,
+#               # check whether all it does is turn the player in a direction (or
+#               # its first item is to move the player in a direction). If so, this
+#               # Transfer Player command may as well set the player's direction
+#               # instead; make it do so and delete that Move Route.
+#               if params[4]==0 &&   # Retain direction
+#                  i+1<list.length && list[i+1].code==209 && list[i+1].parameters[0]==-1   # Set Move Route
+#                 route = list[i+1].parameters[1]
+#                 if route && route.list.length<=2
+#                   # Delete superfluous move route command if necessary
+#                   if route.list[0].code==16      # Player Turn Down
+#                     deleteMoveRouteAt.call(list,i+1)
+#                     params[4] = 2
+#                     changed = true
+#                   elsif route.list[0].code==17   # Player Turn Left
+#                     deleteMoveRouteAt.call(list,i+1)
+#                     params[4] = 4
+#                     changed = true
+#                   elsif route.list[0].code==18   # Player Turn Right
+#                     deleteMoveRouteAt.call(list,i+1)
+#                     params[4] = 6
+#                     changed = true
+#                   elsif route.list[0].code==19   # Player Turn Up
+#                     deleteMoveRouteAt.call(list,i+1)
+#                     params[4] = 8
+#                     changed = true
+#                   elsif (route.list[0].code==1 || route.list[0].code==2 ||   # Player Move (4-dir)
+#                      route.list[0].code==3 || route.list[0].code==4) && list.length==4
+#                     params[4] = [0,2,4,6,8][route.list[0].code]
+#                     deletedRoute = deleteMoveRouteAt.call(list,i+1)
+#                     changed = true
+#                   end
+#                 end
+#               # If an event command before this one is a Move Route that just
+#               # turns the player, delete it and make this Transfer Player command
+#               # set the player's direction instead.
+#               # (I don't know if it makes sense to do this, as there could be a
+#               # lot of commands between then and this Transfer Player which this
+#               # code can't recognise and deal with, so I've quoted this code out.)
+#               elsif params[4]==0 && i>3   # Retain direction
 #                for j in 0...i
 #                  if list[j].code==209 && list[j].parameters[0]==-1   # Set Move Route
 #                    route = list[j].parameters[1]
@@ -1361,40 +1350,39 @@ module Compiler
 #                    end
 #                  end
 #                end
-              # If the next event command changes the screen color, and the one
-              # after that is a Move Route which only turns the player in a
-              # direction, this Transfer Player command may as well set the
-              # player's direction instead; make it do so and delete that Move
-              # Route.
-              elsif params[4]==0 &&   # Retain direction
-                 i+2<list.length &&
-                 list[i+1].code==223 &&   # Change Screen Color Tone
-                 list[i+2].code==209 &&   # Set Move Route
-                 list[i+2].parameters[0]==-1
-                route = list[i+2].parameters[1]
-                if route && route.list.length<=2
-                  # Delete superfluous move route command if necessary
-                  if route.list[0].code==16      # Player Turn Down
-                    deleteMoveRouteAt.call(list,i+2)
-                    params[4] = 2
-                    changed = true
-                  elsif route.list[0].code==17   # Player Turn Left
-                    deleteMoveRouteAt.call(list,i+2)
-                    params[4] = 4
-                    changed = true
-                  elsif route.list[0].code==18   # Player Turn Right
-                    deleteMoveRouteAt.call(list,i+2)
-                    params[4] = 6
-                    changed = true
-                  elsif route.list[0].code==19   # Player Turn Up
-                    deleteMoveRouteAt.call(list,i+2)
-                    params[4] = 8
-                    changed = true
-                  end
-                end
-              end
-            end
-=end
+#               # If the next event command changes the screen color, and the one
+#               # after that is a Move Route which only turns the player in a
+#               # direction, this Transfer Player command may as well set the
+#               # player's direction instead; make it do so and delete that Move
+#               # Route.
+#               elsif params[4]==0 &&   # Retain direction
+#                  i+2<list.length &&
+#                  list[i+1].code==223 &&   # Change Screen Color Tone
+#                  list[i+2].code==209 &&   # Set Move Route
+#                  list[i+2].parameters[0]==-1
+#                 route = list[i+2].parameters[1]
+#                 if route && route.list.length<=2
+#                   # Delete superfluous move route command if necessary
+#                   if route.list[0].code==16      # Player Turn Down
+#                     deleteMoveRouteAt.call(list,i+2)
+#                     params[4] = 2
+#                     changed = true
+#                   elsif route.list[0].code==17   # Player Turn Left
+#                     deleteMoveRouteAt.call(list,i+2)
+#                     params[4] = 4
+#                     changed = true
+#                   elsif route.list[0].code==18   # Player Turn Right
+#                     deleteMoveRouteAt.call(list,i+2)
+#                     params[4] = 6
+#                     changed = true
+#                   elsif route.list[0].code==19   # Player Turn Up
+#                     deleteMoveRouteAt.call(list,i+2)
+#                     params[4] = 8
+#                     changed = true
+#                   end
+#                 end
+#               end
+#             end
             # If this is the only event command, convert to a full event
             if list.length == 2 || (list.length == 3 && (list[0].code == 250 || list[1].code == 250))   # Play SE
               params[5] = 1   # No fade
@@ -1411,10 +1399,10 @@ module Compiler
               )
               changed = true
             end
-#            if deletedRoute
-#              insertMoveRouteAt.call(list,list.length-1,deletedRoute)
-#              changed = true
-#            end
+            #            if deletedRoute
+            #              insertMoveRouteAt.call(list,list.length-1,deletedRoute)
+            #              changed = true
+            #            end
           end
         when 101   # Show Text
           # Capitalise/decapitalise various text formatting codes
@@ -1470,9 +1458,7 @@ module Compiler
               # Find a punctuation mark to split at
               punct = [message.rindex(". "), message.rindex(".\n"),
                        message.rindex("!"), message.rindex("?"), -1].compact.max
-              if punct == -1
-                punct = [message.rindex(", "), message.rindex(",\n"), -1].compact.max
-              end
+              punct = [message.rindex(", "), message.rindex(",\n"), -1].compact.max if punct == -1
               if punct != -1
                 # Delete old message
                 indent = list[i].indent
@@ -1502,8 +1488,8 @@ module Compiler
             changed = true if replace_old_battle_scripts(event, list, i)
             if script[trainerMoneyRE]   # Compares $player.money with a value
               # Checking money directly
-              operator = $1
-              amount   = $2.to_i
+              operator = ::Regexp.last_match(1)
+              amount   = ::Regexp.last_match(2).to_i
               case operator
               when "<"
                 params[0] = 7   # gold
@@ -1528,7 +1514,7 @@ module Compiler
               end
             elsif script[itemBallRE] && i > 0   # Contains pbItemBall after another command
               # Using pbItemBall on non-item events, change it
-              list[i].parameters[1] = script.sub(/pbItemBall/, "pbReceiveItem")
+              list[i].parameters[1] = script.sub("pbItemBall", "pbReceiveItem")
               changed = true
             elsif script[/^\s*(TrainerBattle.start)/]
               # Check if trainer battle conditional branch is empty
@@ -1538,11 +1524,11 @@ module Compiler
               # Check if page is empty
               while j < page.list.length
                 if list[j].indent <= list[i].indent
-                  if list[j].code == 411   # Else
+                  break unless list[j].code == 411   # Else
                     elseIndex = j
-                  else
-                    break   # Reached end of Conditional Branch
-                  end
+                  
+                       # Reached end of Conditional Branch
+                  
                 end
                 if list[j].code != 0 && list[j].code != 411   # Else
                   isempty = false
@@ -1723,11 +1709,10 @@ module Compiler
         Graphics.update
       end
       changed = true if check_counters(map, id, mapData)
-      if changed
-        mapData.saveMap(id)
-        mapData.saveTilesets
-        change_record.push(_INTL("Map {1}: '{2}' was modified and saved.", id, mapData.mapinfos[id].name))
-      end
+      next unless changed
+      mapData.saveMap(id)
+      mapData.saveTilesets
+      change_record.push(_INTL("Map {1}: '{2}' was modified and saved.", id, mapData.mapinfos[id].name))
     end
     Console.echo_done(true)
     change_record.each { |msg| Console.echo_warn(msg) }
@@ -1744,8 +1729,8 @@ module Compiler
     end
     save_data(commonEvents, "Data/CommonEvents.rxdata") if changed
     Console.echo_done(true)
-    if change_record.length > 0 || changed
+    return unless change_record.length > 0 || changed
       Console.echo_warn(_INTL("RMXP data was altered. Close RMXP now to ensure changes are applied."))
-    end
+    
   end
 end

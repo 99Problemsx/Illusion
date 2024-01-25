@@ -108,9 +108,7 @@ def addMove(moves, move, base)
   return if [:BUBBLE, :BUBBLEBEAM].include?(data.id)   # Never add these moves
   count = base + 1   # Number of times to add move to moves
   count = base if data.function_code == "None" && data.power <= 40
-  if data.power <= 30 || [:GROWL, :TAILWHIP, :LEER].include?(data.id)
-    count = base
-  end
+  count = base if data.power <= 30 || [:GROWL, :TAILWHIP, :LEER].include?(data.id)
   if data.power >= 60 ||
      [:REFLECT, :LIGHTSCREEN, :SAFEGUARD, :SUBSTITUTE, :FAKEOUT].include?(data.id)
     count = base + 2
@@ -131,9 +129,7 @@ def hasMorePowerfulMove(moves, thismove)
   moves.each do |move|
     next if !move
     moveData = GameData::Move.get(move)
-    if moveData.type == thisdata.type && moveData.power > thisdata.power
-      return true
-    end
+    return true if moveData.type == thisdata.type && moveData.power > thisdata.power
   end
   return false
 end
@@ -336,17 +332,13 @@ def pbRandomPokemonFromRule(rules, trainer)
         break
       end
     end
-    if item == :LIGHTCLAY && moves.none? { |m| [:LIGHTSCREEN, :REFLECT].include?(m) }
-      item = :LEFTOVERS
-    end
+    item = :LEFTOVERS if item == :LIGHTCLAY && moves.none? { |m| [:LIGHTSCREEN, :REFLECT].include?(m) }
     if item == :BLACKSLUDGE
       types = GameData::Species.get(species).types
       item = :LEFTOVERS if !types.include?(:POISON)
     end
     item = :LEFTOVERS if item == :HEATROCK && moves.none? { |m| m == :SUNNYDAY }
-    if item == :DAMPROCK && moves.none? { |m| m == :RAINDANCE }
-      item = :LEFTOVERS
-    end
+    item = :LEFTOVERS if item == :DAMPROCK && moves.none? { |m| m == :RAINDANCE }
     if moves.any? { |m| m == :REST }
       item = :LUMBERRY if rand(100) < 33
       item = :CHESTOBERRY if rand(100) < 25

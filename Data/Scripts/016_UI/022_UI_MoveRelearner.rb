@@ -23,7 +23,7 @@ class MoveRelearner_Scene
     moves.each { |m| moveCommands.push(GameData::Move.get(m).name) }
     # Create sprite hash
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     addBackgroundPlane(@sprites, "bg", "Move Reminder/bg", @viewport)
     @sprites["pokeicon"] = PokemonIconSprite.new(@pokemon, @viewport)
@@ -89,7 +89,11 @@ class MoveRelearner_Scene
     accuracy = selMoveData.display_accuracy(@pokemon)
     textpos.push([_INTL("CATEGORY"), 272, 120, :left, Color.new(248, 248, 248), Color.black])
     textpos.push([_INTL("POWER"), 272, 152, :left, Color.new(248, 248, 248), Color.black])
-    textpos.push([power <= 1 ? power == 1 ? "???" : "---" : power.to_s, 468, 152, :center,
+    textpos.push([if power <= 1
+                    power == 1 ? "???" : "---"
+                  else
+                    power.to_s
+end, 468, 152, :center,
                   Color.new(64, 64, 64), Color.new(176, 176, 176)])
     textpos.push([_INTL("ACCURACY"), 272, 184, :left, Color.new(248, 248, 248), Color.black])
     textpos.push([accuracy == 0 ? "---" : "#{accuracy}%", 468, 184, :center,
@@ -99,9 +103,7 @@ class MoveRelearner_Scene
     if @sprites["commands"].index < @moves.length - 1
       imagepos.push(["Graphics/UI/Move Reminder/buttons", 48, 350, 0, 0, 76, 32])
     end
-    if @sprites["commands"].index > 0
-      imagepos.push(["Graphics/UI/Move Reminder/buttons", 134, 350, 76, 0, 76, 32])
-    end
+    imagepos.push(["Graphics/UI/Move Reminder/buttons", 134, 350, 76, 0, 76, 32]) if @sprites["commands"].index > 0
     pbDrawImagePositions(overlay, imagepos)
     drawTextEx(overlay, 272, 216, 230, 5, selMoveData.description,
                Color.new(64, 64, 64), Color.new(176, 176, 176))
@@ -170,13 +172,11 @@ class MoveRelearnerScreen
     loop do
       move = @scene.pbChooseMove
       if move
-        if @scene.pbConfirm(_INTL("Teach {1}?", GameData::Move.get(move).name))
-          if pbLearnMove(pkmn, move)
-            $stats.moves_taught_by_reminder += 1
-            @scene.pbEndScene
-            return true
+        if @scene.pbConfirm(_INTL("Teach {1}?", GameData::Move.get(move).name)) && pbLearnMove(pkmn, move)
+          $stats.moves_taught_by_reminder += 1
+          @scene.pbEndScene
+          return true
           end
-        end
       elsif @scene.pbConfirm(_INTL("Give up trying to teach a new move to {1}?", pkmn.name))
         @scene.pbEndScene
         return false

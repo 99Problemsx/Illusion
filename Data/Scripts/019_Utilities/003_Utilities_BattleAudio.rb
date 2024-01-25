@@ -20,9 +20,7 @@ def pbGetWildBattleBGM(_wildParty)
 end
 
 def pbGetWildVictoryBGM
-  if $PokemonGlobal.nextBattleVictoryBGM
-    return $PokemonGlobal.nextBattleVictoryBGM.clone
-  end
+  return $PokemonGlobal.nextBattleVictoryBGM.clone if $PokemonGlobal.nextBattleVictoryBGM
   ret = nil
   # Check map metadata
   music = $game_map.metadata&.wild_victory_BGM
@@ -38,9 +36,7 @@ def pbGetWildVictoryBGM
 end
 
 def pbGetWildCaptureME
-  if $PokemonGlobal.nextBattleCaptureME
-    return $PokemonGlobal.nextBattleCaptureME.clone
-  end
+  return $PokemonGlobal.nextBattleCaptureME.clone if $PokemonGlobal.nextBattleCaptureME
   ret = nil
   if !ret
     # Check map metadata
@@ -71,7 +67,11 @@ def pbPlayTrainerIntroBGM(trainer_type)
       $game_temp.memorized_bgm_position = 0
     else
       $game_temp.memorized_bgm = $game_system.getPlayingBGM
-      $game_temp.memorized_bgm_position = (Audio.bgm_pos rescue 0)
+      $game_temp.memorized_bgm_position = begin
+        Audio.bgm_pos
+      rescue StandardError
+        0
+      end
     end
   end
   pbBGMPlay(bgm)
@@ -122,9 +122,7 @@ end
 
 # Can be a Player, NPCTrainer or an array of them.
 def pbGetTrainerVictoryBGM(trainer)
-  if $PokemonGlobal.nextBattleVictoryBGM
-    return $PokemonGlobal.nextBattleVictoryBGM.clone
-  end
+  return $PokemonGlobal.nextBattleVictoryBGM.clone if $PokemonGlobal.nextBattleVictoryBGM
   music = nil
   trainerarray = (trainer.is_a?(Array)) ? trainer : [trainer]
   trainerarray.each do |t|

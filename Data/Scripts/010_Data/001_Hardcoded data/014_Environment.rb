@@ -4,7 +4,7 @@ module GameData
     attr_reader :real_name
     attr_reader :battle_base
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

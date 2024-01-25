@@ -4,9 +4,7 @@ class Battle::Move
   #=============================================================================
   def pbBaseType(user)
     ret = @type
-    if ret && user.abilityActive?
-      ret = Battle::AbilityEffects.triggerModifyMoveBaseType(user.ability, user, self, ret)
-    end
+    ret = Battle::AbilityEffects.triggerModifyMoveBaseType(user.ability, user, self, ret) if ret && user.abilityActive?
     return ret
   end
 
@@ -33,28 +31,20 @@ class Battle::Move
     ret = Effectiveness.calculate(moveType, defType)
     if Effectiveness.ineffective_type?(moveType, defType)
       # Ring Target
-      if target.hasActiveItem?(:RINGTARGET)
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if target.hasActiveItem?(:RINGTARGET)
       # Foresight
       if (user.hasActiveAbility?(:SCRAPPY) || target.effects[PBEffects::Foresight]) &&
          defType == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Miracle Eye
-      if target.effects[PBEffects::MiracleEye] && defType == :DARK
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if target.effects[PBEffects::MiracleEye] && defType == :DARK
     elsif Effectiveness.super_effective_type?(moveType, defType)
       # Delta Stream's weather
-      if target.effectiveWeather == :StrongWinds && defType == :FLYING
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if target.effectiveWeather == :StrongWinds && defType == :FLYING
     end
     # Grounded Flying-type Pokémon become susceptible to Ground moves
-    if !target.airborne? && defType == :FLYING && moveType == :GROUND
-      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-    end
+    ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if !target.airborne? && defType == :FLYING && moveType == :GROUND
     return ret
   end
 
@@ -154,9 +144,7 @@ class Battle::Move
     end
     # Other effects, inc. ones that set accuracy_multiplier or evasion_stage to
     # specific values
-    if @battle.field.effects[PBEffects::Gravity] > 0
-      modifiers[:accuracy_multiplier] *= 5 / 3.0
-    end
+    modifiers[:accuracy_multiplier] *= 5 / 3.0 if @battle.field.effects[PBEffects::Gravity] > 0
     if user.effects[PBEffects::MicleBerry]
       user.effects[PBEffects::MicleBerry] = false
       modifiers[:accuracy_multiplier] *= 1.2
@@ -186,12 +174,8 @@ class Battle::Move
       c = Battle::AbilityEffects.triggerCriticalCalcFromTarget(target.ability, user, target, c)
     end
     # Item effects that alter critical hit rate
-    if c >= 0 && user.itemActive?
-      c = Battle::ItemEffects.triggerCriticalCalcFromUser(user.item, user, target, c)
-    end
-    if c >= 0 && target.itemActive?
-      c = Battle::ItemEffects.triggerCriticalCalcFromTarget(target.item, user, target, c)
-    end
+    c = Battle::ItemEffects.triggerCriticalCalcFromUser(user.item, user, target, c) if c >= 0 && user.itemActive?
+    c = Battle::ItemEffects.triggerCriticalCalcFromTarget(target.item, user, target, c) if c >= 0 && target.itemActive?
     return false if c < 0
     # Move-specific "always/never a critical hit" effects
     case pbCritialOverride(user, target)
@@ -341,32 +325,20 @@ class Battle::Move
       multipliers[:power_multiplier] /= (Settings::MECHANICS_GENERATION >= 7) ? 4 : 2
     end
     # Other
-    if user.effects[PBEffects::MeFirst]
-      multipliers[:power_multiplier] *= 1.5
-    end
+    multipliers[:power_multiplier] *= 1.5 if user.effects[PBEffects::MeFirst]
     if user.effects[PBEffects::HelpingHand] && !self.is_a?(Battle::Move::Confusion)
       multipliers[:power_multiplier] *= 1.5
     end
-    if user.effects[PBEffects::Charge] > 0 && type == :ELECTRIC
-      multipliers[:power_multiplier] *= 2
-    end
+    multipliers[:power_multiplier] *= 2 if user.effects[PBEffects::Charge] > 0 && type == :ELECTRIC
     # Mud Sport
     if type == :ELECTRIC
-      if @battle.allBattlers.any? { |b| b.effects[PBEffects::MudSport] }
-        multipliers[:power_multiplier] /= 3
-      end
-      if @battle.field.effects[PBEffects::MudSportField] > 0
-        multipliers[:power_multiplier] /= 3
-      end
+      multipliers[:power_multiplier] /= 3 if @battle.allBattlers.any? { |b| b.effects[PBEffects::MudSport] }
+      multipliers[:power_multiplier] /= 3 if @battle.field.effects[PBEffects::MudSportField] > 0
     end
     # Water Sport
     if type == :FIRE
-      if @battle.allBattlers.any? { |b| b.effects[PBEffects::WaterSport] }
-        multipliers[:power_multiplier] /= 3
-      end
-      if @battle.field.effects[PBEffects::WaterSportField] > 0
-        multipliers[:power_multiplier] /= 3
-      end
+      multipliers[:power_multiplier] /= 3 if @battle.allBattlers.any? { |b| b.effects[PBEffects::WaterSport] }
+      multipliers[:power_multiplier] /= 3 if @battle.field.effects[PBEffects::WaterSportField] > 0
     end
     # Terrain moves
     terrain_multiplier = (Settings::MECHANICS_GENERATION >= 8) ? 1.3 : 1.5
@@ -474,9 +446,7 @@ class Battle::Move
       end
     end
     # Minimize
-    if target.effects[PBEffects::Minimize] && tramplesMinimize?
-      multipliers[:final_damage_multiplier] *= 2
-    end
+    multipliers[:final_damage_multiplier] *= 2 if target.effects[PBEffects::Minimize] && tramplesMinimize?
     # Move-specific base damage modifiers
     multipliers[:power_multiplier] = pbBaseDamageMultiplier(multipliers[:power_multiplier], user, target)
     # Move-specific final damage modifiers

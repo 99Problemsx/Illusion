@@ -20,7 +20,7 @@ module GameData
       ret = self.check_graphic_file("Graphics/Characters/", species, form,
                                     gender, shiny, shadow, "Followers")
       ret = "Graphics/Characters/Followers/" if nil_or_empty?(ret)
-	    return ret
+      return ret
     end
   end
 end

@@ -190,16 +190,12 @@ class Battle::Move::CurseTargetOrLowerUserSpd1RaiseUserAtkDef1 < Battle::Move
     showAnim = true
     (@statDown.length / 2).times do |i|
       next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
-      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
     end
     showAnim = true
     (@statUp.length / 2).times do |i|
       next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
     end
   end
 
@@ -286,25 +282,15 @@ class Battle::Move::EffectDependsOnEnvironment < Battle::Move
     when 9
       target.pbFreeze if target.pbCanFreeze?(user, false, self)
     when 5
-      if target.pbCanLowerStatStage?(:ATTACK, user, self)
-        target.pbLowerStatStage(:ATTACK, 1, user)
-      end
+      target.pbLowerStatStage(:ATTACK, 1, user) if target.pbCanLowerStatStage?(:ATTACK, user, self)
     when 14
-      if target.pbCanLowerStatStage?(:DEFENSE, user, self)
-        target.pbLowerStatStage(:DEFENSE, 1, user)
-      end
+      target.pbLowerStatStage(:DEFENSE, 1, user) if target.pbCanLowerStatStage?(:DEFENSE, user, self)
     when 3
-      if target.pbCanLowerStatStage?(:SPECIAL_ATTACK, user, self)
-        target.pbLowerStatStage(:SPECIAL_ATTACK, 1, user)
-      end
+      target.pbLowerStatStage(:SPECIAL_ATTACK, 1, user) if target.pbCanLowerStatStage?(:SPECIAL_ATTACK, user, self)
     when 4, 6, 12
-      if target.pbCanLowerStatStage?(:SPEED, user, self)
-        target.pbLowerStatStage(:SPEED, 1, user)
-      end
+      target.pbLowerStatStage(:SPEED, 1, user) if target.pbCanLowerStatStage?(:SPEED, user, self)
     when 8
-      if target.pbCanLowerStatStage?(:ACCURACY, user, self)
-        target.pbLowerStatStage(:ACCURACY, 1, user)
-      end
+      target.pbLowerStatStage(:ACCURACY, 1, user) if target.pbCanLowerStatStage?(:ACCURACY, user, self)
     when 7, 11, 13
       target.pbFlinch(user)
     end
@@ -339,16 +325,12 @@ end
 #===============================================================================
 class Battle::Move::HitsAllFoesAndPowersUpInPsychicTerrain < Battle::Move
   def pbTarget(user)
-    if @battle.field.terrain == :Psychic && user.affectedByTerrain?
-      return GameData::Target.get(:AllNearFoes)
-    end
+    return GameData::Target.get(:AllNearFoes) if @battle.field.terrain == :Psychic && user.affectedByTerrain?
     return super
   end
 
   def pbBaseDamage(baseDmg, user, target)
-    if @battle.field.terrain == :Psychic && user.affectedByTerrain?
-      baseDmg = baseDmg * 3 / 2
-    end
+    baseDmg = baseDmg * 3 / 2 if @battle.field.terrain == :Psychic && user.affectedByTerrain?
     return baseDmg
   end
 end
@@ -545,17 +527,13 @@ class Battle::Move::UserAddStockpileRaiseDefSpDef1 < Battle::Move
     @battle.pbDisplay(_INTL("{1} stockpiled {2}!",
                             user.pbThis, user.effects[PBEffects::Stockpile]))
     showAnim = true
-    if user.pbCanRaiseStatStage?(:DEFENSE, user, self)
-      if user.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
-        user.effects[PBEffects::StockpileDef] += 1
-        showAnim = false
+    if user.pbCanRaiseStatStage?(:DEFENSE, user, self) && user.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
+      user.effects[PBEffects::StockpileDef] += 1
+      showAnim = false
       end
-    end
-    if user.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, user, self)
-      if user.pbRaiseStatStage(:SPECIAL_DEFENSE, 1, user, showAnim)
-        user.effects[PBEffects::StockpileSpDef] += 1
-      end
-    end
+    return unless user.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, user, self)
+    return unless user.pbRaiseStatStage(:SPECIAL_DEFENSE, 1, user, showAnim)
+    user.effects[PBEffects::StockpileSpDef] += 1
   end
 end
 
@@ -583,8 +561,8 @@ class Battle::Move::PowerDependsOnUserStockpile < Battle::Move
     return if @battle.pbAllFainted?(target.idxOwnSide)
     showAnim = true
     if user.effects[PBEffects::StockpileDef] > 0 &&
-       user.pbCanLowerStatStage?(:DEFENSE, user, self)
-      showAnim = false if user.pbLowerStatStage(:DEFENSE, user.effects[PBEffects::StockpileDef], user, showAnim)
+       user.pbCanLowerStatStage?(:DEFENSE, user, self) && user.pbLowerStatStage(:DEFENSE, user.effects[PBEffects::StockpileDef], user, showAnim)
+      showAnim = false
     end
     if user.effects[PBEffects::StockpileSpDef] > 0 &&
        user.pbCanLowerStatStage?(:SPECIAL_DEFENSE, user, self)
@@ -625,16 +603,12 @@ class Battle::Move::HealUserDependingOnUserStockpile < Battle::Move
     when 2 then hpGain = user.totalhp / 2
     when 3 then hpGain = user.totalhp
     end
-    if user.pbRecoverHP(hpGain) > 0
-      @battle.pbDisplay(_INTL("{1}'s HP was restored.", user.pbThis))
-    end
+    @battle.pbDisplay(_INTL("{1}'s HP was restored.", user.pbThis)) if user.pbRecoverHP(hpGain) > 0
     @battle.pbDisplay(_INTL("{1}'s stockpiled effect wore off!", user.pbThis))
     showAnim = true
     if user.effects[PBEffects::StockpileDef] > 0 &&
-       user.pbCanLowerStatStage?(:DEFENSE, user, self)
-      if user.pbLowerStatStage(:DEFENSE, user.effects[PBEffects::StockpileDef], user, showAnim)
-        showAnim = false
-      end
+       user.pbCanLowerStatStage?(:DEFENSE, user, self) && user.pbLowerStatStage(:DEFENSE, user.effects[PBEffects::StockpileDef], user, showAnim)
+      showAnim = false
     end
     if user.effects[PBEffects::StockpileSpDef] > 0 &&
        user.pbCanLowerStatStage?(:SPECIAL_DEFENSE, user, self)
@@ -752,13 +726,12 @@ class Battle::Move::UseLastMoveUsed < Battle::Move
       "DoesNothingFailsIfNoAlly",                          # Hold Hands
       "DoesNothingCongratulations"                         # Celebrate
     ]
-    if Settings::MECHANICS_GENERATION >= 6
-      @moveBlacklist += [
-        # Target-switching moves
-        "SwitchOutTargetStatusMove",                       # Roar, Whirlwind
-        "SwitchOutTargetDamagingMove"                      # Circle Throw, Dragon Tail
-      ]
-    end
+    return unless Settings::MECHANICS_GENERATION >= 6
+    @moveBlacklist += [
+      # Target-switching moves
+      "SwitchOutTargetStatusMove",                       # Roar, Whirlwind
+      "SwitchOutTargetDamagingMove"                      # Circle Throw, Dragon Tail
+    ]
   end
 
   def pbChangeUsageCounters(user, specialUsage)
@@ -1053,7 +1026,7 @@ class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
       "UseLastMoveUsedByTarget",                           # Mirror Move
       "UseLastMoveUsed",                                   # Copycat
       "UseMoveTargetIsAboutToUse",                         # Me First
-#      "UseMoveDependingOnEnvironment",                    # Nature Power       # See below
+      #      "UseMoveDependingOnEnvironment",                    # Nature Power       # See below
       "UseRandomUserMoveIfAsleep",                         # Sleep Talk
       "UseRandomMoveFromUserParty",                        # Assist
       "UseRandomMove",                                     # Metronome
@@ -1066,7 +1039,7 @@ class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
       "ReduceAttackerMovePPTo0IfUserFaints",               # Grudge             # Not listed on Bulbapedia
       "AttackerFaintsIfUserFaints",                        # Destiny Bond
       # Target-switching moves
-#      "SwitchOutTargetStatusMove",                        # Roar, Whirlwind    # See below
+      #      "SwitchOutTargetStatusMove",                        # Roar, Whirlwind    # See below
       "SwitchOutTargetDamagingMove",                       # Circle Throw, Dragon Tail
       # Held item-moving moves
       "UserTakesTargetItem",                               # Covet, Thief
@@ -1080,29 +1053,28 @@ class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
       "DoesNothingFailsIfNoAlly",                          # Hold Hands
       "DoesNothingCongratulations"                         # Celebrate
     ]
-    if Settings::MECHANICS_GENERATION >= 6
-      @moveBlacklist += [
-        # Moves that call other moves
-        "UseMoveDependingOnEnvironment",                   # Nature Power
-        # Two-turn attacks
-        "TwoTurnAttack",                                   # Razor Wind                # Not listed on Bulbapedia
-        "TwoTurnAttackOneTurnInSun",                       # Solar Beam, Solar Blade   # Not listed on Bulbapedia
-        "TwoTurnAttackParalyzeTarget",                     # Freeze Shock              # Not listed on Bulbapedia
-        "TwoTurnAttackBurnTarget",                         # Ice Burn                  # Not listed on Bulbapedia
-        "TwoTurnAttackFlinchTarget",                       # Sky Attack                # Not listed on Bulbapedia
-        "TwoTurnAttackChargeRaiseUserDefense1",            # Skull Bash                # Not listed on Bulbapedia
-        "TwoTurnAttackInvulnerableInSky",                  # Fly
-        "TwoTurnAttackInvulnerableUnderground",            # Dig
-        "TwoTurnAttackInvulnerableUnderwater",             # Dive
-        "TwoTurnAttackInvulnerableInSkyParalyzeTarget",    # Bounce
-        "TwoTurnAttackInvulnerableRemoveProtections",      # Shadow Force/Phantom Force
-        "TwoTurnAttackInvulnerableInSkyTargetCannotAct",   # Sky Drop
-        "AllBattlersLoseHalfHPUserSkipsNextTurn",          # Shadow Half
-        "TwoTurnAttackRaiseUserSpAtkSpDefSpd2",            # Geomancy                  # Not listed on Bulbapedia
-        # Target-switching moves
-        "SwitchOutTargetStatusMove"                        # Roar, Whirlwind
-      ]
-    end
+    return unless Settings::MECHANICS_GENERATION >= 6
+    @moveBlacklist += [
+      # Moves that call other moves
+      "UseMoveDependingOnEnvironment",                   # Nature Power
+      # Two-turn attacks
+      "TwoTurnAttack",                                   # Razor Wind                # Not listed on Bulbapedia
+      "TwoTurnAttackOneTurnInSun",                       # Solar Beam, Solar Blade   # Not listed on Bulbapedia
+      "TwoTurnAttackParalyzeTarget",                     # Freeze Shock              # Not listed on Bulbapedia
+      "TwoTurnAttackBurnTarget",                         # Ice Burn                  # Not listed on Bulbapedia
+      "TwoTurnAttackFlinchTarget",                       # Sky Attack                # Not listed on Bulbapedia
+      "TwoTurnAttackChargeRaiseUserDefense1",            # Skull Bash                # Not listed on Bulbapedia
+      "TwoTurnAttackInvulnerableInSky",                  # Fly
+      "TwoTurnAttackInvulnerableUnderground",            # Dig
+      "TwoTurnAttackInvulnerableUnderwater",             # Dive
+      "TwoTurnAttackInvulnerableInSkyParalyzeTarget",    # Bounce
+      "TwoTurnAttackInvulnerableRemoveProtections",      # Shadow Force/Phantom Force
+      "TwoTurnAttackInvulnerableInSkyTargetCannotAct",   # Sky Drop
+      "AllBattlersLoseHalfHPUserSkipsNextTurn",          # Shadow Half
+      "TwoTurnAttackRaiseUserSpAtkSpDefSpd2",            # Geomancy                  # Not listed on Bulbapedia
+      # Target-switching moves
+      "SwitchOutTargetStatusMove"                        # Roar, Whirlwind
+    ]
   end
 
   def pbMoveFailed?(user, targets)

@@ -10,9 +10,9 @@ module GameData
     attr_accessor :shadow_size
     attr_reader   :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "species_metrics.dat"
-    PBS_BASE_FILENAME = "pokemon_metrics"
+    DATA = {}.freeze
+    DATA_FILENAME = "species_metrics.dat".freeze
+    PBS_BASE_FILENAME = "pokemon_metrics".freeze
 
     SCHEMA = {
       "SectionName"         => [:id,                    "eV", :Species],
@@ -21,7 +21,7 @@ module GameData
       "FrontSpriteAltitude" => [:front_sprite_altitude, "i"],
       "ShadowX"             => [:shadow_x,              "i"],
       "ShadowSize"          => [:shadow_size,           "u"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -83,7 +83,7 @@ module GameData
 
     def shows_shadow?
       return true
-#      return @front_sprite_altitude > 0
+      #      return @front_sprite_altitude > 0
     end
 
     alias __orig__get_property_for_PBS get_property_for_PBS unless method_defined?(:__orig__get_property_for_PBS)

@@ -67,9 +67,7 @@ class Battle
       Battle::ItemEffects.triggerEVGainModifier(@initialItems[0][idxParty], pkmn, evYield)
     end
     # Double EV gain because of Pokérus
-    if pkmn.pokerusStage >= 1   # Infected or cured
-      evYield.each_key { |stat| evYield[stat] *= 2 }
-    end
+    evYield.each_key { |stat| evYield[stat] *= 2 } if pkmn.pokerusStage >= 1 # Infected or cured
     # Gain EVs for each stat in turn
     if pkmn.shadowPokemon? && pkmn.heartStage <= 3 && pkmn.saved_ev
       pkmn.saved_ev.each_value { |e| evTotal += e }
@@ -135,8 +133,8 @@ class Battle
       exp /= 7
     end
     # Foreign Pokémon gain more Exp
-    isOutsider = (pkmn.owner.id != pbPlayer.id ||
-                 (pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language))
+    isOutsider = pkmn.owner.id != pbPlayer.id ||
+                 (pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language)
     if isOutsider
       if pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language
         exp = (exp * 1.7).floor
@@ -148,9 +146,7 @@ class Battle
     exp = exp * 3 / 2 if $bag.has?(:EXPCHARM)
     # Modify Exp gain based on pkmn's held item
     i = Battle::ItemEffects.triggerExpGainModifier(pkmn.item, pkmn, exp)
-    if i < 0
-      i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp)
-    end
+    i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp) if i < 0
     exp = i if i >= 0
     # Boost Exp gained with high affection
     if Settings::AFFECTION_EFFECTS && @internalBattle && pkmn.affection_level >= 4 && !pkmn.mega?

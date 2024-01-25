@@ -41,15 +41,14 @@ class Battle::Scene
       pbUpdate
     end
     # Show shiny animation for wild Pokémon
-    if @battle.showAnims
-      @battle.sideSizes[1].times do |i|
-        idxBattler = (2 * i) + 1
-        next if !@battle.battlers[idxBattler] || !@battle.battlers[idxBattler].shiny?
-        if Settings::SUPER_SHINY && @battle.battlers[idxBattler].super_shiny?
-          pbCommonAnimation("SuperShiny", @battle.battlers[idxBattler])
-        else
-          pbCommonAnimation("Shiny", @battle.battlers[idxBattler])
-        end
+    return unless @battle.showAnims
+    @battle.sideSizes[1].times do |i|
+      idxBattler = (2 * i) + 1
+      next if !@battle.battlers[idxBattler] || !@battle.battlers[idxBattler].shiny?
+      if Settings::SUPER_SHINY && @battle.battlers[idxBattler].super_shiny?
+        pbCommonAnimation("SuperShiny", @battle.battlers[idxBattler])
+      else
+        pbCommonAnimation("Shiny", @battle.battlers[idxBattler])
       end
     end
   end
@@ -465,22 +464,16 @@ class Battle::Scene
       }
       if typeDefaultAnim[moveType]
         anims = typeDefaultAnim[moveType]
-        if GameData::Move.exists?(anims[moveKind])
-          anim = pbFindMoveAnimDetails(move2anim, anims[moveKind], idxUser)
-        end
+        anim = pbFindMoveAnimDetails(move2anim, anims[moveKind], idxUser) if GameData::Move.exists?(anims[moveKind])
         if !anim && moveKind >= 3 && GameData::Move.exists?(anims[moveKind - 3])
           anim = pbFindMoveAnimDetails(move2anim, anims[moveKind - 3], idxUser)
         end
-        if !anim && GameData::Move.exists?(anims[2])
-          anim = pbFindMoveAnimDetails(move2anim, anims[2], idxUser)
-        end
+        anim = pbFindMoveAnimDetails(move2anim, anims[2], idxUser) if !anim && GameData::Move.exists?(anims[2])
       end
       return anim if anim
       # Default animation for the move's type not found, use Tackle's animation
-      if GameData::Move.exists?(:TACKLE)
-        return pbFindMoveAnimDetails(move2anim, :TACKLE, idxUser)
-      end
-    rescue
+      return pbFindMoveAnimDetails(move2anim, :TACKLE, idxUser) if GameData::Move.exists?(:TACKLE)
+    rescue StandardError
     end
     return nil
   end
@@ -556,11 +549,10 @@ class Battle::Scene
       userSprite.y = oldUserY
       userSprite.pbSetOrigin
     end
-    if targetSprite
-      targetSprite.x = oldTargetX
-      targetSprite.y = oldTargetY
-      targetSprite.pbSetOrigin
-    end
+    return unless targetSprite
+    targetSprite.x = oldTargetX
+    targetSprite.y = oldTargetY
+    targetSprite.pbSetOrigin
   end
 
   # Ball burst common animations should have a focus of "Target" and a priority

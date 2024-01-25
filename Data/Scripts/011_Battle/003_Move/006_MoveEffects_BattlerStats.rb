@@ -99,13 +99,13 @@ class Battle::Move::MaxUserAttackLoseHalfOfTotalHP < Battle::Move
       user.statsDropped = true
       @battle.pbCommonAnimation("StatDown", user)
       @battle.pbDisplay(_INTL("{1} cut its own HP and minimized its {2}!",
-         user.pbThis, GameData::Stat.get(@statUp[0]).name))
+                              user.pbThis, GameData::Stat.get(@statUp[0]).name))
     else
       user.stages[@statUp[0]] = Battle::Battler::STAT_STAGE_MAXIMUM
       user.statsRaisedThisRound = true
       @battle.pbCommonAnimation("StatUp", user)
       @battle.pbDisplay(_INTL("{1} cut its own HP and maximized its {2}!",
-         user.pbThis, GameData::Stat.get(@statUp[0]).name))
+                              user.pbThis, GameData::Stat.get(@statUp[0]).name))
     end
     user.pbItemHPHealCheck
   end
@@ -465,16 +465,12 @@ class Battle::Move::LowerUserDefSpDef1RaiseUserAtkSpAtkSpd2 < Battle::Move
     showAnim = true
     (@statDown.length / 2).times do |i|
       next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
-      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
     end
     showAnim = true
     (@statUp.length / 2).times do |i|
       next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
     end
   end
 end
@@ -604,10 +600,9 @@ class Battle::Move::RaiseUserMainStats1TrapUserInBattle < Battle::Move::RaiseUse
 
   def pbEffectGeneral(user)
     super
-    if !user.trappedInBattle?
-      user.effects[PBEffects::NoRetreat] = true
-      @battle.pbDisplay(_INTL("{1} can no longer escape because it used {2}!", user.pbThis, @name))
-    end
+    return if user.trappedInBattle?
+    user.effects[PBEffects::NoRetreat] = true
+    @battle.pbDisplay(_INTL("{1} can no longer escape because it used {2}!", user.pbThis, @name))
   end
 end
 
@@ -813,9 +808,7 @@ class Battle::Move::RaiseTargetAttack2ConfuseTarget < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    if target.pbCanRaiseStatStage?(:ATTACK, user, self)
-      target.pbRaiseStatStage(:ATTACK, 2, user)
-    end
+    target.pbRaiseStatStage(:ATTACK, 2, user) if target.pbCanRaiseStatStage?(:ATTACK, user, self)
     target.pbConfuse if target.pbCanConfuse?(user, false, self)
   end
 end
@@ -842,9 +835,7 @@ class Battle::Move::RaiseTargetSpAtk1ConfuseTarget < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    if target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
-      target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user)
-    end
+    target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user) if target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
     target.pbConfuse if target.pbCanConfuse?(user, false, self)
   end
 end
@@ -908,12 +899,11 @@ class Battle::Move::RaiseTargetAtkSpAtk2 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     showAnim = true
-    if target.pbCanRaiseStatStage?(:ATTACK, user, self)
-      showAnim = false if target.pbRaiseStatStage(:ATTACK, 2, user, showAnim)
+    if target.pbCanRaiseStatStage?(:ATTACK, user, self) && target.pbRaiseStatStage(:ATTACK, 2, user, showAnim)
+      showAnim = false
     end
-    if target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
-      target.pbRaiseStatStage(:SPECIAL_ATTACK, 2, user, showAnim)
-    end
+    return unless target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
+    target.pbRaiseStatStage(:SPECIAL_ATTACK, 2, user, showAnim)
   end
 end
 
@@ -1143,10 +1133,9 @@ class Battle::Move::LowerTargetSpeed1MakeTargetWeakerToFire < Battle::Move::Targ
 
   def pbEffectAgainstTarget(user, target)
     super
-    if !target.effects[PBEffects::TarShot]
-      target.effects[PBEffects::TarShot] = true
-      @battle.pbDisplay(_INTL("{1} became weaker to fire!", target.pbThis))
-    end
+    return if target.effects[PBEffects::TarShot]
+    target.effects[PBEffects::TarShot] = true
+    @battle.pbDisplay(_INTL("{1} became weaker to fire!", target.pbThis))
   end
 end
 
@@ -1244,9 +1233,7 @@ class Battle::Move::LowerTargetEvasion1RemoveSideEffects < Battle::Move::TargetS
   end
 
   def pbEffectAgainstTarget(user, target)
-    if target.pbCanLowerStatStage?(@statDown[0], user, self)
-      target.pbLowerStatStage(@statDown[0], @statDown[1], user)
-    end
+    target.pbLowerStatStage(@statDown[0], @statDown[1], user) if target.pbCanLowerStatStage?(@statDown[0], user, self)
     if target.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
       target.pbOwnSide.effects[PBEffects::AuroraVeil] = 0
       @battle.pbDisplay(_INTL("{1}'s Aurora Veil wore off!", target.pbTeam))
@@ -1295,19 +1282,18 @@ class Battle::Move::LowerTargetEvasion1RemoveSideEffects < Battle::Move::TargetS
       target.pbOpposingSide.effects[PBEffects::StickyWeb] = false if Settings::MECHANICS_GENERATION >= 6
       @battle.pbDisplay(_INTL("{1} blew away sticky webs!", user.pbThis))
     end
-    if Settings::MECHANICS_GENERATION >= 8 && @battle.field.terrain != :None
-      case @battle.field.terrain
-      when :Electric
-        @battle.pbDisplay(_INTL("The electricity disappeared from the battlefield."))
-      when :Grassy
-        @battle.pbDisplay(_INTL("The grass disappeared from the battlefield."))
-      when :Misty
-        @battle.pbDisplay(_INTL("The mist disappeared from the battlefield."))
-      when :Psychic
-        @battle.pbDisplay(_INTL("The weirdness disappeared from the battlefield."))
-      end
-      @battle.field.terrain = :None
+    return unless Settings::MECHANICS_GENERATION >= 8 && @battle.field.terrain != :None
+    case @battle.field.terrain
+    when :Electric
+      @battle.pbDisplay(_INTL("The electricity disappeared from the battlefield."))
+    when :Grassy
+      @battle.pbDisplay(_INTL("The grass disappeared from the battlefield."))
+    when :Misty
+      @battle.pbDisplay(_INTL("The mist disappeared from the battlefield."))
+    when :Psychic
+      @battle.pbDisplay(_INTL("The weirdness disappeared from the battlefield."))
     end
+    @battle.field.terrain = :None
   end
 end
 
@@ -1455,12 +1441,11 @@ class Battle::Move::RaiseAlliesAtkDef1 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     showAnim = true
-    if target.pbCanRaiseStatStage?(:ATTACK, user, self)
-      showAnim = false if target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+    if target.pbCanRaiseStatStage?(:ATTACK, user, self) && target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+      showAnim = false
     end
-    if target.pbCanRaiseStatStage?(:DEFENSE, user, self)
-      target.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
-    end
+    return unless target.pbCanRaiseStatStage?(:DEFENSE, user, self)
+    target.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
   end
 end
 
@@ -1503,12 +1488,11 @@ class Battle::Move::RaisePlusMinusUserAndAlliesAtkSpAtk1 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     showAnim = true
-    if target.pbCanRaiseStatStage?(:ATTACK, user, self)
-      showAnim = false if target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+    if target.pbCanRaiseStatStage?(:ATTACK, user, self) && target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+      showAnim = false
     end
-    if target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
-      target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user, showAnim)
-    end
+    return unless target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
+    target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user, showAnim)
   end
 
   def pbEffectGeneral(user)
@@ -1556,12 +1540,11 @@ class Battle::Move::RaisePlusMinusUserAndAlliesDefSpDef1 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     showAnim = true
-    if target.pbCanRaiseStatStage?(:DEFENSE, user, self)
-      showAnim = false if target.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
+    if target.pbCanRaiseStatStage?(:DEFENSE, user, self) && target.pbRaiseStatStage(:DEFENSE, 1, user, showAnim)
+      showAnim = false
     end
-    if target.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, user, self)
-      target.pbRaiseStatStage(:SPECIAL_DEFENSE, 1, user, showAnim)
-    end
+    return unless target.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, user, self)
+    target.pbRaiseStatStage(:SPECIAL_DEFENSE, 1, user, showAnim)
   end
 
   def pbEffectGeneral(user)
@@ -1601,12 +1584,11 @@ class Battle::Move::RaiseGroundedGrassBattlersAtkSpAtk1 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     showAnim = true
-    if target.pbCanRaiseStatStage?(:ATTACK, user, self)
-      showAnim = false if target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+    if target.pbCanRaiseStatStage?(:ATTACK, user, self) && target.pbRaiseStatStage(:ATTACK, 1, user, showAnim)
+      showAnim = false
     end
-    if target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
-      target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user, showAnim)
-    end
+    return unless target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, user, self)
+    target.pbRaiseStatStage(:SPECIAL_ATTACK, 1, user, showAnim)
   end
 end
 
@@ -1749,8 +1731,8 @@ class Battle::Move::UserStealTargetPositiveStatStages < Battle::Move
       showAnim = true
       GameData::Stat.each_battle do |s|
         next if target.stages[s.id] <= 0
-        if user.pbCanRaiseStatStage?(s.id, user, self)
-          showAnim = false if user.pbRaiseStatStage(s.id, target.stages[s.id], user, showAnim)
+        if user.pbCanRaiseStatStage?(s.id, user, self) && user.pbRaiseStatStage(s.id, target.stages[s.id], user, showAnim)
+          showAnim = false
         end
         target.statsLoweredThisRound = true
         target.statsDropped = true

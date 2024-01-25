@@ -227,16 +227,28 @@ class HandlerHashEnum
 
   def fromSymbol(sym)
     return sym unless sym.is_a?(Symbol) || sym.is_a?(String)
-    mod = Object.const_get(@mod) rescue nil
+    mod = begin
+      Object.const_get(@mod)
+    rescue StandardError
+      nil
+    end
     return nil if !mod
-    return mod.const_get(sym.to_sym) rescue nil
+    begin
+      return mod.const_get(sym.to_sym)
+    rescue StandardError
+      nil
+    end
   end
 
   def toSymbol(sym)
     return sym.to_sym if sym.is_a?(Symbol) || sym.is_a?(String)
     ret = @symbolCache[sym]
     return ret if ret
-    mod = Object.const_get(@mod) rescue nil
+    mod = begin
+      Object.const_get(@mod)
+    rescue StandardError
+      nil
+    end
     return nil if !mod
     mod.constants.each do |key|
       next if mod.const_get(key) != sym

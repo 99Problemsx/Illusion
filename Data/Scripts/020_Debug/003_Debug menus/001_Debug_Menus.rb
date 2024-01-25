@@ -80,7 +80,7 @@ def pbDebugMenu(show_all = true)
   end
   # Setup windows
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   sprites = {}
   sprites["textbox"] = pbCreateMessageWindow
   sprites["textbox"].letterbyletter = false
@@ -196,7 +196,7 @@ module Battle::DebugMixin
     end
     # Setup windows
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
+    viewport.z = 99_999
     sprites = {}
     sprites["textbox"] = pbCreateMessageWindow
     sprites["textbox"].letterbyletter = false
@@ -271,7 +271,11 @@ module Battle::DebugMixin
     ret += "\n"
     # Level, gender, shininess
     ret += _INTL("Level {1}, {2}", battler.level,
-                 (battler.pokemon.male?) ? "♂" : (battler.pokemon.female?) ? "♀" : _INTL("genderless"))
+                 if battler.pokemon.male?
+                   "♂"
+                 else
+                   (battler.pokemon.female?) ? "♀" : _INTL("genderless")
+end)
     ret += ", " + _INTL("shiny") if battler.pokemon.shiny?
     ret += "\n"
     # HP
@@ -283,9 +287,7 @@ module Battle::DebugMixin
     when :SLEEP
       ret += " " + _INTL("({1} rounds left)", battler.statusCount)
     when :POISON
-      if battler.statusCount > 0
-        ret += " " + _INTL("(toxic, {1}/16)", battler.effects[PBEffects::Toxic])
-      end
+      ret += " " + _INTL("(toxic, {1}/16)", battler.effects[PBEffects::Toxic]) if battler.statusCount > 0
     end
     ret += "\n"
     # Stat stages
@@ -320,7 +322,11 @@ module Battle::DebugMixin
     ret += "\n"
     # Level, gender, shininess
     ret += _INTL("Level {1}, {2}", pkmn.level,
-                 (pkmn.male?) ? "♂" : (pkmn.female?) ? "♀" : _INTL("genderless"))
+                 if pkmn.male?
+                   "♂"
+                 else
+                   (pkmn.female?) ? "♀" : _INTL("genderless")
+end)
     ret += ", " + _INTL("shiny") if pkmn.shiny?
     ret += "\n"
     # HP
@@ -353,7 +359,7 @@ module Battle::DebugMixin
     end
     # Setup windows
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
+    viewport.z = 99_999
     sprites = {}
     sprites["infowindow"] = Window_AdvancedTextPokemon.new("")
     infowindow = sprites["infowindow"]
@@ -383,12 +389,11 @@ module Battle::DebugMixin
       cmd = Kernel.pbShowCommands(sprites["dummywindow"], commands.list, -1, cmd)
       if cmd < 0   # Cancel
         parent = commands.getParent
-        if parent   # Go up a level
-          commands.currentList = parent[0]
-          cmd = parent[1]
-        else   # Exit
-          break
-        end
+        break unless parent   # Go up a level
+        commands.currentList = parent[0]
+        cmd = parent[1]
+      # Exit
+
       else
         real_cmd = commands.getCommand(cmd)
         if commands.hasSubMenu?(real_cmd)

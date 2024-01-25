@@ -17,9 +17,8 @@ def pbClearData
   end
   MapFactoryHelper.clear
   $PokemonEncounters.setup($game_map.map_id) if $game_map && $PokemonEncounters
-  if pbRgssExists?("Data/Tilesets.rxdata")
-    $data_tilesets = load_data("Data/Tilesets.rxdata")
-  end
+  return unless pbRgssExists?("Data/Tilesets.rxdata")
+  $data_tilesets = load_data("Data/Tilesets.rxdata")
 end
 
 #===============================================================================
@@ -27,9 +26,7 @@ end
 #===============================================================================
 def pbLoadRegionalDexes
   $game_temp = Game_Temp.new if !$game_temp
-  if !$game_temp.regional_dexes_data
-    $game_temp.regional_dexes_data = load_data("Data/regional_dexes.dat")
-  end
+  $game_temp.regional_dexes_data = load_data("Data/regional_dexes.dat") if !$game_temp.regional_dexes_data
   return $game_temp.regional_dexes_data
 end
 
@@ -57,8 +54,6 @@ end
 #===============================================================================
 def pbLoadMapInfos
   $game_temp = Game_Temp.new if !$game_temp
-  if !$game_temp.map_infos
-    $game_temp.map_infos = load_data("Data/MapInfos.rxdata")
-  end
+  $game_temp.map_infos = load_data("Data/MapInfos.rxdata") if !$game_temp.map_infos
   return $game_temp.map_infos
 end

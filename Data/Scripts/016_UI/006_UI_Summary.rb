@@ -116,7 +116,7 @@ class PokemonSummary_Scene
 
   def pbStartScene(party, partyindex, inbattle = false)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @party      = party
     @partyindex = partyindex
     @pokemon    = @party[@partyindex]
@@ -183,7 +183,7 @@ class PokemonSummary_Scene
 
   def pbStartForgetScene(party, partyindex, move_to_learn)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @party      = party
     @partyindex = partyindex
     @pokemon    = @party[@partyindex]
@@ -295,7 +295,7 @@ class PokemonSummary_Scene
     markrect = Rect.new(0, 0, MARK_WIDTH, MARK_HEIGHT)
     (@markingbitmap.bitmap.width / MARK_WIDTH).times do |i|
       markrect.x = i * MARK_WIDTH
-      markrect.y = [(markings[i] || 0), mark_variants - 1].min * MARK_HEIGHT
+      markrect.y = [markings[i] || 0, mark_variants - 1].min * MARK_HEIGHT
       bitmap.blt(x + (i * MARK_WIDTH), y, @markingbitmap.bitmap, markrect)
     end
   end
@@ -327,13 +327,9 @@ class PokemonSummary_Scene
     elsif @pokemon.pokerusStage == 1
       status = GameData::Status.count
     end
-    if status >= 0
-      imagepos.push([_INTL("Graphics/UI/statuses"), 124, 100, 0, 16 * status, 44, 16])
-    end
+    imagepos.push([_INTL("Graphics/UI/statuses"), 124, 100, 0, 16 * status, 44, 16]) if status >= 0
     # Show Pokérus cured icon
-    if @pokemon.pokerusStage == 2
-      imagepos.push(["Graphics/UI/Summary/icon_pokerus", 176, 100])
-    end
+    imagepos.push(["Graphics/UI/Summary/icon_pokerus", 176, 100]) if @pokemon.pokerusStage == 2
     # Show shininess star
     imagepos.push(["Graphics/UI/shiny", 2, 134]) if @pokemon.shiny?
     # Draw all images
@@ -470,12 +466,11 @@ class PokemonSummary_Scene
       overlay.blt(type_x, 146, @typebitmap.bitmap, type_rect)
     end
     # Draw Exp bar
-    if @pokemon.level < GameData::GrowthRate.max_level
-      w = @pokemon.exp_fraction * 128
-      w = ((w / 2).round) * 2
-      pbDrawImagePositions(overlay,
-                           [["Graphics/UI/Summary/overlay_exp", 362, 372, 0, 0, w, 6]])
-    end
+    return unless @pokemon.level < GameData::GrowthRate.max_level
+    w = @pokemon.exp_fraction * 128
+    w = (w / 2).round * 2
+    pbDrawImagePositions(overlay,
+                         [["Graphics/UI/Summary/overlay_exp", 362, 372, 0, 0, w, 6]])
   end
 
   def drawPageOneEgg
@@ -529,7 +524,9 @@ class PokemonSummary_Scene
     # Write Egg Watch blurb
     memo += black_text_tag + _INTL("\"The Egg Watch\"") + "\n"
     eggstate = _INTL("It looks like this Egg will take a long time to hatch.")
-    eggstate = _INTL("What will hatch from this? It doesn't seem close to hatching.") if @pokemon.steps_to_hatch < 10_200
+    if @pokemon.steps_to_hatch < 10_200
+      eggstate = _INTL("What will hatch from this? It doesn't seem close to hatching.")
+    end
     eggstate = _INTL("It appears to move occasionally. It may be close to hatching.") if @pokemon.steps_to_hatch < 2550
     eggstate = _INTL("Sounds can be heard coming from inside! It will hatch soon!") if @pokemon.steps_to_hatch < 1275
     memo += black_text_tag + eggstate
@@ -675,18 +672,17 @@ class PokemonSummary_Scene
     # Draw all text
     pbDrawTextPositions(overlay, textpos)
     # Draw HP bar
-    if @pokemon.hp > 0
-      w = @pokemon.hp * 96 / @pokemon.totalhp.to_f
-      w = 1 if w < 1
-      w = ((w / 2).round) * 2
-      hpzone = 0
-      hpzone = 1 if @pokemon.hp <= (@pokemon.totalhp / 2).floor
-      hpzone = 2 if @pokemon.hp <= (@pokemon.totalhp / 4).floor
-      imagepos = [
-        ["Graphics/UI/Summary/overlay_hp", 360, 110, 0, hpzone * 6, w, 6]
-      ]
-      pbDrawImagePositions(overlay, imagepos)
-    end
+    return unless @pokemon.hp > 0
+    w = @pokemon.hp * 96 / @pokemon.totalhp.to_f
+    w = 1 if w < 1
+    w = (w / 2).round * 2
+    hpzone = 0
+    hpzone = 1 if @pokemon.hp <= (@pokemon.totalhp / 2).floor
+    hpzone = 2 if @pokemon.hp <= (@pokemon.totalhp / 4).floor
+    imagepos = [
+      ["Graphics/UI/Summary/overlay_hp", 360, 110, 0, hpzone * 6, w, 6]
+    ]
+    pbDrawImagePositions(overlay, imagepos)
   end
 
   def drawPageFour
@@ -970,9 +966,7 @@ class PokemonSummary_Scene
         end
       elsif Input.trigger?(Input::UP)
         selmove -= 1
-        if selmove < Pokemon::MAX_MOVES && selmove >= @pokemon.numMoves
-          selmove = @pokemon.numMoves - 1
-        end
+        selmove = @pokemon.numMoves - 1 if selmove < Pokemon::MAX_MOVES && selmove >= @pokemon.numMoves
         selmove = 0 if selmove >= Pokemon::MAX_MOVES
         selmove = @pokemon.numMoves - 1 if selmove < 0
         @sprites["movesel"].index = selmove
@@ -1093,7 +1087,7 @@ class PokemonSummary_Scene
         @sprites["markingoverlay"].bitmap.clear
         (@markingbitmap.bitmap.width / MARK_WIDTH).times do |i|
           markrect.x = i * MARK_WIDTH
-          markrect.y = [(markings[i] || 0), mark_variants - 1].min * MARK_HEIGHT
+          markrect.y = [markings[i] || 0, mark_variants - 1].min * MARK_HEIGHT
           @sprites["markingoverlay"].bitmap.blt(300 + (58 * (i % 3)), 154 + (50 * (i / 3)),
                                                 @markingbitmap.bitmap, markrect)
         end
@@ -1196,7 +1190,6 @@ class PokemonSummary_Scene
     cmdGiveItem = -1
     cmdTakeItem = -1
     cmdPokedex  = -1
-    cmdMark     = -1
     if !@pokemon.egg?
       commands[cmdGiveItem = commands.length] = _INTL("Give item")
       commands[cmdTakeItem = commands.length] = _INTL("Take item") if @pokemon.hasItem?
@@ -1247,9 +1240,7 @@ class PokemonSummary_Scene
       elsif Input.trigger?(Input::UP)
         selmove -= 1
         selmove = maxmove if selmove < 0
-        if selmove < Pokemon::MAX_MOVES && selmove >= @pokemon.numMoves
-          selmove = @pokemon.numMoves - 1
-        end
+        selmove = @pokemon.numMoves - 1 if selmove < Pokemon::MAX_MOVES && selmove >= @pokemon.numMoves
         @sprites["movesel"].index = selmove
         selected_move = (selmove == Pokemon::MAX_MOVES) ? new_move : @pokemon.moves[selmove]
         drawSelectedMove(new_move, selected_move)

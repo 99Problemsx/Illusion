@@ -46,10 +46,10 @@ class Battle::Battler
   attr_accessor :damageState
 
   # These arrays should all have the same number of values in them
-  STAT_STAGE_MULTIPLIERS    = [2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8]
-  STAT_STAGE_DIVISORS       = [8, 7, 6, 5, 4, 3, 2, 2, 2, 2, 2, 2, 2]
-  ACC_EVA_STAGE_MULTIPLIERS = [3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 9]
-  ACC_EVA_STAGE_DIVISORS    = [9, 8, 7, 6, 5, 4, 3, 3, 3, 3, 3, 3, 3]
+  STAT_STAGE_MULTIPLIERS    = [2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8].freeze
+  STAT_STAGE_DIVISORS       = [8, 7, 6, 5, 4, 3, 2, 2, 2, 2, 2, 2, 2].freeze
+  ACC_EVA_STAGE_MULTIPLIERS = [3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 9].freeze
+  ACC_EVA_STAGE_DIVISORS    = [9, 8, 7, 6, 5, 4, 3, 3, 3, 3, 3, 3, 3].freeze
   STAT_STAGE_MAXIMUM        = 6   # Is also the minimum (-6)
 
   #=============================================================================
@@ -217,11 +217,10 @@ class Battle::Battler
 
   def pbThis(lowerCase = false)
     if opposes?
-      if @battle.trainerBattle?
-        return lowerCase ? _INTL("the opposing {1}", name) : _INTL("The opposing {1}", name)
-      else
-        return lowerCase ? _INTL("the wild {1}", name) : _INTL("The wild {1}", name)
-      end
+      return lowerCase ? _INTL("the opposing {1}", name) : _INTL("The opposing {1}", name) if @battle.trainerBattle?
+
+      return lowerCase ? _INTL("the wild {1}", name) : _INTL("The wild {1}", name)
+
     elsif !pbOwnedByPlayer?
       return lowerCase ? _INTL("the ally {1}", name) : _INTL("The ally {1}", name)
     end
@@ -251,13 +250,9 @@ class Battle::Battler
     speed = @speed * STAT_STAGE_MULTIPLIERS[stage] / STAT_STAGE_DIVISORS[stage]
     speedMult = 1.0
     # Ability effects that alter calculated Speed
-    if abilityActive?
-      speedMult = Battle::AbilityEffects.triggerSpeedCalc(self.ability, self, speedMult)
-    end
+    speedMult = Battle::AbilityEffects.triggerSpeedCalc(self.ability, self, speedMult) if abilityActive?
     # Item effects that alter calculated Speed
-    if itemActive?
-      speedMult = Battle::ItemEffects.triggerSpeedCalc(self.item, self, speedMult)
-    end
+    speedMult = Battle::ItemEffects.triggerSpeedCalc(self.item, self, speedMult) if itemActive?
     # Other effects
     speedMult *= 2 if pbOwnSide.effects[PBEffects::Tailwind] > 0
     speedMult /= 2 if pbOwnSide.effects[PBEffects::Swamp] > 0
@@ -278,12 +273,8 @@ class Battle::Battler
     ret = (@pokemon) ? @pokemon.weight : 500
     ret += @effects[PBEffects::WeightChange]
     ret = 1 if ret < 1
-    if abilityActive? && !@battle.moldBreaker
-      ret = Battle::AbilityEffects.triggerWeightCalc(self.ability, self, ret)
-    end
-    if itemActive?
-      ret = Battle::ItemEffects.triggerWeightCalc(self.item, self, ret)
-    end
+    ret = Battle::AbilityEffects.triggerWeightCalc(self.ability, self, ret) if abilityActive? && !@battle.moldBreaker
+    ret = Battle::ItemEffects.triggerWeightCalc(self.item, self, ret) if itemActive?
     return [ret, 1].max
   end
 
@@ -366,8 +357,8 @@ class Battle::Battler
       # Form-changing abilities
       :BATTLEBOND,
       :DISGUISE,
-#      :FLOWERGIFT,                                        # This can be stopped
-#      :FORECAST,                                          # This can be stopped
+      #      :FLOWERGIFT,                                        # This can be stopped
+      #      :FORECAST,                                          # This can be stopped
       :GULPMISSILE,
       :ICEFACE,
       :MULTITYPE,
@@ -584,9 +575,7 @@ class Battle::Battler
         return false
       end
       if hasActiveItem?(:SAFETYGOGGLES)
-        if showMsg
-          @battle.pbDisplay(_INTL("{1} is unaffected because of its {2}!", pbThis, itemName))
-        end
+        @battle.pbDisplay(_INTL("{1} is unaffected because of its {2}!", pbThis, itemName)) if showMsg
         return false
       end
     end
@@ -766,10 +755,8 @@ class Battle::Battler
       next if !@battle.battlers[i]
       break if unfaintedOnly && @battle.battlers[i].fainted?
       return @battle.battlers[i]
-    end
-    # Wanted an unfainted battler but couldn't find one; make do with a fainted
-    # battler
-    @battle.pbGetOpposingIndicesInOrder(@index).each do |i|
+      # Wanted an unfainted battler but couldn't find one; make do with a fainted
+      # battler
       return @battle.battlers[i] if @battle.battlers[i]
     end
     return @battle.battlers[(@index ^ 1)]

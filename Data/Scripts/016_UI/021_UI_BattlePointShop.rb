@@ -66,10 +66,8 @@ class BattlePointShopAdapter
   end
 
   def getPrice(item)
-    if $game_temp.mart_prices && $game_temp.mart_prices[item]
-      if $game_temp.mart_prices[item][0] > 0
-        return $game_temp.mart_prices[item][0]
-      end
+    if $game_temp.mart_prices && $game_temp.mart_prices[item] && ($game_temp.mart_prices[item][0] > 0)
+      return $game_temp.mart_prices[item][0]
     end
     return GameData::Item.get(item).bp_price
   end
@@ -158,7 +156,7 @@ class BattlePointShop_Scene
     # Scroll right before showing screen
     pbScrollMap(6, 5, 5)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @stock = stock
     @adapter = adapter
     @sprites = {}
@@ -263,9 +261,7 @@ class BattlePointShop_Scene
           refreshed_after_busy = true
         end
       end
-      if Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
-        cw.resume if cw.busy?
-      end
+      cw.resume if (Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)) && cw.busy?
       return if refreshed_after_busy && System.uptime - timer_start >= 1.5
     end
   end
@@ -288,11 +284,10 @@ class BattlePointShop_Scene
         yielded = true
       end
       pbRefresh if !cw.busy? && wasbusy
-      if Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
-        if cw.resume && !cw.busy?
-          @sprites["helpwindow"].visible = false
-          break
-        end
+      next unless Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
+      if cw.resume && !cw.busy?
+        @sprites["helpwindow"].visible = false
+        break
       end
     end
   end
@@ -321,11 +316,10 @@ class BattlePointShop_Scene
         @sprites["helpwindow"].visible = false
         return false
       end
-      if Input.trigger?(Input::USE) && dw.resume && !dw.busy?
-        cw.dispose
-        @sprites["helpwindow"].visible = false
-        return (cw.index == 0)
-      end
+      next unless Input.trigger?(Input::USE) && dw.resume && !dw.busy?
+      cw.dispose
+      @sprites["helpwindow"].visible = false
+      return (cw.index == 0)
     end
   end
 
@@ -409,12 +403,10 @@ class BattlePointShop_Scene
           pbPlayCloseMenuSE
           return nil
         elsif Input.trigger?(Input::USE)
-          if itemwindow.index < @stock.length
-            pbRefresh
-            return @stock[itemwindow.index]
-          else
-            return nil
-          end
+          return nil unless itemwindow.index < @stock.length
+          pbRefresh
+          return @stock[itemwindow.index]
+
         end
       end
     end
@@ -439,8 +431,8 @@ class BattlePointShopScreen
     return @scene.pbDisplay(msg)
   end
 
-  def pbDisplayPaused(msg, &block)
-    return @scene.pbDisplayPaused(msg, &block)
+  def pbDisplayPaused(msg, ...)
+    return @scene.pbDisplayPaused(msg, ...)
   end
 
   def pbBuyScreen
@@ -494,9 +486,7 @@ class BattlePointShopScreen
         pbDisplayPaused(_INTL("Here you are! Thank you!")) { pbSEPlay("Mart buy item") }
       else
         added.times do
-          if !@adapter.removeItem(item)
-            raise _INTL("Failed to delete stored items")
-          end
+          raise _INTL("Failed to delete stored items") if !@adapter.removeItem(item)
         end
         pbDisplayPaused(_INTL("You have no room in your Bag."))
       end

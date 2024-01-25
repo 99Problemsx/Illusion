@@ -7,9 +7,9 @@ module GameData
     attr_reader   :types
     attr_reader   :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "encounters.dat"
-    PBS_BASE_FILENAME = "encounters"
+    DATA = {}.freeze
+    DATA_FILENAME = "encounters.dat".freeze
+    PBS_BASE_FILENAME = "encounters".freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -53,16 +53,14 @@ module GameData
     def self.each_of_version(version = 0)
       self.each do |data|
         yield data if data.version == version
-        if version > 0 && data.version == 0 && !self::DATA.has_key?([data.map, version])
-          yield data
-        end
+        yield data if version > 0 && data.version == 0 && !self::DATA.has_key?([data.map, version])
       end
     end
 
     def initialize(hash)
       @id              = hash[:id]
       @map             = hash[:map]
-      @version         = hash[:version]         || 0
+      @version         = hash[:version] || 0
       @step_chances    = hash[:step_chances]
       @types           = hash[:types]           || {}
       @pbs_file_suffix = hash[:pbs_file_suffix] || ""

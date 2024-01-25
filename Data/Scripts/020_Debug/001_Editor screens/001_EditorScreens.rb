@@ -11,7 +11,7 @@ def pbEncountersEditor
   help_window = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Edit wild encounters"), Graphics.width / 2, 0, Graphics.width / 2, 96
   )
-  help_window.z = 99999
+  help_window.z = 99_999
   ret = 0
   need_refresh = true
   loop do
@@ -133,7 +133,7 @@ def pbEncounterMapVersionEditor(enc_data)
   help_window = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Edit map's encounters"), Graphics.width / 2, 0, Graphics.width / 2, 96
   )
-  help_window.z = 99999
+  help_window.z = 99_999
   ret = 0
   need_refresh = true
   loop do
@@ -259,7 +259,7 @@ def pbEncounterTypeEditor(enc_data, enc_type)
   help_window = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Edit encounter slots"), Graphics.width / 2, 0, Graphics.width / 2, 96
   )
-  help_window.z = 99999
+  help_window.z = 99_999
   enc_type_name = ""
   ret = 0
   need_refresh = true
@@ -617,14 +617,14 @@ module TrainerPokemonProperty
     Pokemon::MAX_MOVES.times do |i|
       oldsetting.push((initsetting[:moves]) ? initsetting[:moves][i] : nil)
     end
-    oldsetting.concat([initsetting[:ability],
-                       initsetting[:ability_index],
-                       initsetting[:item],
-                       initsetting[:nature],
-                       initsetting[:iv],
-                       initsetting[:ev],
-                       initsetting[:happiness],
-                       initsetting[:poke_ball]])
+    oldsetting.push(initsetting[:ability],
+                    initsetting[:ability_index],
+                    initsetting[:item],
+                    initsetting[:nature],
+                    initsetting[:iv],
+                    initsetting[:ev],
+                    initsetting[:happiness],
+                    initsetting[:poke_ball])
     max_level = GameData::GrowthRate.max_level
     pkmn_properties = [
       [_INTL("Species"),       SpeciesProperty,                         _INTL("Species of the Pokémon.")],
@@ -640,15 +640,15 @@ module TrainerPokemonProperty
       pkmn_properties.push([_INTL("Move {1}", i + 1),
                             MovePropertyForSpecies.new(oldsetting), _INTL("A move known by the Pokémon. Leave all moves blank (use Z key to delete) for a wild moveset.")])
     end
-    pkmn_properties.concat(
-      [[_INTL("Ability"),       AbilityProperty,                         _INTL("Ability of the Pokémon. Overrides the ability index.")],
-       [_INTL("Ability index"), LimitProperty2.new(99),                  _INTL("Ability index. 0=first ability, 1=second ability, 2+=hidden ability.")],
-       [_INTL("Held item"),     ItemProperty,                            _INTL("Item held by the Pokémon.")],
-       [_INTL("Nature"),        GameDataProperty.new(:Nature),           _INTL("Nature of the Pokémon.")],
-       [_INTL("IVs"),           IVsProperty.new(Pokemon::IV_STAT_LIMIT), _INTL("Individual values for each of the Pokémon's stats.")],
-       [_INTL("EVs"),           EVsProperty.new(Pokemon::EV_STAT_LIMIT), _INTL("Effort values for each of the Pokémon's stats.")],
-       [_INTL("Happiness"),     LimitProperty2.new(255),                 _INTL("Happiness of the Pokémon (0-255).")],
-       [_INTL("Poké Ball"),     BallProperty.new(oldsetting),            _INTL("The kind of Poké Ball the Pokémon is kept in.")]]
+    pkmn_properties.push(
+      [_INTL("Ability"), AbilityProperty, _INTL("Ability of the Pokémon. Overrides the ability index.")],
+      [_INTL("Ability index"), LimitProperty2.new(99),                  _INTL("Ability index. 0=first ability, 1=second ability, 2+=hidden ability.")],
+      [_INTL("Held item"),     ItemProperty,                            _INTL("Item held by the Pokémon.")],
+      [_INTL("Nature"),        GameDataProperty.new(:Nature),           _INTL("Nature of the Pokémon.")],
+      [_INTL("IVs"),           IVsProperty.new(Pokemon::IV_STAT_LIMIT), _INTL("Individual values for each of the Pokémon's stats.")],
+      [_INTL("EVs"),           EVsProperty.new(Pokemon::EV_STAT_LIMIT), _INTL("Effort values for each of the Pokémon's stats.")],
+      [_INTL("Happiness"),     LimitProperty2.new(255),                 _INTL("Happiness of the Pokémon (0-255).")],
+      [_INTL("Poké Ball"),     BallProperty.new(oldsetting),            _INTL("The kind of Poké Ball the Pokémon is kept in.")]
     )
     pbPropertyList(settingname, oldsetting, pkmn_properties, false)
     return nil if !oldsetting[0]   # Species is nil
@@ -714,20 +714,19 @@ def pbEditMetadata
     val = property[1].defaultValue if val.nil? && property[1].respond_to?(:defaultValue)
     data.push(val)
   end
-  if pbPropertyList(_INTL("Global Metadata"), data, properties, true)
-    # Construct metadata hash
-    schema = GameData::Metadata.schema
-    metadata_hash = {}
-    properties.each_with_index do |prop, i|
-      metadata_hash[schema[prop[0]][0]] = data[i]
-    end
-    metadata_hash[:id]              = 0
-    metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
-    # Add metadata's data to records
-    GameData::Metadata.register(metadata_hash)
-    GameData::Metadata.save
-    Compiler.write_metadata
+  return unless pbPropertyList(_INTL("Global Metadata"), data, properties, true)
+  # Construct metadata hash
+  schema = GameData::Metadata.schema
+  metadata_hash = {}
+  properties.each_with_index do |prop, i|
+    metadata_hash[schema[prop[0]][0]] = data[i]
   end
+  metadata_hash[:id]              = 0
+  metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
+  # Add metadata's data to records
+  GameData::Metadata.register(metadata_hash)
+  GameData::Metadata.save
+  Compiler.write_metadata
 end
 
 def pbEditPlayerMetadata(player_id = 1)
@@ -753,24 +752,23 @@ def pbEditPlayerMetadata(player_id = 1)
     val = property[1].defaultValue if val.nil? && property[1].respond_to?(:defaultValue)
     data.push(val)
   end
-  if pbPropertyList(_INTL("Player {1}", metadata.id), data, properties, true)
-    # Construct player metadata hash
-    schema = GameData::PlayerMetadata.schema
-    metadata_hash = {}
-    properties.each_with_index do |prop, i|
-      case prop[0]
-      when "ID"
-        metadata_hash[schema["SectionName"][0]] = data[i]
-      else
-        metadata_hash[schema[prop[0]][0]] = data[i]
-      end
+  return unless pbPropertyList(_INTL("Player {1}", metadata.id), data, properties, true)
+  # Construct player metadata hash
+  schema = GameData::PlayerMetadata.schema
+  metadata_hash = {}
+  properties.each_with_index do |prop, i|
+    case prop[0]
+    when "ID"
+      metadata_hash[schema["SectionName"][0]] = data[i]
+    else
+      metadata_hash[schema[prop[0]][0]] = data[i]
     end
-    metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
-    # Add player metadata's data to records
-    GameData::PlayerMetadata.register(metadata_hash)
-    GameData::PlayerMetadata.save
-    Compiler.write_metadata
   end
+  metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
+  # Add player metadata's data to records
+  GameData::PlayerMetadata.register(metadata_hash)
+  GameData::PlayerMetadata.save
+  Compiler.write_metadata
 end
 
 #===============================================================================
@@ -796,24 +794,23 @@ def pbEditMapMetadata(map_id)
     val = property[1].defaultValue if val.nil? && property[1].respond_to?(:defaultValue)
     data.push(val)
   end
-  if pbPropertyList(map_name, data, properties, true)
-    # Construct map metadata hash
-    schema = GameData::MapMetadata.schema
-    metadata_hash = {}
-    properties.each_with_index do |prop, i|
-      case prop[0]
-      when "ID"
-        metadata_hash[schema["SectionName"][0]] = data[i]
-      else
-        metadata_hash[schema[prop[0]][0]] = data[i]
-      end
+  return unless pbPropertyList(map_name, data, properties, true)
+  # Construct map metadata hash
+  schema = GameData::MapMetadata.schema
+  metadata_hash = {}
+  properties.each_with_index do |prop, i|
+    case prop[0]
+    when "ID"
+      metadata_hash[schema["SectionName"][0]] = data[i]
+    else
+      metadata_hash[schema[prop[0]][0]] = data[i]
     end
-    metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
-    # Add map metadata's data to records
-    GameData::MapMetadata.register(metadata_hash)
-    GameData::MapMetadata.save
-    Compiler.write_map_metadata
   end
+  metadata_hash[:pbs_file_suffix] = metadata.pbs_file_suffix
+  # Add map metadata's data to records
+  GameData::MapMetadata.register(metadata_hash)
+  GameData::MapMetadata.save
+  Compiler.write_map_metadata
 end
 
 #===============================================================================
@@ -991,7 +988,7 @@ end
 #===============================================================================
 def pbRegionalDexEditor(dex)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   cmd_window = pbListWindow([])
   info = Window_AdvancedTextPokemon.newWithSize(
     _INTL("Z+Up/Down: Rearrange entries\nZ+Right: Insert new entry\nZ+Left: Delete entry\nD: Clear entry"),
@@ -1098,7 +1095,7 @@ end
 
 def pbRegionalDexEditorMain
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   cmd_window = pbListWindow([])
   cmd_window.viewport = viewport
   cmd_window.z        = 2
@@ -1206,13 +1203,12 @@ def pbAppendEvoToFamilyArray(species, array, seenarray)
   array.push(species)
   seenarray[species] = true
   evos = GameData::Species.get(species).get_evolutions
-  if evos.length > 0
-    subarray = []
-    evos.each do |i|
-      pbAppendEvoToFamilyArray(i[0], subarray, seenarray)
-    end
-    array.push(subarray) if subarray.length > 0
+  return unless evos.length > 0
+  subarray = []
+  evos.each do |i|
+    pbAppendEvoToFamilyArray(i[0], subarray, seenarray)
   end
+  array.push(subarray) if subarray.length > 0
 end
 
 def pbGetEvoFamilies
@@ -1256,7 +1252,7 @@ def pbAnimationsOrganiser
     return
   end
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   cmdwin = pbListWindow([])
   cmdwin.viewport = viewport
   cmdwin.z        = 2

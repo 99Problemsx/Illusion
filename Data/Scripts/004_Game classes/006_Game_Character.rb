@@ -206,8 +206,16 @@ class Game_Character
     end
     this_map = (self.map.valid?(@x, @y)) ? [self.map, @x, @y] : $map_factory&.getNewMap(@x, @y, self.map.map_id)
     if this_map && this_map[0].deepBush?(this_map[1], this_map[2])
-      xbehind = @x + (@direction == 4 ? 1 : @direction == 6 ? -1 : 0)
-      ybehind = @y + (@direction == 8 ? 1 : @direction == 2 ? -1 : 0)
+      xbehind = @x + (if @direction == 4
+                        1
+                      else
+                        @direction == 6 ? -1 : 0
+end)
+      ybehind = @y + (if @direction == 8
+                        1
+                      else
+                        @direction == 2 ? -1 : 0
+end)
       if moving?
         behind_map = (self.map.valid?(xbehind, ybehind)) ? [self.map, xbehind, ybehind] : $map_factory&.getNewMap(xbehind, ybehind, self.map.map_id)
         @bush_depth = Game_Map::TILE_HEIGHT if behind_map[0].deepBush?(behind_map[1], behind_map[2])
@@ -235,8 +243,16 @@ class Game_Character
   # Passability
   #=============================================================================
   def passable?(x, y, d, strict = false)
-    new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
-    new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+    new_x = x + (if d == 6
+                   1
+                 else
+                   d == 4 ? -1 : 0
+end)
+    new_y = y + (if d == 2
+                   1
+                 else
+                   d == 8 ? -1 : 0
+end)
     return false unless self.map.valid?(new_x, new_y)
     return true if @through
     if strict
@@ -334,7 +350,7 @@ class Game_Character
     if @tile_id > 0
       begin
         return z + (self.map.priorities[@tile_id] * 32)
-      rescue
+      rescue StandardError
         raise "Event's graphic is an out-of-range tile (event #{@id}, map #{self.map.map_id})"
       end
     end
@@ -427,7 +443,6 @@ class Game_Character
   def move_type_custom
     return if jumping? || moving?
     return if @move_route.list.size <= 1   # Empty move route
-    start_index = @move_route_index
     (@move_route.list.size - 1).times do
       command = @move_route.list[@move_route_index]
       if command.code == 0
@@ -445,7 +460,6 @@ class Game_Character
           return
         end
       end
-      done_one_command = true
       # The below move route commands wait for a frame (i.e. return) after
       # executing them
       if command.code <= 14
@@ -492,61 +506,60 @@ class Game_Character
       end
       # The below move route commands don't wait for a frame (i.e. return) after
       # executing them
-      if command.code >= 27
-        case command.code
-        when 27
-          $game_switches[command.parameters[0]] = true
-          self.map.need_refresh = true
-        when 28
-          $game_switches[command.parameters[0]] = false
-          self.map.need_refresh = true
-        when 29 then self.move_speed = command.parameters[0]
-        when 30 then self.move_frequency = command.parameters[0]
-        when 31 then @walk_anime = true
-        when 32 then @walk_anime = false
-        when 33 then @step_anime = true
-        when 34 then @step_anime = false
-        when 35 then @direction_fix = true
-        when 36 then @direction_fix = false
-        when 37 then @through = true
-        when 38 then @through = false
-        when 39
-          old_always_on_top = @always_on_top
-          @always_on_top = true
-          calculate_bush_depth if @always_on_top != old_always_on_top
-        when 40
-          old_always_on_top = @always_on_top
-          @always_on_top = false
-          calculate_bush_depth if @always_on_top != old_always_on_top
-        when 41
-          old_tile_id = @tile_id
-          @tile_id = 0
-          @character_name = command.parameters[0]
-          @character_hue = command.parameters[1]
-          if @original_direction != command.parameters[2]
-            @direction = command.parameters[2]
-            @original_direction = @direction
-            @prelock_direction = 0
-          end
-          if @original_pattern != command.parameters[3]
-            @pattern = command.parameters[3]
-            @original_pattern = @pattern
-          end
-          calculate_bush_depth if @tile_id != old_tile_id
-        when 42 then @opacity = command.parameters[0]
-        when 43 then @blend_type = command.parameters[0]
-        when 44 then pbSEPlay(command.parameters[0])
-        when 45
-          eval(command.parameters[0])
-          if command.parameters[0][/^move_random_range/] ||
-             command.parameters[0][/^move_random_UD/] ||
-             command.parameters[0][/^move_random_LR/]
-            @move_route_index += 1
-            return
-          end
+      next unless command.code >= 27
+      case command.code
+      when 27
+        $game_switches[command.parameters[0]] = true
+        self.map.need_refresh = true
+      when 28
+        $game_switches[command.parameters[0]] = false
+        self.map.need_refresh = true
+      when 29 then self.move_speed = command.parameters[0]
+      when 30 then self.move_frequency = command.parameters[0]
+      when 31 then @walk_anime = true
+      when 32 then @walk_anime = false
+      when 33 then @step_anime = true
+      when 34 then @step_anime = false
+      when 35 then @direction_fix = true
+      when 36 then @direction_fix = false
+      when 37 then @through = true
+      when 38 then @through = false
+      when 39
+        old_always_on_top = @always_on_top
+        @always_on_top = true
+        calculate_bush_depth if @always_on_top != old_always_on_top
+      when 40
+        old_always_on_top = @always_on_top
+        @always_on_top = false
+        calculate_bush_depth if @always_on_top != old_always_on_top
+      when 41
+        old_tile_id = @tile_id
+        @tile_id = 0
+        @character_name = command.parameters[0]
+        @character_hue = command.parameters[1]
+        if @original_direction != command.parameters[2]
+          @direction = command.parameters[2]
+          @original_direction = @direction
+          @prelock_direction = 0
         end
-        @move_route_index += 1
+        if @original_pattern != command.parameters[3]
+          @pattern = command.parameters[3]
+          @original_pattern = @pattern
+        end
+        calculate_bush_depth if @tile_id != old_tile_id
+      when 42 then @opacity = command.parameters[0]
+      when 43 then @blend_type = command.parameters[0]
+      when 44 then pbSEPlay(command.parameters[0])
+      when 45
+        eval(command.parameters[0])
+        if command.parameters[0][/^move_random_range/] ||
+           command.parameters[0][/^move_random_UD/] ||
+           command.parameters[0][/^move_random_LR/]
+          @move_route_index += 1
+          return
+        end
       end
+      @move_route_index += 1
     end
   end
 
@@ -556,8 +569,16 @@ class Game_Character
       turn_generic(dir)
       @move_initial_x = @x
       @move_initial_y = @y
-      @x += (dir == 4) ? -1 : (dir == 6) ? 1 : 0
-      @y += (dir == 8) ? -1 : (dir == 2) ? 1 : 0
+      @x += if dir == 4
+              -1
+            else
+              (dir == 6) ? 1 : 0
+end
+      @y += if dir == 8
+              -1
+            else
+              (dir == 2) ? 1 : 0
+end
       @move_timer = 0.0
       increase_steps
     else
@@ -583,58 +604,70 @@ class Game_Character
 
   def move_upper_left
     unless @direction_fix
-      @direction = (@direction == 6 ? 4 : @direction == 2 ? 8 : @direction)
+      @direction = (if @direction == 6
+                      4
+                    else
+                      @direction == 2 ? 8 : @direction
+end)
     end
-    if can_move_in_direction?(7)
-      @move_initial_x = @x
-      @move_initial_y = @y
-      @x -= 1
-      @y -= 1
-      @move_timer = 0.0
-      increase_steps
-    end
+    return unless can_move_in_direction?(7)
+    @move_initial_x = @x
+    @move_initial_y = @y
+    @x -= 1
+    @y -= 1
+    @move_timer = 0.0
+    increase_steps
   end
 
   def move_upper_right
     unless @direction_fix
-      @direction = (@direction == 4 ? 6 : @direction == 2 ? 8 : @direction)
+      @direction = (if @direction == 4
+                      6
+                    else
+                      @direction == 2 ? 8 : @direction
+end)
     end
-    if can_move_in_direction?(9)
-      @move_initial_x = @x
-      @move_initial_y = @y
-      @x += 1
-      @y -= 1
-      @move_timer = 0.0
-      increase_steps
-    end
+    return unless can_move_in_direction?(9)
+    @move_initial_x = @x
+    @move_initial_y = @y
+    @x += 1
+    @y -= 1
+    @move_timer = 0.0
+    increase_steps
   end
 
   def move_lower_left
     unless @direction_fix
-      @direction = (@direction == 6 ? 4 : @direction == 8 ? 2 : @direction)
+      @direction = (if @direction == 6
+                      4
+                    else
+                      @direction == 8 ? 2 : @direction
+end)
     end
-    if can_move_in_direction?(1)
-      @move_initial_x = @x
-      @move_initial_y = @y
-      @x -= 1
-      @y += 1
-      @move_timer = 0.0
-      increase_steps
-    end
+    return unless can_move_in_direction?(1)
+    @move_initial_x = @x
+    @move_initial_y = @y
+    @x -= 1
+    @y += 1
+    @move_timer = 0.0
+    increase_steps
   end
 
   def move_lower_right
     unless @direction_fix
-      @direction = (@direction == 4 ? 6 : @direction == 8 ? 2 : @direction)
+      @direction = (if @direction == 4
+                      6
+                    else
+                      @direction == 8 ? 2 : @direction
+end)
     end
-    if can_move_in_direction?(3)
-      @move_initial_x = @x
-      @move_initial_y = @y
-      @x += 1
-      @y += 1
-      @move_timer = 0.0
-      increase_steps
-    end
+    return unless can_move_in_direction?(3)
+    @move_initial_x = @x
+    @move_initial_y = @y
+    @x += 1
+    @y += 1
+    @move_timer = 0.0
+    increase_steps
   end
 
   # Anticlockwise.
@@ -923,12 +956,11 @@ class Game_Character
   end
 
   def update_command_new
-    if @stop_count >= @command_delay
-      case @move_type
-      when 1 then move_type_random
-      when 2 then move_type_toward_player
-      when 3 then move_type_custom
-      end
+    return unless @stop_count >= @command_delay
+    case @move_type
+    when 1 then move_type_random
+    when 2 then move_type_toward_player
+    when 3 then move_type_custom
     end
   end
 
@@ -998,7 +1030,7 @@ class Game_Character
 
   def update_pattern
     return if @lock_pattern
-#    return if @jumping_on_spot   # Don't animate if jumping on the spot
+    #    return if @jumping_on_spot   # Don't animate if jumping on the spot
     # Character has stopped moving, return to original pattern
     if @moved_last_frame && !@moved_this_frame && !@step_anime
       @pattern = @original_pattern

@@ -70,10 +70,9 @@ class PokemonSprite < Sprite
 
   def update
     super
-    if @_iconbitmap
-      @_iconbitmap.update
-      self.bitmap = @_iconbitmap.bitmap
-    end
+    return unless @_iconbitmap
+    @_iconbitmap.update
+    self.bitmap = @_iconbitmap.bitmap
   end
 end
 

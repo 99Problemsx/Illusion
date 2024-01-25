@@ -1,7 +1,7 @@
 ################################################################################
-# 
+#
 # DLC item handlers.
-# 
+#
 ################################################################################
 
 #===============================================================================
@@ -63,13 +63,12 @@ Battle::ItemEffects::DamageCalcFromUser.copy(:PIXIEPLATE, :FAIRYFEATHER)
 # Wellspring Mask, Hearthflame Mask, Cornerstone Mask
 #===============================================================================
 Battle::ItemEffects::DamageCalcFromUser.add(:WELLSPRINGMASK,
-  proc { |item, user, target, move, mults, power, type|
-    mults[:final_damage_multiplier] *= 1.2 if user.isSpecies?(:OGERPON)
-  }
-)
+                                            proc { |item, user, target, move, mults, power, type|
+                                              mults[:final_damage_multiplier] *= 1.2 if user.isSpecies?(:OGERPON)
+                                            }
+                                           )
 
 Battle::ItemEffects::DamageCalcFromUser.copy(:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK)
-
 
 #===============================================================================
 # Meteorite

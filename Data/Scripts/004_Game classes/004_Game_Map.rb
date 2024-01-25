@@ -60,11 +60,11 @@ class Game_Map
     self.display_y           = 0
     @need_refresh            = false
     EventHandlers.trigger(:on_game_map_setup, map_id, @map, tileset)
-    @events                  = {}
+    @events = {}
     @map.events.each_key do |i|
       @events[i]             = Game_Event.new(@map_id, @map.events[i], self)
     end
-    @common_events           = {}
+    @common_events = {}
     (1...$data_common_events.size).each do |i|
       @common_events[i]      = Game_CommonEvent.new(i)
     end
@@ -111,9 +111,7 @@ class Game_Map
   # Returns the name of this map's BGM. If it's night time, returns the night
   # version of the BGM (if it exists).
   def bgm_name
-    if PBDayNight.isNight? && FileTest.audio_exist?("Audio/BGM/" + @map.bgm.name + "_n")
-      return @map.bgm.name + "_n"
-    end
+    return @map.bgm.name + "_n" if PBDayNight.isNight? && FileTest.audio_exist?("Audio/BGM/" + @map.bgm.name + "_n")
     return @map.bgm.name
   end
 
@@ -190,9 +188,7 @@ class Game_Map
           next if facing_tile_id == 0
           return false if facing_tile_id.nil?
           facing_terrain = GameData::TerrainTag.try_get(@terrain_tags[facing_tile_id])
-          if facing_terrain.id != :None && !facing_terrain.ignore_passability
-            return facing_terrain.can_surf_freely
-          end
+          return facing_terrain.can_surf_freely if facing_terrain.id != :None && !facing_terrain.ignore_passability
         end
         return false
       # Can't walk onto ice
@@ -234,9 +230,7 @@ class Game_Map
         # Prevent cycling in really tall grass/on ice
         return false if $PokemonGlobal.bicycle && (terrain.must_walk || terrain.must_walk_or_run)
         # Depend on passability of bridge tile if on bridge
-        if terrain.bridge && $PokemonGlobal.bridge > 0
-          return (passage & bit == 0 && passage & 0x0f != 0x0f)
-        end
+        return passage & bit == 0 && passage & 0x0f != 0x0f if terrain.bridge && $PokemonGlobal.bridge > 0
       end
       next if terrain&.ignore_passability
       # Regular passability checks
@@ -458,9 +452,7 @@ class Game_Map
       @scroll_distance_y = 0 if scroll_offset == @scroll_distance_y
     end
     # Only update events that are on-screen
-    if !$game_temp.in_menu
-      @events.each_value { |event| event.update }
-    end
+    @events.each_value { |event| event.update } if !$game_temp.in_menu
     # Update common events
     @common_events.each_value { |common_event| common_event.update }
     # Update fog
@@ -479,13 +471,11 @@ class Game_Map
         @fog_tone_timer_start = nil
       end
     end
-    if @fog_opacity_timer_start
-      @fog_opacity = lerp(@fog_opacity_initial, @fog_opacity_target, @fog_opacity_duration, @fog_opacity_timer_start, play_now)
-      if play_now - @fog_opacity_timer_start >= @fog_opacity_duration
-        @fog_opacity_initial = nil
-        @fog_opacity_timer_start = nil
-      end
-    end
+    return unless @fog_opacity_timer_start
+    @fog_opacity = lerp(@fog_opacity_initial, @fog_opacity_target, @fog_opacity_duration, @fog_opacity_timer_start, play_now)
+    return unless play_now - @fog_opacity_timer_start >= @fog_opacity_duration
+    @fog_opacity_initial = nil
+    @fog_opacity_timer_start = nil
   end
 end
 

@@ -68,11 +68,11 @@ class Battle::Scene::PokemonDataBox < Sprite
     end
     case sideSize
     when 2
-      @spriteX += [-12,  12,  0,  0][@battler.index]
+      @spriteX += [-12, 12, 0, 0][@battler.index]
       @spriteY += [-20, -34, 34, 20][@battler.index]
     when 3
-      @spriteX += [-12,  12, -6,  6,  0,  0][@battler.index]
-      @spriteY += [-42, -46,  4,  0, 50, 46][@battler.index]
+      @spriteX += [-12, 12, -6,  6,  0, 0][@battler.index]
+      @spriteY += [-42, -46,  4, 0, 50, 46][@battler.index]
     end
   end
 
@@ -83,7 +83,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @expBarBitmap  = AnimatedBitmap.new("Graphics/UI/Battle/overlay_exp")
     # Create sprite to draw HP numbers on
     @hpNumbers = BitmapSprite.new(124, 16, viewport)
-#    pbSetSmallFont(@hpNumbers.bitmap)
+    #    pbSetSmallFont(@hpNumbers.bitmap)
     @sprites["hpNumbers"] = @hpNumbers
     # Create sprite wrapper that displays HP bar
     @hpBar = Sprite.new(viewport)
@@ -183,7 +183,7 @@ class Battle::Scene::PokemonDataBox < Sprite
   end
 
   def animating_hp?
-    return @anim_hp_timer_start != nil
+    return !@anim_hp_timer_start.nil?
   end
 
   # NOTE: Filling the Exp bar from empty to full takes EXP_BAR_FILL_TIME seconds
@@ -200,7 +200,7 @@ class Battle::Scene::PokemonDataBox < Sprite
   end
 
   def animating_exp?
-    return @anim_exp_timer_start != nil
+    return !@anim_exp_timer_start.nil?
   end
 
   def pbDrawNumber(number, btmp, startX, startY, align = :left)
@@ -314,7 +314,7 @@ class Battle::Scene::PokemonDataBox < Sprite
       w = 1 if w < 1
       # NOTE: The line below snaps the bar's width to the nearest 2 pixels, to
       #       fit in with the rest of the graphics which are doubled in size.
-      w = ((w / 2.0).round) * 2
+      w = (w / 2.0).round * 2
     end
     @hpBar.src_rect.width = w
     hpColor = 0                                      # Green bar
@@ -328,7 +328,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     w = exp_fraction * @expBarBitmap.width
     # NOTE: The line below snaps the bar's width to the nearest 2 pixels, to
     #       fit in with the rest of the graphics which are doubled in size.
-    w = ((w / 2).round) * 2
+    w = (w / 2).round * 2
     @expBar.src_rect.width = w
   end
 
@@ -339,12 +339,11 @@ class Battle::Scene::PokemonDataBox < Sprite
     # Refresh the HP bar/numbers
     refresh_hp
     # End the HP bar filling animation
-    if @anim_hp_current == @anim_hp_end
-      @anim_hp_start = nil
-      @anim_hp_end = nil
-      @anim_hp_timer_start = nil
-      @anim_hp_current = nil
-    end
+    return unless @anim_hp_current == @anim_hp_end
+    @anim_hp_start = nil
+    @anim_hp_end = nil
+    @anim_hp_timer_start = nil
+    @anim_hp_current = nil
   end
 
   def update_exp_animation
@@ -390,13 +389,12 @@ class Battle::Scene::PokemonDataBox < Sprite
     self.x = @spriteX
     self.y = @spriteY
     # Data box bobbing while Pokémon is selected
-    if (@selected == 1 || @selected == 2) && BOBBING_DURATION   # Choosing commands/targeted
-      bob_delta = System.uptime % BOBBING_DURATION   # 0-BOBBING_DURATION
-      bob_frame = (4 * bob_delta / BOBBING_DURATION).floor
-      case bob_frame
-      when 1 then self.y = @spriteY - 2
-      when 3 then self.y = @spriteY + 2
-      end
+    return unless (@selected == 1 || @selected == 2) && BOBBING_DURATION   # Choosing commands/targeted
+    bob_delta = System.uptime % BOBBING_DURATION   # 0-BOBBING_DURATION
+    bob_frame = (4 * bob_delta / BOBBING_DURATION).floor
+    case bob_frame
+    when 1 then self.y = @spriteY - 2
+    when 3 then self.y = @spriteY + 2
     end
   end
 

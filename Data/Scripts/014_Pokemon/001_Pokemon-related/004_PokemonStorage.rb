@@ -122,7 +122,7 @@ class PokemonStorage
   end
 
   def party=(_value)
-    raise ArgumentError.new("Not supported")
+    raise ArgumentError, "Not supported"
   end
 
   def party_full?
@@ -157,14 +157,12 @@ class PokemonStorage
   end
 
   def [](x, y = nil)
-    if y.nil?
-      return (x == -1) ? self.party : @boxes[x]
-    else
-      @boxes.each do |i|
-        raise "Box is a Pokémon, not a box" if i.is_a?(Pokemon)
-      end
-      return (x == -1) ? self.party[y] : @boxes[x][y]
+    return (x == -1) ? self.party : @boxes[x] if y.nil?
+
+    @boxes.each do |i|
+      raise "Box is a Pokémon, not a box" if i.is_a?(Pokemon)
     end
+    return (x == -1) ? self.party[y] : @boxes[x][y]
   end
 
   def []=(x, y, value)
@@ -252,10 +250,9 @@ class PokemonStorage
   end
 
   def pbDelete(box, index)
-    if self[box, index]
-      self[box, index] = nil
-      self.party.compact! if box == -1
-    end
+    return unless self[box, index]
+    self[box, index] = nil
+    self.party.compact! if box == -1
   end
 
   def clear
@@ -274,9 +271,7 @@ class RegionalStorage
   end
 
   def getCurrentStorage
-    if !$game_map
-      raise _INTL("The player is not on a map, so the region could not be determined.")
-    end
+    raise _INTL("The player is not on a map, so the region could not be determined.") if !$game_map
     if @lastmap != $game_map.map_id
       @rgnmap = pbGetCurrentRegion   # may access file IO, so caching result
       @lastmap = $game_map.map_id

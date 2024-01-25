@@ -82,13 +82,13 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
         when 0   # Steps remaining
           if Settings::SAFARI_STEPS > 0
             params = ChooseNumberParams.new
-            params.setRange(0, 99999)
+            params.setRange(0, 99_999)
             params.setDefaultValue(safari.steps)
             safari.steps = pbMessageChooseNumber(_INTL("Set the steps remaining in this Safari game."), params)
           end
         when 1   # Safari Balls
           params = ChooseNumberParams.new
-          params.setRange(0, 99999)
+          params.setRange(0, 99_999)
           params.setDefaultValue(safari.ballcount)
           safari.ballcount = pbMessageChooseNumber(
             _INTL("Set the quantity of {1}.", GameData::Item.get(:SAFARIBALL).name_plural), params)
@@ -116,7 +116,7 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
         when 0   # Steps remaining
           if Settings::BUG_CONTEST_TIME > 0
             params = ChooseNumberParams.new
-            params.setRange(0, 99999)
+            params.setRange(0, 99_999)
             params.setDefaultValue(min)
             new_time = pbMessageChooseNumber(_INTL("Set the time remaining (in minutes) in this Bug-Catching Contest."), params)
             contest.timer_start += (new_time - min) * 60
@@ -128,7 +128,7 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
           end
         when 1   # Sport Balls
           params = ChooseNumberParams.new
-          params.setRange(0, 99999)
+          params.setRange(0, 99_999)
           params.setDefaultValue(contest.ballcount)
           contest.ballcount = pbMessageChooseNumber(
             _INTL("Set the quantity of {1}.", GameData::Item.get(:SPORTBALL).name_plural), params)
@@ -160,7 +160,7 @@ MenuHandlers.add(:debug_menu, :edit_field_effects, {
       case cmd
       when 0   # Repel steps
         params = ChooseNumberParams.new
-        params.setRange(0, 99999)
+        params.setRange(0, 99_999)
         params.setDefaultValue($PokemonGlobal.repel)
         $PokemonGlobal.repel = pbMessageChooseNumber(_INTL("Set the number of steps remaining."), params)
       when 1   # Strength used
@@ -172,9 +172,7 @@ MenuHandlers.add(:debug_menu, :edit_field_effects, {
           darkness.dispose if darkness && !darkness.disposed?
           $game_temp.darkness_sprite = DarknessSprite.new
           $scene.spriteset&.addUserSprite($game_temp.darkness_sprite)
-          if $PokemonGlobal.flashUsed
-            $game_temp.darkness_sprite.radius = $game_temp.darkness_sprite.radiusMax
-          end
+          $game_temp.darkness_sprite.radius = $game_temp.darkness_sprite.radiusMax if $PokemonGlobal.flashUsed
         else
           pbMessage(_INTL("You're not in a dark map!"))
         end
@@ -984,7 +982,7 @@ MenuHandlers.add(:debug_menu, :edit_phone_contacts, {
       case cmd
       when 0   # Time until next call
         params = ChooseNumberParams.new
-        params.setRange(0, 99999)
+        params.setRange(0, 99_999)
         params.setDefaultValue(min)
         params.setCancelValue(-1)
         new_time = pbMessageChooseNumber(_INTL("Set the time (in minutes) until the next phone call."), params)
@@ -1043,7 +1041,7 @@ MenuHandlers.add(:debug_menu, :edit_phone_contacts, {
               contact.time_to_ready = 0 if contact.can_rematch?
             when 2   # Time until ready to battle
               params = ChooseNumberParams.new
-              params.setRange(0, 99999)
+              params.setRange(0, 99_999)
               params.setDefaultValue(ready_min)
               params.setCancelValue(-1)
               new_time = pbMessageChooseNumber(_INTL("Set the time (in minutes) until this trainer is ready to battle."), params)

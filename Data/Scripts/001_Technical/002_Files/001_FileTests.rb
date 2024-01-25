@@ -100,9 +100,7 @@ def safeGlob(dir, wildcard)
   rescue Errno::ENOENT
     raise if afterChdir
   end
-  if block_given?
-    ret.each { |f| yield(f) }
-  end
+  ret.each { |f| yield(f) } if block_given?
   return (block_given?) ? nil : ret
 end
 
@@ -120,16 +118,16 @@ def pbResolveBitmap(x)
   return nil if !x
   noext = x.gsub(/\.(bmp|png|gif|jpg|jpeg)$/, "")
   filename = nil
-#  RTP.eachPathFor(x) { |path|
-#    filename = pbTryString(path) if !filename
-#    filename = pbTryString(path + ".gif") if !filename
-#  }
+  #  RTP.eachPathFor(x) { |path|
+  #    filename = pbTryString(path) if !filename
+  #    filename = pbTryString(path + ".gif") if !filename
+  #  }
   RTP.eachPathFor(noext) do |path|
     filename = pbTryString(path + ".png") if !filename
     filename = pbTryString(path + ".gif") if !filename
-#    filename = pbTryString(path + ".jpg") if !filename
-#    filename = pbTryString(path + ".jpeg") if !filename
-#    filename = pbTryString(path + ".bmp") if !filename
+    #    filename = pbTryString(path + ".jpg") if !filename
+    #    filename = pbTryString(path + ".jpeg") if !filename
+    #    filename = pbTryString(path + ".bmp") if !filename
   end
   return filename
 end
@@ -215,7 +213,7 @@ module RTP
   # Gets the absolute RGSS paths for the given file name
   def self.eachPathFor(filename)
     return if !filename
-    if filename[/^[A-Za-z]\:[\/\\]/] || filename[/^[\/\\]/]
+    if filename[/^[A-Za-z]:[\/\\]/] || filename[/^[\/\\]/]
       # filename is already absolute
       yield filename
     else
@@ -260,8 +258,8 @@ end
 #
 #===============================================================================
 module FileTest
-  IMAGE_EXTENSIONS = [".png", ".gif"]   # ".jpg", ".jpeg", ".bmp",
-  AUDIO_EXTENSIONS = [".wav", ".ogg", ".mp3", ".midi", ".mid", ".wma"]
+  IMAGE_EXTENSIONS = [".png", ".gif"].freeze   # ".jpg", ".jpeg", ".bmp",
+  AUDIO_EXTENSIONS = [".wav", ".ogg", ".mp3", ".midi", ".mid", ".wma"].freeze
 
   def self.audio_exist?(filename)
     return RTP.exists?(filename, AUDIO_EXTENSIONS)
@@ -292,22 +290,17 @@ end
 def pbRgssOpen(file, mode = nil)
   # File.open("debug.txt", "ab") { |fw| fw.write([file, mode, Time.now.to_f].inspect + "\r\n") }
   if !FileTest.exist?("./Game.rgssad")
-    if block_given?
-      File.open(file, mode) { |f| yield f }
-      return nil
-    else
-      return File.open(file, mode)
-    end
+    return File.open(file, mode) unless block_given?
+    File.open(file, mode) { |f| yield f }
+    return nil
+
   end
   file = canonicalize(file)
   Marshal.neverload = true
   str = load_data(file, true)
-  if block_given?
-    StringInput.open(str) { |f| yield f }
-    return nil
-  else
-    return StringInput.open(str)
-  end
+  return StringInput.open(str) unless block_given?
+  StringInput.open(str) { |f| yield f }
+  return nil
 end
 
 # Gets at least the first byte of a file. Doesn't check RTP, but does check
@@ -433,10 +426,10 @@ class StringInput
     @pos > @string.size
   end
 
-  def each(&block)
+  def each(...)
     raise IOError, "closed stream" if @closed
     begin
-      @string.each(&block)
+      @string.each(...)
     ensure
       @pos = 0
     end

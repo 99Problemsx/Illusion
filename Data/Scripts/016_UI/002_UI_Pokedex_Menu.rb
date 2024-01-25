@@ -16,19 +16,18 @@ class Window_DexesList < Window_CommandPokemon
 
   def drawItem(index, count, rect)
     super(index, count, rect)
-    if index >= 0 && index < @commands2.length
-      pbDrawShadowText(self.contents, rect.x + 254, rect.y + (self.contents.text_offset_y || 0),
-                       64, rect.height, @commands2[index][0].to_s, self.baseColor, self.shadowColor, 1)
-      pbDrawShadowText(self.contents, rect.x + 350, rect.y + (self.contents.text_offset_y || 0),
-                       64, rect.height, @commands2[index][1].to_s, self.baseColor, self.shadowColor, 1)
-      allseen = (@commands2[index][0] >= @commands2[index][2])
-      allown  = (@commands2[index][1] >= @commands2[index][2])
-      pbDrawImagePositions(
-        self.contents,
-        [["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 236, rect.y + 6, (allseen) ? 24 : 0, 0, 24, 24],
-         ["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 332, rect.y + 6, (allown) ? 24 : 0, 24, 24, 24]]
-      )
-    end
+    return unless index >= 0 && index < @commands2.length
+    pbDrawShadowText(self.contents, rect.x + 254, rect.y + (self.contents.text_offset_y || 0),
+                     64, rect.height, @commands2[index][0].to_s, self.baseColor, self.shadowColor, 1)
+    pbDrawShadowText(self.contents, rect.x + 350, rect.y + (self.contents.text_offset_y || 0),
+                     64, rect.height, @commands2[index][1].to_s, self.baseColor, self.shadowColor, 1)
+    allseen = (@commands2[index][0] >= @commands2[index][2])
+    allown  = (@commands2[index][1] >= @commands2[index][2])
+    pbDrawImagePositions(
+      self.contents,
+      [["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 236, rect.y + 6, (allseen) ? 24 : 0, 0, 24, 24],
+       ["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 332, rect.y + 6, (allown) ? 24 : 0, 24, 24, 24]]
+    )
   end
 end
 
@@ -46,7 +45,7 @@ class PokemonPokedexMenu_Scene
   def pbStartScene(commands, commands2)
     @commands = commands
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap(_INTL("Graphics/UI/Pokedex/bg_menu"))

@@ -3,9 +3,7 @@ class Battle::Battler
   # Ability trigger checks
   #=============================================================================
   def pbAbilitiesOnSwitchOut
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnSwitchOut(self.ability, self, false)
-    end
+    Battle::AbilityEffects.triggerOnSwitchOut(self.ability, self, false) if abilityActive?
     # Reset form
     @battle.peer.pbOnLeavingBattle(@battle, @pokemon, @battle.usedInBattle[idxOwnSide][@index / 2])
     # Check for end of Neutralizing Gas/Unnerve
@@ -32,8 +30,6 @@ class Battle::Battler
     @battle.pbPriority(true).each do |b|
       next if !b || !b.abilityActive?
       Battle::AbilityEffects.triggerChangeOnBattlerFainting(b.ability, b, self, @battle)
-    end
-    @battle.pbPriority(true).each do |b|
       next if !b || !b.abilityActive?
       Battle::AbilityEffects.triggerOnBattlerFainting(b.ability, b, self, @battle)
     end
@@ -76,26 +72,23 @@ class Battle::Battler
     # Check for end of primordial weather
     @battle.pbEndPrimordialWeather
     # Trace
-    if hasActiveAbility?(:TRACE)
-      # NOTE: In Gen 5 only, Trace only triggers upon the Trace bearer switching
-      #       in and not at any later times, even if a traceable ability turns
-      #       up later. Essentials ignores this, and allows Trace to trigger
-      #       whenever it can even in Gen 5 battle mechanics.
-      choices = @battle.allOtherSideBattlers(@index).select do |b|
-        next !b.ungainableAbility? &&
-             ![:POWEROFALCHEMY, :RECEIVER, :TRACE].include?(b.ability_id)
-      end
-      if choices.length > 0
-        choice = choices[@battle.pbRandom(choices.length)]
-        @battle.pbShowAbilitySplash(self)
-        self.ability = choice.ability
-        @battle.pbDisplay(_INTL("{1} traced {2}'s {3}!", pbThis, choice.pbThis(true), choice.abilityName))
-        @battle.pbHideAbilitySplash(self)
-        if !onSwitchIn && (unstoppableAbility? || abilityActive?)
-          Battle::AbilityEffects.triggerOnSwitchIn(self.ability, self, @battle)
-        end
-      end
+    return unless hasActiveAbility?(:TRACE)
+    # NOTE: In Gen 5 only, Trace only triggers upon the Trace bearer switching
+    #       in and not at any later times, even if a traceable ability turns
+    #       up later. Essentials ignores this, and allows Trace to trigger
+    #       whenever it can even in Gen 5 battle mechanics.
+    choices = @battle.allOtherSideBattlers(@index).select do |b|
+      next !b.ungainableAbility? &&
+        ![:POWEROFALCHEMY, :RECEIVER, :TRACE].include?(b.ability_id)
     end
+    return unless choices.length > 0
+    choice = choices[@battle.pbRandom(choices.length)]
+    @battle.pbShowAbilitySplash(self)
+    self.ability = choice.ability
+    @battle.pbDisplay(_INTL("{1} traced {2}'s {3}!", pbThis, choice.pbThis(true), choice.abilityName))
+    @battle.pbHideAbilitySplash(self)
+    return unless !onSwitchIn && (unstoppableAbility? || abilityActive?)
+    Battle::AbilityEffects.triggerOnSwitchIn(self.ability, self, @battle)
   end
 
   #=============================================================================
@@ -103,9 +96,8 @@ class Battle::Battler
   #=============================================================================
   # Cures status conditions, confusion and infatuation.
   def pbAbilityStatusCureCheck
-    if abilityActive?
-      Battle::AbilityEffects.triggerStatusCure(self.ability, self)
-    end
+    return unless abilityActive?
+    Battle::AbilityEffects.triggerStatusCure(self.ability, self)
   end
 
   #=============================================================================
@@ -302,12 +294,10 @@ class Battle::Battler
     pbItemEndOfMoveCheck(item_to_use, fling)
     # For Enigma Berry, Kee Berry and Maranga Berry, which have their effects
     # when forcibly consumed by Pluck/Fling.
-    if item_to_use
-      itm = item_to_use || self.item
-      if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(itm, self, @battle, true)
-        pbHeldItemTriggered(itm, false, fling)
-      end
-    end
+    return unless item_to_use
+    itm = item_to_use || self.item
+    return unless Battle::ItemEffects.triggerOnBeingHitPositiveBerry(itm, self, @battle, true)
+    pbHeldItemTriggered(itm, false, fling)
   end
 
   # item_to_use is an item ID for Bug Bite/Pluck and Fling, and nil otherwise.
@@ -330,9 +320,8 @@ class Battle::Battler
     return if fainted?
     return if !item_to_use && !itemActive?
     itm = item_to_use || self.item
-    if Battle::ItemEffects.triggerStatusCure(itm, self, @battle, !item_to_use.nil?)
-      pbHeldItemTriggered(itm, item_to_use.nil?, fling)
-    end
+    return unless Battle::ItemEffects.triggerStatusCure(itm, self, @battle, !item_to_use.nil?)
+    pbHeldItemTriggered(itm, item_to_use.nil?, fling)
   end
 
   # Called at the end of using a move.
@@ -358,26 +347,23 @@ class Battle::Battler
     return if fainted?
     return if !item_to_use && !itemActive?
     itm = item_to_use || self.item
-    if Battle::ItemEffects.triggerOnEndOfUsingMoveStatRestore(itm, self, @battle, !item_to_use.nil?)
-      pbHeldItemTriggered(itm, item_to_use.nil?, fling)
-    end
+    return unless Battle::ItemEffects.triggerOnEndOfUsingMoveStatRestore(itm, self, @battle, !item_to_use.nil?)
+    pbHeldItemTriggered(itm, item_to_use.nil?, fling)
   end
 
   # Called when the battle terrain changes and when a Pokémon loses HP.
   def pbItemTerrainStatBoostCheck
     return if !itemActive?
-    if Battle::ItemEffects.triggerTerrainStatBoost(self.item, self, @battle)
-      pbHeldItemTriggered(self.item)
-    end
+    return unless Battle::ItemEffects.triggerTerrainStatBoost(self.item, self, @battle)
+    pbHeldItemTriggered(self.item)
   end
 
   # Used for Adrenaline Orb. Called when Intimidate is triggered (even if
   # Intimidate has no effect on the Pokémon).
   def pbItemOnIntimidatedCheck
     return if !itemActive?
-    if Battle::ItemEffects.triggerOnIntimidated(self.item, self, @battle)
-      pbHeldItemTriggered(self.item)
-    end
+    return unless Battle::ItemEffects.triggerOnIntimidated(self.item, self, @battle)
+    pbHeldItemTriggered(self.item)
   end
 
   # Used for Eject Pack. Returns whether self has switched out.

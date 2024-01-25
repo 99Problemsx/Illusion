@@ -249,7 +249,7 @@ module RPG
       if @weatherTypes[weather_type][0].category == :Rain && index.odd?   # Splash
         sprite.x = @ox + @ox_offset - sprite.bitmap.width + rand(Graphics.width + (sprite.bitmap.width * 2))
         sprite.y = @oy + @oy_offset - sprite.bitmap.height + rand(Graphics.height + (sprite.bitmap.height * 2))
-        lifetimes[index] = (rand(30...50)) * 0.01   # 0.3-0.5 seconds
+        lifetimes[index] = rand(30...50) * 0.01   # 0.3-0.5 seconds
       else
         x_speed = @weatherTypes[weather_type][0].particle_delta_x
         y_speed = @weatherTypes[weather_type][0].particle_delta_y
@@ -314,9 +314,7 @@ module RPG
     def recalculate_tile_positions
       delta_t = Graphics.delta
       weather_type = @type
-      if @fading && @fade_time >= [FADE_OLD_TONE_END - @time_shift, 0].max
-        weather_type = @target_type
-      end
+      weather_type = @target_type if @fading && @fade_time >= [FADE_OLD_TONE_END - @time_shift, 0].max
       @tile_x += @weatherTypes[weather_type][0].tile_delta_x * delta_t
       @tile_y += @weatherTypes[weather_type][0].tile_delta_y * delta_t
       while @tile_x < @ox + @ox_offset - @weatherTypes[weather_type][2][0].width
@@ -485,9 +483,7 @@ module RPG
       if @type == :Storm && !@fading
         if @time_until_flash > 0
           @time_until_flash -= Graphics.delta
-          if @time_until_flash <= 0
-            @viewport.flash(Color.new(255, 255, 255, 230), rand(2..4) * 20)
-          end
+          @viewport.flash(Color.new(255, 255, 255, 230), rand(2..4) * 20) if @time_until_flash <= 0
         end
         if @time_until_flash <= 0
           @time_until_flash = rand(1..12) * 0.5   # 0.5-6 seconds

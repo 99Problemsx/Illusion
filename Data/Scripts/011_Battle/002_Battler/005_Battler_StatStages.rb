@@ -26,9 +26,7 @@ class Battle::Battler
   def pbRaiseStatStageBasic(stat, increment, ignoreContrary = false)
     if !@battle.moldBreaker
       # Contrary
-      if hasActiveAbility?(:CONTRARY) && !ignoreContrary
-        return pbLowerStatStageBasic(stat, increment, true)
-      end
+      return pbLowerStatStageBasic(stat, increment, true) if hasActiveAbility?(:CONTRARY) && !ignoreContrary
       # Simple
       increment *= 2 if hasActiveAbility?(:SIMPLE)
     end
@@ -61,9 +59,7 @@ class Battle::Battler
     ]
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat gain
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnStatGain(self.ability, self, stat, user)
-    end
+    Battle::AbilityEffects.triggerOnStatGain(self.ability, self, stat, user) if abilityActive?
     return true
   end
 
@@ -92,9 +88,7 @@ class Battle::Battler
     end
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat gain
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnStatGain(self.ability, self, stat, user)
-    end
+    Battle::AbilityEffects.triggerOnStatGain(self.ability, self, stat, user) if abilityActive?
     return true
   end
 
@@ -176,9 +170,7 @@ class Battle::Battler
   def pbLowerStatStageBasic(stat, increment, ignoreContrary = false)
     if !@battle.moldBreaker
       # Contrary
-      if hasActiveAbility?(:CONTRARY) && !ignoreContrary
-        return pbRaiseStatStageBasic(stat, increment, true)
-      end
+      return pbRaiseStatStageBasic(stat, increment, true) if hasActiveAbility?(:CONTRARY) && !ignoreContrary
       # Simple
       increment *= 2 if hasActiveAbility?(:SIMPLE)
     end
@@ -199,17 +191,13 @@ class Battle::Battler
                        mirrorArmorSplash = 0, ignoreMirrorArmor = false)
     if !@battle.moldBreaker
       # Contrary
-      if hasActiveAbility?(:CONTRARY) && !ignoreContrary
-        return pbRaiseStatStage(stat, increment, user, showAnim, true)
-      end
+      return pbRaiseStatStage(stat, increment, user, showAnim, true) if hasActiveAbility?(:CONTRARY) && !ignoreContrary
       # Mirror Armor
       if hasActiveAbility?(:MIRRORARMOR) && !ignoreMirrorArmor &&
          user && user.index != @index && !statStageAtMin?(stat)
         if mirrorArmorSplash < 2
           @battle.pbShowAbilitySplash(self)
-          if !Battle::Scene::USE_ABILITY_SPLASH
-            @battle.pbDisplay(_INTL("{1}'s {2} activated!", pbThis, abilityName))
-          end
+          @battle.pbDisplay(_INTL("{1}'s {2} activated!", pbThis, abilityName)) if !Battle::Scene::USE_ABILITY_SPLASH
         end
         ret = false
         if user.pbCanLowerStatStage?(stat, self, nil, true, ignoreContrary, true)
@@ -231,9 +219,7 @@ class Battle::Battler
     ]
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat loss
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnStatLoss(self.ability, self, stat, user)
-    end
+    Battle::AbilityEffects.triggerOnStatLoss(self.ability, self, stat, user) if abilityActive?
     return true
   end
 
@@ -248,9 +234,7 @@ class Battle::Battler
       if hasActiveAbility?(:MIRRORARMOR) && !ignoreMirrorArmor &&
          user && user.index != @index && !statStageAtMin?(stat)
         @battle.pbShowAbilitySplash(self)
-        if !Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("{1}'s {2} activated!", pbThis, abilityName))
-        end
+        @battle.pbDisplay(_INTL("{1}'s {2} activated!", pbThis, abilityName)) if !Battle::Scene::USE_ABILITY_SPLASH
         ret = false
         if user.pbCanLowerStatStage?(stat, self, nil, true, ignoreContrary, true)
           ret = user.pbLowerStatStageByCause(stat, increment, self, abilityName, showAnim, ignoreContrary, true)
@@ -279,9 +263,7 @@ class Battle::Battler
     end
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat loss
-    if abilityActive?
-      Battle::AbilityEffects.triggerOnStatLoss(self.ability, self, stat, user)
-    end
+    Battle::AbilityEffects.triggerOnStatLoss(self.ability, self, stat, user) if abilityActive?
     return true
   end
 
@@ -323,9 +305,7 @@ class Battle::Battler
       @battle.pbHideAbilitySplash(self)
       return false
     end
-    if Battle::Scene::USE_ABILITY_SPLASH
-      return pbLowerStatStageByAbility(:ATTACK, 1, user, false)
-    end
+    return pbLowerStatStageByAbility(:ATTACK, 1, user, false) if Battle::Scene::USE_ABILITY_SPLASH
     # NOTE: These checks exist to ensure appropriate messages are shown if
     #       Intimidate is blocked somehow (i.e. the messages should mention the
     #       Intimidate ability by name).
@@ -344,11 +324,10 @@ class Battle::Battler
       end
       allAllies.each do |b|
         next if !b.abilityActive?
-        if Battle::AbilityEffects.triggerStatLossImmunityFromAlly(b.ability, b, self, :ATTACK, @battle, false)
-          @battle.pbDisplay(_INTL("{1} is protected from {2}'s {3} by {4}'s {5}!",
-                                  pbThis, user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
-          return false
-        end
+        next unless Battle::AbilityEffects.triggerStatLossImmunityFromAlly(b.ability, b, self, :ATTACK, @battle, false)
+        @battle.pbDisplay(_INTL("{1} is protected from {2}'s {3} by {4}'s {5}!",
+                                pbThis, user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
+        return false
       end
     end
     return false if !pbCanLowerStatStage?(:ATTACK, user)

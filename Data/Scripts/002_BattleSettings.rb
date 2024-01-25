@@ -101,7 +101,7 @@ module Settings
 
   # Whether the Exp gained from beating a Pokémon should be scaled depending on
   # the gainer's level.
-  SCALED_EXP_FORMULA            = (MECHANICS_GENERATION == 5 || MECHANICS_GENERATION >= 7)
+  SCALED_EXP_FORMULA            = MECHANICS_GENERATION == 5 || MECHANICS_GENERATION >= 7
   # Whether the Exp gained from beating a Pokémon should be divided equally
   # between each participant (true), or whether each participant should gain
   # that much Exp (false). This also applies to Exp gained via the Exp Share

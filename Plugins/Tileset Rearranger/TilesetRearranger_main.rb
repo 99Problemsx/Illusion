@@ -16,7 +16,7 @@ class TilesetRearranger
   TILESET_START_ID     = TILES_PER_ROW * TILES_PER_AUTOTILE
   MAX_TILESET_ROWS     = Bitmap.max_size / TILE_SIZE   # Number of tiles vertically
   # Size and positioning of screen/elements
-  SCREEN_WIDTH         = TILESET_WIDTH * 2 + 128
+  SCREEN_WIDTH         = (TILESET_WIDTH * 2) + 128
   SCREEN_HEIGHT        = Settings::SCREEN_HEIGHT * 2
   SCROLL_BAR_WIDTH     = 16
   TILESET_OFFSET_X     = SCROLL_BAR_WIDTH + 32   # To allow cursor to fit on the left for row insertion
@@ -45,17 +45,17 @@ class TilesetRearranger
     clear_history
     initialize_tileset_allocation_info
     @viewport = Viewport.new(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize("",
-       TILESET_OFFSET_X + TILESET_WIDTH, 0, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 128, @viewport)
+                                                                  TILESET_OFFSET_X + TILESET_WIDTH, 0, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 128, @viewport)
     @sprites["help_text"] = Window_UnformattedTextPokemon.newWithSize(_INTL("Choose tileset to load"),
-       TILESET_OFFSET_X + TILESET_WIDTH, SCREEN_HEIGHT - 64, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 64, @viewport)
+                                                                      TILESET_OFFSET_X + TILESET_WIDTH, SCREEN_HEIGHT - 64, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 64, @viewport)
     @sprites["scroll_bar"] = BitmapSprite.new(SCROLL_BAR_WIDTH, SCREEN_HEIGHT, @viewport)
     @sprites["tileset"] = BitmapSprite.new(TILESET_WIDTH, NUM_ROWS_VISIBLE * TILE_SIZE, @viewport)
     @sprites["tileset"].x = TILESET_OFFSET_X
     @sprites["tileset"].y = TILESET_OFFSET_Y
-    @sprites["selection"] = BitmapSprite.new(TILESET_WIDTH + 2, MAX_SELECTION_HEIGHT * TILE_SIZE + 2, @viewport)
+    @sprites["selection"] = BitmapSprite.new(TILESET_WIDTH + 2, (MAX_SELECTION_HEIGHT * TILE_SIZE) + 2, @viewport)
     @sprites["selection"].x = SCREEN_WIDTH + SCROLL_BAR_WIDTH - TILESET_OFFSET_X - @sprites["selection"].bitmap.width + 1
     @sprites["selection"].y = (SCREEN_HEIGHT - @sprites["selection"].bitmap.height) / 2
     pbSetSystemFont(@sprites["selection"].bitmap)
@@ -73,7 +73,7 @@ class TilesetRearranger
     @tilesets_usage = []
     @map_names = []
     map_infos = pbLoadMapInfos
-    for id in map_infos.keys
+    map_infos.each_key do |id|
       next if !map_infos[id]
       map = load_data(sprintf("Data/Map%03d.rxdata", id))
       @tilesets_usage[map.tileset_id] = [] if !@tilesets_usage[map.tileset_id]
@@ -108,7 +108,7 @@ class TilesetRearranger
     star.each_with_index do |val, i|
       next if val == 0
       color = Color.new(255 * (val - 1), 255 * (val - 1), 255 * (val - 1))
-      @star_bitmap.fill_rect(x_offset + i % star_width, y_offset + i / star_width, 1, 1, color)
+      @star_bitmap.fill_rect(x_offset + (i % star_width), y_offset + (i / star_width), 1, 1, color)
     end
     # Likely blank bitmap
     @likely_blank_bitmap = BitmapWrapper.new(TILE_SIZE, TILE_SIZE)
@@ -125,7 +125,7 @@ class TilesetRearranger
     @blank_tile_bitmap.fill_rect(0,             0,             1, TILE_SIZE, BLANK_TILE_X_COLOR)
     @blank_tile_bitmap.fill_rect(0,             TILE_SIZE - 1, TILE_SIZE, 1, BLANK_TILE_X_COLOR)
     @blank_tile_bitmap.fill_rect(TILE_SIZE - 1, 0,             1, TILE_SIZE, BLANK_TILE_X_COLOR)
-    for i in 0...TILE_SIZE
+    (0...TILE_SIZE).each do |i|
       @blank_tile_bitmap.fill_rect(i, i,                 1, 1, BLANK_TILE_X_COLOR)
       @blank_tile_bitmap.fill_rect(i, TILE_SIZE - i - 1, 1, 1, BLANK_TILE_X_COLOR)
     end

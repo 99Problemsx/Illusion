@@ -168,7 +168,7 @@ class TriadScene
     @battle = battle
     # Allocate viewport
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     addBackgroundPlane(@sprites, "background", "Triple Triad/bg", @viewport)
     @sprites["helpwindow"] = Window_AdvancedTextPokemon.newWithSize(
       "", 0, Graphics.height - 64, Graphics.width, 64, @viewport
@@ -237,14 +237,10 @@ class TriadScene
       Graphics.update
       Input.update
       pbUpdate
-      if Input.trigger?(Input::USE)
-        if @sprites["helpwindow"].busy?
-          pbPlayDecisionSE if @sprites["helpwindow"].pausing?
-          @sprites["helpwindow"].resume
-        else
-          break
-        end
-      end
+      next unless Input.trigger?(Input::USE)
+      break unless @sprites["helpwindow"].busy?
+      pbPlayDecisionSE if @sprites["helpwindow"].pausing?
+      @sprites["helpwindow"].resume
     end
     @sprites["helpwindow"].letterbyletter = false
     @sprites["helpwindow"].text           = ""
@@ -322,21 +318,20 @@ class TriadScene
           index = -1
         end
       end
-      if Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
-        @battle.maxCards.times do |i|
-          @sprites["player#{i}"].visible = (i < chosenCards.length)
-        end
-        if chosenCards.length == @battle.maxCards
-          @sprites["helpwindow"].text = _INTL("{1} cards have been chosen.", @battle.maxCards)
-          command.visible = false
-          command.active  = false
-          preview.visible = false
-        else
-          @sprites["helpwindow"].text = _INTL("Choose {1} cards to use for this duel.", @battle.maxCards)
-          command.visible = true
-          command.active  = true
-          preview.visible = true
-        end
+      next unless Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
+      @battle.maxCards.times do |i|
+        @sprites["player#{i}"].visible = (i < chosenCards.length)
+      end
+      if chosenCards.length == @battle.maxCards
+        @sprites["helpwindow"].text = _INTL("{1} cards have been chosen.", @battle.maxCards)
+        command.visible = false
+        command.active  = false
+        preview.visible = false
+      else
+        @sprites["helpwindow"].text = _INTL("Choose {1} cards to use for this duel.", @battle.maxCards)
+        command.visible = true
+        command.active  = true
+        preview.visible = true
       end
     end
     command.dispose
@@ -659,36 +654,34 @@ class TriadScreen
       defenderY = panels[(i * 2) + 1]
       defender  = @board[(defenderY * @width) + defenderX]
       next if !defender.card
-      if attacker.owner != defender.owner
-        attack  = attacker.attack(i)
-        defense = defender.defense(i)
-        if @elements
-          # If attacker's type matches the tile's element, add
-          # a bonus of 1 (only for original attacker, not combos)
-          attack += 1 if !recurse && attacker.type == attacker.card.type
-        else
-          # Modifier depends on opponent's Pokémon type:
-          # +1 - Super effective
-          # -1 - Not very effective
-          # -2 - Immune
-#         attack += attacker.bonus(defender)
+      next unless attacker.owner != defender.owner
+      attack  = attacker.attack(i)
+      defense = defender.defense(i)
+      if @elements
+        # If attacker's type matches the tile's element, add
+        # a bonus of 1 (only for original attacker, not combos)
+        attack += 1 if !recurse && attacker.type == attacker.card.type
+      else
+        # Modifier depends on opponent's Pokémon type:
+        # +1 - Super effective
+        # -1 - Not very effective
+        # -2 - Immune
+        #         attack += attacker.bonus(defender)
+      end
+      next unless attack > defense || (attack == defense && @sameWins)
+      flips.push([defenderX, defenderY])
+      if attackerParam.nil?
+        defender.owner = attacker.owner
+        if @sameWins
+          # Combo with the "sameWins" rule
+          ret = flipBoard(defenderX, defenderY, nil, true)
+          flips.concat(ret) if ret
         end
-        if attack > defense || (attack == defense && @sameWins)
-          flips.push([defenderX, defenderY])
-          if attackerParam.nil?
-            defender.owner = attacker.owner
-            if @sameWins
-              # Combo with the "sameWins" rule
-              ret = flipBoard(defenderX, defenderY, nil, true)
-              flips.concat(ret) if ret
-            end
-          else
-            if @sameWins
-              # Combo with the "sameWins" rule
-              ret = flipBoard(defenderX, defenderY, attackerParam, true)
-              flips.concat(ret) if ret
-            end
-          end
+      else
+        if @sameWins
+          # Combo with the "sameWins" rule
+          ret = flipBoard(defenderX, defenderY, attackerParam, true)
+          flips.concat(ret) if ret
         end
       end
     end
@@ -1064,14 +1057,14 @@ def pbBuyTriads
   # Scroll right before showing screen
   pbScrollMap(4, 3, 5)
   cmdwindow = Window_CommandPokemonEx.newWithSize(realcommands, 0, 0, Graphics.width / 2, Graphics.height)
-  cmdwindow.z = 99999
+  cmdwindow.z = 99_999
   goldwindow = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Money:\n{1}", pbGetGoldString), 0, 0, 32, 32
   )
   goldwindow.resizeToFit(goldwindow.text, Graphics.width)
   goldwindow.x = Graphics.width - goldwindow.width
   goldwindow.y = 0
-  goldwindow.z = 99999
+  goldwindow.z = 99_999
   preview = Sprite.new
   preview.x = (Graphics.width * 3 / 4) - 40
   preview.y = (Graphics.height / 2) - 48
@@ -1113,7 +1106,9 @@ def pbBuyTriads
       )
       next if quantity <= 0
       price *= quantity
-      next if !pbConfirmMessage(_INTL("{1}, and you want {2}. That will be ${3}. OK?", itemname, quantity, price.to_s_formatted))
+      if !pbConfirmMessage(_INTL("{1}, and you want {2}. That will be ${3}. OK?", itemname, quantity, price.to_s_formatted))
+        next
+      end
       if $player.money < price
         pbMessage(_INTL("You don't have enough money."))
         next
@@ -1154,14 +1149,14 @@ def pbSellTriads
   # Scroll right before showing screen
   pbScrollMap(4, 3, 5)
   cmdwindow = Window_CommandPokemonEx.newWithSize(commands, 0, 0, Graphics.width / 2, Graphics.height)
-  cmdwindow.z = 99999
+  cmdwindow.z = 99_999
   goldwindow = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Money:\n{1}", pbGetGoldString), 0, 0, 32, 32
   )
   goldwindow.resizeToFit(goldwindow.text, Graphics.width)
   goldwindow.x = Graphics.width - goldwindow.width
   goldwindow.y = 0
-  goldwindow.z = 99999
+  goldwindow.z = 99_999
   preview = Sprite.new
   preview.x = (Graphics.width * 3 / 4) - 40
   preview.y = (Graphics.height / 2) - 48
@@ -1188,50 +1183,47 @@ def pbSellTriads
         done = true
         break
       end
-      if Input.trigger?(Input::USE)
-        if cmdwindow.index >= $PokemonGlobal.triads.length
-          done = true
-          break
-        end
-        item = $PokemonGlobal.triads.get_item(cmdwindow.index)
-        itemname = GameData::Species.get(item).name
-        quantity = $PokemonGlobal.triads.quantity(item)
-        price = TriadCard.new(item).price
-        if price == 0
-          pbDisplayPaused(_INTL("The {1} card? Oh, no. I can't buy that.", itemname))
-          break
-        end
-        cmdwindow.active = false
-        cmdwindow.update
-        if quantity > 1
-          params = ChooseNumberParams.new
-          params.setRange(1, quantity)
-          params.setInitialValue(1)
-          params.setCancelValue(0)
-          quantity = pbMessageChooseNumber(
-            _INTL("The {1} card? How many would you like to sell?", itemname), params
-          )
-        end
-        if quantity > 0
-          price /= 4
-          price *= quantity
-          if pbConfirmMessage(_INTL("I can pay ${1}. Would that be OK?", price.to_s_formatted))
-            $player.money += price
-            goldwindow.text = _INTL("Money:\n{1}", pbGetGoldString)
-            $PokemonGlobal.triads.remove(item, quantity)
-            pbMessage(_INTL("Turned over the {1} card and received ${2}.", itemname, price.to_s_formatted) + "\\se[Mart buy item]")
-            commands = []
-            $PokemonGlobal.triads.length.times do |i|
-              item = $PokemonGlobal.triads[i]
-              speciesname = GameData::Species.get(item[0]).name
-              commands.push(_INTL("{1} x{2}", speciesname, item[1]))
-            end
-            commands.push(_INTL("CANCEL"))
-            cmdwindow.commands = commands
-            break
-          end
-        end
+      next unless Input.trigger?(Input::USE)
+      if cmdwindow.index >= $PokemonGlobal.triads.length
+        done = true
+        break
       end
+      item = $PokemonGlobal.triads.get_item(cmdwindow.index)
+      itemname = GameData::Species.get(item).name
+      quantity = $PokemonGlobal.triads.quantity(item)
+      price = TriadCard.new(item).price
+      if price == 0
+        pbDisplayPaused(_INTL("The {1} card? Oh, no. I can't buy that.", itemname))
+        break
+      end
+      cmdwindow.active = false
+      cmdwindow.update
+      if quantity > 1
+        params = ChooseNumberParams.new
+        params.setRange(1, quantity)
+        params.setInitialValue(1)
+        params.setCancelValue(0)
+        quantity = pbMessageChooseNumber(
+          _INTL("The {1} card? How many would you like to sell?", itemname), params
+        )
+      end
+      next unless quantity > 0
+      price /= 4
+      price *= quantity
+      next unless pbConfirmMessage(_INTL("I can pay ${1}. Would that be OK?", price.to_s_formatted))
+      $player.money += price
+      goldwindow.text = _INTL("Money:\n{1}", pbGetGoldString)
+      $PokemonGlobal.triads.remove(item, quantity)
+      pbMessage(_INTL("Turned over the {1} card and received ${2}.", itemname, price.to_s_formatted) + "\\se[Mart buy item]")
+      commands = []
+      $PokemonGlobal.triads.length.times do |i|
+        item = $PokemonGlobal.triads[i]
+        speciesname = GameData::Species.get(item[0]).name
+        commands.push(_INTL("{1} x{2}", speciesname, item[1]))
+      end
+      commands.push(_INTL("CANCEL"))
+      cmdwindow.commands = commands
+      break
     end
   end
   cmdwindow.dispose
@@ -1258,11 +1250,11 @@ def pbTriadList
     return
   end
   cmdwindow = Window_CommandPokemonEx.newWithSize(commands, 0, 0, Graphics.width / 2, Graphics.height)
-  cmdwindow.z = 99999
+  cmdwindow.z = 99_999
   sprite = Sprite.new
   sprite.x = (Graphics.width / 2) + 40
   sprite.y = 48
-  sprite.z = 99999
+  sprite.z = 99_999
   done = false
   lastIndex = -1
   until done
@@ -1277,11 +1269,10 @@ def pbTriadList
         end
         lastIndex = cmdwindow.index
       end
-      if Input.trigger?(Input::BACK) ||
-         (Input.trigger?(Input::USE) && cmdwindow.index >= $PokemonGlobal.triads.length)
-        done = true
-        break
-      end
+      next unless Input.trigger?(Input::BACK) ||
+                  (Input.trigger?(Input::USE) && cmdwindow.index >= $PokemonGlobal.triads.length)
+      done = true
+      break
     end
   end
   cmdwindow.dispose

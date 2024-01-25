@@ -86,12 +86,8 @@ SaveData.register_conversion(:v20_fix_planted_berry_numerical_ids) do
     global.eventvars.each_value do |var|
       next if !var || !var.is_a?(Array)
       next if var.length < 6 || var.length > 8   # Neither old nor new berry plant
-      if !var[1].is_a?(Symbol)   # Planted berry item
-        var[1] = berry_conversion[var[1]] || :ORANBERRY
-      end
-      if var[7] && !var[7].is_a?(Symbol)   # Mulch
-        var[7] = mulch_conversion[var[7]]
-      end
+      var[1] = berry_conversion[var[1]] || :ORANBERRY if !var[1].is_a?(Symbol) # Planted berry item
+      var[7] = mulch_conversion[var[7]] if var[7] && !var[7].is_a?(Symbol) # Mulch
     end
   end
 end

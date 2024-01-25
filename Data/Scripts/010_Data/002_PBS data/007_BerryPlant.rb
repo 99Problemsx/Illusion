@@ -6,21 +6,21 @@ module GameData
     attr_reader :yield
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "berry_plants.dat"
-    PBS_BASE_FILENAME = "berry_plants"
+    DATA = {}.freeze
+    DATA_FILENAME = "berry_plants.dat".freeze
+    PBS_BASE_FILENAME = "berry_plants".freeze
 
     SCHEMA = {
       "SectionName"   => [:id,              "m"],
       "HoursPerStage" => [:hours_per_stage, "v"],
       "DryingPerHour" => [:drying_per_hour, "u"],
       "Yield"         => [:yield,           "uv"]
-    }
+    }.freeze
 
     NUMBER_OF_REPLANTS           = 9
     NUMBER_OF_GROWTH_STAGES      = 4
     NUMBER_OF_FULLY_GROWN_STAGES = 4
-    WATERING_CANS                = [:SPRAYDUCK, :SQUIRTBOTTLE, :WAILMERPAIL, :SPRINKLOTAD]
+    WATERING_CANS                = [:SPRAYDUCK, :SQUIRTBOTTLE, :WAILMERPAIL, :SPRINKLOTAD].freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

@@ -46,8 +46,16 @@ class Game_Follower < Game_Event
   end
 
   def move_fancy(direction)
-    delta_x = (direction == 6) ? 1 : (direction == 4) ? -1 : 0
-    delta_y = (direction == 2) ? 1 : (direction == 8) ? -1 : 0
+    delta_x = if direction == 6
+                1
+              else
+                (direction == 4) ? -1 : 0
+end
+    delta_y = if direction == 2
+                1
+              else
+                (direction == 8) ? -1 : 0
+end
     new_x = self.x + delta_x
     new_y = self.y + delta_y
     # Move if new position is the player's, or the new position is passable,
@@ -60,8 +68,16 @@ class Game_Follower < Game_Event
   end
 
   def jump_fancy(direction, leader)
-    delta_x = (direction == 6) ? 2 : (direction == 4) ? -2 : 0
-    delta_y = (direction == 2) ? 2 : (direction == 8) ? -2 : 0
+    delta_x = if direction == 6
+                2
+              else
+                (direction == 4) ? -2 : 0
+end
+    delta_y = if direction == 2
+                2
+              else
+                (direction == 8) ? -2 : 0
+end
     half_delta_x = delta_x / 2
     half_delta_y = delta_y / 2
     if location_passable?(self.x + half_delta_x, self.y + half_delta_y, 10 - direction)

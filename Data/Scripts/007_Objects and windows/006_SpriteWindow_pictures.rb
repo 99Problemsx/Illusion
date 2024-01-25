@@ -19,10 +19,9 @@ class IconWindow < SpriteWindow_Base
 
   def update
     super
-    if @_iconbitmap
-      @_iconbitmap.update
-      self.contents = @_iconbitmap.bitmap
-    end
+    return unless @_iconbitmap
+    @_iconbitmap.update
+    self.contents = @_iconbitmap.bitmap
   end
 
   def clearBitmaps
@@ -71,13 +70,12 @@ class PictureWindow < SpriteWindow_Base
 
   def update
     super
-    if @_iconbitmap
-      if @_iconbitmap.is_a?(Bitmap)
-        self.contents = @_iconbitmap
-      else
-        @_iconbitmap.update
-        self.contents = @_iconbitmap.bitmap
-      end
+    return unless @_iconbitmap
+    if @_iconbitmap.is_a?(Bitmap)
+      self.contents = @_iconbitmap
+    else
+      @_iconbitmap.update
+      self.contents = @_iconbitmap.bitmap
     end
   end
 

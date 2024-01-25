@@ -39,17 +39,13 @@ class PokemonBag
 
   # Gets the index of the current selected item in the pocket
   def last_viewed_index(pocket)
-    if pocket <= 0 || pocket > PokemonBag.pocket_count
-      raise ArgumentError.new(_INTL("Invalid pocket: {1}", pocket.inspect))
-    end
+    raise ArgumentError, _INTL("Invalid pocket: {1}", pocket.inspect) if pocket <= 0 || pocket > PokemonBag.pocket_count
     return [@last_pocket_selections[pocket], @pockets[pocket].length].min || 0
   end
 
   # Sets the index of the current selected item in the pocket
   def set_last_viewed_index(pocket, value)
-    if pocket <= 0 || pocket > PokemonBag.pocket_count
-      raise ArgumentError.new(_INTL("Invalid pocket: {1}", pocket.inspect))
-    end
+    raise ArgumentError, _INTL("Invalid pocket: {1}", pocket.inspect) if pocket <= 0 || pocket > PokemonBag.pocket_count
     @last_pocket_selections[pocket] = value if value <= @pockets[pocket].length
   end
 

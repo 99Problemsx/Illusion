@@ -123,7 +123,7 @@ def pbSpindaSpots(pkmn, bitmap)
   d = (id >> 12) & 15
   c = (id >> 8) & 15
   b = (id >> 4) & 15
-  a = (id) & 15
+  a = id & 15
   # NOTE: The coordinates below (b + 33, a + 25 and so on) are doubled when
   #       drawing the spot.
   if pkmn.shiny?
@@ -176,7 +176,7 @@ MultipleForms.register(:KYOGRE, {
 })
 
 MultipleForms.register(:BURMY, {
-  "getFormOnCreation" => proc { |pkmn|
+  "getFormOnCreation"      => proc { |pkmn|
     case pbGetEnvironment
     when :Rock, :Sand, :Cave
       next 1   # Sandy Cloak
@@ -240,7 +240,9 @@ MultipleForms.register(:ROTOM, {
     if new_move_id.nil? && old_move_index >= 0 && pkmn.numMoves == 1
       new_move_id = :THUNDERSHOCK
       new_move_id = nil if !GameData::Move.exists?(new_move_id)
-      raise _INTL("Rotom is trying to forget its last move, but there isn't another move to replace it with.") if new_move_id.nil?
+      if new_move_id.nil?
+        raise _INTL("Rotom is trying to forget its last move, but there isn't another move to replace it with.")
+      end
     end
     new_move_id = nil if pkmn.hasMove?(new_move_id)
     # Forget a known move (if relevant) and learn a new move (if relevant)
@@ -331,10 +333,10 @@ MultipleForms.register(:KYUREM, {
   "getFormOnEnteringBattle" => proc { |pkmn, wild|
     next pkmn.form + 2 if pkmn.form == 1 || pkmn.form == 2
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 3   # Fused forms stop glowing
   },
-  "onSetForm" => proc { |pkmn, form, oldForm|
+  "onSetForm"               => proc { |pkmn, form, oldForm|
     case form
     when 0   # Normal
       pkmn.moves.each_with_index do |move, i|
@@ -420,7 +422,7 @@ MultipleForms.register(:SCATTERBUG, {
 MultipleForms.copy(:SCATTERBUG, :SPEWPA, :VIVILLON)
 
 MultipleForms.register(:FURFROU, {
-  "getForm" => proc { |pkmn|
+  "getForm"   => proc { |pkmn|
     if !pkmn.time_form_set ||
        pbGetTimeNow.to_i > pkmn.time_form_set.to_i + (60 * 60 * 24 * 5)   # 5 days
       next 0
@@ -461,7 +463,7 @@ MultipleForms.register(:XERNEAS, {
   "getFormOnStartingBattle" => proc { |pkmn, wild|
     next 1
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if endBattle
   }
 })
@@ -473,7 +475,7 @@ MultipleForms.register(:ZYGARDE, {
 })
 
 MultipleForms.register(:HOOPA, {
-  "getForm" => proc { |pkmn|
+  "getForm"   => proc { |pkmn|
     if !pkmn.time_form_set ||
        pbGetTimeNow.to_i > pkmn.time_form_set.to_i + (60 * 60 * 24 * 3)   # 3 days
       next 0
@@ -542,13 +544,13 @@ MultipleForms.register(:SILVALLY, {
 })
 
 MultipleForms.register(:MINIOR, {
-  "getFormOnCreation" => proc { |pkmn|
+  "getFormOnCreation"       => proc { |pkmn|
     next rand(7..13)   # Meteor forms are 0-6, Core forms are 7-13
   },
   "getFormOnEnteringBattle" => proc { |pkmn, wild|
     next pkmn.form - 7 if pkmn.form >= 7 && wild   # Wild Minior always appear in Meteor form
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form + 7 if pkmn.form < 7
   }
 })
@@ -564,7 +566,7 @@ MultipleForms.register(:NECROZMA, {
     # Fused forms are 1 and 2, Ultra form is 3 or 4 depending on which fusion
     next pkmn.form - 2 if pkmn.form >= 3 && (pkmn.fainted? || endBattle)
   },
-  "onSetForm" => proc { |pkmn, form, oldForm|
+  "onSetForm"              => proc { |pkmn, form, oldForm|
     next if form > 2 || oldForm > 2   # Ultra form changes don't affect moveset
     form_moves = [
       :SUNSTEELSTRIKE,   # Dusk Mane (with Solgaleo) (form 1)
@@ -617,9 +619,7 @@ MultipleForms.register(:MILCERY, {
     num_flavors = 9
     sweets = [:STRAWBERRYSWEET, :BERRYSWEET, :LOVESWEET, :STARSWEET,
               :CLOVERSWEET, :FLOWERSWEET, :RIBBONSWEET]
-    if sweets.include?(pkmn.item_id)
-      next sweets.index(pkmn.item_id) + ((pkmn.personalID % num_flavors) * sweets.length)
-    end
+    next sweets.index(pkmn.item_id) + ((pkmn.personalID % num_flavors) * sweets.length) if sweets.include?(pkmn.item_id)
     next 0
   }
 })
@@ -651,7 +651,7 @@ MultipleForms.register(:MORPEKO, {
 })
 
 MultipleForms.register(:ZACIAN, {
-  "getFormOnStartingBattle" => proc { |pkmn, wild|
+  "getFormOnStartingBattle"       => proc { |pkmn, wild|
     next 1 if pkmn.hasItem?(:RUSTEDSWORD)
     next 0
   },
@@ -660,10 +660,10 @@ MultipleForms.register(:ZACIAN, {
       pkmn.moves.each { |move| move.id = :BEHEMOTHBLADE if move.id == :IRONHEAD }
     end
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"        => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if endBattle
   },
-  "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "changePokemonOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     if endBattle
       pkmn.moves.each { |move| move.id = :IRONHEAD if move.id == :BEHEMOTHBLADE }
     end
@@ -671,7 +671,7 @@ MultipleForms.register(:ZACIAN, {
 })
 
 MultipleForms.register(:ZAMAZENTA, {
-  "getFormOnStartingBattle" => proc { |pkmn, wild|
+  "getFormOnStartingBattle"       => proc { |pkmn, wild|
     next 1 if pkmn.hasItem?(:RUSTEDSHIELD)
     next 0
   },
@@ -680,10 +680,10 @@ MultipleForms.register(:ZAMAZENTA, {
       pkmn.moves.each { |move| move.id = :BEHEMOTHBASH if move.id == :IRONHEAD }
     end
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"        => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if endBattle
   },
-  "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "changePokemonOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     if endBattle
       pkmn.moves.each { |move| move.id = :IRONHEAD if move.id == :BEHEMOTHBASH }
     end

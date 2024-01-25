@@ -66,10 +66,9 @@ class Battle::Battler
     @effects[PBEffects::MoveNext]            = false
     @effects[PBEffects::Quash]               = 0
     # Encore's effect ends if the encored move is no longer available
-    if @effects[PBEffects::Encore] > 0 && pbEncoredMoveIndex < 0
-      @effects[PBEffects::Encore]     = 0
-      @effects[PBEffects::EncoreMove] = nil
-    end
+    return unless @effects[PBEffects::Encore] > 0 && pbEncoredMoveIndex < 0
+    @effects[PBEffects::Encore]     = 0
+    @effects[PBEffects::EncoreMove] = nil
   end
 
   # Called when the usage of various multi-turn moves is disrupted due to
@@ -154,7 +153,7 @@ class Battle::Battler
   def pbUseMove(choice, specialUsage = false)
     # NOTE: This is intentionally determined before a multi-turn attack can
     #       set specialUsage to true.
-    skipAccuracyCheck = (specialUsage && choice[2] != @battle.struggle)
+    skipAccuracyCheck = specialUsage && choice[2] != @battle.struggle
     # Start using the move
     pbBeginTurn(choice)
     # Force the use of certain moves if they're already being used
@@ -269,16 +268,15 @@ class Battle::Battler
     # Dazzling/Queenly Majesty make the move fail here
     @battle.pbPriority(true).each do |b|
       next if !b || !b.abilityActive?
-      if Battle::AbilityEffects.triggerMoveBlocking(b.ability, b, user, targets, move, @battle)
-        @battle.pbDisplayBrief(_INTL("{1} used {2}!", user.pbThis, move.name))
-        @battle.pbShowAbilitySplash(b)
-        @battle.pbDisplay(_INTL("{1} cannot use {2}!", user.pbThis, move.name))
-        @battle.pbHideAbilitySplash(b)
-        user.lastMoveFailed = true
-        pbCancelMoves
-        pbEndTurn(choice)
-        return
-      end
+      next unless Battle::AbilityEffects.triggerMoveBlocking(b.ability, b, user, targets, move, @battle)
+      @battle.pbDisplayBrief(_INTL("{1} used {2}!", user.pbThis, move.name))
+      @battle.pbShowAbilitySplash(b)
+      @battle.pbDisplay(_INTL("{1} cannot use {2}!", user.pbThis, move.name))
+      @battle.pbHideAbilitySplash(b)
+      user.lastMoveFailed = true
+      pbCancelMoves
+      pbEndTurn(choice)
+      return
     end
     # "X used Y!" message
     # Can be different for Bide, Fling, Focus Punch and Future Sight
@@ -488,18 +486,18 @@ class Battle::Battler
           @battle.pbDisplay(_INTL("{1} bounced the {2} back!", mc.pbThis, move.name))
           @battle.pbHideAbilitySplash(mc) if magicBouncer >= 0
           success = false
-          if !move.pbMoveFailed?(mc, [])
-            success = pbProcessMoveHit(move, mc, [], 0, false)
-          end
+          success = pbProcessMoveHit(move, mc, [], 0, false) if !move.pbMoveFailed?(mc, [])
           mc.lastMoveFailed = true if !success
           targets.each { |b| b.pbFaint if b&.fainted? }
           user.pbFaint if user.fainted?
         end
       end
       # Move-specific effects after all hits
-      targets.each { |b| move.pbEffectAfterAllHits(user, b) }
-      # Faint if 0 HP
-      targets.each { |b| b.pbFaint if b&.fainted? }
+      targets.each { |b|
+        move.pbEffectAfterAllHits(user, b)
+        # Faint if 0 HP
+        b.pbFaint if b&.fainted?
+      }
       user.pbFaint if user.fainted?
       # External/general effects after all hits. Eject Button, Shell Bell, etc.
       pbEffectsAfterMove(user, targets, move, realNumHits)
@@ -604,9 +602,7 @@ class Battle::Battler
         targets.each do |b|
           next if !b.damageState.missed || b.damageState.magicCoat
           pbMissMessage(move, user, b)
-          if user.itemActive?
-            Battle::ItemEffects.triggerOnMissingTarget(user.item, user, b, move, hitNum, @battle)
-          end
+          Battle::ItemEffects.triggerOnMissingTarget(user.item, user, b, move, hitNum, @battle) if user.itemActive?
           break if move.pbRepeatHit?   # Dragon Darts only shows one failure message
         end
         move.pbCrashDamage(user)
@@ -650,9 +646,7 @@ class Battle::Battler
       targets.each do |b|
         next if !b.damageState.missed
         pbMissMessage(move, user, b)
-        if user.itemActive?
-          Battle::ItemEffects.triggerOnMissingTarget(user.item, user, b, move, hitNum, @battle)
-        end
+        Battle::ItemEffects.triggerOnMissingTarget(user.item, user, b, move, hitNum, @battle) if user.itemActive?
       end
     end
     # Deal the damage (to all allies first simultaneously, then all foes
@@ -673,20 +667,14 @@ class Battle::Battler
         move.pbHitEffectivenessMessages(user, b, targets.length)
         # Record data about the hit for various effects' purposes
         move.pbRecordDamageLost(user, b)
-      end
-      # Close Combat/Superpower's stat-lowering, Flame Burst's splash damage,
-      # and Incinerate's berry destruction
-      targets.each do |b|
+        # Close Combat/Superpower's stat-lowering, Flame Burst's splash damage,
+        # and Incinerate's berry destruction
         next if b.damageState.unaffected
         move.pbEffectWhenDealingDamage(user, b)
-      end
-      # Ability/item effects such as Static/Rocky Helmet, and Grudge, etc.
-      targets.each do |b|
+        # Ability/item effects such as Static/Rocky Helmet, and Grudge, etc.
         next if b.damageState.unaffected
         pbEffectsOnMakingHit(move, user, b)
-      end
-      # Disguise/Endure/Sturdy/Focus Sash/Focus Band messages
-      targets.each do |b|
+        # Disguise/Endure/Sturdy/Focus Sash/Focus Band messages
         next if b.damageState.unaffected
         move.pbEndureKOMessage(b)
       end
@@ -695,10 +683,10 @@ class Battle::Battler
       @battle.pbPriority(true).each do |b|
         next if move.preventsBattlerConsumingHealingBerry?(b, targets)
         b.pbItemHPHealCheck
+        # Animate battlers fainting (checks all battlers rather than just targets
+        # because Flame Burst's splash damage affects non-targets)
+        b.pbFaint if b&.fainted?
       end
-      # Animate battlers fainting (checks all battlers rather than just targets
-      # because Flame Burst's splash damage affects non-targets)
-      @battle.pbPriority(true).each { |b| b.pbFaint if b&.fainted? }
     end
     @battle.pbJudgeCheckpoint(user, move)
     # Main effect (recoil/drain, etc.)
@@ -728,12 +716,10 @@ class Battle::Battler
         PBDebug.log("[Item/ability triggered] #{user.pbThis}'s King's Rock/Razor Fang or Stench")
         b.pbFlinch(user)
       end
-    end
-    # Message for and consuming of type-weakening berries
-    # NOTE: The "consume held item" animation for type-weakening berries occurs
-    #       during pbCalcDamage above (before the move's animation), but the
-    #       message about it only shows here.
-    targets.each do |b|
+      # Message for and consuming of type-weakening berries
+      # NOTE: The "consume held item" animation for type-weakening berries occurs
+      #       during pbCalcDamage above (before the move's animation), but the
+      #       message about it only shows here.
       next if b.damageState.unaffected
       next if !b.damageState.berryWeakened
       @battle.pbDisplay(_INTL("The {1} weakened the damage to {2}!", b.itemName, b.pbThis(true)))

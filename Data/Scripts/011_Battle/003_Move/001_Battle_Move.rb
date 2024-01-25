@@ -62,9 +62,7 @@ class Battle::Move
     else
       class_name = sprintf("Battle::Move::%s", code)
     end
-    if Object.const_defined?(class_name)
-      return Object.const_get(class_name).new(battle, move)
-    end
+    return Object.const_get(class_name).new(battle, move) if Object.const_defined?(class_name)
     return Battle::Move::Unimplemented.new(battle, move)
   end
 
@@ -118,11 +116,16 @@ class Battle::Move
   def hitsFlyingTargets?;   return false; end
   def hitsDiggingTargets?;  return false; end
   def hitsDivingTargets?;   return false; end
-  def ignoresReflect?;      return false; end   # For Brick Break
-  def targetsPosition?;     return false; end   # For Future Sight/Doom Desire
-  def cannotRedirect?;      return false; end   # For Snipe Shot
-  def worksWithNoTargets?;  return false; end   # For Explosion
-  def damageReducedByBurn?; return true;  end   # For Facade
+  # For Brick Break
+  def ignoresReflect?;      return false; end
+  # For Future Sight/Doom Desire
+  def targetsPosition?;     return false; end
+  # For Snipe Shot
+  def cannotRedirect?;      return false; end
+  # For Explosion
+  def worksWithNoTargets?;  return false; end
+  # For Facade
+  def damageReducedByBurn?; return true;  end
   def triggersHyperMode?;   return false; end
   def canSnatch?;           return false; end
   def canMagicCoat?;        return false; end
@@ -142,8 +145,10 @@ class Battle::Move
   # Causes perfect accuracy and double damage if target used Minimize. Perfect accuracy only with Gen 6+ mechanics.
   def tramplesMinimize?;  return @flags.any? { |f| f[/^TramplesMinimize$/i] };    end
 
-  def nonLethal?(_user, _target); return false; end   # For False Swipe
-  def preventsBattlerConsumingHealingBerry?(battler, targets); return false; end   # For Bug Bite/Pluck
+  # For False Swipe
+  def nonLethal?(_user, _target); return false; end
+  # For Bug Bite/Pluck
+  def preventsBattlerConsumingHealingBerry?(battler, targets); return false; end
 
   # user is the Pokémon using this move.
   def ignoresSubstitute?(user)
@@ -160,40 +165,34 @@ class Battle::Move
       if battler.isSpecies?(:MORPEKO) || battler.effects[PBEffects::TransformSpecies] == :MORPEKO
         return pbBaseType(battler)
       end
-=begin
-    when "TypeDependsOnUserPlate", "TypeDependsOnUserMemory",
-         "TypeDependsOnUserDrive", "TypeAndPowerDependOnUserBerry",
-         "TypeIsUserFirstType", "TypeAndPowerDependOnWeather",
-         "TypeAndPowerDependOnTerrain"
-      return pbBaseType(battler)
-=end
+      #     when "TypeDependsOnUserPlate", "TypeDependsOnUserMemory",
+      #          "TypeDependsOnUserDrive", "TypeAndPowerDependOnUserBerry",
+      #          "TypeIsUserFirstType", "TypeAndPowerDependOnWeather",
+      #          "TypeAndPowerDependOnTerrain"
+      #       return pbBaseType(battler)
     end
     return @realMove.display_type(battler.pokemon)
   end
 
   def display_damage(battler)
-=begin
-    case @function_code
-    when "TypeAndPowerDependOnUserBerry"
-      return pbNaturalGiftBaseDamage(battler.item_id)
-    when "TypeAndPowerDependOnWeather", "TypeAndPowerDependOnTerrain",
-         "PowerHigherWithUserHP", "PowerLowerWithUserHP",
-         "PowerHigherWithUserHappiness", "PowerLowerWithUserHappiness",
-         "PowerHigherWithUserPositiveStatStages", "PowerDependsOnUserStockpile"
-      return pbBaseType(@power, battler, nil)
-    end
-=end
+    #     case @function_code
+    #     when "TypeAndPowerDependOnUserBerry"
+    #       return pbNaturalGiftBaseDamage(battler.item_id)
+    #     when "TypeAndPowerDependOnWeather", "TypeAndPowerDependOnTerrain",
+    #          "PowerHigherWithUserHP", "PowerLowerWithUserHP",
+    #          "PowerHigherWithUserHappiness", "PowerLowerWithUserHappiness",
+    #          "PowerHigherWithUserPositiveStatStages", "PowerDependsOnUserStockpile"
+    #       return pbBaseType(@power, battler, nil)
+    #     end
     return @realMove.display_damage(battler.pokemon)
   end
 
   def display_category(battler)
-=begin
-    case @function_code
-    when "CategoryDependsOnHigherDamageIgnoreTargetAbility"
-      pbOnStartUse(user, nil)
-      return @calcCategory
-    end
-=end
+    #     case @function_code
+    #     when "CategoryDependsOnHigherDamageIgnoreTargetAbility"
+    #       pbOnStartUse(user, nil)
+    #       return @calcCategory
+    #     end
     return @realMove.display_category(battler.pokemon)
   end
 

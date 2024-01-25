@@ -462,11 +462,10 @@ class SpeciesFormProperty
   def format(value)
     if value && GameData::Species.exists?(value)
       species_data = GameData::Species.get(value)
-      if species_data.form > 0
-        return sprintf("%s_%d", species_data.real_name, species_data.form)
-      else
-        return species_data.real_name
-      end
+      return sprintf("%s_%d", species_data.real_name, species_data.form) if species_data.form > 0
+
+      return species_data.real_name
+
     end
     return "-"
   end
@@ -745,7 +744,7 @@ end
 
 def chooseMapPoint(map, rgnmap = false)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   title = Window_UnformattedTextPokemon.newWithSize(
     _INTL("Click a point on the map."), 0, Graphics.height - 64, Graphics.width, 64, viewport
   )
@@ -781,12 +780,9 @@ end
 module MapCoordsProperty
   def self.set(settingname, oldsetting)
     chosenmap = pbListScreen(settingname, MapLister.new((oldsetting) ? oldsetting[0] : 0))
-    if chosenmap >= 0
-      mappoint = chooseMapPoint(chosenmap)
-      return (mappoint) ? [chosenmap, mappoint[0], mappoint[1]] : oldsetting
-    else
-      return oldsetting
-    end
+    return oldsetting unless chosenmap >= 0
+    mappoint = chooseMapPoint(chosenmap)
+    return (mappoint) ? [chosenmap, mappoint[0], mappoint[1]] : oldsetting
   end
 
   def self.format(value)
@@ -800,18 +796,12 @@ end
 module MapCoordsFacingProperty
   def self.set(settingname, oldsetting)
     chosenmap = pbListScreen(settingname, MapLister.new((oldsetting) ? oldsetting[0] : 0))
-    if chosenmap >= 0
-      mappoint = chooseMapPoint(chosenmap)
-      if mappoint
-        facing = pbMessage(_INTL("Choose the direction to face in."),
-                           [_INTL("Down"), _INTL("Left"), _INTL("Right"), _INTL("Up")], -1)
-        return (facing >= 0) ? [chosenmap, mappoint[0], mappoint[1], [2, 4, 6, 8][facing]] : oldsetting
-      else
-        return oldsetting
-      end
-    else
-      return oldsetting
-    end
+    return oldsetting unless chosenmap >= 0
+    mappoint = chooseMapPoint(chosenmap)
+    return oldsetting unless mappoint
+    facing = pbMessage(_INTL("Choose the direction to face in."),
+                       [_INTL("Down"), _INTL("Left"), _INTL("Right"), _INTL("Up")], -1)
+    return (facing >= 0) ? [chosenmap, mappoint[0], mappoint[1], [2, 4, 6, 8][facing]] : oldsetting
   end
 
   def self.format(value)
@@ -1067,7 +1057,13 @@ class GameDataPoolProperty
     loop do
       if need_refresh
         if @auto_sort
-          values.sort! { |a, b| (a[0].nil?) ? -1 : b[0].nil? ? 1 : a[1] <=> b[1] }
+          values.sort! { |a, b|
+            if a[0].nil?
+              -1
+            else
+              b[0].nil? ? 1 : a[1] <=> b[1]
+          end
+          }
         end
         commands = values.map { |entry| entry[1] }
         need_refresh = false
@@ -1590,9 +1586,7 @@ module EncounterSlotProperty
       [_INTL("Maximum level"), NonzeroLimitProperty.new(max_level), _INTL("Maximum level of this species (1-{1}).", max_level)]
     ]
     pbPropertyList(setting_name, data, properties, false)
-    if data[2] > data[3]
-      data[3], data[2] = data[2], data[3]
-    end
+    data[3], data[2] = data[2], data[3] if data[2] > data[3]
     return data
   end
 
@@ -1611,9 +1605,7 @@ module EncounterSlotProperty
       return sprintf("%d, %s_%d (Lv.%d-%d)", value[0],
                      species_data.real_name, species_data.form, value[2], value[3])
     end
-    if value[2] == value[3]
-      return sprintf("%d, %s (Lv.%d)", value[0], species_data.real_name, value[2])
-    end
+    return sprintf("%d, %s (Lv.%d)", value[0], species_data.real_name, value[2]) if value[2] == value[3]
     return sprintf("%d, %s (Lv.%d-%d)", value[0], species_data.real_name, value[2], value[3])
   end
 end
@@ -1623,7 +1615,7 @@ end
 #===============================================================================
 def pbPropertyList(title, data, properties, saveprompt = false)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   list = pbListWindow([], Graphics.width / 2)
   list.viewport = viewport
   list.z        = 2

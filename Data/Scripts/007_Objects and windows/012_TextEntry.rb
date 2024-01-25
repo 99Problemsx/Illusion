@@ -16,9 +16,7 @@ class CharacterEntryHelper
 
   def textChars
     chars = text.scan(/./m)
-    if @passwordChar != ""
-      chars.length.times { |i| chars[i] = @passwordChar }
-    end
+    chars.length.times { |i| chars[i] = @passwordChar } if @passwordChar != ""
     return chars
   end
 
@@ -196,27 +194,24 @@ class Window_TextEntry < SpriteWindow_Base
     startpos = @helper.cursor
     fromcursor = 0
     while startpos > 0
-      c = (@helper.passwordChar != "") ? @helper.passwordChar : textscan[startpos - 1]
+      c = (@helper.passwordChar == "") ? textscan[startpos - 1] : @helper.passwordChar
       fromcursor += bitmap.text_size(c).width
       break if fromcursor > width - 4
       startpos -= 1
     end
     (startpos...scanlength).each do |i|
-      c = (@helper.passwordChar != "") ? @helper.passwordChar : textscan[i]
+      c = (@helper.passwordChar == "") ? textscan[i] : @helper.passwordChar
       textwidth = bitmap.text_size(c).width
       next if c == "\n"
       # Draw text
       pbDrawShadowText(bitmap, x, y, textwidth + 4, 32, c, @baseColor, @shadowColor)
       # Draw cursor if necessary
-      if i == @helper.cursor && @cursor_shown
-        bitmap.fill_rect(x, y + 4, 2, 24, cursorcolor)
-      end
+      bitmap.fill_rect(x, y + 4, 2, 24, cursorcolor) if i == @helper.cursor && @cursor_shown
       # Add x to drawn text width
       x += textwidth
     end
-    if textscan.length == @helper.cursor && @cursor_shown
-      bitmap.fill_rect(x, y + 4, 2, 24, cursorcolor)
-    end
+    return unless textscan.length == @helper.cursor && @cursor_shown
+    bitmap.fill_rect(x, y + 4, 2, 24, cursorcolor)
   end
 end
 
@@ -425,7 +420,7 @@ class Window_MultilineTextEntry < SpriteWindow_Base
   def moveCursor(lineOffset, columnOffset)
     # Move column offset first, then lines (since column offset
     # can affect line offset)
-#   echoln ["beforemoving",@cursorLine,@cursorColumn]
+    #   echoln ["beforemoving",@cursorLine,@cursorColumn]
     totalColumns = getColumnsInLine(@cursorLine) # check current line
     totalLines = getTotalLines
     oldCursorLine = @cursorLine
@@ -453,7 +448,7 @@ class Window_MultilineTextEntry < SpriteWindow_Base
     @cursorColumn = totalColumns if @cursorColumn > totalColumns
     @cursorColumn = 0 if @cursorColumn < 0 # totalColumns can be 0
     updateCursorPos(oldCursorLine != @cursorLine || oldCursorColumn != @cursorColumn)
-#   echoln ["aftermoving",@cursorLine,@cursorColumn]
+    #   echoln ["aftermoving",@cursorLine,@cursorColumn]
   end
 
   def update
@@ -528,29 +523,28 @@ class Window_MultilineTextEntry < SpriteWindow_Base
       pbDrawShadowText(bitmap, text[1], textY, textwidth, textheight, c, @baseColor, @shadowColor)
     end
     # Draw cursor
-    if @cursor_shown
-      textheight = bitmap.text_size("X").height
-      cursorY = (textheight * @cursorLine) - startY
-      cursorX = 0
-      textchars.each do |text|
-        thisline = text[5]
-        thiscolumn = text[7]
-        thislength = text[8]
-        next if thisline != @cursorLine || @cursorColumn < thiscolumn ||
-                @cursorColumn > thiscolumn + thislength
-        cursorY = text[2] - startY
-        cursorX = text[1]
-        textheight = text[4]
-        posToCursor = @cursorColumn - thiscolumn
-        if posToCursor >= 0
-          partialString = text[0].scan(/./m)[0, posToCursor].join
-          cursorX += bitmap.text_size(partialString).width
-        end
-        break
+    return unless @cursor_shown
+    textheight = bitmap.text_size("X").height
+    cursorY = (textheight * @cursorLine) - startY
+    cursorX = 0
+    textchars.each do |text|
+      thisline = text[5]
+      thiscolumn = text[7]
+      thislength = text[8]
+      next if thisline != @cursorLine || @cursorColumn < thiscolumn ||
+              @cursorColumn > thiscolumn + thislength
+      cursorY = text[2] - startY
+      cursorX = text[1]
+      textheight = text[4]
+      posToCursor = @cursorColumn - thiscolumn
+      if posToCursor >= 0
+        partialString = text[0].scan(/./m)[0, posToCursor].join
+        cursorX += bitmap.text_size(partialString).width
       end
-      cursorY += 4
-      cursorHeight = [4, textheight - 4, bitmap.text_size("X").height - 4].max
-      bitmap.fill_rect(cursorX, cursorY, 2, cursorHeight, cursorcolor)
+      break
     end
+    cursorY += 4
+    cursorHeight = [4, textheight - 4, bitmap.text_size("X").height - 4].max
+    bitmap.fill_rect(cursorX, cursorY, 2, cursorHeight, cursorcolor)
   end
 end

@@ -111,23 +111,22 @@ class SpriteWindow < Window
   end
 
   def dispose
-    if !self.disposed?
-      @sprites.each do |i|
-        i[1]&.dispose
-        @sprites[i[0]] = nil
-      end
-      @sidebitmaps.each_with_index do |bitmap, i|
-        bitmap&.dispose
-        @sidebitmaps[i] = nil
-      end
-      @blankcontents.dispose
-      @cursorbitmap&.dispose
-      @backbitmap&.dispose
-      @sprites.clear
-      @sidebitmaps.clear
-      @_windowskin = nil
-      @disposed = true
+    return if self.disposed?
+    @sprites.each do |i|
+      i[1]&.dispose
+      @sprites[i[0]] = nil
     end
+    @sidebitmaps.each_with_index do |bitmap, i|
+      bitmap&.dispose
+      @sidebitmaps[i] = nil
+    end
+    @blankcontents.dispose
+    @cursorbitmap&.dispose
+    @backbitmap&.dispose
+    @sprites.clear
+    @sidebitmaps.clear
+    @_windowskin = nil
+    @disposed = true
   end
 
   def stretch=(value)
@@ -163,24 +162,21 @@ class SpriteWindow < Window
   end
 
   def contents=(value)
-    if @contents != value
-      @contents = value
-      privRefresh if @visible
-    end
+    return unless @contents != value
+    @contents = value
+    privRefresh if @visible
   end
 
   def ox=(value)
-    if @ox != value
-      @ox = value
-      privRefresh if @visible
-    end
+    return unless @ox != value
+    @ox = value
+    privRefresh if @visible
   end
 
   def oy=(value)
-    if @oy != value
-      @oy = value
-      privRefresh if @visible
-    end
+    return unless @oy != value
+    @oy = value
+    privRefresh if @visible
   end
 
   def active=(value)
@@ -317,10 +313,9 @@ class SpriteWindow < Window
       mustchange = @pauseframe != oldpauseframe || @pauseopacity != oldpauseopacity
     end
     privRefresh if mustchange
-    if @flash_timer_start
-      @sprites.each_value { |i| i.update }
-      @flash_timer_start = nil if System.uptime - @flash_timer_start >= @flash_duration
-    end
+    return unless @flash_timer_start
+    @sprites.each_value { |i| i.update }
+    @flash_timer_start = nil if System.uptime - @flash_timer_start >= @flash_duration
   end
 
   def loadSkinFile(_file)
@@ -369,25 +364,20 @@ class SpriteWindow < Window
   end
 
   def skinformat=(value)
-    if @skinformat != value
-      @skinformat = value
-      privRefresh(true)
-    end
+    return unless @skinformat != value
+    @skinformat = value
+    privRefresh(true)
   end
 
   def borderX
     return 32 if !@trim || skinformat == 0
-    if @_windowskin && !@_windowskin.disposed?
-      return @trim[0] + (@_windowskin.width - @trim[2] - @trim[0])
-    end
+    return @trim[0] + (@_windowskin.width - @trim[2] - @trim[0]) if @_windowskin && !@_windowskin.disposed?
     return 32
   end
 
   def borderY
     return 32 if !@trim || skinformat == 0
-    if @_windowskin && !@_windowskin.disposed?
-      return @trim[1] + (@_windowskin.height - @trim[3] - @trim[1])
-    end
+    return @trim[1] + (@_windowskin.height - @trim[3] - @trim[1]) if @_windowskin && !@_windowskin.disposed?
     return 32
   end
 
@@ -508,7 +498,7 @@ class SpriteWindow < Window
       @sprites["cursor"].opacity = cursoropac
       @sprites["pause"].opacity = @pauseopacity
       supported = (@skinformat == 0)
-      hascontents = (@contents && !@contents.disposed?)
+      hascontents = @contents && !@contents.disposed?
       @sprites["back"].visible = @visible
       @sprites["contents"].visible = @visible && @openness == 255
       @sprites["pause"].visible = supported && @visible && @pause &&
@@ -767,9 +757,7 @@ class SpriteWindow < Window
         else
           tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, backRect)
         end
-        if blindsRect
-          tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, blindsRect)
-        end
+        tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, blindsRect) if blindsRect
       else
         @sprites["back"].visible = false
         @sprites["back"].src_rect.set(0, 0, 0, 0)
@@ -843,13 +831,12 @@ class SpriteWindow_Base < SpriteWindow
   end
 
   def __resolveSystemFrame
-    if self.skinformat == 1
-      if !@resolvedFrame
-        @resolvedFrame = MessageConfig.pbGetSystemFrame
-        @resolvedFrame.sub!(/\.[^\.\/\\]+$/, "")
-      end
-      self.loadSkinFile("#{@resolvedFrame}.txt") if @resolvedFrame != ""
+    return unless self.skinformat == 1
+    if !@resolvedFrame
+      @resolvedFrame = MessageConfig.pbGetSystemFrame
+      @resolvedFrame.sub!(/\.[^\.\/\\]+$/, "")
     end
+    self.loadSkinFile("#{@resolvedFrame}.txt") if @resolvedFrame != ""
   end
 
   # Filename of windowskin to apply. Supports XP, VX, and animated skins.
@@ -861,10 +848,9 @@ class SpriteWindow_Base < SpriteWindow
     @customskin = AnimatedBitmap.new(resolvedName)
     RPG::Cache.retain(resolvedName)
     __setWindowskin(@customskin.bitmap)
-    if self.skinformat == 1
-      skinbase = resolvedName.sub(/\.[^\.\/\\]+$/, "")
-      self.loadSkinFile("#{skinbase}.txt")
-    end
+    return unless self.skinformat == 1
+    skinbase = resolvedName.sub(/\.[^\.\/\\]+$/, "")
+    self.loadSkinFile("#{skinbase}.txt")
   end
 
   def setSystemFrame
@@ -904,15 +890,12 @@ class SpriteWindow_Base < SpriteWindow
       rescue NoMethodError
       end
     end
-    if @curfont != MessageConfig.pbGetSystemFontName
-      @curfont = MessageConfig.pbGetSystemFontName
-      if self.contents && !self.contents.disposed?
-        pbSetSystemFont(self.contents)
-      end
-      begin
-        refresh
-      rescue NoMethodError
-      end
+    return unless @curfont != MessageConfig.pbGetSystemFontName
+    @curfont = MessageConfig.pbGetSystemFontName
+    pbSetSystemFont(self.contents) if self.contents && !self.contents.disposed?
+    begin
+      refresh
+    rescue NoMethodError
     end
   end
 

@@ -8,7 +8,7 @@ def pbHiddenMoveAnimation(pokemon, field_move = true)
   FollowingPkmn.move_route([PBMoveRoute::WAIT, 1]) if pokemon && FollowingPkmn.active?
   ret = __followingpkmn__pbHiddenMoveAnimation(pokemon)
   return ret if !ret || no_field_move || !FollowingPkmn.active? || pokemon != FollowingPkmn.get_pokemon
-  initial_dir  = $game_player.direction
+  initial_dir = $game_player.direction
   pbTurnTowardEvent(FollowingPkmn.get_event, $game_player)
   pbWait(0.2)
   moved_dir    = 0
@@ -20,10 +20,10 @@ def pbHiddenMoveAnimation(pokemon, field_move = true)
     next if !$game_player.passable?($game_player.x, $game_player.y, 10 - d)
     moved_dir = 10 - d
     break
-  end 
+  end
   if moved_dir > 0
     FollowingPkmn.get_event.move_toward_player
-    pbMoveRoute($game_player, [(moved_dir) / 2], true)
+    pbMoveRoute($game_player, [moved_dir / 2], true)
     pbWait(0.2)
     pbTurnTowardEvent($game_player, FollowingPkmn.get_event)
     pbWait(0.2)
@@ -74,13 +74,12 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     battler.setColor(delay, Color.new(0, 0, 0, 0))
     battler.setDelta(0, -240, 0)
     battler.moveDelta(delay, 12, 240, 0)
-    battler.setCallback(delay + 12, [batSprite,:pbPlayIntroAnimation])
-    if @shadowVisible
-      shadow = addSprite(shaSprite, PictureOrigin::CENTER)
-      shadow.setVisible(delay, @shadowVisible)
-      shadow.setDelta(0, -Graphics.width/2, 0)
-      shadow.setDelta(delay, 12, Graphics.width/2, 0)
-    end
+    battler.setCallback(delay + 12, [batSprite, :pbPlayIntroAnimation])
+    return unless @shadowVisible
+    shadow = addSprite(shaSprite, PictureOrigin::CENTER)
+    shadow.setVisible(delay, @shadowVisible)
+    shadow.setDelta(0, -Graphics.width / 2, 0)
+    shadow.setDelta(delay, 12, Graphics.width / 2, 0)
   end
 end
 

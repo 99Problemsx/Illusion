@@ -15,9 +15,7 @@ def pbPCItemStorage
                                       _INTL("Go back to the previous menu.")], -1, command)
     case command
     when 0   # Withdraw Item
-      if !$PokemonGlobal.pcItemStorage
-        $PokemonGlobal.pcItemStorage = PCItemStorage.new
-      end
+      $PokemonGlobal.pcItemStorage = PCItemStorage.new if !$PokemonGlobal.pcItemStorage
       if $PokemonGlobal.pcItemStorage.empty?
         pbMessage(_INTL("There are no items."))
       else
@@ -34,9 +32,7 @@ def pbPCItemStorage
         screen.pbDepositItemScreen
       end
     when 2   # Toss Item
-      if !$PokemonGlobal.pcItemStorage
-        $PokemonGlobal.pcItemStorage = PCItemStorage.new
-      end
+      $PokemonGlobal.pcItemStorage = PCItemStorage.new if !$PokemonGlobal.pcItemStorage
       if $PokemonGlobal.pcItemStorage.empty?
         pbMessage(_INTL("There are no items."))
       else
@@ -67,38 +63,35 @@ def pbPCMailbox
       end
       commands.push(_INTL("Cancel"))
       command = pbShowCommands(nil, commands, -1, command)
-      if command >= 0 && command < $PokemonGlobal.mailbox.length
-        mailIndex = command
-        commandMail = pbMessage(
-          _INTL("What do you want to do with {1}'s Mail?", $PokemonGlobal.mailbox[mailIndex].sender),
-          [_INTL("Read"),
-           _INTL("Move to Bag"),
-           _INTL("Give"),
-           _INTL("Cancel")], -1
-        )
-        case commandMail
-        when 0   # Read
-          pbFadeOutIn do
-            pbDisplayMail($PokemonGlobal.mailbox[mailIndex])
-          end
-        when 1   # Move to Bag
-          if pbConfirmMessage(_INTL("The message will be lost. Is that OK?"))
-            if $bag.add($PokemonGlobal.mailbox[mailIndex].item)
-              pbMessage(_INTL("The Mail was returned to the Bag with its message erased."))
-              $PokemonGlobal.mailbox.delete_at(mailIndex)
-            else
-              pbMessage(_INTL("The Bag is full."))
-            end
-          end
-        when 2   # Give
-          pbFadeOutIn do
-            sscene = PokemonParty_Scene.new
-            sscreen = PokemonPartyScreen.new(sscene, $player.party)
-            sscreen.pbPokemonGiveMailScreen(mailIndex)
+      break unless command >= 0 && command < $PokemonGlobal.mailbox.length
+      mailIndex = command
+      commandMail = pbMessage(
+        _INTL("What do you want to do with {1}'s Mail?", $PokemonGlobal.mailbox[mailIndex].sender),
+        [_INTL("Read"),
+         _INTL("Move to Bag"),
+         _INTL("Give"),
+         _INTL("Cancel")], -1
+      )
+      case commandMail
+      when 0   # Read
+        pbFadeOutIn do
+          pbDisplayMail($PokemonGlobal.mailbox[mailIndex])
+        end
+      when 1   # Move to Bag
+        if pbConfirmMessage(_INTL("The message will be lost. Is that OK?"))
+          if $bag.add($PokemonGlobal.mailbox[mailIndex].item)
+            pbMessage(_INTL("The Mail was returned to the Bag with its message erased."))
+            $PokemonGlobal.mailbox.delete_at(mailIndex)
+          else
+            pbMessage(_INTL("The Bag is full."))
           end
         end
-      else
-        break
+      when 2   # Give
+        pbFadeOutIn do
+          sscene = PokemonParty_Scene.new
+          sscreen = PokemonPartyScreen.new(sscene, $player.party)
+          sscreen.pbPokemonGiveMailScreen(mailIndex)
+        end
       end
     end
   end
@@ -161,11 +154,11 @@ end
 #
 #===============================================================================
 MenuHandlers.add(:pc_menu, :pokemon_storage, {
-  "name"      => proc {
+  "name"   => proc {
     next ($player.seen_storage_creator) ? _INTL("{1}'s PC", pbGetStorageCreator) : _INTL("Someone's PC")
   },
-  "order"     => 10,
-  "effect"    => proc { |menu|
+  "order"  => 10,
+  "effect" => proc { |menu|
     pbMessage("\\se[PC access]" + _INTL("The Pokémon Storage System was opened."))
     command = 0
     loop do
@@ -219,9 +212,9 @@ MenuHandlers.add(:pc_menu, :pokemon_storage, {
 })
 
 MenuHandlers.add(:pc_menu, :player_pc, {
-  "name"      => proc { next _INTL("{1}'s PC", $player.name) },
-  "order"     => 20,
-  "effect"    => proc { |menu|
+  "name"   => proc { next _INTL("{1}'s PC", $player.name) },
+  "order"  => 20,
+  "effect" => proc { |menu|
     pbMessage("\\se[PC access]" + _INTL("Accessed {1}'s PC.", $player.name))
     pbTrainerPCMenu
     next false
@@ -229,9 +222,9 @@ MenuHandlers.add(:pc_menu, :player_pc, {
 })
 
 MenuHandlers.add(:pc_menu, :close, {
-  "name"      => _INTL("Log off"),
-  "order"     => 100,
-  "effect"    => proc { |menu|
+  "name"   => _INTL("Log off"),
+  "order"  => 100,
+  "effect" => proc { |menu|
     next true
   }
 })

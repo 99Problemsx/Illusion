@@ -384,12 +384,12 @@ class SafariBattle
   #-----------------------------------------------------------------------------
   # Messages and animations
   #-----------------------------------------------------------------------------
-  def pbDisplay(msg, &block)
-    @scene.pbDisplayMessage(msg, &block)
+  def pbDisplay(msg, ...)
+    @scene.pbDisplayMessage(msg, ...)
   end
 
-  def pbDisplayPaused(msg, &block)
-    @scene.pbDisplayPausedMessage(msg, &block)
+  def pbDisplayPaused(msg, ...)
+    @scene.pbDisplayPausedMessage(msg, ...)
   end
 
   def pbDisplayBrief(msg)
@@ -400,10 +400,10 @@ class SafariBattle
     return @scene.pbDisplayConfirmMessage(msg)
   end
 
-  class BattleAbortedException < Exception; end
+  class BattleAbortedException < StandardError; end
 
   def pbAbort
-    raise BattleAbortedException.new("Battle aborted")
+    raise BattleAbortedException, "Battle aborted"
   end
 
   #-----------------------------------------------------------------------------

@@ -4,15 +4,23 @@ class Battle::Scene
   # Return values: -1=Cancel, 0=Fight, 1=Bag, 2=Pokémon, 3=Run, 4=Call
   #=============================================================================
   def pbCommandMenu(idxBattler, firstAction)
-    shadowTrainer = (GameData::Type.exists?(:SHADOW) && @battle.trainerBattle?)
+    shadowTrainer = GameData::Type.exists?(:SHADOW) && @battle.trainerBattle?
     cmds = [
       _INTL("What will\n{1} do?", @battle.battlers[idxBattler].name),
       _INTL("Fight"),
       _INTL("Bag"),
       _INTL("Pokémon"),
-      (shadowTrainer) ? _INTL("Call") : (firstAction) ? _INTL("Run") : _INTL("Cancel")
+      if shadowTrainer
+        _INTL("Call")
+      else
+  (firstAction) ? _INTL("Run") : _INTL("Cancel")
+end
     ]
-    ret = pbCommandMenuEx(idxBattler, cmds, (shadowTrainer) ? 2 : (firstAction) ? 0 : 1)
+    ret = pbCommandMenuEx(idxBattler, cmds, if shadowTrainer
+                                              2
+                                            else
+  (firstAction) ? 0 : 1
+end)
     ret = 4 if ret == 3 && shadowTrainer   # Convert "Run" to "Call"
     ret = -1 if ret == 3 && !firstAction   # Convert "Run" to "Cancel"
     return ret
@@ -70,9 +78,7 @@ class Battle::Scene
     cw = @sprites["fightWindow"]
     cw.battler = battler
     moveIndex = 0
-    if battler.moves[@lastMove[idxBattler]]&.id
-      moveIndex = @lastMove[idxBattler]
-    end
+    moveIndex = @lastMove[idxBattler] if battler.moves[@lastMove[idxBattler]]&.id
     cw.shiftMode = (@battle.pbCanShift?(idxBattler)) ? 1 : 0
     cw.setIndexAndMode(moveIndex, (megaEvoPossible) ? 1 : 0)
     needFullRefresh = true
@@ -163,7 +169,6 @@ class Battle::Scene
       # Choose a command for the selected Pokémon
       cmdSwitch  = -1
       cmdBoxes   = -1
-      cmdSummary = -1
       commands = []
       commands[cmdSwitch  = commands.length] = _INTL("Switch In") if mode == 0 && modParty[idxParty].able? &&
                                                                      (@battle.canSwitch || !canCancel)
@@ -241,12 +246,12 @@ class Battle::Scene
         # are the only available Pokémon/battler to use the item on
         case useType
         when 1   # Use on Pokémon
-          if @battle.pbTeamLengthFromBattlerIndex(idxBattler) == 1
-            break if yield item.id, useType, @battle.battlers[idxBattler].pokemonIndex, -1, itemScene
+          if @battle.pbTeamLengthFromBattlerIndex(idxBattler) == 1 && yield item.id, useType, @battle.battlers[idxBattler].pokemonIndex, -1, itemScene
+            break
           end
         when 3   # Use on battler
-          if @battle.pbPlayerBattlerCount == 1
-            break if yield item.id, useType, @battle.battlers[idxBattler].pokemonIndex, -1, itemScene
+          if @battle.pbPlayerBattlerCount == 1 && yield item.id, useType, @battle.battlers[idxBattler].pokemonIndex, -1, itemScene
+            break
           end
         end
         # Fade out and hide Bag screen
@@ -301,8 +306,8 @@ class Battle::Scene
           tempVisibleSprites["commandWindow"] = false
           tempVisibleSprites["targetWindow"]  = true
           idxTarget = pbChooseTarget(idxBattler, GameData::Target.get(:Foe), tempVisibleSprites)
-          if idxTarget >= 0
-            break if yield item.id, useType, idxTarget, -1, self
+          if idxTarget >= 0 && yield item.id, useType, idxTarget, -1, self
+            break
           end
           # Target invalid/cancelled choosing a target; show the Bag screen again
           wasTargeting = false
@@ -361,18 +366,18 @@ class Battle::Scene
     case target_data.id
     when :NearAlly
       @battle.allSameSideBattlers(idxBattler).each do |b|
-        next if b.index == idxBattler || !@battle.nearBattlers?(b, idxBattler)
+         next if b.index == idxBattler || !@battle.nearBattlers?(b, idxBattler)
         next if b.fainted?
         return b.index
-      end
-      @battle.allSameSideBattlers(idxBattler).each do |b|
         next if b.index == idxBattler || !@battle.nearBattlers?(b, idxBattler)
         return b.index
       end
     when :NearFoe, :NearOther
       indices = @battle.pbGetOpposingIndicesInOrder(idxBattler)
-      indices.each { |i| return i if @battle.nearBattlers?(i, idxBattler) && !@battle.battlers[i].fainted? }
-      indices.each { |i| return i if @battle.nearBattlers?(i, idxBattler) }
+      indices.each { |i| 
+        return i if @battle.nearBattlers?(i, idxBattler) && !@battle.battlers[i].fainted?
+                         return i if @battle.nearBattlers?(i, idxBattler)
+}
     when :Foe, :Other
       indices = @battle.pbGetOpposingIndicesInOrder(idxBattler)
       indices.each { |i| return i if !@battle.battlers[i].fainted? }

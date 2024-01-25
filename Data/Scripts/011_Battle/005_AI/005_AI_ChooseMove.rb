@@ -131,9 +131,8 @@ class Battle::AI
     # If the user is a wild Pokémon, doubly prefer one of its moves (the choice
     # is random but consistent and does not correlate to any other property of
     # the user)
-    if @user.wild? && @user.pokemon.personalID % @user.battler.moves.length == idxMove
-      choices.push([idxMove, score, idxTarget])
-    end
+    return unless @user.wild? && @user.pokemon.personalID % @user.battler.moves.length == idxMove
+    choices.push([idxMove, score, idxTarget])
   end
 
   #-----------------------------------------------------------------------------
@@ -159,14 +158,13 @@ class Battle::AI
   def set_up_move_check_target(target)
     @target = (target) ? @battlers[target.index] : nil
     @target&.refresh_battler
-    if @target && @move.function_code == "UseLastMoveUsedByTarget"
-      if @target.battler.lastRegularMoveUsed &&
-         GameData::Move.exists?(@target.battler.lastRegularMoveUsed) &&
-         GameData::Move.get(@target.battler.lastRegularMoveUsed).has_flag?("CanMirrorMove")
-        @battle.moldBreaker = @user.has_mold_breaker?
-        mov = Battle::Move.from_pokemon_move(@battle, Pokemon::Move.new(@target.battler.lastRegularMoveUsed))
-        @move.set_up(mov)
-      end
+    return unless @target && @move.function_code == "UseLastMoveUsedByTarget"
+    if @target.battler.lastRegularMoveUsed &&
+       GameData::Move.exists?(@target.battler.lastRegularMoveUsed) &&
+       GameData::Move.get(@target.battler.lastRegularMoveUsed).has_flag?("CanMirrorMove")
+      @battle.moldBreaker = @user.has_mold_breaker?
+      mov = Battle::Move.from_pokemon_move(@battle, Pokemon::Move.new(@target.battler.lastRegularMoveUsed))
+      @move.set_up(mov)
     end
   end
 
@@ -195,7 +193,9 @@ class Battle::AI
   # no battle conditions change between now and using the move).
   def pbPredictMoveFailureAgainstTarget
     # Move effect-specific checks
-    return true if Battle::AI::Handlers.move_will_fail_against_target?(@move.function_code, @move, @user, @target, self, @battle)
+    if Battle::AI::Handlers.move_will_fail_against_target?(@move.function_code, @move, @user, @target, self, @battle)
+      return true
+    end
     # Immunity to priority moves because of Psychic Terrain
     return true if @battle.field.terrain == :Psychic && @target.battler.affectedByTerrain? &&
                    @target.opposes?(@user) && @move.rough_priority(@user) > 0
@@ -274,7 +274,7 @@ class Battle::AI
       # Modify the score according to the move's effect
       old_score = score
       score = Battle::AI::Handlers.apply_move_effect_score(@move.function_code,
-         score, @move, @user, self, @battle)
+                                                           score, @move, @user, self, @battle)
       PBDebug.log_score_change(score - old_score, "function code modifier (generic)")
       # Modify the score according to various other effects
       score = Battle::AI::Handlers.apply_general_move_score_modifiers(
@@ -303,7 +303,7 @@ class Battle::AI
       # Modify the score according to the move's effect against the target
       old_score = score
       score = Battle::AI::Handlers.apply_move_effect_against_target_score(@move.function_code,
-         MOVE_BASE_SCORE, @move, @user, @target, self, @battle)
+                                                                          MOVE_BASE_SCORE, @move, @user, @target, self, @battle)
       PBDebug.log_score_change(score - old_score, "function code modifier (against target)")
       # Modify the score according to various other effects against the target
       score = Battle::AI::Handlers.apply_general_move_against_target_score_modifiers(
@@ -381,13 +381,12 @@ class Battle::AI
       break
     end
     # Log the result
-    if @battle.choices[user_battler.index][2]
-      move_name = @battle.choices[user_battler.index][2].name
-      if @battle.choices[user_battler.index][3] >= 0
-        PBDebug.log("   => will use #{move_name} (target #{@battle.choices[user_battler.index][3]})")
-      else
-        PBDebug.log("   => will use #{move_name}")
-      end
+    return unless @battle.choices[user_battler.index][2]
+    move_name = @battle.choices[user_battler.index][2].name
+    if @battle.choices[user_battler.index][3] >= 0
+      PBDebug.log("   => will use #{move_name} (target #{@battle.choices[user_battler.index][3]})")
+    else
+      PBDebug.log("   => will use #{move_name}")
     end
   end
 end

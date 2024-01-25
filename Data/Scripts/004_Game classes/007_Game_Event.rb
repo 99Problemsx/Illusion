@@ -78,11 +78,9 @@ class Game_Event < Game_Character
   def switchIsOn?(id)
     switchname = $data_system.switches[id]
     return false if !switchname
-    if switchname[/^s\:/]
-      return eval($~.post_match)
-    else
-      return $game_switches[id]
-    end
+    return eval($~.post_match) if switchname[/^s:/]
+
+    return $game_switches[id]
   end
 
   def variable
@@ -186,9 +184,7 @@ class Game_Event < Game_Character
   def check_event_trigger_auto
     case @trigger
     when 2   # Event touch
-      if at_coordinate?($game_player.x, $game_player.y) && !jumping? && over_trigger?
-        start
-      end
+      start if at_coordinate?($game_player.x, $game_player.y) && !jumping? && over_trigger?
     when 3   # Autorun
       start
     end
@@ -285,18 +281,16 @@ class Game_Event < Game_Character
       refresh
     end
     check_event_trigger_auto
-    if @interpreter
-      @interpreter.setup(@list, @event.id, @map_id) if !@interpreter.running?
-      @interpreter.update
-    end
+    return unless @interpreter
+    @interpreter.setup(@list, @event.id, @map_id) if !@interpreter.running?
+    @interpreter.update
   end
 
   def update_move
     was_jumping = jumping?
     super
-    if was_jumping && !jumping? && !@transparent && (@tile_id > 0 || @character_name != "")
-      spriteset = $scene.spriteset(map_id)
-      spriteset&.addUserAnimation(Settings::DUST_ANIMATION_ID, self.x, self.y, true, 1)
-    end
+    return unless was_jumping && !jumping? && !@transparent && (@tile_id > 0 || @character_name != "")
+    spriteset = $scene.spriteset(map_id)
+    spriteset&.addUserAnimation(Settings::DUST_ANIMATION_ID, self.x, self.y, true, 1)
   end
 end

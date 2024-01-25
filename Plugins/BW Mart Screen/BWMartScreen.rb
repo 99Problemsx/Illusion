@@ -161,11 +161,9 @@ class SellAdapter
   end
 
   def getDisplayPrice(item)
-    if @adapter.showQuantity?(item)
-      return sprintf("x%d", @adapter.getQuantity(item))
-    else
-      return ""
-    end
+    return sprintf("x%d", @adapter.getQuantity(item)) if @adapter.showQuantity?(item)
+
+    return ""
   end
 
   def isSelling?
@@ -243,7 +241,7 @@ class PokemonMart_Scene
     # Scroll right before showing screen
     pbScrollMap(6, 5, 5)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @stock = stock
     @adapter = adapter
     @sprites = {}
@@ -312,14 +310,14 @@ class PokemonMart_Scene
     @subscene = PokemonBag_Scene.new
     @adapter = adapter
     @viewport2 = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport2.z = 99999
+    @viewport2.z = 99_999
     pbWait(0.4) do |delta_t|
       @viewport2.color.alpha = lerp(0, 255, 0.4, delta_t)
     end
     @viewport2.color.alpha = 255
     @subscene.pbStartScene(bag)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["helpwindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["helpwindow"])
@@ -404,9 +402,7 @@ class PokemonMart_Scene
         return if brief
         pbRefresh if i == 0
       end
-      if Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
-        cw.resume if cw.busy?
-      end
+      cw.resume if (Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)) && cw.busy?
       return if refreshed_after_busy && System.uptime - timer_start >= 1.5
     end
   end
@@ -429,11 +425,10 @@ class PokemonMart_Scene
         yielded = true
       end
       pbRefresh if !cw.busy? && wasbusy
-      if Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
-        if cw.resume && !cw.busy?
-          @sprites["helpwindow"].visible = false
-          break
-        end
+      next unless Input.trigger?(Input::USE) || Input.trigger?(Input::BACK)
+      if cw.resume && !cw.busy?
+        @sprites["helpwindow"].visible = false
+        break
       end
     end
   end
@@ -462,11 +457,10 @@ class PokemonMart_Scene
         @sprites["helpwindow"].visible = false
         return false
       end
-      if Input.trigger?(Input::USE) && dw.resume && !dw.busy?
-        cw.dispose
-        @sprites["helpwindow"].visible = false
-        return (cw.index == 0)
-      end
+      next unless Input.trigger?(Input::USE) && dw.resume && !dw.busy?
+      cw.dispose
+      @sprites["helpwindow"].visible = false
+      return (cw.index == 0)
     end
   end
 
@@ -549,23 +543,19 @@ class PokemonMart_Scene
           pbPlayCloseMenuSE
           return nil
         elsif Input.trigger?(Input::USE)
-          if itemwindow.index < @stock.length
-            pbRefresh
-            return @stock[itemwindow.index]
-          else
-            return nil
-          end
+          return nil unless itemwindow.index < @stock.length
+          pbRefresh
+          return @stock[itemwindow.index]
+
         end
       end
     end
   end
 
   def pbChooseSellItem
-    if @subscene
-      return @subscene.pbChooseItem
-    else
-      return pbChooseBuyItem
-    end
+    return @subscene.pbChooseItem if @subscene
+
+    return pbChooseBuyItem
   end
 end
 
@@ -587,8 +577,8 @@ class PokemonMartScreen
     return @scene.pbDisplay(msg)
   end
 
-  def pbDisplayPaused(msg, &block)
-    return @scene.pbDisplayPaused(msg, &block)
+  def pbDisplayPaused(msg, ...)
+    return @scene.pbDisplayPaused(msg, ...)
   end
 
   def pbBuyScreen
@@ -661,9 +651,7 @@ class PokemonMartScreen
         end
       else
         added.times do
-          if !@adapter.removeItem(item)
-            raise _INTL("Failed to delete stored items")
-          end
+          raise _INTL("Failed to delete stored items") if !@adapter.removeItem(item)
         end
         pbDisplayPaused(_INTL("You have no room in your Bag."))
       end

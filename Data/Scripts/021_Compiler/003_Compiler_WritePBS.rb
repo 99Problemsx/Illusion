@@ -6,9 +6,7 @@ module Compiler
     game_data.each { |element| ret.push(element.pbs_file_suffix) if !ret.include?(element.pbs_file_suffix) }
     ret.each_with_index do |element, i|
       ret[i] = [sprintf("PBS/%s.txt", game_data::PBS_BASE_FILENAME), element]
-      if !nil_or_empty?(element)
-        ret[i][0] = sprintf("PBS/%s_%s.txt", game_data::PBS_BASE_FILENAME, element)
-      end
+      ret[i][0] = sprintf("PBS/%s_%s.txt", game_data::PBS_BASE_FILENAME, element) if !nil_or_empty?(element)
     end
     return ret
   end
@@ -17,7 +15,7 @@ module Compiler
     file.write(0xEF.chr)
     file.write(0xBB.chr)
     file.write(0xBF.chr)
-    file.write("\# " + _INTL("See the documentation on the wiki to learn how to edit this file.") + "\r\n")
+    file.write("# " + _INTL("See the documentation on the wiki to learn how to edit this file.") + "\r\n")
   end
 
   def write_PBS_file_generic(game_data)
@@ -34,7 +32,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])
@@ -109,7 +107,7 @@ module Compiler
     mapinfos = pbLoadMapInfos
     File.open(path, "wb") do |f|
       add_PBS_header_to_file(f)
-      f.write("\#-------------------------------\r\n")
+      f.write("#-------------------------------\r\n")
       conndata.each do |conn|
         if mapinfos
           # Skip if map no longer exists
@@ -173,7 +171,9 @@ module Compiler
   #=============================================================================
   def write_pokemon
     paths = []
-    GameData::Species.each_species { |element| paths.push(element.pbs_file_suffix) if !paths.include?(element.pbs_file_suffix) }
+    GameData::Species.each_species { |element|
+      paths.push(element.pbs_file_suffix) if !paths.include?(element.pbs_file_suffix)
+    }
     paths.each_with_index do |element, i|
       paths[i] = [sprintf("PBS/%s.txt", GameData::Species::PBS_BASE_FILENAME[0]), element]
       if !nil_or_empty?(element)
@@ -192,7 +192,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])
@@ -252,7 +252,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName", true), f, schema["SectionName"])
@@ -320,7 +320,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])
@@ -368,7 +368,7 @@ module Compiler
       add_PBS_header_to_file(f)
       # Write each Dex list in turn
       dex_lists.each_with_index do |list, index|
-        f.write("\#-------------------------------\r\n")
+        f.write("#-------------------------------\r\n")
         f.write("[#{index}]")
         comma = false
         current_family = nil
@@ -413,7 +413,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           map_name = (map_infos[element.map]) ? " # #{map_infos[element.map].name}" : ""
           if element.version > 0
             f.write(sprintf("[%03d,%d]%s\r\n", element.map, element.version, map_name))
@@ -466,7 +466,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])
@@ -509,14 +509,18 @@ module Compiler
   # Save trainer list data to PBS file
   #=============================================================================
   def write_trainer_lists(path = "PBS/battle_facility_lists.txt")
-    trainerlists = load_data("Data/trainer_lists.dat") rescue nil
+    trainerlists = begin
+      load_data("Data/trainer_lists.dat")
+    rescue StandardError
+      nil
+    end
     return if !trainerlists
     write_pbs_file_message_start(path)
     File.open(path, "wb") do |f|
       add_PBS_header_to_file(f)
       trainerlists.each do |tr|
         echo "."
-        f.write("\#-------------------------------\r\n")
+        f.write("#-------------------------------\r\n")
         f.write(((tr[5]) ? "[DefaultTrainerList]" : "[TrainerList]") + "\r\n")
         f.write("Trainers = " + tr[3] + "\r\n")
         f.write("Pokemon = " + tr[4] + "\r\n")
@@ -545,7 +549,7 @@ module Compiler
       add_PBS_header_to_file(f)
       bttrainers.length.times do |i|
         next if !bttrainers[i]
-        f.write("\#-------------------------------\r\n")
+        f.write("#-------------------------------\r\n")
         f.write(sprintf("[%03d]\r\n", i))
         btTrainersRequiredTypes.each_key do |key|
           schema = btTrainersRequiredTypes[key]
@@ -586,7 +590,7 @@ module Compiler
     }
     File.open(filename, "wb") do |f|
       add_PBS_header_to_file(f)
-      f.write("\#-------------------------------\r\n")
+      f.write("#-------------------------------\r\n")
       btpokemon.length.times do |i|
         Graphics.update if i % 500 == 0
         pkmn = btpokemon[i]
@@ -633,9 +637,7 @@ module Compiler
     end
     paths.each_with_index do |element, i|
       paths[i] = [sprintf("PBS/%s.txt", GameData::Metadata::PBS_BASE_FILENAME), element]
-      if !nil_or_empty?(element)
-        paths[i][0] = sprintf("PBS/%s_%s.txt", GameData::Metadata::PBS_BASE_FILENAME, element)
-      end
+      paths[i][0] = sprintf("PBS/%s_%s.txt", GameData::Metadata::PBS_BASE_FILENAME, element) if !nil_or_empty?(element)
     end
     global_schema = GameData::Metadata.schema
     player_schema = GameData::PlayerMetadata.schema
@@ -649,7 +651,7 @@ module Compiler
           schema = player_schema if game_data == GameData::PlayerMetadata
           game_data.each do |element|
             next if element.pbs_file_suffix != path[1]
-            f.write("\#-------------------------------\r\n")
+            f.write("#-------------------------------\r\n")
             if schema["SectionName"]
               f.write("[")
               pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])
@@ -699,7 +701,7 @@ module Compiler
           echo "." if idx % 100 == 0
           Graphics.update if idx % 500 == 0
           idx += 1
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           map_name = (map_infos && map_infos[element.id]) ? map_infos[element.id].name : nil
           f.write(sprintf("[%03d]", element.id))
           f.write(sprintf("   # %s", map_name)) if map_name
@@ -742,7 +744,7 @@ module Compiler
         # Write each element in turn
         GameData::DungeonTileset.each do |element|
           next if element.pbs_file_suffix != path[1]
-          f.write("\#-------------------------------\r\n")
+          f.write("#-------------------------------\r\n")
           if schema["SectionName"]
             f.write("[")
             pbWriteCsvRecord(element.get_property_for_PBS("SectionName"), f, schema["SectionName"])

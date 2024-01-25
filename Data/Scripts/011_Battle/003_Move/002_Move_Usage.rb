@@ -2,11 +2,15 @@ class Battle::Move
   #=============================================================================
   # Effect methods per move usage
   #=============================================================================
-  def pbCanChooseMove?(user, commandPhase, showMessages); return true; end   # For Belch
-  def pbDisplayChargeMessage(user); end   # For Focus Punch/shell Trap/Beak Blast
+  # For Belch
+  def pbCanChooseMove?(user, commandPhase, showMessages); return true; end
+  # For Focus Punch/shell Trap/Beak Blast
+  def pbDisplayChargeMessage(user); end
   def pbOnStartUse(user, targets); end
-  def pbAddTarget(targets, user); end   # For Counter, etc. and Bide
-  def pbModifyTargets(targets, user); end   # For Dragon Darts
+  # For Counter, etc. and Bide
+  def pbAddTarget(targets, user); end
+  # For Dragon Darts
+  def pbModifyTargets(targets, user); end
 
   # Reset move usage counters (child classes can increment them).
   def pbChangeUsageCounters(user, specialUsage)
@@ -61,8 +65,10 @@ class Battle::Move
   def pbOverrideSuccessCheckPerHit(user, target); return false; end
   def pbCrashDamage(user); end
   def pbInitialEffect(user, targets, hitNum); end
-  def pbDesignateTargetsForHit(targets, hitNum); return targets; end   # For Dragon Darts
-  def pbRepeatHit?; return false; end   # For Dragon Darts
+  # For Dragon Darts
+  def pbDesignateTargetsForHit(targets, hitNum); return targets; end
+  # For Dragon Darts
+  def pbRepeatHit?; return false; end
 
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
     return if !showAnimation
@@ -78,7 +84,8 @@ class Battle::Move
   def pbEffectAgainstTarget(user, target); end
   def pbEffectGeneral(user); end
   def pbAdditionalEffect(user, target); end
-  def pbEffectAfterAllHits(user, target); end   # Move effects that occur after all hits
+  # Move effects that occur after all hits
+  def pbEffectAfterAllHits(user, target); end
   def pbSwitchOutTargetEffect(user, targets, numHits, switched_battlers); end
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers); end
 
@@ -106,8 +113,8 @@ class Battle::Move
   def pbMoveFailedLastInRound?(user, showMessage = true)
     unmoved = @battle.allBattlers.any? do |b|
       next b.index != user.index &&
-           [:UseMove, :Shift].include?(@battle.choices[b.index][0]) &&
-           !b.movedThisRound?
+        [:UseMove, :Shift].include?(@battle.choices[b.index][0]) &&
+        !b.movedThisRound?
     end
     if !unmoved
       @battle.pbDisplay(_INTL("But it failed!")) if showMessage
@@ -316,13 +323,10 @@ class Battle::Move
       end
     end
     # Effectiveness message, for moves with 1 hit
-    if !multiHitMove? && user.effects[PBEffects::ParentalBond] == 0
-      pbEffectivenessMessage(user, target, numTargets)
-    end
-    if target.damageState.substitute && target.effects[PBEffects::Substitute] == 0
-      target.effects[PBEffects::Substitute] = 0
-      @battle.pbDisplay(_INTL("{1}'s substitute faded!", target.pbThis))
-    end
+    pbEffectivenessMessage(user, target, numTargets) if !multiHitMove? && user.effects[PBEffects::ParentalBond] == 0
+    return unless target.damageState.substitute && target.effects[PBEffects::Substitute] == 0
+    target.effects[PBEffects::Substitute] = 0
+    @battle.pbDisplay(_INTL("{1}'s substitute faded!", target.pbThis))
   end
 
   def pbEndureKOMessage(target)

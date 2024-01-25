@@ -4,7 +4,7 @@
 class TilesetRearranger
   def choose_tileset
     commands = []
-    for i in 1...@tilesets_data.length
+    (1...@tilesets_data.length).each do |i|
       commands.push(sprintf("%03d %s", i, @tilesets_data[i].name))
     end
     ret = pbShowCommands(nil, commands, -1, (@tileset_id || 1) - 1)
@@ -15,13 +15,13 @@ class TilesetRearranger
 
   def open_menu
     commands = [
-       _INTL("Go to bottom"),
-       _INTL("Go to top"),
-       _INTL("Clear all unused tiles"),
-       _INTL("Delete all unused rows"),
-       _INTL("List maps using this tileset"),
-       _INTL("Change tileset"),
-       _INTL("Cancel")
+      _INTL("Go to bottom"),
+      _INTL("Go to top"),
+      _INTL("Clear all unused tiles"),
+      _INTL("Delete all unused rows"),
+      _INTL("List maps using this tileset"),
+      _INTL("Change tileset"),
+      _INTL("Cancel")
     ]
     case pbShowCommands(nil, commands, -1)
     when 0   # Go to bottom
@@ -39,8 +39,8 @@ class TilesetRearranger
       loop do
         break if row >= @height
         used = false
-        for i in 0...TILES_PER_ROW
-          tile_id = @tile_ID_map[row * TILES_PER_ROW + i]
+        (0...TILES_PER_ROW).each do |i|
+          tile_id = @tile_ID_map[(row * TILES_PER_ROW) + i]
           next if !tile_id || tile_id < 0 || !@used_ids[TILESET_START_ID + tile_id]
           used = true
           break

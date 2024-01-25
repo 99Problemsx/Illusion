@@ -104,7 +104,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
                                      self.height - self.borderY)
     self.contents.clear
     drawTextEx(self.contents, 0, -2, self.contents.width, 0,   # TEXT OFFSET
-               @text.gsub(/\r/, ""), @baseColor, @shadowColor)
+               @text.gsub("\r", ""), @baseColor, @shadowColor)
   end
 end
 
@@ -406,22 +406,21 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     return if !busy?
     return if @textchars[@curchar] == "\n"
     resume
-    if curcharSkip(true)
-      visiblelines = (self.height - self.borderY) / @lineHeight
-      if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
-        @scroll_timer_start = System.uptime
-      elsif @textchars[@curchar] == "\1"
-        @pausing = true if @curchar < @numtextchars - 1
-        self.startPause
-        refresh
-      end
+    return unless curcharSkip(true)
+    visiblelines = (self.height - self.borderY) / @lineHeight
+    if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+      @scroll_timer_start = System.uptime
+    elsif @textchars[@curchar] == "\1"
+      @pausing = true if @curchar < @numtextchars - 1
+      self.startPause
+      refresh
     end
   end
 
   def allocPause
     return if @pausesprite
     @pausesprite = AnimatedSprite.create("Graphics/UI/pause_arrow", 4, 3)
-    @pausesprite.z       = 100000
+    @pausesprite.z       = 100_000
     @pausesprite.visible = false
   end
 
@@ -565,17 +564,15 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     end
     @lastchar = @curchar
     # Keep displaying more text
-    if show_more_characters
-      @display_timer += delta_t
-      if curcharSkip
-        if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
-          @scroll_timer_start = time_now
-        elsif @textchars[@curchar] == "\1"
-          @pausing = true if @curchar < @numtextchars - 1
-          self.startPause
-          refresh
-        end
-      end
+    return unless show_more_characters
+    @display_timer += delta_t
+    return unless curcharSkip
+    if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+      @scroll_timer_start = time_now
+    elsif @textchars[@curchar] == "\1"
+      @pausing = true if @curchar < @numtextchars - 1
+      self.startPause
+      refresh
     end
   end
 
@@ -692,39 +689,38 @@ class Window_InputNumberPokemon < SpriteWindow_Base
       @cursor_shown = cursor_to_show
       refresh
     end
-    if self.active
-      if Input.repeat?(Input::UP) || Input.repeat?(Input::DOWN)
+    return unless self.active
+    if Input.repeat?(Input::UP) || Input.repeat?(Input::DOWN)
+      pbPlayCursorSE
+      if @index == 0 && @sign
+        @negative = !@negative
+      else
+        place = 10**(digits - 1 - @index)
+        n = @number / place % 10
+        @number -= n * place
+        if Input.repeat?(Input::UP)
+          n = (n + 1) % 10
+        elsif Input.repeat?(Input::DOWN)
+          n = (n + 9) % 10
+        end
+        @number += n * place
+      end
+      refresh
+    elsif Input.repeat?(Input::RIGHT)
+      if digits >= 2
         pbPlayCursorSE
-        if @index == 0 && @sign
-          @negative = !@negative
-        else
-          place = 10**(digits - 1 - @index)
-          n = @number / place % 10
-          @number -= n * place
-          if Input.repeat?(Input::UP)
-            n = (n + 1) % 10
-          elsif Input.repeat?(Input::DOWN)
-            n = (n + 9) % 10
-          end
-          @number += n * place
-        end
+        @index = (@index + 1) % digits
+        @cursor_timer_start = System.uptime
+        @cursor_shown = true
         refresh
-      elsif Input.repeat?(Input::RIGHT)
-        if digits >= 2
-          pbPlayCursorSE
-          @index = (@index + 1) % digits
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          refresh
-        end
-      elsif Input.repeat?(Input::LEFT)
-        if digits >= 2
-          pbPlayCursorSE
-          @index = (@index + digits - 1) % digits
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          refresh
-        end
+      end
+    elsif Input.repeat?(Input::LEFT)
+      if digits >= 2
+        pbPlayCursorSE
+        @index = (@index + digits - 1) % digits
+        @cursor_timer_start = System.uptime
+        @cursor_shown = true
+        refresh
       end
     end
   end
@@ -740,10 +736,9 @@ class Window_InputNumberPokemon < SpriteWindow_Base
                      y - 2 + (self.contents.text_offset_y || 0),   # TEXT OFFSET (the - 2)
                      textwidth + 4, 32, text, @baseColor, @shadowColor)
     # Draw cursor
-    if @index == i && @active && @cursor_shown
-      self.contents.fill_rect(x + (12 - (textwidth / 2)), y + 28, textwidth, 4, @shadowColor)
-      self.contents.fill_rect(x + (12 - (textwidth / 2)), y + 28, textwidth - 2, 2, @baseColor)
-    end
+    return unless @index == i && @active && @cursor_shown
+    self.contents.fill_rect(x + (12 - (textwidth / 2)), y + 28, textwidth, 4, @shadowColor)
+    self.contents.fill_rect(x + (12 - (textwidth / 2)), y + 28, textwidth - 2, 2, @baseColor)
   end
 end
 
@@ -770,10 +765,9 @@ class SpriteWindow_Selectable < SpriteWindow_Base
   end
 
   def index=(index)
-    if @index != index
-      @index = index
-      priv_update_cursor_rect(true)
-    end
+    return unless @index != index
+    @index = index
+    priv_update_cursor_rect(true)
   end
 
   def rowHeight
@@ -781,12 +775,11 @@ class SpriteWindow_Selectable < SpriteWindow_Base
   end
 
   def rowHeight=(value)
-    if @row_height != value
-      oldTopRow = self.top_row
-      @row_height = [1, value].max
-      self.top_row = oldTopRow
-      update_cursor_rect
-    end
+    return unless @row_height != value
+    oldTopRow = self.top_row
+    @row_height = [1, value].max
+    self.top_row = oldTopRow
+    update_cursor_rect
   end
 
   def columns
@@ -794,10 +787,9 @@ class SpriteWindow_Selectable < SpriteWindow_Base
   end
 
   def columns=(value)
-    if @column_max != value
-      @column_max = [1, value].max
-      update_cursor_rect
-    end
+    return unless @column_max != value
+    @column_max = [1, value].max
+    update_cursor_rect
   end
 
   def columnSpacing
@@ -805,10 +797,9 @@ class SpriteWindow_Selectable < SpriteWindow_Base
   end
 
   def columnSpacing=(value)
-    if @column_spacing != value
-      @column_spacing = [0, value].max
-      update_cursor_rect
-    end
+    return unless @column_spacing != value
+    @column_spacing = [0, value].max
+    update_cursor_rect
   end
 
   def count
@@ -861,64 +852,63 @@ class SpriteWindow_Selectable < SpriteWindow_Base
 
   def update
     super
-    if self.active && @item_max > 0 && @index >= 0 && !@ignore_input
-      if Input.repeat?(Input::UP)
-        if @index >= @column_max ||
-           (Input.trigger?(Input::UP) && (@item_max % @column_max) == 0)
-          oldindex = @index
-          @index = (@index - @column_max + @item_max) % @item_max
-          if @index != oldindex
-            pbPlayCursorSE
-            update_cursor_rect
-          end
+    return unless self.active && @item_max > 0 && @index >= 0 && !@ignore_input
+    if Input.repeat?(Input::UP)
+      if @index >= @column_max ||
+         (Input.trigger?(Input::UP) && (@item_max % @column_max) == 0)
+        oldindex = @index
+        @index = (@index - @column_max + @item_max) % @item_max
+        if @index != oldindex
+          pbPlayCursorSE
+          update_cursor_rect
         end
-      elsif Input.repeat?(Input::DOWN)
-        if @index < @item_max - @column_max ||
-           (Input.trigger?(Input::DOWN) && (@item_max % @column_max) == 0)
-          oldindex = @index
-          @index = (@index + @column_max) % @item_max
-          if @index != oldindex
-            pbPlayCursorSE
-            update_cursor_rect
-          end
+      end
+    elsif Input.repeat?(Input::DOWN)
+      if @index < @item_max - @column_max ||
+         (Input.trigger?(Input::DOWN) && (@item_max % @column_max) == 0)
+        oldindex = @index
+        @index = (@index + @column_max) % @item_max
+        if @index != oldindex
+          pbPlayCursorSE
+          update_cursor_rect
         end
-      elsif Input.repeat?(Input::LEFT)
-        if @column_max >= 2 && @index > 0
-          oldindex = @index
-          @index -= 1
-          if @index != oldindex
-            pbPlayCursorSE
-            update_cursor_rect
-          end
+      end
+    elsif Input.repeat?(Input::LEFT)
+      if @column_max >= 2 && @index > 0
+        oldindex = @index
+        @index -= 1
+        if @index != oldindex
+          pbPlayCursorSE
+          update_cursor_rect
         end
-      elsif Input.repeat?(Input::RIGHT)
-        if @column_max >= 2 && @index < @item_max - 1
-          oldindex = @index
-          @index += 1
-          if @index != oldindex
-            pbPlayCursorSE
-            update_cursor_rect
-          end
+      end
+    elsif Input.repeat?(Input::RIGHT)
+      if @column_max >= 2 && @index < @item_max - 1
+        oldindex = @index
+        @index += 1
+        if @index != oldindex
+          pbPlayCursorSE
+          update_cursor_rect
         end
-      elsif Input.repeat?(Input::JUMPUP)
-        if @index > 0
-          oldindex = @index
-          @index = [self.index - self.page_item_max, 0].max
-          if @index != oldindex
-            pbPlayCursorSE
-            self.top_row -= self.page_row_max
-            update_cursor_rect
-          end
+      end
+    elsif Input.repeat?(Input::JUMPUP)
+      if @index > 0
+        oldindex = @index
+        @index = [self.index - self.page_item_max, 0].max
+        if @index != oldindex
+          pbPlayCursorSE
+          self.top_row -= self.page_row_max
+          update_cursor_rect
         end
-      elsif Input.repeat?(Input::JUMPDOWN)
-        if @index < @item_max - 1
-          oldindex = @index
-          @index = [self.index + self.page_item_max, @item_max - 1].min
-          if @index != oldindex
-            pbPlayCursorSE
-            self.top_row += self.page_row_max
-            update_cursor_rect
-          end
+      end
+    elsif Input.repeat?(Input::JUMPDOWN)
+      if @index < @item_max - 1
+        oldindex = @index
+        @index = [self.index + self.page_item_max, @item_max - 1].min
+        if @index != oldindex
+          pbPlayCursorSE
+          self.top_row += self.page_row_max
+          update_cursor_rect
         end
       end
     end
@@ -946,25 +936,25 @@ class SpriteWindow_Selectable < SpriteWindow_Base
     row = @index / @column_max
     # This code makes lists scroll only when the cursor hits the top and bottom
     # of the visible list.
-#    if row < self.top_row
-#      self.top_row = row
-#      dorefresh=true
-#    end
-#    if row > self.top_row + (self.page_row_max - 1)
-#      self.top_row = row - (self.page_row_max - 1)
-#      dorefresh=true
-#    end
-#    if oldindex-self.top_item>=((self.page_item_max - 1)/2)
-#      self.top_row+=1
-#    end
-#    self.top_row = [self.top_row, self.row_max - self.page_row_max].min
+    #    if row < self.top_row
+    #      self.top_row = row
+    #      dorefresh=true
+    #    end
+    #    if row > self.top_row + (self.page_row_max - 1)
+    #      self.top_row = row - (self.page_row_max - 1)
+    #      dorefresh=true
+    #    end
+    #    if oldindex-self.top_item>=((self.page_item_max - 1)/2)
+    #      self.top_row+=1
+    #    end
+    #    self.top_row = [self.top_row, self.row_max - self.page_row_max].min
     # This code makes the cursor stay in the middle of the visible list as much
     # as possible.
     new_top_row = row - ((self.page_row_max - 1) / 2).floor
     new_top_row = [[new_top_row, self.row_max - self.page_row_max].min, 0].max
     if self.top_row != new_top_row
       self.top_row = new_top_row
-#      dorefresh = true
+      #      dorefresh = true
     end
     # End of code
     cursor_width = (self.width - self.borderX) / @column_max
@@ -984,8 +974,8 @@ module UpDownArrowMixin
     @downarrow = AnimatedSprite.create("Graphics/UI/down_arrow", 8, 2, self.viewport)
     RPG::Cache.retain("Graphics/UI/up_arrow")
     RPG::Cache.retain("Graphics/UI/down_arrow")
-    @uparrow.z   = 99998
-    @downarrow.z = 99998
+    @uparrow.z   = 99_998
+    @downarrow.z = 99_998
     @uparrow.visible   = false
     @downarrow.visible = false
     @uparrow.play
@@ -1214,18 +1204,16 @@ class Window_CommandPokemon < Window_DrawableCommand
 
   def width=(value)
     super
-    if !@starting
-      self.index = self.index
-      self.update_cursor_rect
-    end
+    return if @starting
+    self.index = self.index
+    self.update_cursor_rect
   end
 
   def height=(value)
     super
-    if !@starting
-      self.index = self.index
-      self.update_cursor_rect
-    end
+    return if @starting
+    self.index = self.index
+    self.update_cursor_rect
   end
 
   def resizeToFit(commands, width = nil)
@@ -1324,19 +1312,17 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
   def width=(value)
     oldvalue = self.width
     super
-    if !@starting && oldvalue != value
-      self.index = self.index
-      self.update_cursor_rect
-    end
+    return unless !@starting && oldvalue != value
+    self.index = self.index
+    self.update_cursor_rect
   end
 
   def height=(value)
     oldvalue = self.height
     super
-    if !@starting && oldvalue != value
-      self.index = self.index
-      self.update_cursor_rect
-    end
+    return unless !@starting && oldvalue != value
+    self.index = self.index
+    self.update_cursor_rect
   end
 
   def resizeToFit(commands, width = nil)
@@ -1353,7 +1339,7 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
   def drawItem(index, _count, rect)
     pbSetSystemFont(self.contents)
     rect = drawCursor(index, rect)
-    if toUnformattedText(@commands[index]).gsub(/\n/, "") == @commands[index]
+    if toUnformattedText(@commands[index]).gsub("\n", "") == @commands[index]
       # Use faster alternative for unformatted text without line breaks
       pbDrawShadowText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
                        rect.width, rect.height, @commands[index], self.baseColor, self.shadowColor)

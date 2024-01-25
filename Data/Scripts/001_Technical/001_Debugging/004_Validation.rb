@@ -10,9 +10,7 @@ module Kernel
   #   validate foo => [Sprite, Bitmap, Viewport] # raises an error if foo isn't a Sprite, Bitmap or Viewport
   # @raise [ArgumentError] if validation fails
   def validate(value_pairs)
-    unless value_pairs.is_a?(Hash)
-      raise ArgumentError, "Non-hash argument #{value_pairs.inspect} passed into validate."
-    end
+    raise ArgumentError, "Non-hash argument #{value_pairs.inspect} passed into validate." unless value_pairs.is_a?(Hash)
     errors = value_pairs.map do |value, condition|
       if condition.is_a?(Array)
         unless condition.any? { |klass| value.is_a?(klass) }

@@ -8,9 +8,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "shadow_pokemon.dat"
-    PBS_BASE_FILENAME = "shadow_pokemon"
+    DATA = {}.freeze
+    DATA_FILENAME = "shadow_pokemon.dat".freeze
+    PBS_BASE_FILENAME = "shadow_pokemon".freeze
     OPTIONAL = true
 
     SCHEMA = {
@@ -18,7 +18,7 @@ module GameData
       "GaugeSize"   => [:gauge_size, "v"],
       "Moves"       => [:moves,      "*e", :Move],
       "Flags"       => [:flags,      "*s"]
-    }
+    }.freeze
     HEART_GAUGE_SIZE = 4000   # Default gauge size
 
     extend ClassMethodsSymbols
