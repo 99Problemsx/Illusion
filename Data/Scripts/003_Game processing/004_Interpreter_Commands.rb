@@ -129,9 +129,8 @@ class Interpreter
     @list = nil
     end_follower_overrides
     # If main map event and event ID are valid, unlock event
-    if @main && @event_id > 0 && $game_map.events[@event_id]
-      $game_map.events[@event_id].unlock
-    end
+    return unless @main && @event_id > 0 && $game_map.events[@event_id]
+    $game_map.events[@event_id].unlock
   end
 
   #-----------------------------------------------------------------------------
@@ -394,7 +393,7 @@ class Interpreter
     case @parameters[0]
     when 0   # switch
       switch_name = $data_system.switches[@parameters[1]]
-      if switch_name && switch_name[/^s\:/]
+      if switch_name && switch_name[/^s:/]
         result = (eval($~.post_match) == (@parameters[2] == 0))
       else
         result = ($game_switches[@parameters[1]] == (@parameters[2] == 0))
@@ -420,14 +419,14 @@ class Interpreter
         sec = $game_system.timer
         result = (@parameters[2] == 0) ? (sec >= @parameters[1]) : (sec <= @parameters[1])
       end
-#    when 4, 5   # actor, enemy
+    #    when 4, 5   # actor, enemy
     when 6   # character
       character = get_character(@parameters[1])
       result = (character.direction == @parameters[2]) if character
     when 7   # gold
       gold = $player.money
       result = (@parameters[2] == 0) ? (gold >= @parameters[1]) : (gold <= @parameters[1])
-#    when 8, 9, 10   # item, weapon, armor
+    #    when 8, 9, 10   # item, weapon, armor
     when 11   # button
       result = Input.press?(@parameters[1])
     when 12   # script
@@ -573,7 +572,7 @@ class Interpreter
       value = $game_variables[@parameters[4]]
     when 2   # random number
       value = @parameters[4] + rand(@parameters[5] - @parameters[4] + 1)
-#    when 3, 4, 5   # item, actor, enemy
+    #    when 3, 4, 5   # item, actor, enemy
     when 6   # character
       character = get_character(@parameters[4])
       if character
@@ -660,10 +659,14 @@ class Interpreter
     return true
   end
 
-  def command_126; command_dummy; end   # Change Items
-  def command_127; command_dummy; end   # Change Weapons
-  def command_128; command_dummy; end   # Change Armor
-  def command_129; command_dummy; end   # Change Party Member
+  # Change Items
+  def command_126; command_dummy; end
+  # Change Weapons
+  def command_127; command_dummy; end
+  # Change Armor
+  def command_128; command_dummy; end
+  # Change Party Member
+  def command_129; command_dummy; end
 
   #-----------------------------------------------------------------------------
   # * Change Windowskin
@@ -1061,11 +1064,16 @@ class Interpreter
     return true
   end
 
-  def command_301; command_dummy; end   # Battle Processing
-  def command_601; command_if(0); end   # If Win
-  def command_602; command_if(1); end   # If Escape
-  def command_603; command_if(2); end   # If Lose
-  def command_302; command_dummy; end   # Shop Processing
+  # Battle Processing
+  def command_301; command_dummy; end
+  # If Win
+  def command_601; command_if(0); end
+  # If Escape
+  def command_602; command_if(1); end
+  # If Lose
+  def command_603; command_if(2); end
+  # Shop Processing
+  def command_302; command_dummy; end
 
   #-----------------------------------------------------------------------------
   # * Name Input Processing
@@ -1089,9 +1097,12 @@ class Interpreter
     return true
   end
 
-  def command_311; command_dummy; end   # Change HP
-  def command_312; command_dummy; end   # Change SP
-  def command_313; command_dummy; end   # Change State
+  # Change HP
+  def command_311; command_dummy; end
+  # Change SP
+  def command_312; command_dummy; end
+  # Change State
+  def command_313; command_dummy; end
 
   #-----------------------------------------------------------------------------
   # * Recover All
@@ -1107,24 +1118,42 @@ class Interpreter
     return true
   end
 
-  def command_315; command_dummy; end   # Change EXP
-  def command_316; command_dummy; end   # Change Level
-  def command_317; command_dummy; end   # Change Parameters
-  def command_318; command_dummy; end   # Change Skills
-  def command_319; command_dummy; end   # Change Equipment
-  def command_320; command_dummy; end   # Change Actor Name
-  def command_321; command_dummy; end   # Change Actor Class
-  def command_322; command_dummy; end   # Change Actor Graphic
-  def command_331; command_dummy; end   # Change Enemy HP
-  def command_332; command_dummy; end   # Change Enemy SP
-  def command_333; command_dummy; end   # Change Enemy State
-  def command_334; command_dummy; end   # Enemy Recover All
-  def command_335; command_dummy; end   # Enemy Appearance
-  def command_336; command_dummy; end   # Enemy Transform
-  def command_337; command_dummy; end   # Show Battle Animation
-  def command_338; command_dummy; end   # Deal Damage
-  def command_339; command_dummy; end   # Force Action
-  def command_340; command_dummy; end   # Abort Battle
+  # Change EXP
+  def command_315; command_dummy; end
+  # Change Level
+  def command_316; command_dummy; end
+  # Change Parameters
+  def command_317; command_dummy; end
+  # Change Skills
+  def command_318; command_dummy; end
+  # Change Equipment
+  def command_319; command_dummy; end
+  # Change Actor Name
+  def command_320; command_dummy; end
+  # Change Actor Class
+  def command_321; command_dummy; end
+  # Change Actor Graphic
+  def command_322; command_dummy; end
+  # Change Enemy HP
+  def command_331; command_dummy; end
+  # Change Enemy SP
+  def command_332; command_dummy; end
+  # Change Enemy State
+  def command_333; command_dummy; end
+  # Enemy Recover All
+  def command_334; command_dummy; end
+  # Enemy Appearance
+  def command_335; command_dummy; end
+  # Enemy Transform
+  def command_336; command_dummy; end
+  # Show Battle Animation
+  def command_337; command_dummy; end
+  # Deal Damage
+  def command_338; command_dummy; end
+  # Force Action
+  def command_339; command_dummy; end
+  # Abort Battle
+  def command_340; command_dummy; end
 
   #-----------------------------------------------------------------------------
   # * Call Menu Screen

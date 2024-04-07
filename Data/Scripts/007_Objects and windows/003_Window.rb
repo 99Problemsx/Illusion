@@ -131,24 +131,23 @@ class Window
   end
 
   def dispose
-    if !self.disposed?
-      @sprites.each do |i|
-        i[1]&.dispose
-        @sprites[i[0]] = nil
-      end
-      @sidebitmaps.each_with_index do |bitmap, i|
-        bitmap&.dispose
-        @sidebitmaps[i] = nil
-      end
-      @blankcontents.dispose
-      @cursorbitmap&.dispose
-      @backbitmap&.dispose
-      @sprites.clear
-      @sidebitmaps.clear
-      @_windowskin = nil
-      @_contents = nil
-      @disposed = true
+    return if self.disposed?
+    @sprites.each do |i|
+      i[1]&.dispose
+      @sprites[i[0]] = nil
     end
+    @sidebitmaps.each_with_index do |bitmap, i|
+      bitmap&.dispose
+      @sidebitmaps[i] = nil
+    end
+    @blankcontents.dispose
+    @cursorbitmap&.dispose
+    @backbitmap&.dispose
+    @sprites.clear
+    @sidebitmaps.clear
+    @_windowskin = nil
+    @_contents = nil
+    @disposed = true
   end
 
   def openness=(value)
@@ -395,7 +394,7 @@ class Window
       @sprites["contents"].visible = @visible && @openness == 255
       @sprites["pause"].visible = @visible && @pause
       @sprites["cursor"].visible = @visible && @openness == 255
-      hascontents = (@contents && !@contents.disposed?)
+      hascontents = @contents && !@contents.disposed?
       @sprites["scroll0"].visible = @visible && hascontents && @oy > 0
       @sprites["scroll1"].visible = @visible && hascontents && @ox > 0
       @sprites["scroll2"].visible = @visible && hascontents &&
@@ -570,9 +569,7 @@ class Window
         else
           tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, backRect)
         end
-        if blindsRect
-          tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, blindsRect)
-        end
+        tileBitmap(@backbitmap, @sprites["back"].src_rect, @_windowskin, blindsRect) if blindsRect
       else
         @sprites["back"].visible = false
         @sprites["back"].src_rect.set(0, 0, 0, 0)

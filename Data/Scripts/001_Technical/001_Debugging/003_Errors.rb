@@ -1,10 +1,10 @@
 #===============================================================================
 # Exceptions and critical code
 #===============================================================================
-class Reset < Exception
+class Reset < StandardError
 end
 
-class EventScriptError < Exception
+class EventScriptError < StandardError
   attr_accessor :event_message
 
   def initialize(message)
@@ -24,7 +24,11 @@ def pbGetExceptionMessage(e, _script = "")
     filename = emessage.sub("No such file or directory - ", "")
     emessage = "File #{filename} not found."
   end
-  emessage.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[$1.to_i][1] } rescue nil
+  begin
+    emessage.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[Regexp.last_match(1).to_i][1] }
+  rescue StandardError
+    nil
+  end
   return emessage
 end
 
@@ -46,7 +50,11 @@ def pbPrintException(e)
       maxlength = ($INTERNAL) ? 25 : 10
       e.backtrace[0, maxlength].each { |i| backtrace_text += "#{i}\r\n" }
     end
-    backtrace_text.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[$1.to_i][1] } rescue nil
+    begin
+      backtrace_text.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[Regexp.last_match(1).to_i][1] }
+    rescue StandardError
+      nil
+    end
     message += backtrace_text
   end
   # output to log
@@ -80,14 +88,12 @@ def pbCriticalCode
     ret = 1
   rescue Exception
     e = $!
-    if e.is_a?(Reset) || e.is_a?(SystemExit)
-      raise
-    else
-      pbPrintException(e)
-      if e.is_a?(Hangup)
-        ret = 2
-        raise Reset.new
-      end
+    raise if e.is_a?(Reset) || e.is_a?(SystemExit)
+
+    pbPrintException(e)
+    if e.is_a?(Hangup)
+      ret = 2
+      raise Reset
     end
   end
   return ret

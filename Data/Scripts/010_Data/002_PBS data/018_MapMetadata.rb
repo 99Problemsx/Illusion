@@ -26,9 +26,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "map_metadata.dat"
-    PBS_BASE_FILENAME = "map_metadata"
+    DATA = {}.freeze
+    DATA_FILENAME = "map_metadata.dat".freeze
+    PBS_BASE_FILENAME = "map_metadata".freeze
 
     SCHEMA = {
       "SectionName"       => [:id,                   "u"],
@@ -55,7 +55,7 @@ module GameData
       "MapSize"           => [:town_map_size,        "us"],
       "Environment"       => [:battle_environment,   "e", :Environment],
       "Flags"             => [:flags,                "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsIDNumbers
     include InstanceMethods
@@ -85,7 +85,7 @@ module GameData
         ["WildCaptureME",     MEProperty,              _INTL("Default ME played after catching a wild Pokémon on this map.")],
         ["MapSize",           MapSizeProperty,         _INTL("The width of the map in Town Map squares, and a string indicating which squares are part of this map.")],
         ["Environment",       GameDataProperty.new(:Environment), _INTL("The default battle environment for battles on this map.")],
-        ["Flags",             StringListProperty,      _INTL("Words/phrases that distinguish this map from others.")]
+        ["Flags",             StringListProperty, _INTL("Words/phrases that distinguish this map from others.")]
       ]
     end
 
@@ -121,7 +121,7 @@ module GameData
     def name
       ret = pbGetMessageFromHash(MessageTypes::MAP_NAMES, @real_name)
       ret = pbGetBasicMapNameFromId(@id) if nil_or_empty?(ret)
-      ret.gsub!(/\\PN/, $player.name) if $player
+      ret.gsub!("\\PN", $player.name) if $player
       return ret
     end
 

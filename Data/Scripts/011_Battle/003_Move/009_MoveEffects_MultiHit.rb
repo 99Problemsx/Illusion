@@ -137,12 +137,9 @@ end
 class Battle::Move::HitTwoToFiveTimesRaiseUserSpd1LowerUserDef1 < Battle::Move::HitTwoToFiveTimes
   def pbEffectAfterAllHits(user, target)
     return if target.damageState.unaffected
-    if user.pbCanLowerStatStage?(:DEFENSE, user, self)
-      user.pbLowerStatStage(:DEFENSE, 1, user)
-    end
-    if user.pbCanRaiseStatStage?(:SPEED, user, self)
-      user.pbRaiseStatStage(:SPEED, 1, user)
-    end
+    user.pbLowerStatStage(:DEFENSE, 1, user) if user.pbCanLowerStatStage?(:DEFENSE, user, self)
+    return unless user.pbCanRaiseStatStage?(:SPEED, user, self)
+    user.pbRaiseStatStage(:SPEED, 1, user)
   end
 end
 
@@ -308,9 +305,7 @@ class Battle::Move::TwoTurnAttackRaiseUserSpAtkSpDefSpd2 < Battle::Move::TwoTurn
     showAnim = true
     (@statUp.length / 2).times do |i|
       next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
     end
   end
 end
@@ -332,9 +327,8 @@ class Battle::Move::TwoTurnAttackChargeRaiseUserDefense1 < Battle::Move::TwoTurn
   end
 
   def pbChargingTurnEffect(user, target)
-    if user.pbCanRaiseStatStage?(@statUp[0], user, self)
-      user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
-    end
+    return unless user.pbCanRaiseStatStage?(@statUp[0], user, self)
+    user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
   end
 end
 
@@ -355,9 +349,8 @@ class Battle::Move::TwoTurnAttackChargeRaiseUserSpAtk1 < Battle::Move::TwoTurnMo
   end
 
   def pbChargingTurnEffect(user, target)
-    if user.pbCanRaiseStatStage?(@statUp[0], user, self)
-      user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
-    end
+    return unless user.pbCanRaiseStatStage?(@statUp[0], user, self)
+    user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
   end
 end
 
@@ -424,8 +417,8 @@ class Battle::Move::TwoTurnAttackInvulnerableInSkyTargetCannotAct < Battle::Move
     # NOTE: Sky Drop doesn't benefit from Power Herb, probably because it works
     #       differently (i.e. immobilises the target during use too).
     @powerHerb = false
-    @chargingTurn = (user.effects[PBEffects::TwoTurnAttack].nil?)
-    @damagingTurn = (!user.effects[PBEffects::TwoTurnAttack].nil?)
+    @chargingTurn = user.effects[PBEffects::TwoTurnAttack].nil?
+    @damagingTurn = !user.effects[PBEffects::TwoTurnAttack].nil?
     return !@damagingTurn
   end
 
@@ -529,12 +522,10 @@ class Battle::Move::MultiTurnAttackConfuseUserAtEnd < Battle::Move
       user.effects[PBEffects::Outrage] = 2 + @battle.pbRandom(2)
       user.currentMove = @id
     end
-    if user.effects[PBEffects::Outrage] > 0
-      user.effects[PBEffects::Outrage] -= 1
-      if user.effects[PBEffects::Outrage] == 0 && user.pbCanConfuseSelf?(false)
-        user.pbConfuse(_INTL("{1} became confused due to fatigue!", user.pbThis))
-      end
-    end
+    return unless user.effects[PBEffects::Outrage] > 0
+    user.effects[PBEffects::Outrage] -= 1
+    return unless user.effects[PBEffects::Outrage] == 0 && user.pbCanConfuseSelf?(false)
+    user.pbConfuse(_INTL("{1} became confused due to fatigue!", user.pbThis))
   end
 end
 
@@ -572,9 +563,8 @@ class Battle::Move::MultiTurnAttackBideThenReturnDoubleDamage < Battle::Move::Fi
     return if user.effects[PBEffects::Bide] != 1   # Not the attack turn
     idxTarget = user.effects[PBEffects::BideTarget]
     t = (idxTarget >= 0) ? @battle.battlers[idxTarget] : nil
-    if !user.pbAddTarget(targets, user, t, self, false)
-      user.pbAddTargetRandomFoe(targets, user, self, false)
-    end
+    return if user.pbAddTarget(targets, user, t, self, false)
+    user.pbAddTargetRandomFoe(targets, user, self, false)
   end
 
   def pbMoveFailed?(user, targets)

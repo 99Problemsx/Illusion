@@ -55,10 +55,9 @@ class Window_PokemonBag < Window_DrawableCommand
   end
 
   def drawCursor(index, rect)
-    if self.index == index
-      bmp = (@sorting) ? @swaparrow.bitmap : @selarrow.bitmap
-      pbCopyBitmap(self.contents, bmp, rect.x, rect.y + 2)
-    end
+    return unless self.index == index
+    bmp = (@sorting) ? @swaparrow.bitmap : @selarrow.bitmap
+    pbCopyBitmap(self.contents, bmp, rect.x, rect.y + 2)
   end
 
   def drawItem(index, _count, rect)
@@ -144,7 +143,7 @@ class PokemonBag_Scene
 
   def pbStartScene(bag, choosing = false, filterproc = nil, resetpocket = true)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @bag        = bag
     @choosing   = choosing
     @filterproc = filterproc
@@ -364,9 +363,7 @@ class PokemonBag_Scene
         end
         if itemwindow.index != oldindex
           # Move the item being switched
-          if itemwindow.sorting
-            thispocket.insert(itemwindow.index, thispocket.delete_at(oldindex))
-          end
+          thispocket.insert(itemwindow.index, thispocket.delete_at(oldindex)) if itemwindow.sorting
           # Update selected item for current pocket
           @bag.set_last_viewed_index(itemwindow.pocket, itemwindow.index)
           pbRefresh
@@ -421,16 +418,16 @@ class PokemonBag_Scene
               pbPlayCursorSE
               pbRefresh
             end
-#          elsif Input.trigger?(Input::SPECIAL)   # Register/unregister selected item
-#            if !@choosing && itemwindow.index<thispocket.length
-#              if @bag.registered?(itemwindow.item)
-#                @bag.unregister(itemwindow.item)
-#              elsif pbCanRegisterItem?(itemwindow.item)
-#                @bag.register(itemwindow.item)
-#              end
-#              pbPlayDecisionSE
-#              pbRefresh
-#            end
+          #          elsif Input.trigger?(Input::SPECIAL)   # Register/unregister selected item
+          #            if !@choosing && itemwindow.index<thispocket.length
+          #              if @bag.registered?(itemwindow.item)
+          #                @bag.unregister(itemwindow.item)
+          #              elsif pbCanRegisterItem?(itemwindow.item)
+          #                @bag.register(itemwindow.item)
+          #              end
+          #              pbPlayDecisionSE
+          #              pbRefresh
+          #            end
           elsif Input.trigger?(Input::ACTION)   # Start switching the selected item
             if !@choosing && thispocket.length > 1 && itemwindow.index < thispocket.length &&
                !Settings::BAG_POCKET_AUTO_SORT[itemwindow.pocket - 1]
@@ -602,9 +599,7 @@ class PokemonBagScreen
 
   # UI logic for withdrawing an item in the item storage screen.
   def pbWithdrawItemScreen
-    if !$PokemonGlobal.pcItemStorage
-      $PokemonGlobal.pcItemStorage = PCItemStorage.new
-    end
+    $PokemonGlobal.pcItemStorage = PCItemStorage.new if !$PokemonGlobal.pcItemStorage
     storage = $PokemonGlobal.pcItemStorage
     @scene.pbStartScene(storage)
     loop do
@@ -612,17 +607,11 @@ class PokemonBagScreen
       break if !item
       itm = GameData::Item.get(item)
       qty = storage.quantity(item)
-      if qty > 1 && !itm.is_important?
-        qty = @scene.pbChooseNumber(_INTL("How many do you want to withdraw?"), qty)
-      end
+      qty = @scene.pbChooseNumber(_INTL("How many do you want to withdraw?"), qty) if qty > 1 && !itm.is_important?
       next if qty <= 0
       if @bag.can_add?(item, qty)
-        if !storage.remove(item, qty)
-          raise "Can't delete items from storage"
-        end
-        if !@bag.add(item, qty)
-          raise "Can't withdraw items from storage"
-        end
+        raise "Can't delete items from storage" if !storage.remove(item, qty)
+        raise "Can't withdraw items from storage" if !@bag.add(item, qty)
         @scene.pbRefresh
         dispqty = (itm.is_important?) ? 1 : qty
         itemname = (dispqty > 1) ? itm.portion_name_plural : itm.portion_name
@@ -637,26 +626,18 @@ class PokemonBagScreen
   # UI logic for depositing an item in the item storage screen.
   def pbDepositItemScreen
     @scene.pbStartScene(@bag)
-    if !$PokemonGlobal.pcItemStorage
-      $PokemonGlobal.pcItemStorage = PCItemStorage.new
-    end
+    $PokemonGlobal.pcItemStorage = PCItemStorage.new if !$PokemonGlobal.pcItemStorage
     storage = $PokemonGlobal.pcItemStorage
     loop do
       item = @scene.pbChooseItem
       break if !item
       itm = GameData::Item.get(item)
       qty = @bag.quantity(item)
-      if qty > 1 && !itm.is_important?
-        qty = @scene.pbChooseNumber(_INTL("How many do you want to deposit?"), qty)
-      end
+      qty = @scene.pbChooseNumber(_INTL("How many do you want to deposit?"), qty) if qty > 1 && !itm.is_important?
       if qty > 0
         if storage.can_add?(item, qty)
-          if !@bag.remove(item, qty)
-            raise "Can't delete items from Bag"
-          end
-          if !storage.add(item, qty)
-            raise "Can't deposit items to storage"
-          end
+          raise "Can't delete items from Bag" if !@bag.remove(item, qty)
+          raise "Can't deposit items to storage" if !storage.add(item, qty)
           @scene.pbRefresh
           dispqty  = (itm.is_important?) ? 1 : qty
           itemname = (dispqty > 1) ? itm.portion_name_plural : itm.portion_name
@@ -671,9 +652,7 @@ class PokemonBagScreen
 
   # UI logic for tossing an item in the item storage screen.
   def pbTossItemScreen
-    if !$PokemonGlobal.pcItemStorage
-      $PokemonGlobal.pcItemStorage = PCItemStorage.new
-    end
+    $PokemonGlobal.pcItemStorage = PCItemStorage.new if !$PokemonGlobal.pcItemStorage
     storage = $PokemonGlobal.pcItemStorage
     @scene.pbStartScene(storage)
     loop do
@@ -687,15 +666,11 @@ class PokemonBagScreen
       qty = storage.quantity(item)
       itemname       = itm.portion_name
       itemnameplural = itm.portion_name_plural
-      if qty > 1
-        qty = @scene.pbChooseNumber(_INTL("Toss out how many {1}?", itemnameplural), qty)
-      end
+      qty = @scene.pbChooseNumber(_INTL("Toss out how many {1}?", itemnameplural), qty) if qty > 1
       next if qty <= 0
       itemname = itemnameplural if qty > 1
       next if !pbConfirm(_INTL("Is it OK to throw away {1} {2}?", qty, itemname))
-      if !storage.remove(item, qty)
-        raise "Can't delete items from storage"
-      end
+      raise "Can't delete items from storage" if !storage.remove(item, qty)
       @scene.pbRefresh
       pbDisplay(_INTL("Threw away {1} {2}.", qty, itemname))
     end

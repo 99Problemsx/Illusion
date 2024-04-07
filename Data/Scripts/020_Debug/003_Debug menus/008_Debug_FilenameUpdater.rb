@@ -56,7 +56,9 @@ module FilenameUpdater
           next if nil_or_empty?(page.graphic.character_name)
           char_name = page.graphic.character_name
           next if !char_name[/^berrytree[^_]+/]
-          next if ["berrytreewet", "berrytreedamp", "berrytreedry", "berrytreeplanted"].include?(char_name.split(".")[0])
+          if ["berrytreewet", "berrytreedamp", "berrytreedry", "berrytreeplanted"].include?(char_name.split(".")[0])
+            next
+          end
           new_file = page.graphic.character_name.gsub("berrytree", "berrytree_")
           page.graphic.character_name = new_file
           changed = true
@@ -74,9 +76,7 @@ module FilenameUpdater
     Console.echo_h1(_INTL("Updating file names and locations"))
     change_record = []
     # Add underscore to berry plant charsets
-    if rename_berry_plant_charsets
-      Console.echo_warn(_INTL("Berry plant charset files were renamed."))
-    end
+    Console.echo_warn(_INTL("Berry plant charset files were renamed.")) if rename_berry_plant_charsets
     change_record += update_berry_tree_event_charsets
     # Warn if any map data has been changed
     if !change_record.empty?

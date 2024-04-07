@@ -98,9 +98,7 @@ class PokemonMapFactory
     newmap = getNewMap($game_player.x, $game_player.y)
     return if !newmap
     oldmap = $game_map.map_id
-    if oldmap != 0 && oldmap != newmap[0].map_id
-      setMapChanging(newmap[0].map_id, newmap[0])
-    end
+    setMapChanging(newmap[0].map_id, newmap[0]) if oldmap != 0 && oldmap != newmap[0].map_id
     $game_map = newmap[0]
     @mapIndex = getMapIndex($game_map.map_id)
     $game_player.moveto(newmap[1], newmap[2])
@@ -225,9 +223,7 @@ class PokemonMapFactory
 
   # Returns the coordinate change to go from this position to other position
   def getRelativePos(thisMapID, thisX, thisY, otherMapID, otherX, otherY)
-    if thisMapID == otherMapID   # Both events share the same map
-      return [otherX - thisX, otherY - thisY]
-    end
+    return [otherX - thisX, otherY - thisY] if thisMapID == otherMapID # Both events share the same map
     MapFactoryHelper.eachConnectionForMap(thisMapID) do |conn|
       if conn[0] == otherMapID
         posX = conn[4] - conn[1] + otherX - thisX
@@ -454,7 +450,7 @@ module MapFactoryHelper
       begin
         map = load_data(sprintf("Data/Map%03d.rxdata", id))
         @@MapDims[id] = [map.width, map.height]
-      rescue
+      rescue StandardError
         @@MapDims[id] = [0, 0]
       end
     end

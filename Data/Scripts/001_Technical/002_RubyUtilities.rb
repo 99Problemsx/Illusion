@@ -210,17 +210,17 @@ class Color
         (base_int >> 24) & 0xFF,
         (base_int >> 16) & 0xFF,
         (base_int >> 8) & 0xFF,
-        (base_int) & 0xFF
+        base_int & 0xFF
       )
     when 6   # 24-bit hex
       return Color.new(
         (base_int >> 16) & 0xFF,
         (base_int >> 8) & 0xFF,
-        (base_int) & 0xFF
+        base_int & 0xFF
       )
     when 4   # 15-bit hex
       return Color.new(
-        ((base_int) & 0x1F) << 3,
+        (base_int & 0x1F) << 3,
         ((base_int >> 5) & 0x1F) << 3,
         ((base_int >> 10) & 0x1F) << 3
       )
@@ -278,7 +278,7 @@ class Color
     b = self.blue
     yuv = [
       (r * 0.299) + (g * 0.587) + (b * 0.114),
-      (r * -0.1687) + (g * -0.3313) + (b *  0.500) + 0.5,
+      (r * -0.1687) + (g * -0.3313) + (b * 0.500) + 0.5,
       (r * 0.500) + (g * -0.4187) + (b * -0.0813) + 0.5
     ]
     if yuv[0] < 127.5
@@ -321,15 +321,15 @@ class Color
   def self.green;   return Color.new(128, 255, 128); end
   def self.blue;    return Color.new(128, 128, 255); end
   def self.yellow;  return Color.new(255, 255, 128); end
-  def self.magenta; return Color.new(255,   0, 255); end
+  def self.magenta; return Color.new(255, 0, 255); end
   def self.cyan;    return Color.new(128, 255, 255); end
   def self.white;   return Color.new(255, 255, 255); end
   def self.gray;    return Color.new(192, 192, 192); end
-  def self.black;   return Color.new(  0,   0,   0); end
+  def self.black;   return Color.new(0, 0, 0); end
   def self.pink;    return Color.new(255, 128, 255); end
-  def self.orange;  return Color.new(255, 155,   0); end
-  def self.purple;  return Color.new(155,   0, 255); end
-  def self.brown;   return Color.new(112,  72,  32); end
+  def self.orange;  return Color.new(255, 155, 0); end
+  def self.purple;  return Color.new(155, 0, 255); end
+  def self.brown;   return Color.new(112, 72, 32); end
 end
 
 #===============================================================================
@@ -375,11 +375,10 @@ class << Kernel
       hi = a.max
       return lo + oldRand(hi - lo + 1)
     elsif a.is_a?(Numeric)
-      if b.is_a?(Numeric)
-        return a + oldRand(b - a + 1)
-      else
-        return oldRand(a)
-      end
+      return a + oldRand(b - a + 1) if b.is_a?(Numeric)
+
+      return oldRand(a)
+
     elsif a.nil?
       return oldRand(b)
     end

@@ -33,7 +33,11 @@ ItemHandlers::UseFromBag.add(:ESCAPEROPE, proc { |item|
     pbMessage(_INTL("It can't be used when you have someone with you."))
     next 0
   end
-  if ($PokemonGlobal.escapePoint rescue false) && $PokemonGlobal.escapePoint.length > 0
+  if begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    false
+  end && $PokemonGlobal.escapePoint.length > 0
     next 2   # End screen and use item
   end
   pbMessage(_INTL("Can't use that here."))
@@ -67,28 +71,28 @@ ItemHandlers::UseFromBag.add(:TOWNMAP, proc { |item|
     screen = PokemonRegionMapScreen.new(scene)
     ret = screen.pbStartScreen
     $game_temp.fly_destination = ret if ret
-    next 99999 if ret   # Ugly hack to make Bag scene not reappear if flying
+    next 99_999 if ret   # Ugly hack to make Bag scene not reappear if flying
   end
   next ($game_temp.fly_destination) ? 2 : 0
 })
 
 ItemHandlers::UseFromBag.addIf(:move_machines,
-  proc { |item| GameData::Item.get(item).is_machine? },
-  proc { |item|
-    if $player.pokemon_count == 0
-      pbMessage(_INTL("There is no Pokémon."))
-      next 0
-    end
-    item_data = GameData::Item.get(item)
-    move = item_data.move
-    next 0 if !move
-    pbMessage("\\se[PC access]" + _INTL("You booted up the {1}.", item_data.name) + "\1")
-    next 0 if !pbConfirmMessage(_INTL("Do you want to teach {1} to a Pokémon?",
-                                      GameData::Move.get(move).name))
-    next 1 if pbMoveTutorChoose(move, nil, true, item_data.is_TR?)
-    next 0
-  }
-)
+                               proc { |item| GameData::Item.get(item).is_machine? },
+                               proc { |item|
+                                 if $player.pokemon_count == 0
+                                   pbMessage(_INTL("There is no Pokémon."))
+                                   next 0
+                                 end
+                                 item_data = GameData::Item.get(item)
+                                 move = item_data.move
+                                 next 0 if !move
+                                 pbMessage("\\se[PC access]" + _INTL("You booted up the {1}.", item_data.name) + "\1")
+                                 next 0 if !pbConfirmMessage(_INTL("Do you want to teach {1} to a Pokémon?",
+                                                                   GameData::Move.get(move).name))
+                                 next 1 if pbMoveTutorChoose(move, nil, true, item_data.is_TR?)
+                                 next 0
+                               }
+                              )
 
 #===============================================================================
 # ConfirmUseInField handlers
@@ -98,7 +102,11 @@ ItemHandlers::UseFromBag.addIf(:move_machines,
 #===============================================================================
 
 ItemHandlers::ConfirmUseInField.add(:ESCAPEROPE, proc { |item|
-  escape = ($PokemonGlobal.escapePoint rescue nil)
+  escape = begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    nil
+  end
   if !escape || escape == []
     pbMessage(_INTL("Can't use that here."))
     next false
@@ -145,25 +153,27 @@ ItemHandlers::UseInField.add(:MAXREPEL, proc { |item|
 })
 
 EventHandlers.add(:on_player_step_taken, :repel_counter,
-  proc {
-    next if $PokemonGlobal.repel <= 0 || $game_player.terrain_tag.ice   # Shouldn't count down if on ice
-    $PokemonGlobal.repel -= 1
-    next if $PokemonGlobal.repel > 0
-    repels = []
-    GameData::Item.each { |itm| repels.push(itm.id) if itm.has_flag?("Repel") }
-    if repels.none? { |item| $bag.has?(item) }
-      pbMessage(_INTL("The repellent's effect wore off!"))
-      next
-    end
-    next if !pbConfirmMessage(_INTL("The repellent's effect wore off! Would you like to use another one?"))
-    ret = nil
-    pbFadeOutIn do
-      scene = PokemonBag_Scene.new
-      screen = PokemonBagScreen.new(scene, $bag)
-      ret = screen.pbChooseItemScreen(proc { |item| repels.include?(item) })
-    end
-    pbUseItem($bag, ret) if ret
-  }
+                  proc {
+                    next if $PokemonGlobal.repel <= 0 || $game_player.terrain_tag.ice   # Shouldn't count down if on ice
+                    $PokemonGlobal.repel -= 1
+                    next if $PokemonGlobal.repel > 0
+                    repels = []
+                    GameData::Item.each { |itm| repels.push(itm.id) if itm.has_flag?("Repel") }
+                    if repels.none? { |item| $bag.has?(item) }
+                      pbMessage(_INTL("The repellent's effect wore off!"))
+                      next
+                    end
+                    if !pbConfirmMessage(_INTL("The repellent's effect wore off! Would you like to use another one?"))
+                      next
+                    end
+                    ret = nil
+                    pbFadeOutIn do
+                      scene = PokemonBag_Scene.new
+                      screen = PokemonBagScreen.new(scene, $bag)
+                      ret = screen.pbChooseItemScreen(proc { |item| repels.include?(item) })
+                    end
+                    pbUseItem($bag, ret) if ret
+                  }
 )
 
 ItemHandlers::UseInField.add(:BLACKFLUTE, proc { |item|
@@ -201,7 +211,11 @@ ItemHandlers::UseInField.add(:HONEY, proc { |item|
 })
 
 ItemHandlers::UseInField.add(:ESCAPEROPE, proc { |item|
-  escape = ($PokemonGlobal.escapePoint rescue nil)
+  escape = begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    nil
+  end
   if !escape || escape == []
     pbMessage(_INTL("Can't use that here."))
     next false
@@ -384,30 +398,30 @@ ItemHandlers::UseInField.add(:EXPALLOFF, proc { |item|
 # Applies to all items defined as an evolution stone.
 # No need to add more code for new ones.
 ItemHandlers::UseOnPokemon.addIf(:evolution_stones,
-  proc { |item| GameData::Item.get(item).is_evolution_stone? },
-  proc { |item, qty, pkmn, scene|
-    if pkmn.shadowPokemon?
-      scene.pbDisplay(_INTL("It won't have any effect."))
-      next false
-    end
-    newspecies = pkmn.check_evolution_on_use_item(item)
-    if newspecies
-      pbFadeOutInWithMusic do
-        evo = PokemonEvolutionScene.new
-        evo.pbStartScreen(pkmn, newspecies)
-        evo.pbEvolution(false)
-        evo.pbEndScreen
-        if scene.is_a?(PokemonPartyScreen)
-          scene.pbRefreshAnnotations(proc { |p| !p.check_evolution_on_use_item(item).nil? })
-          scene.pbRefresh
-        end
-      end
-      next true
-    end
-    scene.pbDisplay(_INTL("It won't have any effect."))
-    next false
-  }
-)
+                                 proc { |item| GameData::Item.get(item).is_evolution_stone? },
+                                 proc { |item, qty, pkmn, scene|
+                                   if pkmn.shadowPokemon?
+                                     scene.pbDisplay(_INTL("It won't have any effect."))
+                                     next false
+                                   end
+                                   newspecies = pkmn.check_evolution_on_use_item(item)
+                                   if newspecies
+                                     pbFadeOutInWithMusic do
+                                       evo = PokemonEvolutionScene.new
+                                       evo.pbStartScreen(pkmn, newspecies)
+                                       evo.pbEvolution(false)
+                                       evo.pbEndScreen
+                                       if scene.is_a?(PokemonPartyScreen)
+                                         scene.pbRefreshAnnotations(proc { |p| !p.check_evolution_on_use_item(item).nil? })
+                                         scene.pbRefresh
+                                       end
+                                     end
+                                     next true
+                                   end
+                                   scene.pbDisplay(_INTL("It won't have any effect."))
+                                   next false
+                                 }
+                                )
 
 ItemHandlers::UseOnPokemon.add(:POTION, proc { |item, qty, pkmn, scene|
   next pbHPItem(pkmn, 20, scene)

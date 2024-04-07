@@ -105,9 +105,8 @@ class Battle::Battler
     move.pp = pp
     # No need to care about @effects[PBEffects::Mimic], since Mimic can't copy
     # Mimic
-    if move.realMove && move.id == move.realMove.id && !@effects[PBEffects::Transform]
-      move.realMove.pp = pp
-    end
+    return unless move.realMove && move.id == move.realMove.id && !@effects[PBEffects::Transform]
+    move.realMove.pp = pp
   end
 
   def pbReducePP(move)
@@ -171,19 +170,17 @@ class Battle::Battler
   def pbCheckFormOnStatusChange
     return if fainted? || @effects[PBEffects::Transform]
     # Shaymin - reverts if frozen
-    if isSpecies?(:SHAYMIN) && frozen?
-      pbChangeForm(0, _INTL("{1} transformed!", pbThis))
-    end
+    return unless isSpecies?(:SHAYMIN) && frozen?
+    pbChangeForm(0, _INTL("{1} transformed!", pbThis))
   end
 
   def pbCheckFormOnMovesetChange
     return if fainted? || @effects[PBEffects::Transform]
     # Keldeo - knowing Secret Sword
-    if isSpecies?(:KELDEO)
-      newForm = 0
-      newForm = 1 if pbHasMove?(:SECRETSWORD)
-      pbChangeForm(newForm, _INTL("{1} transformed!", pbThis))
-    end
+    return unless isSpecies?(:KELDEO)
+    newForm = 0
+    newForm = 1 if pbHasMove?(:SECRETSWORD)
+    pbChangeForm(newForm, _INTL("{1} transformed!", pbThis))
   end
 
   def pbCheckFormOnWeatherChange(ability_changed = false)
@@ -287,11 +284,10 @@ class Battle::Battler
       pbChangeForm(newForm, _INTL("{1} transformed into its Complete Forme!", pbThis))
     end
     # Morpeko - Hunger Switch
-    if isSpecies?(:MORPEKO) && hasActiveAbility?(:HUNGERSWITCH) && endOfRound
-      # Intentionally doesn't show the ability splash or a message
-      newForm = (@form + 1) % 2
-      pbChangeForm(newForm, nil)
-    end
+    return unless isSpecies?(:MORPEKO) && hasActiveAbility?(:HUNGERSWITCH) && endOfRound
+    # Intentionally doesn't show the ability splash or a message
+    newForm = (@form + 1) % 2
+    pbChangeForm(newForm, nil)
   end
 
   def pbTransform(target)

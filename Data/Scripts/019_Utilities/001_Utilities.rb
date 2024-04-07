@@ -85,9 +85,7 @@ class AntiRandom
       @new = @old.clone
       @old.clear
     end
-    if @old.length > 0 && rand(7) == 0   # Get old value
-      return @old[rand(@old.length)]
-    end
+    return @old[rand(@old.length)] if @old.length > 0 && rand(7) == 0 # Get old value
     if @new.length > 0   # Get new value
       ret = @new.delete_at(rand(@new.length))
       @old.push(ret)
@@ -104,7 +102,7 @@ end
 def isConst?(val, mod, constant)
   begin
     return false if !mod.const_defined?(constant.to_sym)
-  rescue
+  rescue StandardError
     return false
   end
   return (val == mod.const_get(constant.to_sym))
@@ -113,21 +111,35 @@ end
 # Unused
 def hasConst?(mod, constant)
   return false if !mod || constant.nil?
-  return mod.const_defined?(constant.to_sym) rescue false
+  begin
+    return mod.const_defined?(constant.to_sym)
+  rescue StandardError
+    false
+  end
 end
 
 # Unused
 def getConst(mod, constant)
   return nil if !mod || constant.nil?
-  return mod.const_get(constant.to_sym) rescue nil
+  begin
+    return mod.const_get(constant.to_sym)
+  rescue StandardError
+    nil
+  end
 end
 
 # Unused
 def getID(mod, constant)
   return nil if !mod || constant.nil?
   if constant.is_a?(Symbol) || constant.is_a?(String)
-    if (mod.const_defined?(constant.to_sym) rescue false)
-      return mod.const_get(constant.to_sym) rescue 0
+    begin
+      return mod.const_get(constant.to_sym)
+    rescue StandardError
+      0
+    end if begin
+      mod.const_defined?(constant.to_sym)
+    rescue StandardError
+      false
     end
     return 0
   end
@@ -213,9 +225,7 @@ def pbExclaim(event, id = Settings::EXCLAMATION_ANIMATION_ID, tinting = false)
 end
 
 def pbNoticePlayer(event, always_show_exclaim = false)
-  if always_show_exclaim || !pbFacingEachOther(event, $game_player)
-    pbExclaim(event)
-  end
+  pbExclaim(event) if always_show_exclaim || !pbFacingEachOther(event, $game_player)
   pbTurnTowardEvent($game_player, event)
   pbMoveTowardPlayer(event)
 end
@@ -275,7 +285,7 @@ def pbSuggestTrainerName(gender)
   userName = userName[0, Settings::MAX_PLAYER_NAME_SIZE]
   return userName
   # Unreachable
-#  return getRandomNameEx(gender, nil, 1, Settings::MAX_PLAYER_NAME_SIZE)
+  #  return getRandomNameEx(gender, nil, 1, Settings::MAX_PLAYER_NAME_SIZE)
 end
 
 def pbGetUserName
@@ -452,9 +462,7 @@ end
 def pbMoveTutorChoose(move, movelist = nil, bymachine = false, oneusemachine = false)
   ret = false
   move = GameData::Move.get(move).id
-  if movelist.is_a?(Array)
-    movelist.map! { |m| GameData::Move.get(m).id }
-  end
+  movelist.map! { |m| GameData::Move.get(m).id } if movelist.is_a?(Array)
   pbFadeOutIn do
     movename = GameData::Move.get(move).name
     annot = pbMoveTutorAnnotations(move, movelist)
@@ -616,7 +624,7 @@ def pbScreenCapture
     Dir.create(folder_name) if !Dir.safe?(folder_name)
     capturefile = folder_name + "/" + sprintf("%s.png", filestart)
     Graphics.screenshot(capturefile)
-  rescue
+  rescue StandardError
     capturefile = RTP.getSaveFileName(sprintf("%s.png", filestart))
     Graphics.screenshot(capturefile)
   end

@@ -63,9 +63,7 @@ class Scene_Map
       test_filename += "_n" if PBDayNight.isNight? && FileTest.audio_exist?("Audio/BGM/" + test_filename + "_n")
       pbBGMFade(0.8) if playingBGM.name != test_filename
     end
-    if playingBGS && map.autoplay_bgs && playingBGS.name != map.bgs.name
-      pbBGMFade(0.8)
-    end
+    pbBGMFade(0.8) if playingBGS && map.autoplay_bgs && playingBGS.name != map.bgs.name
     Graphics.frame_reset
   end
 
@@ -75,9 +73,7 @@ class Scene_Map
     autofade($game_temp.player_new_map_id)
     pbBridgeOff
     @spritesetGlobal.playersprite.clearShadows
-    if $game_map.map_id != $game_temp.player_new_map_id
-      $map_factory.setup($game_temp.player_new_map_id)
-    end
+    $map_factory.setup($game_temp.player_new_map_id) if $game_map.map_id != $game_temp.player_new_map_id
     $game_player.moveto($game_temp.player_new_x, $game_temp.player_new_y)
     case $game_temp.player_new_direction
     when 2 then $game_player.turn_down
@@ -202,29 +198,28 @@ class Scene_Map
         $game_temp.debug_calling = true if $DEBUG
       end
     end
-    if !$game_player.moving?
-      if $game_temp.menu_calling
-        call_menu
-      elsif $game_temp.debug_calling
-        call_debug
-      elsif $game_temp.ready_menu_calling
-        $game_temp.ready_menu_calling = false
+    return if $game_player.moving?
+    if $game_temp.menu_calling
+      call_menu
+    elsif $game_temp.debug_calling
+      call_debug
+    elsif $game_temp.ready_menu_calling
+      $game_temp.ready_menu_calling = false
+      $game_player.straighten
+      pbUseKeyItem
+    elsif $game_temp.interact_calling
+      $game_temp.interact_calling = false
+      triggered = false
+      # Try to trigger an event the player is standing on, and one in front of
+      # the player
+      if !$game_temp.in_mini_update
+        triggered ||= $game_player.check_event_trigger_here([0])
+        triggered ||= $game_player.check_event_trigger_there([0, 2]) if !triggered
+      end
+      # Try to trigger an interaction with a tile
+      if !triggered
         $game_player.straighten
-        pbUseKeyItem
-      elsif $game_temp.interact_calling
-        $game_temp.interact_calling = false
-        triggered = false
-        # Try to trigger an event the player is standing on, and one in front of
-        # the player
-        if !$game_temp.in_mini_update
-          triggered ||= $game_player.check_event_trigger_here([0])
-          triggered ||= $game_player.check_event_trigger_there([0, 2]) if !triggered
-        end
-        # Try to trigger an interaction with a tile
-        if !triggered
-          $game_player.straighten
-          EventHandlers.trigger(:on_player_interact)
-        end
+        EventHandlers.trigger(:on_player_interact)
       end
     end
   end
@@ -240,13 +235,12 @@ class Scene_Map
     end
     Graphics.freeze
     dispose
-    if $game_temp.title_screen_calling
-      pbMapInterpreter.command_end if pbMapInterpreterRunning?
-      $game_temp.last_uptime_refreshed_play_time = nil
-      $game_temp.title_screen_calling = false
-      pbBGMFade(1.0)
-      Graphics.transition
-      Graphics.freeze
-    end
+    return unless $game_temp.title_screen_calling
+    pbMapInterpreter.command_end if pbMapInterpreterRunning?
+    $game_temp.last_uptime_refreshed_play_time = nil
+    $game_temp.title_screen_calling = false
+    pbBGMFade(1.0)
+    Graphics.transition
+    Graphics.freeze
   end
 end

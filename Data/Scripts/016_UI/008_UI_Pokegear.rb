@@ -70,7 +70,7 @@ class PokemonPokegear_Scene
     @commands = commands
     @index = 0
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     if $player.female? && pbResolveBitmap("Graphics/UI/Pokegear/bg_f")
@@ -169,7 +169,7 @@ MenuHandlers.add(:pokegear_menu, :map, {
       if ret
         $game_temp.fly_destination = ret
         menu.dispose
-        next 99999
+        next 99_999
       end
     end
     next $game_temp.fly_destination
@@ -180,7 +180,7 @@ MenuHandlers.add(:pokegear_menu, :phone, {
   "name"      => _INTL("Phone"),
   "icon_name" => "phone",
   "order"     => 20,
-#  "condition" => proc { next $PokemonGlobal.phone && $PokemonGlobal.phone.contacts.length > 0 },
+  #  "condition" => proc { next $PokemonGlobal.phone && $PokemonGlobal.phone.contacts.length > 0 },
   "effect"    => proc { |menu|
     pbFadeOutIn do
       scene = PokemonPhone_Scene.new

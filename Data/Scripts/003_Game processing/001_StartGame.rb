@@ -11,9 +11,8 @@ module Game
     pbLoadBattleAnimations
     GameData.load_all
     map_file = sprintf("Data/Map%03d.rxdata", $data_system.start_map_id)
-    if $data_system.start_map_id == 0 || !pbRgssExists?(map_file)
-      raise _INTL("No starting position was set in the map editor.")
-    end
+    return unless $data_system.start_map_id == 0 || !pbRgssExists?(map_file)
+    raise _INTL("No starting position was set in the map editor.")
   end
 
   # Loads bootup data from save file (if it exists) or creates bootup data (if
@@ -28,18 +27,15 @@ module Game
     # Set resize factor
     pbSetResizeFactor([$PokemonSystem.screensize, 4].min)
     # Set language (and choose language if there is no save file)
-    if !Settings::LANGUAGES.empty?
-      $PokemonSystem.language = pbChooseLanguage if save_data.empty? && Settings::LANGUAGES.length >= 2
-      MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1])
-    end
+    return if Settings::LANGUAGES.empty?
+    $PokemonSystem.language = pbChooseLanguage if save_data.empty? && Settings::LANGUAGES.length >= 2
+    MessageTypes.load_message_files(Settings::LANGUAGES[$PokemonSystem.language][1])
   end
 
   # Called when starting a new game. Initializes global variables
   # and transfers the player into the map scene.
   def self.start_new
-    if $game_map&.events
-      $game_map.events.each_value { |event| event.clear_starting }
-    end
+    $game_map.events.each_value { |event| event.clear_starting } if $game_map&.events
     $game_temp.common_event_id = 0 if $game_temp
     $game_temp.begun_new_game = true
     pbMapInterpreter&.clear
@@ -81,23 +77,18 @@ module Game
       begin
         $map_factory.setup($game_map.map_id)
       rescue Errno::ENOENT
-        if $DEBUG
-          pbMessage(_INTL("Map {1} was not found.", $game_map.map_id))
-          map = pbWarpToMap
-          exit unless map
-          $map_factory.setup(map[0])
-          $game_player.moveto(map[1], map[2])
-        else
-          raise _INTL("The map was not found. The game cannot continue.")
-        end
+        raise _INTL("The map was not found. The game cannot continue.") unless $DEBUG
+        pbMessage(_INTL("Map {1} was not found.", $game_map.map_id))
+        map = pbWarpToMap
+        exit unless map
+        $map_factory.setup(map[0])
+        $game_player.moveto(map[1], map[2])
       end
       $game_player.center($game_player.x, $game_player.y)
     else
       $map_factory.setMapChanged($game_map.map_id)
     end
-    if $game_map.events.nil?
-      raise _INTL("The map is corrupt. The game cannot continue.")
-    end
+    raise _INTL("The map is corrupt. The game cannot continue.") if $game_map.events.nil?
     $PokemonEncounters = PokemonEncounters.new
     $PokemonEncounters.setup($game_map.map_id)
     pbUpdateVehicle

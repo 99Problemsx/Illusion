@@ -6,7 +6,7 @@
 
 module Settings
   # The version of your game. It has to adhere to the MAJOR.MINOR.PATCH format.
-  GAME_VERSION = "1.0.0"
+  GAME_VERSION = "1.0.0".freeze
 
   # The generation that the battle system follows. Used throughout the battle
   # scripts, and also by some other settings which are used in and out of battle
@@ -62,7 +62,7 @@ module Settings
     [:RIVAL1,   12],
     [:RIVAL2,   12],
     [:CHAMPION, 12]
-  ]
+  ].freeze
 
   #-----------------------------------------------------------------------------
   # Overworld
@@ -94,7 +94,7 @@ module Settings
   #   e.g. [4,5,16,17,42,43] will be map pairs 4,5 and 16,17 and 42,43.
   # Moving between two maps that have the exact same name won't show the
   # location signpost anyway, so you don't need to list those maps here.
-  NO_SIGNPOSTS               = []
+  NO_SIGNPOSTS               = [].freeze
   # Whether poisoned Pokémon will lose HP while walking around in the field.
   POISON_IN_FIELD            = (MECHANICS_GENERATION <= 4)
   # Whether poisoned Pokémon will faint while walking around in the field
@@ -175,8 +175,8 @@ module Settings
   # A list of maps used by roaming Pokémon. Each map has an array of other maps
   # it can lead to.
   ROAMING_AREAS = {
-    5  => [   21, 28, 31, 39, 41, 44, 47, 66, 69],
-    21 => [5,     28, 31, 39, 41, 44, 47, 66, 69],
+    5  => [ 21, 28, 31, 39, 41, 44, 47, 66, 69],
+    21 => [5, 28, 31, 39, 41, 44, 47, 66, 69],
     28 => [5, 21,     31, 39, 41, 44, 47, 66, 69],
     31 => [5, 21, 28,     39, 41, 44, 47, 66, 69],
     39 => [5, 21, 28, 31,     41, 44, 47, 66, 69],
@@ -185,7 +185,7 @@ module Settings
     47 => [5, 21, 28, 31, 39, 41, 44,     66, 69],
     66 => [5, 21, 28, 31, 39, 41, 44, 47,     69],
     69 => [5, 21, 28, 31, 39, 41, 44, 47, 66    ]
-  }
+  }.freeze
   # A set of arrays, each containing the details of a roaming Pokémon. The
   # information within each array is as follows:
   #   * Species.
@@ -204,13 +204,13 @@ module Settings
     [:LATIAS, 30, 53, 0, "Battle roaming"],
     [:LATIOS, 30, 53, 0, "Battle roaming"],
     [:KYOGRE, 40, 54, 2, nil, {
-      2  => [   21, 31    ],
-      21 => [2,     31, 69],
-      31 => [2, 21,     69],
-      69 => [   21, 31    ]
+      2  => [ 21, 31 ],
+      21 => [2, 31, 69],
+      31 => [2, 21, 69],
+      69 => [   21, 31 ]
     }],
     [:ENTEI, 40, 55, 1]
-  ]
+  ].freeze
 
   #-----------------------------------------------------------------------------
   # Party and Pokémon storage
@@ -274,10 +274,10 @@ module Settings
     ]
   end
   # The maximum number of slots per pocket (-1 means infinite number).
-  BAG_MAX_POCKET_SIZE  = [-1, -1, -1, -1, -1, -1, -1, -1]
+  BAG_MAX_POCKET_SIZE  = [-1, -1, -1, -1, -1, -1, -1, -1].freeze
   # Whether each pocket in turn auto-sorts itself by the order items are defined
   # in the PBS file items.txt.
-  BAG_POCKET_AUTO_SORT = [false, false, false, true, true, false, false, false]
+  BAG_POCKET_AUTO_SORT = [false, false, false, true, true, false, false, false].freeze
   # The maximum number of items each slot in the Bag can hold.
   BAG_MAX_PER_SLOT     = 999
 
@@ -312,7 +312,7 @@ module Settings
   # An array of numbers, where each number is that of a Dex list (in the same
   # order as above, except the National Dex is -1). All Dex lists included here
   # will begin their numbering at 0 rather than 1 (e.g. Victini in Unova's Dex).
-  DEXES_WITH_OFFSETS                        = []
+  DEXES_WITH_OFFSETS                        = [].freeze
   # Whether the Pokédex entry of a newly owned species will be shown after it
   # hatches from an egg, after it evolves and after obtaining it from a trade,
   # in addition to after catching it in battle.
@@ -333,7 +333,7 @@ module Settings
   REGION_MAP_EXTRAS = [
     [0, 51, 16, 15, "hidden_Berth", false],
     [0, 52, 20, 14, "hidden_Faraday", false]
-  ]
+  ].freeze
   # Whether the player can use Fly while looking at the Town Map. This is only
   # allowed if the player can use Fly normally.
   CAN_FLY_FROM_TOWN_MAP = true
@@ -423,9 +423,9 @@ module Settings
   # called messages_FRAGMENT_core.dat and messages_FRAGMENT_game.dat (if they
   # exist).
   LANGUAGES = [
-#    ["English", "english"],
-#    ["Deutsch", "deutsch"]
-  ]
+    #    ["English", "english"],
+    #    ["Deutsch", "deutsch"]
+  ].freeze
 
   #-----------------------------------------------------------------------------
   # Screen size and zoom
@@ -467,7 +467,7 @@ module Settings
     "speech hgss 19",
     "speech hgss 20",
     "speech pl 18"
-  ]
+  ].freeze
   # Available menu frames. These are graphic files in "Graphics/Windowskins/".
   MENU_WINDOWSKINS = [
     "choice 1",
@@ -498,7 +498,7 @@ module Settings
     "choice 26",
     "choice 27",
     "choice 28"
-  ]
+  ].freeze
 
   #-----------------------------------------------------------------------------
   # Debug helpers
@@ -518,7 +518,7 @@ end
 # DO NOT EDIT THESE!
 #===============================================================================
 module Essentials
-  VERSION = "21.1"
-  ERROR_TEXT = ""
-  MKXPZ_VERSION = "2.4.2/c9378cf"
+  VERSION = "21.1".freeze
+  ERROR_TEXT = "".freeze
+  MKXPZ_VERSION = "2.4.2/c9378cf".freeze
 end

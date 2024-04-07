@@ -18,9 +18,9 @@ module GameData
     attr_reader :real_description
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "items.dat"
-    PBS_BASE_FILENAME = "items"
+    DATA = {}.freeze
+    DATA_FILENAME = "items.dat".freeze
+    PBS_BASE_FILENAME = "items".freeze
 
     SCHEMA = {
       "SectionName"       => [:id,                       "m"],
@@ -41,7 +41,7 @@ module GameData
       "ShowQuantity"      => [:show_quantity,            "b"],
       "Move"              => [:move,                     "e", :Move],
       "Description"       => [:real_description,         "q"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -155,7 +155,9 @@ module GameData
 
     # @return [String] the translated plural version of the portion name of this item
     def portion_name_plural
-      return pbGetMessageFromHash(MessageTypes::ITEM_PORTION_NAME_PLURALS, @real_portion_name_plural) if @real_portion_name_plural
+      if @real_portion_name_plural
+        return pbGetMessageFromHash(MessageTypes::ITEM_PORTION_NAME_PLURALS, @real_portion_name_plural)
+      end
       return name_plural
     end
 
@@ -183,7 +185,8 @@ module GameData
     def is_apricorn?;        return has_flag?("Apricorn"); end
     def is_gem?;             return has_flag?("TypeGem"); end
     def is_mulch?;           return has_flag?("Mulch"); end
-    def is_mega_stone?;      return has_flag?("MegaStone"); end   # Does NOT include Red Orb/Blue Orb
+    # Does NOT include Red Orb/Blue Orb
+    def is_mega_stone?;      return has_flag?("MegaStone"); end
     def is_scent?;           return has_flag?("Scent"); end
 
     def is_important?

@@ -1,13 +1,11 @@
 module LevelCapsEX
-
-
   # Set this to the Game Variable which controls the value of the
   # level cap
   LEVEL_CAP_VARIABLE      = 26
 
   # Set this to the Game Variable which controls the mode of the
   # level cap. The 3 modes are:
-  #   0 (Hard Cap) - The Pokemon cannot level up/gain experience 
+  #   0 (Hard Cap) - The Pokemon cannot level up/gain experience
   #   past the level cap.
   #   1 (EXP Cap) - The Pokemon will gain reduced EXP when it
   #   crosses the level cap.

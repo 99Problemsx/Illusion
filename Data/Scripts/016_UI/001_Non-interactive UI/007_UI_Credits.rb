@@ -35,8 +35,8 @@
 #==============================================================================
 class Scene_Credits
   # Backgrounds to show in credits. Found in Graphics/Titles/ folder
-  BACKGROUNDS_LIST       = ["credits1", "credits2", "credits3", "credits4", "credits5"]
-  BGM                    = "Credits"
+  BACKGROUNDS_LIST       = ["credits1", "credits2", "credits3", "credits4", "credits5"].freeze
+  BGM                    = "Credits".freeze
   SCROLL_SPEED           = 40   # Pixels per second
   SECONDS_PER_BACKGROUND = 11
   TEXT_OUTLINE_COLOR     = Color.new(0, 0, 128, 255)
@@ -72,33 +72,33 @@ class Scene_Credits
     ret.push("", "", "")
     ret.push(_INTL("\"Pokémon Essentials\" was created by:"))
     add_names_to_credits(ret, [
-      "Poccil (Peter O.)",
-      "Maruno",
-      _INTL("Inspired by work by Flameguru")
-    ])
+                           "Poccil (Peter O.)",
+                           "Maruno",
+                           _INTL("Inspired by work by Flameguru")
+                         ])
     ret.push(_INTL("With contributions from:"))
     add_names_to_credits(ret, [
-      "AvatarMonkeyKirby", "Boushy", "Brother1440", "FL.", "Genzai Kawakami",
-      "Golisopod User", "help-14", "IceGod64", "Jacob O. Wobbrock", "KitsuneKouta",
-      "Lisa Anthony", "Luka S.J.", "Marin", "MiDas Mike", "Near Fantastica",
-      "PinkMan", "Popper", "Rataime", "Savordez", "SoundSpawn",
-      "the__end", "Venom12", "Wachunga"
-    ], false)
+                           "AvatarMonkeyKirby", "Boushy", "Brother1440", "FL.", "Genzai Kawakami",
+                           "Golisopod User", "help-14", "IceGod64", "Jacob O. Wobbrock", "KitsuneKouta",
+                           "Lisa Anthony", "Luka S.J.", "Marin", "MiDas Mike", "Near Fantastica",
+                           "PinkMan", "Popper", "Rataime", "Savordez", "SoundSpawn",
+                           "the__end", "Venom12", "Wachunga"
+                         ], false)
     ret.push(_INTL("and everyone else who helped out"))
     ret.push("")
     ret.push(_INTL("\"mkxp-z\" by:"))
     add_names_to_credits(ret, [
-      "Anon",
-      _INTL("Based on \"mkxp\" by Ancurio et al.")
-    ])
+                           "Anon",
+                           _INTL("Based on \"mkxp\" by Ancurio et al.")
+                         ])
     ret.push(_INTL("\"RPG Maker XP\" by:"))
     add_names_to_credits(ret, ["Enterbrain"])
     ret.push(_INTL("Pokémon is owned by:"))
     add_names_to_credits(ret, [
-      "The Pokémon Company",
-      "Nintendo",
-      _INTL("Affiliated with Game Freak")
-    ])
+                           "The Pokémon Company",
+                           "Nintendo",
+                           _INTL("Affiliated with Game Freak")
+                         ])
     ret.push("", "")
     ret.push(_INTL("This is a non-profit fan-made game."),
              _INTL("No copyright infringements intended."),
@@ -125,9 +125,9 @@ class Scene_Credits
     # Make background and text sprites
     #-------------------------------
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
+    viewport.z = 99_999
     text_viewport = Viewport.new(0, @trim, Graphics.width, Graphics.height - (@trim * 2))
-    text_viewport.z = 99999
+    text_viewport.z = 99_999
     @background_sprite = IconSprite.new(0, 0)
     @background_sprite.setBitmap("Graphics/Titles/" + BACKGROUNDS_LIST[0])
     @credit_sprites = []

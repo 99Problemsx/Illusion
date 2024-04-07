@@ -9,12 +9,12 @@ class SlotMachineReel < BitmapSprite
   SCROLL_SPEED = 640   # Pixels moved per second
   ICONS_SETS = [[3, 2, 7, 6, 3, 1, 5, 2, 3, 0, 6, 4, 7, 5, 1, 3, 2, 3, 6, 0, 4, 5],   # Reel 1
                 [0, 4, 1, 2, 7, 4, 6, 0, 1, 5, 4, 0, 1, 3, 4, 0, 1, 6, 7, 0, 1, 5],   # Reel 2
-                [6, 2, 1, 4, 3, 2, 1, 4, 7, 3, 2, 1, 4, 3, 7, 2, 4, 3, 1, 2, 4, 5]]   # Reel 3
-  SLIPPING = [0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3]
+                [6, 2, 1, 4, 3, 2, 1, 4, 7, 3, 2, 1, 4, 3, 7, 2, 4, 3, 1, 2, 4, 5]].freeze   # Reel 3
+  SLIPPING = [0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3].freeze
 
   def initialize(x, y, reel_num, difficulty = 1)
     @viewport = Viewport.new(x, y, 64, 144)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     super(64, 144, @viewport)
     @reel_num = reel_num
     @difficulty = difficulty
@@ -88,9 +88,7 @@ class SlotMachineReel < BitmapSprite
             @slipping = [@slipping - new_index + old_index, 0].max
           end
         end
-        if @spinning
-          @index = (new_index + @initial_index) % @reel.length
-        end
+        @index = (new_index + @initial_index) % @reel.length if @spinning
       end
     end
     4.times do |i|
@@ -110,7 +108,7 @@ class SlotMachineScore < BitmapSprite
 
   def initialize(x, y, score = 0)
     @viewport = Viewport.new(x, y, 70, 22)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     super(70, 22, @viewport)
     @numbers = AnimatedBitmap.new("Graphics/UI/Slot Machine/numbers")
     self.score = score
@@ -240,7 +238,7 @@ class SlotMachineScene
         if this_tick != last_paid_tick
           @sprites["payout"].score -= 1
           @sprites["credit"].score += 1
-          this_tick = last_paid_tick
+          last_paid_tick
         end
         if Input.trigger?(Input::USE) || @sprites["credit"].score == Settings::MAX_COINS
           @sprites["credit"].score += @sprites["payout"].score
@@ -275,7 +273,7 @@ class SlotMachineScene
   def pbStartScene(difficulty)
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     addBackgroundPlane(@sprites, "bg", "Slot Machine/bg", @viewport)
     @sprites["reel1"] = SlotMachineReel.new(64, 112, 1, difficulty)
     @sprites["reel2"] = SlotMachineReel.new(144, 112, 2, difficulty)
@@ -289,7 +287,11 @@ class SlotMachineScene
       y = [170, 122, 218, 82, 82][i - 1]
       @sprites["row#{i}"] = IconSprite.new(2, y, @viewport)
       @sprites["row#{i}"].setBitmap(sprintf("Graphics/UI/Slot Machine/line%1d%s",
-                                            1 + (i / 2), (i >= 4) ? ((i == 4) ? "a" : "b") : ""))
+                                            1 + (i / 2), if i >= 4
+                                                           (i == 4) ? "a" : "b"
+                                                         else
+                                                           ""
+end))
       @sprites["row#{i}"].visible = false
     end
     @sprites["light1"] = IconSprite.new(16, 32, @viewport)

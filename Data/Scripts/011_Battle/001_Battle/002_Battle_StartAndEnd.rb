@@ -1,8 +1,8 @@
 class Battle
-  class BattleAbortedException < Exception; end
+  class BattleAbortedException < StandardError; end
 
   def pbAbort
-    raise BattleAbortedException.new("Battle aborted")
+    raise BattleAbortedException, "Battle aborted"
   end
 
   #=============================================================================
@@ -83,17 +83,15 @@ class Battle
       break if !needsChanging
       # Reduce one or both side's sizes by 1 and try again
       if wildBattle?
-        PBDebug.log("#{@sideSizes[0]}v#{@sideSizes[1]} battle isn't possible " +
+        PBDebug.log("#{@sideSizes[0]}v#{@sideSizes[1]} battle isn't possible " \
                     "(#{side1counts} player-side teams versus #{side2counts[0]} wild Pokémon)")
         newSize = @sideSizes[0] - 1
       else
-        PBDebug.log("#{@sideSizes[0]}v#{@sideSizes[1]} battle isn't possible " +
+        PBDebug.log("#{@sideSizes[0]}v#{@sideSizes[1]} battle isn't possible " \
                     "(#{side1counts} player-side teams versus #{side2counts} opposing teams)")
         newSize = @sideSizes.max - 1
       end
-      if newSize == 0
-        raise _INTL("Couldn't lower either side's size any further, battle isn't possible")
-      end
+      raise _INTL("Couldn't lower either side's size any further, battle isn't possible") if newSize == 0
       2.times do |side|
         next if side == 1 && wildBattle?   # Wild Pokémon's side size is fixed
         next if @sideSizes[side] == 1 || newSize > @sideSizes[side]
@@ -107,9 +105,7 @@ class Battle
   # Set up all battlers
   #=============================================================================
   def pbCreateBattler(idxBattler, pkmn, idxParty)
-    if !@battlers[idxBattler].nil?
-      raise _INTL("Battler index {1} already exists", idxBattler)
-    end
+    raise _INTL("Battler index {1} already exists", idxBattler) if !@battlers[idxBattler].nil?
     @battlers[idxBattler] = Battler.new(self, idxBattler)
     @positions[idxBattler] = ActivePosition.new
     pbClearChoice(idxBattler)
@@ -368,17 +364,15 @@ class Battle
       end
     end
     # Pick up money scattered by Pay Day
-    if @field.effects[PBEffects::PayDay] > 0
-      @field.effects[PBEffects::PayDay] *= 2 if @field.effects[PBEffects::AmuletCoin]
-      @field.effects[PBEffects::PayDay] *= 2 if @field.effects[PBEffects::HappyHour]
-      oldMoney = pbPlayer.money
-      pbPlayer.money += @field.effects[PBEffects::PayDay]
-      moneyGained = pbPlayer.money - oldMoney
-      if moneyGained > 0
-        $stats.battle_money_gained += moneyGained
-        pbDisplayPaused(_INTL("You picked up ${1}!", moneyGained.to_s_formatted))
-      end
-    end
+    return unless @field.effects[PBEffects::PayDay] > 0
+    @field.effects[PBEffects::PayDay] *= 2 if @field.effects[PBEffects::AmuletCoin]
+    @field.effects[PBEffects::PayDay] *= 2 if @field.effects[PBEffects::HappyHour]
+    oldMoney = pbPlayer.money
+    pbPlayer.money += @field.effects[PBEffects::PayDay]
+    moneyGained = pbPlayer.money - oldMoney
+    return unless moneyGained > 0
+    $stats.battle_money_gained += moneyGained
+    pbDisplayPaused(_INTL("You picked up ${1}!", moneyGained.to_s_formatted))
   end
 
   def pbLoseMoney
@@ -392,13 +386,12 @@ class Battle
     oldMoney = pbPlayer.money
     pbPlayer.money -= tMoney
     moneyLost = oldMoney - pbPlayer.money
-    if moneyLost > 0
-      $stats.battle_money_lost += moneyLost
-      if trainerBattle?
-        pbDisplayPaused(_INTL("You gave ${1} to the winner...", moneyLost.to_s_formatted))
-      else
-        pbDisplayPaused(_INTL("You panicked and dropped ${1}...", moneyLost.to_s_formatted))
-      end
+    return unless moneyLost > 0
+    $stats.battle_money_lost += moneyLost
+    if trainerBattle?
+      pbDisplayPaused(_INTL("You gave ${1} to the winner...", moneyLost.to_s_formatted))
+    else
+      pbDisplayPaused(_INTL("You panicked and dropped ${1}...", moneyLost.to_s_formatted))
     end
   end
 
@@ -552,7 +545,8 @@ class Battle
     return 5                                # Draw
   end
 
-  def pbDecisionOnDraw; return 5; end   # Draw
+  # Draw
+  def pbDecisionOnDraw; return 5; end
 
   def pbJudge
     fainted1 = pbAllFainted?(0)

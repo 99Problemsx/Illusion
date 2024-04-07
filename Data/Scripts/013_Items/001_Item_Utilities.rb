@@ -208,7 +208,7 @@ def pbTopRightWindow(text, scene = nil)
   window.width = 198
   window.x     = Graphics.width - window.width
   window.y     = 0
-  window.z     = 99999
+  window.z     = 99_999
   pbPlayDecisionSE
   loop do
     Graphics.update
@@ -319,9 +319,7 @@ def pbGainExpFromExpCandy(pkmn, base_amt, qty, scene)
   end
   pbSEPlay("Pkmn level up")
   scene.scene.pbSetHelpText("") if scene.is_a?(PokemonPartyScreen)
-  if qty > 1
-    (qty - 1).times { pkmn.changeHappiness("vitamin") }
-  end
+  (qty - 1).times { pkmn.changeHappiness("vitamin") } if qty > 1
   pbChangeExp(pkmn, pkmn.exp + (base_amt * qty), scene)
   scene.pbHardRefresh
   return true
@@ -352,9 +350,7 @@ end
 
 def pbBattleHPItem(pkmn, battler, restoreHP, scene)
   if battler
-    if battler.pbRecoverHP(restoreHP) > 0
-      scene.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
-    end
+    scene.pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis)) if battler.pbRecoverHP(restoreHP) > 0
   elsif pbItemRestoreHP(pkmn, restoreHP) > 0
     scene.pbDisplay(_INTL("{1}'s HP was restored.", pkmn.name))
   end
@@ -470,9 +466,7 @@ def pbRaiseHappinessAndLowerEV(pkmn, scene, stat, qty, messages)
     scene.pbDisplay(_INTL("It won't have any effect."))
     return false
   end
-  if h
-    qty.times { |i| pkmn.changeHappiness("evberry") }
-  end
+  qty.times { |i| pkmn.changeHappiness("evberry") } if h
   if e
     pkmn.ev[stat] -= 10 * qty
     pkmn.ev[stat] = 0 if pkmn.ev[stat] < 0
@@ -491,9 +485,7 @@ def pbNatureChangingMint(new_nature, item, pkmn, scene)
     scene.pbDisplay(_INTL("It won't have any effect."))
     return false
   end
-  if !scene.pbConfirm(_INTL("It might affect {1}'s stats. Are you sure you want to use it?", pkmn.name))
-    return false
-  end
+  return false if !scene.pbConfirm(_INTL("It might affect {1}'s stats. Are you sure you want to use it?", pkmn.name))
   pkmn.nature_for_stats = new_nature
   pkmn.calc_stats
   scene.pbRefresh
@@ -579,50 +571,49 @@ end
 #===============================================================================
 # Teach and forget a move
 #===============================================================================
-def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, &block)
+def pbLearnMove(pkmn, move, ...)
   return false if !pkmn
   move = GameData::Move.get(move).id
   if pkmn.egg? && !$DEBUG
-    pbMessage(_INTL("Eggs can't be taught any moves."), &block)
+    pbMessage(...)
     return false
   elsif pkmn.shadowPokemon?
-    pbMessage(_INTL("Shadow Pokémon can't be taught any moves."), &block)
+    pbMessage(...)
     return false
   end
-  pkmn_name = pkmn.name
-  move_name = GameData::Move.get(move).name
+  pkmn.name
+  GameData::Move.get(move).name
   if pkmn.hasMove?(move)
-    pbMessage(_INTL("{1} already knows {2}.", pkmn_name, move_name), &block) if !ignore_if_known
+    pbMessage(...) if !ignore_if_known
     return false
   elsif pkmn.numMoves < Pokemon::MAX_MOVES
     pkmn.learn_move(move)
-    pbMessage("\\se[]" + _INTL("{1} learned {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
+    pbMessage(...)
     return true
   end
-  pbMessage(_INTL("{1} wants to learn {2}, but it already knows {3} moves.",
-                  pkmn_name, move_name, pkmn.numMoves.to_word) + "\1", &block)
-  if pbConfirmMessage(_INTL("Should {1} forget a move to learn {2}?", pkmn_name, move_name), &block)
+  pbMessage(...)
+  if pbConfirmMessage(...)
     loop do
       move_index = pbForgetMove(pkmn, move)
       if move_index >= 0
-        old_move_name = pkmn.moves[move_index].name
+        pkmn.moves[move_index].name
         oldmovepp = pkmn.moves[move_index].pp
         pkmn.moves[move_index] = Pokemon::Move.new(move)   # Replaces current/total PP
         if by_machine && Settings::TAUGHT_MACHINES_KEEP_OLD_PP
           pkmn.moves[move_index].pp = [oldmovepp, pkmn.moves[move_index].total_pp].min
         end
-        pbMessage(_INTL("1, 2, and...\\wt[16] ...\\wt[16] ...\\wt[16] Ta-da!") + "\\se[Battle ball drop]\1", &block)
-        pbMessage(_INTL("{1} forgot how to use {2}.\\nAnd..." + "\1", pkmn_name, old_move_name), &block)
-        pbMessage("\\se[]" + _INTL("{1} learned {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
+        pbMessage(...)
+        pbMessage(...)
+        pbMessage(...)
         pkmn.changeHappiness("machine") if by_machine
         return true
-      elsif pbConfirmMessage(_INTL("Give up on learning {1}?", move_name), &block)
-        pbMessage(_INTL("{1} did not learn {2}.", pkmn_name, move_name), &block)
+      elsif pbConfirmMessage(...)
+        pbMessage(...)
         return false
       end
     end
   else
-    pbMessage(_INTL("{1} did not learn {2}.", pkmn_name, move_name), &block)
+    pbMessage(...)
   end
   return false
 end
@@ -720,12 +711,10 @@ def pbUseItemOnPokemon(item, pkmn, scene)
       pbMessage(_INTL("{1} can't learn {2}.", pkmn.name, movename)) { scene.pbUpdate }
     else
       pbMessage("\\se[PC access]" + _INTL("You booted up the {1}.", itm.portion_name) + "\1") { scene.pbUpdate }
-      if pbConfirmMessage(_INTL("Do you want to teach {1} to {2}?", movename, pkmn.name)) { scene.pbUpdate }
-        if pbLearnMove(pkmn, machine, false, true) { scene.pbUpdate }
-          $bag.remove(item) if itm.consumed_after_use?
-          return true
+      if pbConfirmMessage(_INTL("Do you want to teach {1} to {2}?", movename, pkmn.name)) { scene.pbUpdate } && pbLearnMove(pkmn, machine, false, true) { scene.pbUpdate }
+        $bag.remove(item) if itm.consumed_after_use?
+        return true
         end
-      end
     end
     return false
   end
@@ -745,9 +734,7 @@ def pbUseItemOnPokemon(item, pkmn, scene)
   scene.pbHardRefresh
   if ret && itm.consumed_after_use?
     $bag.remove(item, qty)
-    if !$bag.has?(item)
-      pbMessage(_INTL("You used your last {1}.", itm.portion_name)) { scene.pbUpdate }
-    end
+    pbMessage(_INTL("You used your last {1}.", itm.portion_name)) { scene.pbUpdate } if !$bag.has?(item)
   end
   return ret
 end

@@ -45,10 +45,9 @@ class TilesetRearranger
     @selected_y = -1
     @selected_width = 0
     @selected_height = 0
-    if !screen_start
-      draw_cursor
-      draw_tile_selection
-    end
+    return if screen_start
+    draw_cursor
+    draw_tile_selection
   end
 
   def clear_history
@@ -100,11 +99,11 @@ class TilesetRearranger
     elsif !areas_overlap?
       # Areas do not overlap at all; simply swap each tile in turn
       add_to_history if record_history
-      for j in 0...@selected_height
-        for i in 0...@selected_width
-          offset = j * TILES_PER_ROW + i
-          first_idx = @y * TILES_PER_ROW + @x + offset
-          second_idx = @selected_y * TILES_PER_ROW + @selected_x + offset
+      (0...@selected_height).each do |j|
+        (0...@selected_width).each do |i|
+          offset = (j * TILES_PER_ROW) + i
+          first_idx = (@y * TILES_PER_ROW) + @x + offset
+          second_idx = (@selected_y * TILES_PER_ROW) + @selected_x + offset
           @tile_ID_map[first_idx], @tile_ID_map[second_idx] = @tile_ID_map[second_idx], @tile_ID_map[first_idx]
         end
       end
@@ -116,14 +115,12 @@ class TilesetRearranger
       total_height = max_y - min_y
       # Put affected tiles in a temp array with x and y reversed
       temp_array = []
-      for i in 0...@selected_width
-        for j in min_y...max_y
-          idx = j * TILES_PER_ROW + @x + i
+      (0...@selected_width).each do |i|
+        (min_y...max_y).each do |j|
+          idx = (j * TILES_PER_ROW) + @x + i
           temp_array.push(@tile_ID_map[idx])
         end
-      end
-      # Swap tiles round
-      for j in 0...@selected_width   # For each row in turn
+        # Swap tiles round
         row_start_idx = j * total_height
         cut_tiles = []
         @selected_height.times do
@@ -133,9 +130,9 @@ class TilesetRearranger
       end
       # Put the temp array back into the main array
       counter = 0
-      for i in 0...@selected_width
-        for j in min_y...max_y
-          idx = j * TILES_PER_ROW + @x + i
+      (0...@selected_width).each do |i|
+        (min_y...max_y).each do |j|
+          idx = (j * TILES_PER_ROW) + @x + i
           @tile_ID_map[idx] = temp_array[counter]
           counter += 1
         end
@@ -143,7 +140,7 @@ class TilesetRearranger
       return true
     elsif @y == @selected_y   # Areas are aligned horizontally
       add_to_history if record_history
-      for j in 0...@selected_height   # For each row in turn
+      (0...@selected_height).each do |j|   # For each row in turn
         row_start_idx = (@selected_y + j) * TILES_PER_ROW
         cut_tiles = []
         @selected_width.times do
@@ -158,9 +155,9 @@ class TilesetRearranger
 
   def clear_unused_tiles_in_area(start_x, start_y, width, height)
     ret = true
-    for yy in 0...height
+    (0...height).each do |yy|
       y_offset = (start_y + yy) * TILES_PER_ROW
-      for xx in 0...width
+      (0...width).each do |xx|
         position_id = y_offset + start_x + xx
         tile_id = @tile_ID_map[position_id]
         if tile_id && tile_id > 0 && @used_ids[TILESET_START_ID + tile_id]
@@ -203,9 +200,7 @@ class TilesetRearranger
     if x_offset != 0
       @x += x_offset
       @x = @x.clamp(0, TILES_PER_ROW - 1)
-      if @mode == :swap && @selected_width > 0
-        @x = @x.clamp(0, TILES_PER_ROW - @selected_width)
-      end
+      @x = @x.clamp(0, TILES_PER_ROW - @selected_width) if @mode == :swap && @selected_width > 0
     end
     if y_offset != 0
       @y += y_offset
@@ -220,9 +215,8 @@ class TilesetRearranger
       ensure_cursor_and_tileset_on_screen
     end
     draw_tileset if @top_y != old_top_y
-    if @x != old_x || @y != old_y
-      draw_cursor
-      draw_help_text
-    end
+    return unless @x != old_x || @y != old_y
+    draw_cursor
+    draw_help_text
   end
 end

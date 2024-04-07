@@ -52,9 +52,7 @@ end
 #===============================================================================
 class Battle::Move::AddMoneyGainedFromBattle < Battle::Move
   def pbEffectGeneral(user)
-    if user.pbOwnedByPlayer?
-      @battle.field.effects[PBEffects::PayDay] += 5 * user.level
-    end
+    @battle.field.effects[PBEffects::PayDay] += 5 * user.level if user.pbOwnedByPlayer?
     @battle.pbDisplay(_INTL("Coins were scattered everywhere!"))
   end
 end
@@ -587,10 +585,9 @@ class Battle::Move::RemoveUserBindingAndEntryHazards < Battle::Move::StatUpMove
       user.pbOwnSide.effects[PBEffects::ToxicSpikes] = 0
       @battle.pbDisplay(_INTL("{1} blew away poison spikes!", user.pbThis))
     end
-    if user.pbOwnSide.effects[PBEffects::StickyWeb]
-      user.pbOwnSide.effects[PBEffects::StickyWeb] = false
-      @battle.pbDisplay(_INTL("{1} blew away sticky webs!", user.pbThis))
-    end
+    return unless user.pbOwnSide.effects[PBEffects::StickyWeb]
+    user.pbOwnSide.effects[PBEffects::StickyWeb] = false
+    @battle.pbDisplay(_INTL("{1} blew away sticky webs!", user.pbThis))
   end
 
   def pbAdditionalEffect(user, target)
@@ -672,11 +669,10 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
   def pbEffectGeneral(user)
     idxA = user.index
     idxB = @idxAlly
-    if @battle.pbSwapBattlers(idxA, idxB)
-      @battle.pbDisplay(_INTL("{1} and {2} switched places!",
-                              @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
-      [idxA, idxB].each { |idx| @battle.pbEffectsOnBattlerEnteringPosition(@battle.battlers[idx]) }
-    end
+    return unless @battle.pbSwapBattlers(idxA, idxB)
+    @battle.pbDisplay(_INTL("{1} and {2} switched places!",
+                            @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
+    [idxA, idxB].each { |idx| @battle.pbEffectsOnBattlerEnteringPosition(@battle.battlers[idx]) }
   end
 end
 

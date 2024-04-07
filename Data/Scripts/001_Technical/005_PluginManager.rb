@@ -128,12 +128,8 @@ module PluginManager
       value = options[key]
       case key
       when :name   # Plugin name
-        if nil_or_empty?(value)
-          self.error("Plugin name must be a non-empty string.")
-        end
-        if !@@Plugins[value].nil?
-          self.error("A plugin called '#{value}' already exists.")
-        end
+        self.error("Plugin name must be a non-empty string.") if nil_or_empty?(value)
+        self.error("A plugin called '#{value}' already exists.") if !@@Plugins[value].nil?
         name = value
       when :version   # Plugin version
         self.error("Plugin version must be a string.") if nil_or_empty?(value)
@@ -141,9 +137,7 @@ module PluginManager
       when :essentials
         essentials = value
       when :link   # Plugin website
-        if nil_or_empty?(value)
-          self.error("Plugin link must be a non-empty string.")
-        end
+        self.error("Plugin link must be a non-empty string.") if nil_or_empty?(value)
         link = value
       when :dependencies   # Plugin dependencies
         dependencies = value
@@ -151,9 +145,7 @@ module PluginManager
         value.each do |dep|
           case dep
           when String   # "plugin name"
-            if !self.installed?(dep)
-              self.error("Plugin '#{name}' requires plugin '#{dep}' to be installed above it.")
-            end
+            self.error("Plugin '#{name}' requires plugin '#{dep}' to be installed above it.") if !self.installed?(dep)
           when Array
             case dep.size
             when 1   # ["plugin name"]
@@ -173,16 +165,14 @@ module PluginManager
                 dep_version = dep[1]
                 next if self.installed?(dep_name, dep_version)
                 if self.installed?(dep_name)   # Have plugin but lower version
-                  msg = "Plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} or higher, " +
+                  msg = "Plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} or higher, " \
                         "but the installed version is #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
-                  if dep_link
-                    msg += "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'."
-                  end
+                  msg += "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'." if dep_link
                   self.error(msg)
                 else   # Don't have plugin
-                  self.error("Plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} " +
-                      "or higher to be installed above it.")
+                  self.error("Plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} " \
+                             "or higher to be installed above it.")
                 end
               end
             when 3   # [:optional/:exact/:optional_exact, "plugin name", "version"]
@@ -209,7 +199,7 @@ module PluginManager
                 optional = true
                 exact = true
               else
-                self.error("Expected first dependency argument to be one of " +
+                self.error("Expected first dependency argument to be one of " \
                            ":optional, :exact or :optional_exact, but got #{dep_arg.inspect}.")
               end
               if optional
@@ -219,9 +209,7 @@ module PluginManager
                   msg << " or higher" if !exact
                   msg << ", but the installed version was #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
-                  if dep_link
-                    msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'."
-                  end
+                  msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'." if dep_link
                   self.error(msg)
                 end
               elsif !self.installed?(dep_name, dep_version, exact)
@@ -230,9 +218,7 @@ module PluginManager
                   msg << " or later" if !exact
                   msg << ", but the installed version was #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
-                  if dep_link
-                    msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'."
-                  end
+                  msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'." if dep_link
                 else   # Don't have plugin
                   msg = "Plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} "
                   msg << "or later " if !exact
@@ -487,7 +473,9 @@ module PluginManager
       dname = dname[0] if dname.is_a?(Array) && dname.length == 2
       dname = dname[1] if dname.is_a?(Array) && dname.length == 3
       # catch looping dependency issue
-      self.error("Plugin '#{og[0]}' has looping dependencies which cannot be resolved automatically.") if !og.nil? && og.include?(dname)
+      if !og.nil? && og.include?(dname)
+        self.error("Plugin '#{og[0]}' has looping dependencies which cannot be resolved automatically.")
+      end
       new_og = og.clone
       new_og.push(dname)
       self.validateDependencies(dname, meta, new_og)

@@ -5,7 +5,7 @@
 module OverConfig
   # Change the name of the background if you want it to be diferent than the options screen.
   # Note: It has to be in the pictures folder
-  BACKGROUND = "optionsbg"
+  BACKGROUND = "optionsbg".freeze
 
   # Change the color of the "Controls" text. Change only the numbers to change the colors
   TITLE_BASE = Color.new(248, 248, 248)
@@ -16,8 +16,8 @@ module OverConfig
   NAME_SHADOW = Color.new(0, 0, 0)
 
   # Change the color of the value of the option. Change only the numbers to change the colors
-  VALUE_BASE = Color.new(248,136,128)
-  VALUE_SHADOW = Color.new(248,48,24)
+  VALUE_BASE = Color.new(248, 136, 128)
+  VALUE_SHADOW = Color.new(248, 48, 24)
 
   # Change the position of the "Controls" text
   TITLE_X = 0		# Default: 0

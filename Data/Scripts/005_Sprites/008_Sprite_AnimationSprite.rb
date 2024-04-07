@@ -37,9 +37,7 @@ class SpriteAnimation
     @_animation_duration = @_animation.frame_max
     @_animation_index    = -1
     fr = 20
-    if @_animation.name[/\[\s*(\d+?)\s*\]\s*$/]
-      fr = $~[1].to_i
-    end
+    fr = $~[1].to_i if @_animation.name[/\[\s*(\d+?)\s*\]\s*$/]
     @_animation_time_per_frame = 1.0 / fr
     @_animation_timer_start = System.uptime
     animation_name = @_animation.animation_name
@@ -71,9 +69,7 @@ class SpriteAnimation
     @_loop_animation_duration = @_animation.frame_max
     @_loop_animation_index = -1
     fr = 20
-    if @_animation.name[/\[\s*(\d+?)\s*\]\s*$/]
-      fr = $~[1].to_i
-    end
+    fr = $~[1].to_i if @_animation.name[/\[\s*(\d+?)\s*\]\s*$/]
     @_loop_animation_time_per_frame = 1.0 / fr
     @_loop_animation_timer_start = System.uptime
     animation_name = @_loop_animation.animation_name
@@ -235,23 +231,17 @@ class SpriteAnimation
   def x=(x)
     sx = x - self.x
     return if sx == 0
-    if @_animation_sprites
-      16.times { |i| @_animation_sprites[i].x += sx }
-    end
-    if @_loop_animation_sprites
-      16.times { |i| @_loop_animation_sprites[i].x += sx }
-    end
+    16.times { |i| @_animation_sprites[i].x += sx } if @_animation_sprites
+    return unless @_loop_animation_sprites
+    16.times { |i| @_loop_animation_sprites[i].x += sx }
   end
 
   def y=(y)
     sy = y - self.y
     return if sy == 0
-    if @_animation_sprites
-      16.times { |i| @_animation_sprites[i].y += sy }
-    end
-    if @_loop_animation_sprites
-      16.times { |i| @_loop_animation_sprites[i].y += sy }
-    end
+    16.times { |i| @_animation_sprites[i].y += sy } if @_animation_sprites
+    return unless @_loop_animation_sprites
+    16.times { |i| @_loop_animation_sprites[i].y += sy }
   end
 end
 

@@ -83,7 +83,11 @@ class Game_System
   end
 
   def bgm_pause(fadetime = 0.0) # :nodoc:
-    pos = Audio.bgm_pos rescue 0
+    pos = begin
+      Audio.bgm_pos
+    rescue StandardError
+      0
+    end
     self.bgm_fade(fadetime) if fadetime > 0.0
     @bgm_position = pos
     @bgm_paused   = true
@@ -95,11 +99,10 @@ class Game_System
   end
 
   def bgm_resume(bgm) # :nodoc:
-    if @bgm_paused
-      self.bgm_play_internal(bgm, @bgm_position)
-      @bgm_position = 0
-      @bgm_paused   = false
-    end
+    return unless @bgm_paused
+    self.bgm_play_internal(bgm, @bgm_position)
+    @bgm_position = 0
+    @bgm_paused   = false
   end
 
   def bgm_stop(track = nil) # :nodoc:
@@ -198,10 +201,9 @@ class Game_System
   end
 
   def bgs_resume(bgs) # :nodoc:
-    if @bgs_paused
-      self.bgs_play(bgs)
-      @bgs_paused = false
-    end
+    return unless @bgs_paused
+    self.bgs_play(bgs)
+    @bgs_paused = false
   end
 
   def bgs_stop
@@ -236,12 +238,11 @@ class Game_System
 
   def se_play(se)
     se = RPG::AudioFile.new(se) if se.is_a?(String)
-    if se && se.name != "" && FileTest.audio_exist?("Audio/SE/" + se.name)
-      vol = se.volume
-      vol *= $PokemonSystem.sevolume / 100.0
-      vol = vol.to_i
-      Audio.se_play("Audio/SE/" + se.name, vol, se.pitch)
-    end
+    return unless se && se.name != "" && FileTest.audio_exist?("Audio/SE/" + se.name)
+    vol = se.volume
+    vol *= $PokemonSystem.sevolume / 100.0
+    vol = vol.to_i
+    Audio.se_play("Audio/SE/" + se.name, vol, se.pitch)
   end
 
   def se_stop
@@ -277,11 +278,10 @@ class Game_System
   end
 
   def update
-    if Input.trigger?(Input::SPECIAL) && pbCurrentEventCommentInput(1, "Cut Scene")
-      event = @map_interpreter.get_self
-      @map_interpreter.pbSetSelfSwitch(event.id, "A", true)
-      @map_interpreter.command_end
-      event.start
-    end
+    return unless Input.trigger?(Input::SPECIAL) && pbCurrentEventCommentInput(1, "Cut Scene")
+    event = @map_interpreter.get_self
+    @map_interpreter.pbSetSelfSwitch(event.id, "A", true)
+    @map_interpreter.command_end
+    event.start
   end
 end

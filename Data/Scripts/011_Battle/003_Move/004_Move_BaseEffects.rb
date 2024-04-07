@@ -98,9 +98,8 @@ class Battle::Move::StatUpMove < Battle::Move
   end
 
   def pbAdditionalEffect(user, target)
-    if user.pbCanRaiseStatStage?(@statUp[0], user, self)
-      user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
-    end
+    return unless user.pbCanRaiseStatStage?(@statUp[0], user, self)
+    user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
   end
 end
 
@@ -132,9 +131,7 @@ class Battle::Move::MultiStatUpMove < Battle::Move
     showAnim = true
     (@statUp.length / 2).times do |i|
       next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
     end
   end
 
@@ -142,9 +139,7 @@ class Battle::Move::MultiStatUpMove < Battle::Move
     showAnim = true
     (@statUp.length / 2).times do |i|
       next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
     end
   end
 end
@@ -160,9 +155,7 @@ class Battle::Move::StatDownMove < Battle::Move
     showAnim = true
     (@statDown.length / 2).times do |i|
       next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
-      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
+      showAnim = false if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
     end
   end
 end
@@ -227,9 +220,7 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
         end
         @battle.pbDisplay(_INTL("{1}'s stats won't go any lower!", user.pbThis)) if !canLower && show_message
       end
-      if canLower
-        target.pbCanLowerStatStage?(@statDown[0], user, self, show_message)
-      end
+      target.pbCanLowerStatStage?(@statDown[0], user, self, show_message) if canLower
       return true
     end
     return false
@@ -331,21 +322,20 @@ class Battle::Move::TwoTurnMove < Battle::Move
     pbChargingTurnMessage(user, targets)
     pbShowAnimation(@id, user, targets, 1)   # Charging anim
     targets.each { |b| pbChargingTurnEffect(user, b) }
-    if @powerHerb
-      # Moves that would make the user semi-invulnerable will hide the user
-      # after the charging animation, so the "UseItem" animation shouldn't show
-      # for it
-      if !["TwoTurnAttackInvulnerableInSky",
-           "TwoTurnAttackInvulnerableUnderground",
-           "TwoTurnAttackInvulnerableUnderwater",
-           "TwoTurnAttackInvulnerableInSkyParalyzeTarget",
-           "TwoTurnAttackInvulnerableRemoveProtections",
-           "TwoTurnAttackInvulnerableInSkyTargetCannotAct"].include?(@function_code)
-        @battle.pbCommonAnimation("UseItem", user)
-      end
-      @battle.pbDisplay(_INTL("{1} became fully charged due to its Power Herb!", user.pbThis))
-      user.pbConsumeItem
+    return unless @powerHerb
+    # Moves that would make the user semi-invulnerable will hide the user
+    # after the charging animation, so the "UseItem" animation shouldn't show
+    # for it
+    if !["TwoTurnAttackInvulnerableInSky",
+         "TwoTurnAttackInvulnerableUnderground",
+         "TwoTurnAttackInvulnerableUnderwater",
+         "TwoTurnAttackInvulnerableInSkyParalyzeTarget",
+         "TwoTurnAttackInvulnerableRemoveProtections",
+         "TwoTurnAttackInvulnerableInSkyTargetCannotAct"].include?(@function_code)
+      @battle.pbCommonAnimation("UseItem", user)
     end
+    @battle.pbDisplay(_INTL("{1} became fully charged due to its Power Herb!", user.pbThis))
+    user.pbConsumeItem
   end
 
   def pbAccuracyCheck(user, target)

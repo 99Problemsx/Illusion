@@ -1,7 +1,7 @@
 ################################################################################
-# 
+#
 # Updates to old move effects.
-# 
+#
 ################################################################################
 
 #===============================================================================
@@ -74,25 +74,24 @@ class Battle::Move::HealUserAndAlliesQuarterOfTotalHPCureStatus < Battle::Move
       target.pbRecoverHP(target.totalhp / 4)
       @battle.pbDisplay(_INTL("{1}'s HP was restored.", target.pbThis))
     end
-    if target.status != :NONE
-      old_status = target.status
-      target.pbCureStatus(false)
-      case old_status
-      when :SLEEP
-        @battle.pbDisplay(_INTL("{1} was woken from sleep.", target.pbThis))
-      when :POISON
-        @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", target.pbThis))
-      when :BURN
-        @battle.pbDisplay(_INTL("{1}'s burn was healed.", target.pbThis))
-      when :PARALYSIS
-        @battle.pbDisplay(_INTL("{1} was cured of paralysis.", target.pbThis))
-      when :FROZEN
-        @battle.pbDisplay(_INTL("{1} was thawed out.", target.pbThis))
-      when :DROWSY
-        @battle.pbDisplay(_INTL("{1} became alert again.", target.pbThis))
-      when :FROSTBITE
-        @battle.pbDisplay(_INTL("{1}'s frostbite was healed.", target.pbThis))
-      end
+    return unless target.status != :NONE
+    old_status = target.status
+    target.pbCureStatus(false)
+    case old_status
+    when :SLEEP
+      @battle.pbDisplay(_INTL("{1} was woken from sleep.", target.pbThis))
+    when :POISON
+      @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", target.pbThis))
+    when :BURN
+      @battle.pbDisplay(_INTL("{1}'s burn was healed.", target.pbThis))
+    when :PARALYSIS
+      @battle.pbDisplay(_INTL("{1} was cured of paralysis.", target.pbThis))
+    when :FROZEN
+      @battle.pbDisplay(_INTL("{1} was thawed out.", target.pbThis))
+    when :DROWSY
+      @battle.pbDisplay(_INTL("{1} became alert again.", target.pbThis))
+    when :FROSTBITE
+      @battle.pbDisplay(_INTL("{1}'s frostbite was healed.", target.pbThis))
     end
   end
 end
@@ -144,7 +143,7 @@ class Battle::Move::HealUserFullyAndFallAsleep < Battle::Move::HealingMove
     end
     return paldea_pbMoveFailed?(user, targets)
   end
-end  
+end
 
 #===============================================================================
 # Roar, Whirlwind
@@ -154,10 +153,10 @@ end
 class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
   alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
   def pbFailsAgainstTarget?(user, target, show_message)
-	if target.isCommander?
+    if target.isCommander?
       @battle.pbDisplay(_INTL("But it failed!")) if show_message
       return true
-    end
+      end
     if target.hasActiveAbility?(:GUARDDOG) && !@battle.moldBreaker
       if show_message
         @battle.pbShowAbilitySplash(target)
@@ -228,7 +227,7 @@ class Battle::Move::StartUserSideDoubleSpeed < Battle::Move
   def pbEffectGeneral(user)
     user.pbOwnSide.effects[PBEffects::Tailwind] = 4
     @battle.pbDisplay(_INTL("The Tailwind blew from behind {1}!", user.pbTeam(true)))
-    @battle.allSameSideBattlers.each do |b| 
+    @battle.allSameSideBattlers.each do |b|
       next if !b || b.fainted?
       if b.hasActiveAbility?(:WINDRIDER) && b.pbCanRaiseStatStage?(:ATTACK, b, self)
         b.pbRaiseStatStageByAbility(:ATTACK, 1, b)
@@ -253,7 +252,7 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
     super
     user.effects[PBEffects::ProtectRate] = oldVal
   end
-  
+
   alias paldea_pbMoveFailed? pbMoveFailed?
   def pbMoveFailed?(user, targets)
     if Settings::MECHANICS_GENERATION >= 9
@@ -271,7 +270,7 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
     end
     return paldea_pbMoveFailed?(user, targets)
   end
-  
+
   alias paldea_pbEffectGeneral pbEffectGeneral
   def pbEffectGeneral(user)
     if Settings::MECHANICS_GENERATION >= 9
@@ -317,7 +316,7 @@ end
 class Battle::Move::HitTwoToFiveTimes < Battle::Move
   alias paldea_pbNumHits pbNumHits
   def pbNumHits(user, targets)
-    return 4 + rand(2) if user.hasActiveItem?(:LOADEDDICE)
+    return rand(4..5) if user.hasActiveItem?(:LOADEDDICE)
     return paldea_pbNumHits(user, targets)
   end
 end
@@ -364,12 +363,14 @@ class Battle::Move::UserTargetSwapAbilities < Battle::Move
     end
     return paldea_pbMoveFailed?(user, targets)
   end
-  
+
   alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
   def pbFailsAgainstTarget?(user, target, show_message)
     ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis)) if show_message
+      if show_message
+        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis))
+      end
       return true
     end
     return ret
@@ -386,7 +387,9 @@ class Battle::Move::SetTargetAbilityToUserAbility < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis)) if show_message
+      if show_message
+        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis))
+      end
       return true
     end
     return ret
@@ -403,7 +406,9 @@ class Battle::Move::SetTargetAbilityToInsomnia < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis)) if show_message
+      if show_message
+        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis))
+      end
       return true
     end
     return ret
@@ -420,7 +425,9 @@ class Battle::Move::SetTargetAbilityToSimple < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis)) if show_message
+      if show_message
+        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis))
+      end
       return true
     end
     return ret
@@ -437,7 +444,9 @@ class Battle::Move::NegateTargetAbility < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis)) if show_message
+      if show_message
+        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", target.pbThis))
+      end
       return true
     end
     return ret
@@ -464,9 +473,8 @@ end
 #-------------------------------------------------------------------------------
 class Battle::Move::IgnoreTargetAbility < Battle::Move
   def pbOnStartUse(user, targets)
-    if @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
-      @battle.moldBreaker = false
-    end
+    return unless @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
+    @battle.moldBreaker = false
   end
 end
 
@@ -479,9 +487,8 @@ class Battle::Move::CategoryDependsOnHigherDamageIgnoreTargetAbility < Battle::M
   alias paldea_pbOnStartUse pbOnStartUse
   def pbOnStartUse(user, targets)
     paldea_pbOnStartUse(user, targets)
-    if @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
-      @battle.moldBreaker = false
-    end
+    return unless @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
+    @battle.moldBreaker = false
   end
 end
 
@@ -549,9 +556,8 @@ class Battle::Move::LowerTargetEvasion1RemoveSideEffects < Battle::Move::TargetS
   def pbEffectAgainstTarget(user, target)
     old_terrain = @battle.field.terrain
     paldea_pbEffectAgainstTarget(user, target)
-    if old_terrain != :None
-      @battle.allBattlers.each { |b| b.pbAbilityOnTerrainChange }
-    end
+    return unless old_terrain != :None
+    @battle.allBattlers.each { |b| b.pbAbilityOnTerrainChange }
   end
 end
 
@@ -562,31 +568,27 @@ end
 #-------------------------------------------------------------------------------
 class Battle::Move::TypeDependsOnUserPlate < Battle::Move
   def pbOnStartUse(user, targets)
-    if user.hasLegendPlateJudgment? && !targets.empty?
-      target = nil
-      targets.each do |b|
-        next if !b || b.fainted? || b.isCommander?
-        target = b
-      end
-      newType   = @battle.pbGetBestTypeJudgment(user, target, self, user.legendPlateType)
-      newForm   = GameData::Type.get(newType).icon_position
-      typeName  = GameData::Type.get(newType).name
-      @calcType = newType
-      if user.form != newForm
-        @battle.scene.pbArceusTransform(user.index, newType)
-        user.pbChangeForm(newForm,
-        _INTL("{1} transformed into the {2} type!", user.pbThis, typeName))
-      end
+    return unless user.hasLegendPlateJudgment? && !targets.empty?
+    target = nil
+    targets.each do |b|
+      next if !b || b.fainted? || b.isCommander?
+      target = b
     end
+    newType   = @battle.pbGetBestTypeJudgment(user, target, self, user.legendPlateType)
+    newForm   = GameData::Type.get(newType).icon_position
+    typeName  = GameData::Type.get(newType).name
+    @calcType = newType
+    return unless user.form != newForm
+    @battle.scene.pbArceusTransform(user.index, newType)
+    user.pbChangeForm(newForm,
+                      _INTL("{1} transformed into the {2} type!", user.pbThis, typeName))
   end
 
   alias paldea_pbBaseType pbBaseType
   def pbBaseType(user)
-    if user.hasLegendPlateJudgment?
-      return user.legendPlateType
-    else
-      return paldea_pbBaseType(user)
-    end
+    return user.legendPlateType if user.hasLegendPlateJudgment?
+
+    return paldea_pbBaseType(user)
   end
 end
 

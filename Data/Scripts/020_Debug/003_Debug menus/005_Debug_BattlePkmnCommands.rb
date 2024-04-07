@@ -335,9 +335,7 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :hidden_values, {
             end
           else   # (Max) Randomise all
             evTotalTarget = Pokemon::EV_LIMIT
-            if cmd2 == ev_commands.length - 2   # Randomize all (not max)
-              evTotalTarget = rand(Pokemon::EV_LIMIT)
-            end
+            evTotalTarget = rand(Pokemon::EV_LIMIT) if cmd2 == ev_commands.length - 2 # Randomize all (not max)
             GameData::Stat.each_main { |s| pkmn.ev[s.id] = 0 }
             while evTotalTarget > 0
               r = rand(ev_id.length)
@@ -555,14 +553,10 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_move_pp, {
                 "\\ts[]" + _INTL("Set PP of {1} (max. {2}).", move_name, move.total_pp), params
               )
               move.pp = h
-              if battler && battler.moves[move_indices[cmd]].id == move.id
-                battler.moves[move_indices[cmd]].pp = move.pp
-              end
+              battler.moves[move_indices[cmd]].pp = move.pp if battler && battler.moves[move_indices[cmd]].id == move.id
             when 1   # Full PP
               move.pp = move.total_pp
-              if battler && battler.moves[move_indices[cmd]].id == move.id
-                battler.moves[move_indices[cmd]].pp = move.pp
-              end
+              battler.moves[move_indices[cmd]].pp = move.pp if battler && battler.moves[move_indices[cmd]].id == move.id
             when 2   # Change PP Up
               params = ChooseNumberParams.new
               params.setRange(0, 3)
@@ -572,17 +566,13 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_move_pp, {
               )
               move.ppup = h
               move.pp = move.total_pp if move.pp > move.total_pp
-              if battler && battler.moves[move_indices[cmd]].id == move.id
-                battler.moves[move_indices[cmd]].pp = move.pp
-              end
+              battler.moves[move_indices[cmd]].pp = move.pp if battler && battler.moves[move_indices[cmd]].id == move.id
             end
           end
         end
       elsif cmd == commands.length - 1   # Restore all PP
         pkmn.heal_PP
-        if battler
-          battler.moves.each { |m| m.pp = m.total_pp }
-        end
+        battler.moves.each { |m| m.pp = m.total_pp } if battler
       end
     end
   }
@@ -621,9 +611,7 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_item, {
         item = pbChooseItemList(pkmn.item_id)
         if item && item != pkmn.item_id
           (battler || pkmn).item = item
-          if GameData::Item.get(item).is_mail?
-            pkmn.mail = Mail.new(item, _INTL("Text"), $player.name)
-          end
+          pkmn.mail = Mail.new(item, _INTL("Text"), $player.name) if GameData::Item.get(item).is_mail?
         end
       when 1   # Remove item
         if pkmn.hasItem?
@@ -667,9 +655,7 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_ability, {
       when 1   # Set ability for battler
         if battler
           new_ability = pbChooseAbilityList(battler.ability_id)
-          if new_ability && new_ability != battler.ability_id
-            battler.ability = new_ability
-          end
+          battler.ability = new_ability if new_ability && new_ability != battler.ability_id
         else
           pbMessage(_INTL("This Pokémon isn't in battle."))
         end
@@ -811,7 +797,11 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_shininess, {
   "effect" => proc { |pkmn, battler, battle|
     cmd = 0
     loop do
-      msg_idx = pkmn.shiny? ? (pkmn.super_shiny? ? 1 : 0) : 2
+      msg_idx = if pkmn.shiny?
+                  pkmn.super_shiny? ? 1 : 0
+                else
+                  2
+end
       msg = [_INTL("Is shiny."), _INTL("Is super shiny."), _INTL("Is normal (not shiny).")][msg_idx]
       cmd = pbMessage("\\ts[]" + msg,
                       [_INTL("Make shiny"),

@@ -6,23 +6,23 @@
 class AutomaticLevelScaling
   @@selectedDifficulty = Difficulty.new
   @@settings = {
-    temporary: false,
-    automatic_evolutions: LevelScalingSettings::AUTOMATIC_EVOLUTIONS,
+    temporary:               false,
+    automatic_evolutions:    LevelScalingSettings::AUTOMATIC_EVOLUTIONS,
     include_previous_stages: LevelScalingSettings::INCLUDE_PREVIOUS_STAGES,
-    first_evolution_level: LevelScalingSettings::DEFAULT_FIRST_EVOLUTION_LEVEL,
-    second_evolution_level: LevelScalingSettings::DEFAULT_SECOND_EVOLUTION_LEVEL,
-    proportional_scaling: LevelScalingSettings::PROPORTIONAL_SCALING,
-    only_scale_if_higher: LevelScalingSettings::ONLY_SCALE_IF_HIGHER,
-    only_scale_if_lower: LevelScalingSettings::ONLY_SCALE_IF_LOWER,
-    update_moves: true
+    first_evolution_level:   LevelScalingSettings::DEFAULT_FIRST_EVOLUTION_LEVEL,
+    second_evolution_level:  LevelScalingSettings::DEFAULT_SECOND_EVOLUTION_LEVEL,
+    proportional_scaling:    LevelScalingSettings::PROPORTIONAL_SCALING,
+    only_scale_if_higher:    LevelScalingSettings::ONLY_SCALE_IF_HIGHER,
+    only_scale_if_lower:     LevelScalingSettings::ONLY_SCALE_IF_LOWER,
+    update_moves:            true
   }
 
   def self.setDifficulty(id)
-    if LevelScalingSettings::DIFFICULTIES[id] == nil
+    if LevelScalingSettings::DIFFICULTIES[id].nil?
       raise _INTL("No difficulty with id \"{1}\" was provided in the DIFFICULTIES Hash of Settings.", id)
-    else
-      @@selectedDifficulty = LevelScalingSettings::DIFFICULTIES[id]
-    end
+end
+
+    @@selectedDifficulty = LevelScalingSettings::DIFFICULTIES[id]
   end
 
   def self.getScaledLevel
@@ -65,19 +65,18 @@ class AutomaticLevelScaling
     end
 
     # Settings reset
-    if @@settings[:temporary]
-      @@settings = {
-        temporary: false,
-        automatic_evolutions: LevelScalingSettings::AUTOMATIC_EVOLUTIONS,
-        include_previous_stages: LevelScalingSettings::INCLUDE_PREVIOUS_STAGES,
-        first_evolution_level: LevelScalingSettings::DEFAULT_FIRST_EVOLUTION_LEVEL,
-        second_evolution_level: LevelScalingSettings::DEFAULT_SECOND_EVOLUTION_LEVEL,
-        proportional_scaling: LevelScalingSettings::PROPORTIONAL_SCALING,
-        only_scale_if_higher: LevelScalingSettings::ONLY_SCALE_IF_HIGHER,
-        only_scale_if_lower: LevelScalingSettings::ONLY_SCALE_IF_LOWER,
-        update_moves: true
-      }
-    end
+    return unless @@settings[:temporary]
+    @@settings = {
+      temporary:               false,
+      automatic_evolutions:    LevelScalingSettings::AUTOMATIC_EVOLUTIONS,
+      include_previous_stages: LevelScalingSettings::INCLUDE_PREVIOUS_STAGES,
+      first_evolution_level:   LevelScalingSettings::DEFAULT_FIRST_EVOLUTION_LEVEL,
+      second_evolution_level:  LevelScalingSettings::DEFAULT_SECOND_EVOLUTION_LEVEL,
+      proportional_scaling:    LevelScalingSettings::PROPORTIONAL_SCALING,
+      only_scale_if_higher:    LevelScalingSettings::ONLY_SCALE_IF_HIGHER,
+      only_scale_if_lower:     LevelScalingSettings::ONLY_SCALE_IF_LOWER,
+      update_moves:            true
+    }
   end
 
   def self.setNewStage(pokemon)
@@ -89,13 +88,11 @@ class AutomaticLevelScaling
       pokemon.species = GameData::Species.get(pokemon.species).get_baby_species # revert to the first stage
     else
       # Checks if the pokemon has evolved
-      if pokemon.species != GameData::Species.get(pokemon.species).get_baby_species
-        stage = 1
-      end
+      stage = 1 if pokemon.species != GameData::Species.get(pokemon.species).get_baby_species
     end
 
     regionalForm = false
-    for species in LevelScalingSettings::POKEMON_WITH_REGIONAL_FORMS do
+    LevelScalingSettings::POKEMON_WITH_REGIONAL_FORMS.each do |species|
       regionalForm = true if pokemon.isSpecies?(species)
     end
 
@@ -105,17 +102,10 @@ class AutomaticLevelScaling
       # Checks if the species only evolve by level up
       other_evolving_method = false
       evolutions.length.times { |i|
-        if evolutions[i][1] != :Level
-          other_evolving_method = true
-        end
+        other_evolving_method = true if evolutions[i][1] != :Level
       }
 
-      unless other_evolving_method || regionalForm  # Species that evolve by level up
-        if pokemon.check_evolution_on_level_up != nil
-          pokemon.species = pokemon.check_evolution_on_level_up
-        end
-
-      else  # For species with other evolving methods
+      if other_evolving_method || regionalForm  # For species with other evolving methods
         # Checks if the pokemon is in it's midform and defines the level to evolve
         level = @@settings[stage == 0 ? :first_evolution_level : :second_evolution_level]
 
@@ -126,7 +116,14 @@ class AutomaticLevelScaling
 
           elsif evolutions.length > 1
             if regionalForm
-              if !pokemon.isSpecies?(:MEOWTH)
+              if pokemon.isSpecies?(:MEOWTH)  # Meowth has two possible evolutions and a regional form depending on its origin region
+                if [0, 1].include?(form)
+                  pokemon.species = evolutions[0][0]
+                  pokemon.setForm(form)
+                else
+                  pokemon.species = evolutions[1][0]
+                end
+              else
                 if form >= evolutions.length  # regional form
                   pokemon.species = evolutions[0][0]
                   pokemon.setForm(form)
@@ -134,26 +131,20 @@ class AutomaticLevelScaling
                   pokemon.species = evolutions[form][0]
                 end
 
-              else  # Meowth has two possible evolutions and a regional form depending on its origin region
-                if form == 0 || form == 1
-                  pokemon.species = evolutions[0][0]
-                  pokemon.setForm(form)
-                else
-                  pokemon.species = evolutions[1][0]
-                end
               end
 
             else                            # Species with multiple possible evolutions
               pokemon.species = evolutions[rand(0, evolutions.length - 1)][0]
               # Checks for the evolution defined in the PBS
-              for evolution in evolutions do
-                if evolution[0] == original_species
-                  pokemon.species = evolution[0]
-                end
+              evolutions.each do |evolution|
+                pokemon.species = evolution[0] if evolution[0] == original_species
               end
             end
           end
         end
+      else  # Species that evolve by level up
+        pokemon.species = pokemon.check_evolution_on_level_up if !pokemon.check_evolution_on_level_up.nil?
+
       end
 
       stage += 1
@@ -164,15 +155,13 @@ class AutomaticLevelScaling
     # Parameters validation
     case setting
     when "firstEvolutionLevel", "secondEvolutionLevel"
-      if !value.is_a?(Integer)
-        raise _INTL("\"{1}\" requires an integer value, but {2} was provided.",setting,value)
-      end
+      raise _INTL("\"{1}\" requires an integer value, but {2} was provided.", setting, value) if !value.is_a?(Integer)
     when "updateMoves", "automaticEvolutions", "includePreviousStages", "proportionalScaling", "onlyScaleIfHigher", "onlyScaleIfLower"
       if !(value.is_a?(FalseClass) || value.is_a?(TrueClass))
-        raise _INTL("\"{1}\" requires a boolean value, but {2} was provided.",setting,value)
+        raise _INTL("\"{1}\" requires a boolean value, but {2} was provided.", setting, value)
       end
     else
-      raise _INTL("\"{1}\" is not a defined setting name.",setting)
+      raise _INTL("\"{1}\" is not a defined setting name.", setting)
     end
 
     @@settings[:temporary] = true

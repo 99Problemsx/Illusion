@@ -48,7 +48,8 @@ def repositionY(x1, y1, x2, y2, tx, ty)
   return [x, y]
 end
 
-def transformPoint(x1, y1, x2, y2,  # Source line
+# Source line
+def transformPoint(x1, y1, x2, y2,
                    x3, y3, x4, y4,  # Destination line
                    px, py)        # Source point
   ret = yaxisIntersect(x1, y1, x2, y2, px, py)
@@ -514,8 +515,6 @@ class PBAnimation < Array
           foGraphic.color = Color.new(cr, cg, cb, ca)
         end
       end
-    end
-    @timing.each do |i|
       next if i.frame != frame
       case i.timingType
       when 0   # Play SE
@@ -525,10 +524,10 @@ class PBAnimation < Array
           name = GameData::Species.cry_filename_from_pokemon(user.pokemon)
           pbSEPlay(name, i.volume, i.pitch) if name
         end
-#        if sprite
-#          sprite.flash(i.flashColor, i.flashDuration * 2) if i.flashScope == 1
-#          sprite.flash(nil, i.flashDuration * 2) if i.flashScope == 3
-#        end
+      #        if sprite
+      #          sprite.flash(i.flashColor, i.flashDuration * 2) if i.flashScope == 1
+      #          sprite.flash(nil, i.flashDuration * 2) if i.flashScope == 3
+      #        end
       when 1   # Set background graphic (immediate)
         if i.name && i.name != ""
           bgGraphic.setBitmap("Graphics/Animations/" + i.name)
@@ -634,33 +633,32 @@ def pbSpriteSetAnimFrame(sprite, frame, user = nil, target = nil, inEditor = fal
   sprite.oy = sprite.src_rect.height / 2
   sprite.x  = frame[AnimFrame::X]
   sprite.y  = frame[AnimFrame::Y]
-  if sprite != user && sprite != target
-    case frame[AnimFrame::PRIORITY]
-    when 0   # Behind everything
-      sprite.z = 10
-    when 1   # In front of everything
-      sprite.z = 80
-    when 2   # Just behind focus
-      case frame[AnimFrame::FOCUS]
-      when 1   # Focused on target
-        sprite.z = (target) ? target.z - 1 : 20
-      when 2   # Focused on user
-        sprite.z = (user) ? user.z - 1 : 20
-      else     # Focused on user and target, or screen
-        sprite.z = 20
-      end
-    when 3   # Just in front of focus
-      case frame[AnimFrame::FOCUS]
-      when 1   # Focused on target
-        sprite.z = (target) ? target.z + 1 : 80
-      when 2   # Focused on user
-        sprite.z = (user) ? user.z + 1 : 80
-      else     # Focused on user and target, or screen
-        sprite.z = 80
-      end
-    else
+  return unless sprite != user && sprite != target
+  case frame[AnimFrame::PRIORITY]
+  when 0   # Behind everything
+    sprite.z = 10
+  when 1   # In front of everything
+    sprite.z = 80
+  when 2   # Just behind focus
+    case frame[AnimFrame::FOCUS]
+    when 1   # Focused on target
+      sprite.z = (target) ? target.z - 1 : 20
+    when 2   # Focused on user
+      sprite.z = (user) ? user.z - 1 : 20
+    else     # Focused on user and target, or screen
+      sprite.z = 20
+    end
+  when 3   # Just in front of focus
+    case frame[AnimFrame::FOCUS]
+    when 1   # Focused on target
+      sprite.z = (target) ? target.z + 1 : 80
+    when 2   # Focused on user
+      sprite.z = (user) ? user.z + 1 : 80
+    else     # Focused on user and target, or screen
       sprite.z = 80
     end
+  else
+    sprite.z = 80
   end
 end
 

@@ -109,7 +109,7 @@ class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
     [0, 2, 1, 4],   # 2 = Regular battle with "Call" instead of "Run"
     [5, 7, 6, 3],   # 3 = Safari Zone
     [0, 8, 1, 3]    # 4 = Bug-Catching Contest
-  ]
+  ].freeze
 
   def initialize(viewport, z)
     super(viewport)
@@ -215,7 +215,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     Color.new(248, 136, 32), Color.new(144, 72, 24),   # Orange, 1/4 of total PP or less
     Color.new(248, 192, 0), Color.new(144, 104, 0),    # Yellow, 1/2 of total PP or less
     TEXT_BASE_COLOR, TEXT_SHADOW_COLOR                 # Black, more than 1/2 of total PP
-  ]
+  ].freeze
 
   def initialize(viewport, z)
     super(viewport)
@@ -404,13 +404,12 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     type_number = GameData::Type.get(move.display_type(@battler)).icon_position
     @typeIcon.src_rect.y = type_number * TYPE_ICON_HEIGHT
     # PP text
-    if move.total_pp > 0
-      ppFraction = [(4.0 * move.pp / move.total_pp).ceil, 3].min
-      textPos = []
-      textPos.push([_INTL("PP: {1}/{2}", move.pp, move.total_pp),
-                    448, 56, :center, PP_COLORS[ppFraction * 2], PP_COLORS[(ppFraction * 2) + 1]])
-      pbDrawTextPositions(@infoOverlay.bitmap, textPos)
-    end
+    return unless move.total_pp > 0
+    ppFraction = [(4.0 * move.pp / move.total_pp).ceil, 3].min
+    textPos = []
+    textPos.push([_INTL("PP: {1}/{2}", move.pp, move.total_pp),
+                  448, 56, :center, PP_COLORS[ppFraction * 2], PP_COLORS[(ppFraction * 2) + 1]])
+    pbDrawTextPositions(@infoOverlay.bitmap, textPos)
   end
 
   def refreshMegaEvolutionButton
@@ -451,7 +450,7 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
     [0, 2, 1, 4],   # 2 = Regular battle with "Call" instead of "Run"
     [5, 7, 6, 3],   # 3 = Safari Zone
     [0, 8, 1, 3]    # 4 = Bug-Catching Contest
-  ]
+  ].freeze
   CMD_BUTTON_WIDTH_SMALL = 170
   TEXT_BASE_COLOR   = Color.new(240, 248, 224)
   TEXT_SHADOW_COLOR = Color.new(64, 64, 64)
@@ -524,7 +523,7 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
       sel = false
       buttonType = 0
       if @texts[i]
-        sel ||= (@mode == 0 && i == @index)
+        sel ||= @mode == 0 && i == @index
         sel ||= (@mode == 1)
         buttonType = (i.even?) ? 1 : 2
       end

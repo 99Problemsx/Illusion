@@ -56,9 +56,7 @@ end
 def pbCheckHiddenMoveBadge(badge = -1, showmsg = true)
   return true if badge < 0   # No badge requirement
   return true if $DEBUG
-  if (Settings::FIELD_MOVES_COUNT_BADGES) ? $player.badge_count >= badge : $player.badges[badge]
-    return true
-  end
+  return true if (Settings::FIELD_MOVES_COUNT_BADGES) ? $player.badge_count >= badge : $player.badges[badge]
   pbMessage(_INTL("Sorry, a new Badge is required.")) if showmsg
   return false
 end
@@ -69,7 +67,7 @@ end
 def pbHiddenMoveAnimation(pokemon)
   return false if !pokemon
   viewport = Viewport.new(0, 0, Graphics.width, 0)
-  viewport.z = 99999
+  viewport.z = 99_999
   # Set up sprites
   bg = Sprite.new(viewport)
   bg.bitmap = RPG::Cache.ui("Field move/bg")
@@ -201,9 +199,7 @@ HiddenMoveHandlers::CanUseMove.add(:CUT, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::UseMove.add(:CUT, proc { |move, pokemon|
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   $stats.cut_count += 1
   facingEvent = $game_player.pbFacingEvent
   pbSmashEvent(facingEvent) if facingEvent
@@ -230,7 +226,11 @@ end
 # Dig
 #===============================================================================
 HiddenMoveHandlers::CanUseMove.add(:DIG, proc { |move, pkmn, showmsg|
-  escape = ($PokemonGlobal.escapePoint rescue nil)
+  escape = begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    nil
+  end
   if !escape || escape == []
     pbMessage(_INTL("You can't use that here.")) if showmsg
     next false
@@ -243,18 +243,24 @@ HiddenMoveHandlers::CanUseMove.add(:DIG, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::ConfirmUseMove.add(:DIG, proc { |move, pkmn|
-  escape = ($PokemonGlobal.escapePoint rescue nil)
+  escape = begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    nil
+  end
   next false if !escape || escape == []
   mapname = pbGetMapNameFromId(escape[0])
   next pbConfirmMessage(_INTL("Want to escape from here and return to {1}?", mapname))
 })
 
 HiddenMoveHandlers::UseMove.add(:DIG, proc { |move, pokemon|
-  escape = ($PokemonGlobal.escapePoint rescue nil)
+  escape = begin
+    $PokemonGlobal.escapePoint
+  rescue StandardError
+    nil
+  end
   if escape
-    if !pbHiddenMoveAnimation(pokemon)
-      pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-    end
+    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
     pbFadeOutIn do
       $game_temp.player_new_map_id    = escape[0]
       $game_temp.player_new_x         = escape[1]
@@ -343,22 +349,22 @@ def pbSurfacing
 end
 
 EventHandlers.add(:on_player_interact, :diving,
-  proc {
-    if $PokemonGlobal.diving
-      surface_map_id = nil
-      GameData::MapMetadata.each do |map_data|
-        next if !map_data.dive_map_id || map_data.dive_map_id != $game_map.map_id
-        surface_map_id = map_data.id
-        break
-      end
-      if surface_map_id &&
-         $map_factory.getTerrainTag(surface_map_id, $game_player.x, $game_player.y).can_dive
-        pbSurfacing
-      end
-    elsif $game_player.terrain_tag.can_dive
-      pbDive
-    end
-  }
+                  proc {
+                    if $PokemonGlobal.diving
+                      surface_map_id = nil
+                      GameData::MapMetadata.each do |map_data|
+                        next if !map_data.dive_map_id || map_data.dive_map_id != $game_map.map_id
+                        surface_map_id = map_data.id
+                        break
+                      end
+                      if surface_map_id &&
+                         $map_factory.getTerrainTag(surface_map_id, $game_player.x, $game_player.y).can_dive
+                        pbSurfacing
+                      end
+                    elsif $game_player.terrain_tag.can_dive
+                      pbDive
+                    end
+                  }
 )
 
 HiddenMoveHandlers::CanUseMove.add(:DIVE, proc { |move, pkmn, showmsg|
@@ -401,9 +407,7 @@ HiddenMoveHandlers::UseMove.add(:DIVE, proc { |move, pokemon|
     dive_map_id = $game_map.metadata&.dive_map_id
   end
   next false if !dive_map_id
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   pbFadeOutIn do
     $game_temp.player_new_map_id    = dive_map_id
     $game_temp.player_new_x         = $game_player.x
@@ -438,9 +442,7 @@ HiddenMoveHandlers::CanUseMove.add(:FLASH, proc { |move, pkmn, showmsg|
 HiddenMoveHandlers::UseMove.add(:FLASH, proc { |move, pokemon|
   darkness = $game_temp.darkness_sprite
   next false if !darkness || darkness.disposed?
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   $PokemonGlobal.flashUsed = true
   $stats.flash_count += 1
   duration = 0.7
@@ -570,9 +572,7 @@ HiddenMoveHandlers::CanUseMove.add(:HEADBUTT, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::UseMove.add(:HEADBUTT, proc { |move, pokemon|
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   $stats.headbutt_count += 1
   facingEvent = $game_player.pbFacingEvent
   pbHeadbuttEffect(facingEvent)
@@ -582,10 +582,9 @@ HiddenMoveHandlers::UseMove.add(:HEADBUTT, proc { |move, pokemon|
 # Rock Smash
 #===============================================================================
 def pbRockSmashRandomEncounter
-  if $PokemonEncounters.encounter_triggered?(:RockSmash, false, false)
-    $stats.rock_smash_battles += 1
-    pbEncounter(:RockSmash)
-  end
+  return unless $PokemonEncounters.encounter_triggered?(:RockSmash, false, false)
+  $stats.rock_smash_battles += 1
+  pbEncounter(:RockSmash)
 end
 
 def pbRockSmash
@@ -616,9 +615,7 @@ HiddenMoveHandlers::CanUseMove.add(:ROCKSMASH, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::UseMove.add(:ROCKSMASH, proc { |move, pokemon|
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   $stats.rock_smash_count += 1
   facingEvent = $game_player.pbFacingEvent
   if facingEvent
@@ -655,10 +652,10 @@ def pbStrength
 end
 
 EventHandlers.add(:on_player_interact, :strength_event,
-  proc {
-    facingEvent = $game_player.pbFacingEvent
-    pbStrength if facingEvent && facingEvent.name[/strengthboulder/i]
-  }
+                  proc {
+                    facingEvent = $game_player.pbFacingEvent
+                    pbStrength if facingEvent && facingEvent.name[/strengthboulder/i]
+                  }
 )
 
 HiddenMoveHandlers::CanUseMove.add(:STRENGTH, proc { |move, pkmn, showmsg|
@@ -686,9 +683,7 @@ def pbSurf
   return false if !$game_player.can_ride_vehicle_with_follower?
   move = :SURF
   movefinder = $player.get_pokemon_with_move(move)
-  if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_SURF, false) || (!$DEBUG && !movefinder)
-    return false
-  end
+  return false if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_SURF, false) || (!$DEBUG && !movefinder)
   if pbConfirmMessage(_INTL("The water is a deep blue color... Would you like to use Surf on it?"))
     speciesname = (movefinder) ? movefinder.name : $player.name
     pbMessage(_INTL("{1} used {2}!", speciesname, GameData::Move.get(move).name))
@@ -725,30 +720,30 @@ def pbEndSurf(_xOffset, _yOffset)
 end
 
 EventHandlers.add(:on_player_interact, :start_surfing,
-  proc {
-    next if $PokemonGlobal.surfing
-    next if $game_map.metadata&.always_bicycle
-    next if !$game_player.pbFacingTerrainTag.can_surf_freely
-    next if !$game_map.passable?($game_player.x, $game_player.y, $game_player.direction, $game_player)
-    pbSurf
-  }
+                  proc {
+                    next if $PokemonGlobal.surfing
+                    next if $game_map.metadata&.always_bicycle
+                    next if !$game_player.pbFacingTerrainTag.can_surf_freely
+                    next if !$game_map.passable?($game_player.x, $game_player.y, $game_player.direction, $game_player)
+                    pbSurf
+                  }
 )
 
 # Do things after a jump to start/end surfing.
 EventHandlers.add(:on_step_taken, :surf_jump,
-  proc { |event|
-    next if !$scene.is_a?(Scene_Map) || !event.is_a?(Game_Player)
-    next if !$game_temp.surf_base_coords
-    # Hide the temporary surf base graphic after jumping onto/off it
-    $game_temp.surf_base_coords = nil
-    # Finish up dismounting from surfing
-    if $game_temp.ending_surf
-      pbCancelVehicles
-      $PokemonEncounters.reset_step_count
-      $game_map.autoplayAsCue   # Play regular map BGM
-      $game_temp.ending_surf = false
-    end
-  }
+                  proc { |event|
+                    next if !$scene.is_a?(Scene_Map) || !event.is_a?(Game_Player)
+                    next if !$game_temp.surf_base_coords
+                    # Hide the temporary surf base graphic after jumping onto/off it
+                    $game_temp.surf_base_coords = nil
+                    # Finish up dismounting from surfing
+                    if $game_temp.ending_surf
+                      pbCancelVehicles
+                      $PokemonEncounters.reset_step_count
+                      $game_map.autoplayAsCue   # Play regular map BGM
+                      $game_temp.ending_surf = false
+                    end
+                  }
 )
 
 HiddenMoveHandlers::CanUseMove.add(:SURF, proc { |move, pkmn, showmsg|
@@ -776,9 +771,7 @@ HiddenMoveHandlers::CanUseMove.add(:SURF, proc { |move, pkmn, showmsg|
 HiddenMoveHandlers::UseMove.add(:SURF, proc { |move, pokemon|
   $game_temp.in_menu = false
   pbCancelVehicles
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   surfbgm = GameData::Metadata.get.surf_BGM
   pbCueBGM(surfbgm, 0.5) if surfbgm
   pbStartSurfing
@@ -794,7 +787,7 @@ def pbSweetScent
     return
   end
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   viewport.color.red   = 255
   viewport.color.green = 32
   viewport.color.blue  = 32
@@ -824,9 +817,7 @@ HiddenMoveHandlers::CanUseMove.add(:SWEETSCENT, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::UseMove.add(:SWEETSCENT, proc { |move, pokemon|
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   pbSweetScent
   next true
 })
@@ -867,9 +858,7 @@ HiddenMoveHandlers::UseMove.add(:TELEPORT, proc { |move, pokemon|
   healing = GameData::PlayerMetadata.get($player.character_ID)&.home if !healing
   healing = GameData::Metadata.get.home if !healing   # Home
   next false if !healing
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   pbFadeOutIn do
     $game_temp.player_new_map_id    = healing[0]
     $game_temp.player_new_x         = healing[1]
@@ -941,14 +930,14 @@ def pbWaterfall
 end
 
 EventHandlers.add(:on_player_interact, :waterfall,
-  proc {
-    terrain = $game_player.pbFacingTerrainTag
-    if terrain.waterfall
-      pbWaterfall
-    elsif terrain.waterfall_crest
-      pbMessage(_INTL("A wall of water is crashing down with a mighty roar."))
-    end
-  }
+                  proc {
+                    terrain = $game_player.pbFacingTerrainTag
+                    if terrain.waterfall
+                      pbWaterfall
+                    elsif terrain.waterfall_crest
+                      pbMessage(_INTL("A wall of water is crashing down with a mighty roar."))
+                    end
+                  }
 )
 
 HiddenMoveHandlers::CanUseMove.add(:WATERFALL, proc { |move, pkmn, showmsg|
@@ -961,9 +950,7 @@ HiddenMoveHandlers::CanUseMove.add(:WATERFALL, proc { |move, pkmn, showmsg|
 })
 
 HiddenMoveHandlers::UseMove.add(:WATERFALL, proc { |move, pokemon|
-  if !pbHiddenMoveAnimation(pokemon)
-    pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name))
-  end
+  pbMessage(_INTL("{1} used {2}!", pokemon.name, GameData::Move.get(move).name)) if !pbHiddenMoveAnimation(pokemon)
   pbAscendWaterfall
   next true
 })

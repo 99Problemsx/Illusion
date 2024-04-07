@@ -82,7 +82,8 @@ end
 # (Purify)
 #===============================================================================
 class Battle::Move::CureTargetStatusHealUserHalfOfTotalHP < Battle::Move::HealingMove
-  def canSnatch?;    return false; end   # Because it affects a target
+  # Because it affects a target
+  def canSnatch?;    return false; end
   def canMagicCoat?; return true;  end
 
   def pbFailsAgainstTarget?(user, target, show_message)
@@ -146,9 +147,7 @@ class Battle::Move::HealUserByTargetAttackLowerTargetAttack1 < Battle::Move
     atkStage = target.stages[@statDown[0]] + max_stage
     healAmt = (atk.to_f * stageMul[atkStage] / stageDiv[atkStage]).floor
     # Reduce target's Attack stat
-    if target.pbCanLowerStatStage?(@statDown[0], user, self)
-      target.pbLowerStatStage(@statDown[0], @statDown[1], user)
-    end
+    target.pbLowerStatStage(@statDown[0], @statDown[1], user) if target.pbCanLowerStatStage?(@statDown[0], user, self)
     # Heal user
     if target.hasActiveAbility?(:LIQUIDOOZE, true)
       @battle.pbShowAbilitySplash(target)
@@ -260,21 +259,20 @@ class Battle::Move::HealUserAndAlliesQuarterOfTotalHPCureStatus < Battle::Move
       target.pbRecoverHP(target.totalhp / 4)
       @battle.pbDisplay(_INTL("{1}'s HP was restored.", target.pbThis))
     end
-    if target.status != :NONE
-      old_status = target.status
-      target.pbCureStatus(false)
-      case old_status
-      when :SLEEP
-        @battle.pbDisplay(_INTL("{1} was woken from sleep.", target.pbThis))
-      when :POISON
-        @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", target.pbThis))
-      when :BURN
-        @battle.pbDisplay(_INTL("{1}'s burn was healed.", target.pbThis))
-      when :PARALYSIS
-        @battle.pbDisplay(_INTL("{1} was cured of paralysis.", target.pbThis))
-      when :FROZEN
-        @battle.pbDisplay(_INTL("{1} was thawed out.", target.pbThis))
-      end
+    return unless target.status != :NONE
+    old_status = target.status
+    target.pbCureStatus(false)
+    case old_status
+    when :SLEEP
+      @battle.pbDisplay(_INTL("{1} was woken from sleep.", target.pbThis))
+    when :POISON
+      @battle.pbDisplay(_INTL("{1} was cured of its poisoning.", target.pbThis))
+    when :BURN
+      @battle.pbDisplay(_INTL("{1}'s burn was healed.", target.pbThis))
+    when :PARALYSIS
+      @battle.pbDisplay(_INTL("{1} was cured of paralysis.", target.pbThis))
+    when :FROZEN
+      @battle.pbDisplay(_INTL("{1} was thawed out.", target.pbThis))
     end
   end
 end
@@ -299,9 +297,7 @@ class Battle::Move::HealTargetHalfOfTotalHP < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     hpGain = (target.totalhp / 2.0).round
-    if pulseMove? && user.hasActiveAbility?(:MEGALAUNCHER)
-      hpGain = (target.totalhp * 3 / 4.0).round
-    end
+    hpGain = (target.totalhp * 3 / 4.0).round if pulseMove? && user.hasActiveAbility?(:MEGALAUNCHER)
     target.pbRecoverHP(hpGain)
     @battle.pbDisplay(_INTL("{1}'s HP was restored.", target.pbThis))
   end

@@ -11,8 +11,16 @@ class TilemapRenderer
   attr_accessor :oy        # Does nothing
   attr_accessor :visible   # Does nothing
 
-  DISPLAY_TILE_WIDTH      = Game_Map::TILE_WIDTH rescue 32
-  DISPLAY_TILE_HEIGHT     = Game_Map::TILE_HEIGHT rescue 32
+  DISPLAY_TILE_WIDTH = begin
+    Game_Map::TILE_WIDTH
+  rescue StandardError
+    32
+  end
+  DISPLAY_TILE_HEIGHT = begin
+    Game_Map::TILE_HEIGHT
+  rescue StandardError
+    32
+  end
   SOURCE_TILE_WIDTH       = 32
   SOURCE_TILE_HEIGHT      = 32
   ZOOM_X                  = DISPLAY_TILE_WIDTH / SOURCE_TILE_WIDTH
@@ -38,11 +46,11 @@ class TilemapRenderer
   # Extra autotiles are only useful if the tiles are animated, because otherwise
   # you just have some tiles which belong in the tileset instead.
   EXTRA_AUTOTILES = {
-#   Examples:
-#    1 => [["Sand shore"], ["Flowers2"]],
-#    2 => [[], ["Flowers2", "Waterfall", "Waterfall crest", "Waterfall bottom"]],
-#    6 => [["Water rock", "Sea deep"], []]
-  }
+    #   Examples:
+    #    1 => [["Sand shore"], ["Flowers2"]],
+    #    2 => [[], ["Flowers2", "Waterfall", "Waterfall crest", "Waterfall bottom"]],
+    #    6 => [["Water rock", "Sea deep"], []]
+  }.freeze
 
   #=============================================================================
   #
@@ -105,12 +113,11 @@ class TilemapRenderer
       return if !@bitmaps[tile.filename]
       tile.src_rect.x = ((tile_id - TILESET_START_ID) % TILESET_TILES_PER_ROW) * SOURCE_TILE_WIDTH
       tile.src_rect.y = ((tile_id - TILESET_START_ID) / TILESET_TILES_PER_ROW) * SOURCE_TILE_HEIGHT
-      if @bitmap_wraps[tile.filename]
-        height = @bitmaps[tile.filename].height
-        col = (tile_id - TILESET_START_ID) * SOURCE_TILE_HEIGHT / (TILESET_TILES_PER_ROW * height)
-        tile.src_rect.x += col * TILESET_TILES_PER_ROW * SOURCE_TILE_WIDTH
-        tile.src_rect.y -= col * height
-      end
+      return unless @bitmap_wraps[tile.filename]
+      height = @bitmaps[tile.filename].height
+      col = (tile_id - TILESET_START_ID) * SOURCE_TILE_HEIGHT / (TILESET_TILES_PER_ROW * height)
+      tile.src_rect.x += col * TILESET_TILES_PER_ROW * SOURCE_TILE_WIDTH
+      tile.src_rect.y -= col * height
     end
 
     def update; end
@@ -146,9 +153,7 @@ class TilemapRenderer
       orig_bitmap = pbGetAutotile(filename)
       @bitmap_wraps[filename] = false
       duration = AUTOTILE_FRAME_DURATION
-      if filename[/\[\s*(\d+?)\s*\]\s*$/]
-        duration = $~[1].to_i
-      end
+      duration = $~[1].to_i if filename[/\[\s*(\d+?)\s*\]\s*$/]
       @frame_durations[filename] = duration.to_f / 20
       bitmap = AutotileExpander.expand(orig_bitmap)
       self[filename] = bitmap
@@ -172,9 +177,7 @@ class TilemapRenderer
         return 0 if !@bitmaps[filename]
         bitmap = @bitmaps[filename]
         @frame_counts[filename] = [bitmap.width / SOURCE_TILE_WIDTH, 1].max
-        if bitmap.height > SOURCE_TILE_HEIGHT && @bitmap_wraps[filename]
-          @frame_counts[filename] /= 2
-        end
+        @frame_counts[filename] /= 2 if bitmap.height > SOURCE_TILE_HEIGHT && @bitmap_wraps[filename]
       end
       return @frame_counts[filename]
     end

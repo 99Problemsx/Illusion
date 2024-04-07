@@ -37,7 +37,7 @@ class AnimatedSprite < Sprite
     raise _INTL("Frame height is 0") if frameheight == 0
     begin
       @animbitmap = AnimatedBitmap.new(animname).deanimate
-    rescue
+    rescue StandardError
       @animbitmap = Bitmap.new(framewidth, frameheight)
     end
     if @animbitmap.width % framewidth != 0
@@ -67,7 +67,7 @@ class AnimatedSprite < Sprite
     @time_per_frame = [1, frameskip].max / 20.0
     begin
       @animbitmap = AnimatedBitmap.new(animname).deanimate
-    rescue
+    rescue StandardError
       @animbitmap = Bitmap.new(framecount * 4, 32)
     end
     if @animbitmap.width % framecount != 0
@@ -128,10 +128,9 @@ class AnimatedSprite < Sprite
 
   def update
     super
-    if @playing
-      new_frame = (System.uptime / @time_per_frame).to_i % self.framecount
-      self.frame = new_frame if self.frame != new_frame
-    end
+    return unless @playing
+    new_frame = (System.uptime / @time_per_frame).to_i % self.framecount
+    self.frame = new_frame if self.frame != new_frame
   end
 end
 
@@ -198,11 +197,10 @@ class IconSprite < Sprite
     super
     return if !@_iconbitmap
     @_iconbitmap.update
-    if self.bitmap != @_iconbitmap.bitmap
-      oldrc = self.src_rect
-      self.bitmap = @_iconbitmap.bitmap
-      self.src_rect = oldrc
-    end
+    return unless self.bitmap != @_iconbitmap.bitmap
+    oldrc = self.src_rect
+    self.bitmap = @_iconbitmap.bitmap
+    self.src_rect = oldrc
   end
 end
 

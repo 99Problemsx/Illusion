@@ -38,9 +38,7 @@ def pbPurify(pkmn, scene)
     pkmn.saved_exp = nil
     newlevel = pkmn.growth_rate.level_from_exp(newexp)
     curlevel = pkmn.level
-    if newexp != pkmn.exp
-      scene.pbDisplay(_INTL("{1} regained {2} Exp. Points!", pkmn.name, newexp - pkmn.exp))
-    end
+    scene.pbDisplay(_INTL("{1} regained {2} Exp. Points!", pkmn.name, newexp - pkmn.exp)) if newexp != pkmn.exp
     if newlevel == curlevel
       pkmn.exp = newexp
       pkmn.calc_stats
@@ -84,7 +82,7 @@ class RelicStoneScene
   def pbStartScene(pokemon)
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @pokemon = pokemon
     addBackgroundPlane(@sprites, "bg", "relicstonebg", @viewport)
     @sprites["msgwindow"] = Window_AdvancedTextPokemon.new("")
@@ -154,9 +152,8 @@ def pbRelicStone
   pbChoosePokemon(1, 2, proc { |pkmn|
     pkmn.able? && pkmn.shadowPokemon? && pkmn.heart_gauge == 0
   })
-  if $game_variables[1] >= 0
-    pbRelicStoneScreen($player.party[$game_variables[1]])
-  end
+  return unless $game_variables[1] >= 0
+  pbRelicStoneScreen($player.party[$game_variables[1]])
 end
 
 #===============================================================================
@@ -187,10 +184,9 @@ class Battle::Battler
     self.pokemon.hyper_mode = false if self.pokemonIndex > 0 && inHyperMode?
     __shadow__pbInitPokemon(*arg)
     # Called into battle
-    if shadowPokemon?
-      self.types = [:SHADOW] if GameData::Type.exists?(:SHADOW)
-      self.pokemon.change_heart_gauge("battle") if pbOwnedByPlayer?
-    end
+    return unless shadowPokemon?
+    self.types = [:SHADOW] if GameData::Type.exists?(:SHADOW)
+    self.pokemon.change_heart_gauge("battle") if pbOwnedByPlayer?
   end
 
   def shadowPokemon?
@@ -207,10 +203,9 @@ class Battle::Battler
   def pbHyperMode
     return if fainted? || !shadowPokemon? || inHyperMode? || !pbOwnedByPlayer?
     p = self.pokemon
-    if @battle.pbRandom(p.heart_gauge) <= p.max_gauge_size / 4
-      p.hyper_mode = true
-      @battle.pbDisplay(_INTL("{1}'s emotions rose to a fever pitch!\nIt entered Hyper Mode!", self.pbThis))
-    end
+    return unless @battle.pbRandom(p.heart_gauge) <= p.max_gauge_size / 4
+    p.hyper_mode = true
+    @battle.pbDisplay(_INTL("{1}'s emotions rose to a fever pitch!\nIt entered Hyper Mode!", self.pbThis))
   end
 
   def pbHyperModeObedience(move)
@@ -420,41 +415,41 @@ end
 # Record current heart gauges of Pokémon in party, to see if they drop to zero
 # during battle and need to say they're ready to be purified afterwards
 EventHandlers.add(:on_start_battle, :record_party_heart_gauges,
-  proc {
-    $game_temp.party_heart_gauges_before_battle = []
-    $player.party.each_with_index do |pkmn, i|
-      $game_temp.party_heart_gauges_before_battle[i] = pkmn.heart_gauge
-    end
-  }
+                  proc {
+                    $game_temp.party_heart_gauges_before_battle = []
+                    $player.party.each_with_index do |pkmn, i|
+                      $game_temp.party_heart_gauges_before_battle[i] = pkmn.heart_gauge
+                    end
+                  }
 )
 
 EventHandlers.add(:on_end_battle, :check_ready_to_purify,
-  proc { |_decision, _canLose|
-    $game_temp.party_heart_gauges_before_battle.each_with_index do |value, i|
-      pkmn = $player.party[i]
-      next if !pkmn || !value || value == 0
-      pkmn.check_ready_to_purify if pkmn.heart_gauge == 0
-    end
-  }
+                  proc { |_decision, _canLose|
+                    $game_temp.party_heart_gauges_before_battle.each_with_index do |value, i|
+                      pkmn = $player.party[i]
+                      next if !pkmn || !value || value == 0
+                      pkmn.check_ready_to_purify if pkmn.heart_gauge == 0
+                    end
+                  }
 )
 
 EventHandlers.add(:on_player_step_taken, :lower_heart_gauges,
-  proc {
-    $player.able_party.each do |pkmn|
-      next if pkmn.heart_gauge == 0
-      pkmn.heart_gauge_step_counter = 0 if !pkmn.heart_gauge_step_counter
-      pkmn.heart_gauge_step_counter += 1
-      next if pkmn.heart_gauge_step_counter < 256
-      old_stage = pkmn.heartStage
-      pkmn.change_heart_gauge("walking")
-      new_stage = pkmn.heartStage
-      if new_stage == 0
-        pkmn.check_ready_to_purify
-      elsif new_stage != old_stage
-        pkmn.update_shadow_moves
-      end
-      pkmn.heart_gauge_step_counter = 0
-    end
-    $PokemonGlobal.purifyChamber&.update
-  }
+                  proc {
+                    $player.able_party.each do |pkmn|
+                      next if pkmn.heart_gauge == 0
+                      pkmn.heart_gauge_step_counter = 0 if !pkmn.heart_gauge_step_counter
+                      pkmn.heart_gauge_step_counter += 1
+                      next if pkmn.heart_gauge_step_counter < 256
+                      old_stage = pkmn.heartStage
+                      pkmn.change_heart_gauge("walking")
+                      new_stage = pkmn.heartStage
+                      if new_stage == 0
+                        pkmn.check_ready_to_purify
+                      elsif new_stage != old_stage
+                        pkmn.update_shadow_moves
+                      end
+                      pkmn.heart_gauge_step_counter = 0
+                    end
+                    $PokemonGlobal.purifyChamber&.update
+                  }
 )

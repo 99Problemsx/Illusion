@@ -110,16 +110,16 @@ end
 # Record current levels of Pokémon in party, to see if they gain a level during
 # battle and may need to evolve afterwards
 EventHandlers.add(:on_start_battle, :record_party_status,
-  proc {
-    $game_temp.party_levels_before_battle = []
-    $game_temp.party_critical_hits_dealt = []
-    $game_temp.party_direct_damage_taken = []
-    $player.party.each_with_index do |pkmn, i|
-      $game_temp.party_levels_before_battle[i] = pkmn.level
-      $game_temp.party_critical_hits_dealt[i] = 0
-      $game_temp.party_direct_damage_taken[i] = 0
-    end
-  }
+                  proc {
+                    $game_temp.party_levels_before_battle = []
+                    $game_temp.party_critical_hits_dealt = []
+                    $game_temp.party_direct_damage_taken = []
+                    $player.party.each_with_index do |pkmn, i|
+                      $game_temp.party_levels_before_battle[i] = pkmn.level
+                      $game_temp.party_critical_hits_dealt[i] = 0
+                      $game_temp.party_direct_damage_taken[i] = 0
+                    end
+                  }
 )
 
 def pbCanDoubleBattle?
@@ -376,9 +376,7 @@ class WildBattle
     outcome_variable = $game_temp.battle_rules["outcomeVar"] || 1
     can_lose         = $game_temp.battle_rules["canLose"] || false
     # Skip battle if the player has no able Pokémon, or if holding Ctrl in Debug mode
-    if BattleCreationHelperMethods.skip_battle?
-      return BattleCreationHelperMethods.skip_battle(outcome_variable)
-    end
+    return BattleCreationHelperMethods.skip_battle(outcome_variable) if BattleCreationHelperMethods.skip_battle?
     # Record information about party Pokémon to be used at the end of battle
     # (e.g. comparing levels for an evolution check)
     EventHandlers.trigger(:on_start_battle)
@@ -429,9 +427,7 @@ class WildBattle
           ret.push(pbGenerateWildPokemon(species_id, arg))
           species_id = nil
         else   # Expecting species ID
-          if !GameData::Species.exists?(arg)
-            raise _INTL("Species {1} does not exist.", arg)
-          end
+          raise _INTL("Species {1} does not exist.", arg) if !GameData::Species.exists?(arg)
           species_id = arg
         end
       end
@@ -494,9 +490,7 @@ class TrainerBattle
     outcome_variable = $game_temp.battle_rules["outcomeVar"] || 1
     can_lose         = $game_temp.battle_rules["canLose"] || false
     # Skip battle if the player has no able Pokémon, or if holding Ctrl in Debug mode
-    if BattleCreationHelperMethods.skip_battle?
-      return BattleCreationHelperMethods.skip_battle(outcome_variable, true)
-    end
+    return BattleCreationHelperMethods.skip_battle(outcome_variable, true) if BattleCreationHelperMethods.skip_battle?
     # Record information about party Pokémon to be used at the end of battle (e.g.
     # comparing levels for an evolution check)
     EventHandlers.trigger(:on_start_battle)
@@ -590,9 +584,7 @@ class TrainerBattle
             trainer_type = nil
           end
         else   # Expecting trainer type
-          if !GameData::TrainerType.exists?(arg)
-            raise _INTL("Trainer type {1} does not exist.", arg)
-          end
+          raise _INTL("Trainer type {1} does not exist.", arg) if !GameData::TrainerType.exists?(arg)
           trainer_type = arg
         end
       end
@@ -606,28 +598,28 @@ end
 # After battles
 #===============================================================================
 EventHandlers.add(:on_end_battle, :evolve_and_black_out,
-  proc { |decision, canLose|
-    # Check for evolutions
-    pbEvolutionCheck if Settings::CHECK_EVOLUTION_AFTER_ALL_BATTLES ||
-                        (decision != 2 && decision != 5)   # not a loss or a draw
-    $game_temp.party_levels_before_battle = nil
-    $game_temp.party_critical_hits_dealt = nil
-    $game_temp.party_direct_damage_taken = nil
-    # Check for blacking out or gaining Pickup/Huney Gather items
-    case decision
-    when 1, 4   # Win, capture
-      $player.pokemon_party.each do |pkmn|
-        pbPickup(pkmn)
-        pbHoneyGather(pkmn)
-      end
-    when 2, 5   # Lose, draw
-      if !canLose
-        $game_system.bgm_unpause
-        $game_system.bgs_unpause
-        pbStartOver
-      end
-    end
-  }
+                  proc { |decision, canLose|
+                    # Check for evolutions
+                    pbEvolutionCheck if Settings::CHECK_EVOLUTION_AFTER_ALL_BATTLES ||
+                                        (decision != 2 && decision != 5)   # not a loss or a draw
+                    $game_temp.party_levels_before_battle = nil
+                    $game_temp.party_critical_hits_dealt = nil
+                    $game_temp.party_direct_damage_taken = nil
+                    # Check for blacking out or gaining Pickup/Huney Gather items
+                    case decision
+                    when 1, 4   # Win, capture
+                      $player.pokemon_party.each do |pkmn|
+                        pbPickup(pkmn)
+                        pbHoneyGather(pkmn)
+                      end
+                    when 2, 5   # Lose, draw
+                      if !canLose
+                        $game_system.bgm_unpause
+                        $game_system.bgs_unpause
+                        pbStartOver
+                      end
+                    end
+                  }
 )
 
 def pbEvolutionCheck
@@ -683,9 +675,9 @@ PICKUP_COMMON_ITEMS = [
   :MAXREVIVE,     # Levels                                                 71-80, 81-90, 91-100
   :PPUP,          # Levels                                                        81-90, 91-100
   :MAXELIXIR      # Levels                                                               91-100
-]
+].freeze
 # Chances to get each item added to the pool from the array above.
-PICKUP_COMMON_ITEM_CHANCES = [30, 10, 10, 10, 10, 10, 10, 4, 4]
+PICKUP_COMMON_ITEM_CHANCES = [30, 10, 10, 10, 10, 10, 10, 4, 4].freeze
 # Rare items to find via Pickup. Items from this list are added to the pool in
 # order, starting from a point dependng on the Pokémon's level. The number of
 # items added is how many probabilities are in the PICKUP_RARE_ITEM_CHANCES
@@ -705,9 +697,9 @@ PICKUP_RARE_ITEMS = [
   :DESTINYKNOT,   # Levels                                                 71-80, 81-90
   :LEFTOVERS,     # Levels                                                        81-90, 91-100
   :DESTINYKNOT    # Levels                                                               91-100
-]
+].freeze
 # Chances to get each item added to the pool from the array above.
-PICKUP_RARE_ITEM_CHANCES = [1, 1]
+PICKUP_RARE_ITEM_CHANCES = [1, 1].freeze
 
 # Try to gain an item after a battle if a Pokemon has the ability Pickup.
 def pbPickup(pkmn)

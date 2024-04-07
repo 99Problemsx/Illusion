@@ -1,41 +1,35 @@
 ################################################################################
-# 
+#
 # Battle::AI class changes.
-# 
+#
 ################################################################################
-
 
 class Battle::AI
   GEN_9_BASE_ABILITY_RATINGS = {
-    9  => [:ORICHALCUMPULSE, :HADRONENGINE],
-    8  => [:THERMALEXCHANGE],
-    7  => [:EARTHEATER, :TOXICDEBRIS, :PROTOSYNTHESIS, :QUARKDRIVE, :SUPERSWEETSYRUP, :MINDSEYE],
-    6  => [:SUPREMEOVERLORD, :SEEDSOWER, :OPPORTUNIST],
-    5  => [:ARMORTAIL, :ROCKYPAYLOAD, :SHARPNESS, :LINGERINGAROMA, :CUDCHEW, 
-           :TOXICCHAIN, :POISONPUPPETEER],
-    4  => [:PURIFYINGSALT, :WELLBAKEDBODY, :ANGERSHELL, :ELECTROMORPHOSIS, :WINDPOWER],
-    3  => [:WINDRIDER, :HOSPITALITY,
-           :TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN
-          ],
-    1  => [:EMBODYASPECT, :EMBODYASPECT_1, :EMBODYASPECT_2, :EMBODYASPECT_3,
-           :TERASHIFT, :TERASHELL, :TERAFORMZERO
-          ]
+    9 => [:ORICHALCUMPULSE, :HADRONENGINE],
+    8 => [:THERMALEXCHANGE],
+    7 => [:EARTHEATER, :TOXICDEBRIS, :PROTOSYNTHESIS, :QUARKDRIVE, :SUPERSWEETSYRUP, :MINDSEYE],
+    6 => [:SUPREMEOVERLORD, :SEEDSOWER, :OPPORTUNIST],
+    5 => [:ARMORTAIL, :ROCKYPAYLOAD, :SHARPNESS, :LINGERINGAROMA, :CUDCHEW,
+          :TOXICCHAIN, :POISONPUPPETEER],
+    4 => [:PURIFYINGSALT, :WELLBAKEDBODY, :ANGERSHELL, :ELECTROMORPHOSIS, :WINDPOWER],
+    3 => [:WINDRIDER, :HOSPITALITY,
+          :TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN],
+    1 => [:EMBODYASPECT, :EMBODYASPECT_1, :EMBODYASPECT_2, :EMBODYASPECT_3,
+          :TERASHIFT, :TERASHELL, :TERAFORMZERO]
 
-  }
+  }.freeze
 
   GEN_9_BASE_ITEM_RATINGS = {
-    6  => [ :LEGENDPLATE, :BOOSTERENERGY,
-            # Legendary Orbs
-            :ADAMANTCRYSTAL, :LUSTROUSGLOBE, :GRISEOUSCORE,
-            # Ogerpon Masks
-            :WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK
-          ],
-    5  => [:BLANKPLATE, :PUNCHINGGLOVE, :LOADEDDICE, :FAIRYFEATHER],
-    3  => [:HOPOBERRY, :MIRRORHERB, :COVERTCLOAK],
-    2  => [:CLEARAMULET],
-  }
-
-
+    6 => [ :LEGENDPLATE, :BOOSTERENERGY,
+           # Legendary Orbs
+           :ADAMANTCRYSTAL, :LUSTROUSGLOBE, :GRISEOUSCORE,
+           # Ogerpon Masks
+           :WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK],
+    5 => [:BLANKPLATE, :PUNCHINGGLOVE, :LOADEDDICE, :FAIRYFEATHER],
+    3 => [:HOPOBERRY, :MIRRORHERB, :COVERTCLOAK],
+    2 => [:CLEARAMULET]
+  }.freeze
 
   #===============================================================================
   # Battle_AI
@@ -105,7 +99,7 @@ class Battle::AI
         category = (i < 2) ? physicalMove?(calc_type) : specialMove?(calc_type)
         category = !category if i.odd? && @ai.battle.field.effects[PBEffects::WonderRoom] > 0
         mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-        mult *= 0.75 if !user.has_active_ability?(ability) && category
+        mult * 0.75 if !user.has_active_ability?(ability) && category
       end
     end
     # Ability effects that alter damage
@@ -117,7 +111,7 @@ class Battle::AI
         if rough_priority(user) <= 0
           user_faster = false
           @ai.each_battler do |b, i|
-            user_faster = (i != user.index && user.faster_than?(b))
+            user_faster = i != user.index && user.faster_than?(b)
             break if user_faster
           end
           multipliers[:power_multiplier] *= 1.3 if !user_faster
@@ -133,9 +127,7 @@ class Battle::AI
       when :STAKEOUT
         # NOTE: Can't predict whether the target will switch out this round.
       when :TINTEDLENS
-        if Effectiveness.resistant_type?(calc_type, *target.pbTypes(true))
-          multipliers[:final_damage_multiplier] *= 2
-        end
+        multipliers[:final_damage_multiplier] *= 2 if Effectiveness.resistant_type?(calc_type, *target.pbTypes(true))
       else
         Battle::AbilityEffects.triggerDamageCalcFromUser(
           user.ability, user_battler, target_battler, @move, multipliers, base_dmg, calc_type
@@ -210,19 +202,11 @@ class Battle::AI
     # Mud Sport and Water Sport
     if @ai.trainer.medium_skill?
       if calc_type == :ELECTRIC
-        if @ai.battle.allBattlers.any? { |b| b.effects[PBEffects::MudSport] }
-          multipliers[:power_multiplier] /= 3
-        end
-        if @ai.battle.field.effects[PBEffects::MudSportField] > 0
-          multipliers[:power_multiplier] /= 3
-        end
+        multipliers[:power_multiplier] /= 3 if @ai.battle.allBattlers.any? { |b| b.effects[PBEffects::MudSport] }
+        multipliers[:power_multiplier] /= 3 if @ai.battle.field.effects[PBEffects::MudSportField] > 0
       elsif calc_type == :FIRE
-        if @ai.battle.allBattlers.any? { |b| b.effects[PBEffects::WaterSport] }
-          multipliers[:power_multiplier] /= 3
-        end
-        if @ai.battle.field.effects[PBEffects::WaterSportField] > 0
-          multipliers[:power_multiplier] /= 3
-        end
+        multipliers[:power_multiplier] /= 3 if @ai.battle.allBattlers.any? { |b| b.effects[PBEffects::WaterSport] }
+        multipliers[:power_multiplier] /= 3 if @ai.battle.field.effects[PBEffects::WaterSportField] > 0
       end
     end
     # Terrain moves
@@ -230,8 +214,12 @@ class Battle::AI
       terrain_multiplier = (Settings::MECHANICS_GENERATION >= 8) ? 1.3 : 1.5
       case @ai.battle.field.terrain
       when :Electric
-        multipliers[:power_multiplier] *= terrain_multiplier if calc_type == :ELECTRIC && user_battler.affectedByTerrain?
-        multipliers[:power_multiplier] *= 1.5 if function_code == "IncreasePowerWhileElectricTerrain" && user_battler.affectedByTerrain?
+        if calc_type == :ELECTRIC && user_battler.affectedByTerrain?
+          multipliers[:power_multiplier] *= terrain_multiplier
+        end
+        if function_code == "IncreasePowerWhileElectricTerrain" && user_battler.affectedByTerrain?
+          multipliers[:power_multiplier] *= 1.5
+        end
       when :Grassy
         multipliers[:power_multiplier] *= terrain_multiplier if calc_type == :GRASS && user_battler.affectedByTerrain?
       when :Psychic
@@ -251,9 +239,7 @@ class Battle::AI
       end
     end
     # Multi-targeting attacks
-    if @ai.trainer.high_skill? && targets_multiple_battlers?
-      multipliers[:final_damage_multiplier] *= 0.75
-    end
+    multipliers[:final_damage_multiplier] *= 0.75 if @ai.trainer.high_skill? && targets_multiple_battlers?
     # Weather
     if @ai.trainer.medium_skill?
       case user_battler.effectiveWeather
@@ -285,10 +271,10 @@ class Battle::AI
       #-------------------------------------------------------------------------
       when :Hail
         if Settings::HAIL_WEATHER_TYPE > 0 && target.pbHasType?(:ICE) &&
-            (physicalMove?(calc_type) || function_code == "UseTargetDefenseInsteadOfTargetSpDef")
+           (physicalMove?(calc_type) || function_code == "UseTargetDefenseInsteadOfTargetSpDef")
           multipliers[:defense_multiplier] *= 1.5
         end
-      #-------------------------------------------------------------------------
+        #-------------------------------------------------------------------------
       end
     end
     # Critical hits
@@ -319,9 +305,7 @@ class Battle::AI
     #---------------------------------------------------------------------------
     # Added for Drowsy
     #---------------------------------------------------------------------------
-    if @ai.trainer.high_skill? && target.status == :DROWSY
-      multipliers[:final_damage_multiplier] *= 4 / 3.0
-    end
+    multipliers[:final_damage_multiplier] *= 4 / 3.0 if @ai.trainer.high_skill? && target.status == :DROWSY
     #---------------------------------------------------------------------------
     # Added for Frostbite
     #---------------------------------------------------------------------------
@@ -358,9 +342,7 @@ class Battle::AI
     #---------------------------------------------------------------------------
     # Added for Glaive Rush
     #---------------------------------------------------------------------------
-    if @ai.trainer.high_skill? && target.effects[PBEffects::GlaiveRush] > 0
-      multipliers[:final_damage_multiplier] *= 2
-    end
+    multipliers[:final_damage_multiplier] *= 2 if @ai.trainer.high_skill? && target.effects[PBEffects::GlaiveRush] > 0
     #---------------------------------------------------------------------------
     # NOTE: No need to check pbBaseDamageMultiplier, as it's already accounted
     #       for in an AI's MoveBasePower handler or can't be checked now anyway.
@@ -376,13 +358,13 @@ class Battle::AI
     ret = target.hp - 1 if @move.nonLethal?(user_battler, target_battler) && ret >= target.hp
     return ret
   end
-  
+
   #-----------------------------------------------------------------------------
   # Used to allow an AI trainer to select a Pokemon in the party to revive.
   #-----------------------------------------------------------------------------
   def choose_best_revive_pokemon(idxBattler, party)
     reserves = []
-    idxPartyStart, idxPartyEnd = @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
+    @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
     party.each_with_index do |_p, i|
       reserves.push([i, 100]) if !_p.egg? && _p.fainted?
     end
@@ -395,41 +377,45 @@ class Battle::AI
     # Return the party index of the best rated replacement Pokémon
     return reserves[0][0]
   end
-  
+
   #===============================================================================
   # AI_Switch
   #===============================================================================
   # Handler to encourage AI trainers to switch out to trigger Zero to Hero.
   #-------------------------------------------------------------------------------
   Battle::AI::Handlers::ShouldSwitch.add(:zero_to_hero_ability,
-    proc { |battler, reserves, ai, battle|
-      next false if !battler.ability_active?
-      next false if battler.ability != :ZEROTOHERO
-      next false if battler.form != 0
-      # Don't try to transform if entry hazards will
-      # KO the battler if it switches back in
-      entry_hazard_damage = ai.calculate_entry_hazard_damage(battler.pokemon, battler.side)
-      next false if entry_hazard_damage >= battler.hp
-      # Check switching moves
-      switchFunctions = [
-          "SwitchOutUserStatusMove",           # Teleport
-          "SwitchOutUserDamagingMove",         # U-Turn/Volt Switch
-          "SwitchOutUserPassOnEffects",        # Baton Pass
-          "LowerTargetAtkSpAtk1SwitchOutUser", # Parting Shot
-          "StartHailWeatherSwitchOutUser",     # Chilly Reception
-          "UserMakeSubstituteSwitchOut"        # Shed Tail
-        ]
-      hasSwitchMove = false
-      battler.eachMoveWithIndex do |m, i|
-        next if !switchFunctions.include?(m.function_code) || !battle.pbCanChooseMove?(battler.index, i, false)
-        hasSwitchMove = true
-        break
-      end
-      next true if !hasSwitchMove && (ai.trainer.high_skill? || ai.pbAIRandom(100) < 70)
-      next false
-    }
-  )
-  
+                                         proc { |battler, reserves, ai, battle|
+                                           next false if !battler.ability_active?
+                                           next false if battler.ability != :ZEROTOHERO
+                                           next false if battler.form != 0
+                                           # Don't try to transform if entry hazards will
+                                           # KO the battler if it switches back in
+                                           entry_hazard_damage = ai.calculate_entry_hazard_damage(battler.pokemon, battler.side)
+                                           next false if entry_hazard_damage >= battler.hp
+                                           # Check switching moves
+                                           switchFunctions = [
+                                             "SwitchOutUserStatusMove",           # Teleport
+                                             "SwitchOutUserDamagingMove",         # U-Turn/Volt Switch
+                                             "SwitchOutUserPassOnEffects",        # Baton Pass
+                                             "LowerTargetAtkSpAtk1SwitchOutUser", # Parting Shot
+                                             "StartHailWeatherSwitchOutUser",     # Chilly Reception
+                                             "UserMakeSubstituteSwitchOut"        # Shed Tail
+                                           ]
+                                           hasSwitchMove = false
+                                           battler.eachMoveWithIndex do |m, i|
+                                             if !switchFunctions.include?(m.function_code) || !battle.pbCanChooseMove?(battler.index, i, false)
+                                               next
+                                             end
+                                             hasSwitchMove = true
+                                             break
+                                           end
+                                           if !hasSwitchMove && (ai.trainer.high_skill? || ai.pbAIRandom(100) < 70)
+                                             next true
+                                           end
+                                           next false
+                                         }
+                                        )
+
   #===============================================================================
   # AI_Utilities
   #===============================================================================
@@ -471,8 +457,8 @@ class Battle::AI
       # Immunity because of Commander
       return true if target.has_active_ability?(:COMMANDER) && target.battler.isCommander?
       # Good As Gold Pokémon immunity to status moves
-      return true if @move.statusMove?  && @target.has_active_ability?(:GOODASGOLD) && 
-                                          !(@user.has_active_ability?(:MYCELIUMMIGHT))
+      return true if @move.statusMove? && @target.has_active_ability?(:GOODASGOLD) &&
+                     !@user.has_active_ability?(:MYCELIUMMIGHT)
     end
     return ret
   end
@@ -522,10 +508,8 @@ class Battle::AI::AIBattler
   alias paldea_effectiveness_of_type_against_single_battler_type effectiveness_of_type_against_single_battler_type
   def effectiveness_of_type_against_single_battler_type(type, defend_type, user = nil)
     ret = paldea_effectiveness_of_type_against_single_battler_type(type, defend_type, user)
-    if Effectiveness.ineffective_type?(type, defend_type)
-      if user&.has_active_ability?(:MINDSEYE) && defend_type == :GHOST
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+    if Effectiveness.ineffective_type?(type, defend_type) && (user&.has_active_ability?(:MINDSEYE) && defend_type == :GHOST)
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
     end
     return ret
   end
@@ -536,7 +520,7 @@ class Battle::AI::AIBattler
     Battle::AI::GEN_9_BASE_ITEM_RATINGS.each_pair do |val, items|
       next if Battle::AI::BASE_ITEM_RATINGS[val] && Battle::AI::BASE_ITEM_RATINGS[val].include?(item)
       Battle::AI::BASE_ITEM_RATINGS[val] = [] if !Battle::AI::BASE_ITEM_RATINGS[val]
-      items.each{|itm|
+      items.each {|itm|
         Battle::AI::BASE_ITEM_RATINGS[val].push(itm)
       }
     end
@@ -549,7 +533,7 @@ class Battle::AI::AIBattler
     Battle::AI::GEN_9_BASE_ABILITY_RATINGS.each_pair do |val, abilities|
       next if Battle::AI::BASE_ABILITY_RATINGS[val] && Battle::AI::BASE_ABILITY_RATINGS[val].include?(ability)
       Battle::AI::BASE_ABILITY_RATINGS[val] = [] if !Battle::AI::BASE_ABILITY_RATINGS[val]
-      abilities.each{|ab|
+      abilities.each {|ab|
         Battle::AI::BASE_ABILITY_RATINGS[val].push(ab)
       }
     end
@@ -566,9 +550,7 @@ class Battle::AI::AIMove
   # Full accuracy calculation.
   alias paldea_rough_accuracy rough_accuracy
   def rough_accuracy
-    if @ai.trainer.medium_skill?
-      return 100 if @ai.target.effects[PBEffects::GlaiveRush] > 0
-    end
+    return 100 if @ai.trainer.medium_skill? && (@ai.target.effects[PBEffects::GlaiveRush] > 0)
     return paldea_rough_accuracy
   end
 end

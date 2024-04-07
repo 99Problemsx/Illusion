@@ -75,9 +75,8 @@ class PokemonChallengeRules
   end
 
   def unadjustLevelsBilateral(party1, party2, adjusts)
-    if @levelAdjustment && adjusts && @levelAdjustment.type == LevelAdjustment::BOTH_TEAMS
-      @levelAdjustment.unadjustLevels(party1, party2, adjusts)
-    end
+    return unless @levelAdjustment && adjusts && @levelAdjustment.type == LevelAdjustment::BOTH_TEAMS
+    @levelAdjustment.unadjustLevels(party1, party2, adjusts)
   end
 
   def addPokemonRule(rule)
@@ -258,125 +257,123 @@ end
 #===============================================================================
 # Other Interesting Rulesets
 #===============================================================================
-=begin
-# Official Species Restriction
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :MEWTWO, :MEW,
-   :LUGIA, :HOOH, :CELEBI,
-   :KYOGRE, :GROUDON, :RAYQUAZA, :JIRACHI, :DEOXYS,
-   :DIALGA, :PALKIA, :GIRATINA, :MANAPHY, :PHIONE,
-   :DARKRAI, :SHAYMIN, :ARCEUS))
-.addBattleRule(SoulDewBattleClause.new)
-
+# # Official Species Restriction
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :MEWTWO, :MEW,
+#    :LUGIA, :HOOH, :CELEBI,
+#    :KYOGRE, :GROUDON, :RAYQUAZA, :JIRACHI, :DEOXYS,
+#    :DIALGA, :PALKIA, :GIRATINA, :MANAPHY, :PHIONE,
+#    :DARKRAI, :SHAYMIN, :ARCEUS))
+# .addBattleRule(SoulDewBattleClause.new)
+#
 # New Official Species Restriction
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :MEW,
-   :CELEBI,
-   :JIRACHI, :DEOXYS,
-   :MANAPHY, :PHIONE, :DARKRAI, :SHAYMIN, :ARCEUS))
-.addBattleRule(SoulDewBattleClause.new)
-
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :MEW,
+#    :CELEBI,
+#    :JIRACHI, :DEOXYS,
+#    :MANAPHY, :PHIONE, :DARKRAI, :SHAYMIN, :ARCEUS))
+# .addBattleRule(SoulDewBattleClause.new)
+#
 # Pocket Monsters Stadium
-PokemonChallengeRules.new
-.addPokemonRule(SpeciesRestriction.new(
-   :VENUSAUR, :CHARIZARD, :BLASTOISE, :BEEDRILL, :FEAROW,
-   :PIKACHU, :NIDOQUEEN, :NIDOKING, :DUGTRIO, :PRIMEAPE,
-   :ARCANINE, :ALAKAZAM, :MACHAMP, :GOLEM, :MAGNETON,
-   :CLOYSTER, :GENGAR, :ONIX, :HYPNO, :ELECTRODE,
-   :EXEGGUTOR, :CHANSEY, :KANGASKHAN, :STARMIE, :SCYTHER,
-   :JYNX, :PINSIR, :TAUROS, :GYARADOS, :LAPRAS,
-   :DITTO, :VAPOREON, :JOLTEON, :FLAREON, :AERODACTYL,
-   :SNORLAX, :ARTICUNO, :ZAPDOS, :MOLTRES, :DRAGONITE
-))
-
+# PokemonChallengeRules.new
+# .addPokemonRule(SpeciesRestriction.new(
+#    :VENUSAUR, :CHARIZARD, :BLASTOISE, :BEEDRILL, :FEAROW,
+#    :PIKACHU, :NIDOQUEEN, :NIDOKING, :DUGTRIO, :PRIMEAPE,
+#    :ARCANINE, :ALAKAZAM, :MACHAMP, :GOLEM, :MAGNETON,
+#    :CLOYSTER, :GENGAR, :ONIX, :HYPNO, :ELECTRODE,
+#    :EXEGGUTOR, :CHANSEY, :KANGASKHAN, :STARMIE, :SCYTHER,
+#    :JYNX, :PINSIR, :TAUROS, :GYARADOS, :LAPRAS,
+#    :DITTO, :VAPOREON, :JOLTEON, :FLAREON, :AERODACTYL,
+#    :SNORLAX, :ARTICUNO, :ZAPDOS, :MOLTRES, :DRAGONITE
+# ))
+#
 # 1999 Tournament Rules
-PokemonChallengeRules.new
-.addTeamRule(SpeciesClause.new)
-.addPokemonRule(ItemsDisallowedClause.new)
-.addBattleRule(SleepClause.new)
-.addBattleRule(FreezeClause.new)
-.addBattleRule(SelfdestructClause.new)
-.setDoubleBattle(false)
-.setLevelRule(1, 50, 150)
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :VENUSAUR, :DUGTRIO, :ALAKAZAM, :GOLEM, :MAGNETON,
-   :GENGAR, :HYPNO, :ELECTRODE, :EXEGGUTOR, :CHANSEY,
-   :KANGASKHAN, :STARMIE, :JYNX, :TAUROS, :GYARADOS,
-   :LAPRAS, :DITTO, :VAPOREON, :JOLTEON, :SNORLAX,
-   :ARTICUNO, :ZAPDOS, :DRAGONITE, :MEWTWO, :MEW))
-
+# PokemonChallengeRules.new
+# .addTeamRule(SpeciesClause.new)
+# .addPokemonRule(ItemsDisallowedClause.new)
+# .addBattleRule(SleepClause.new)
+# .addBattleRule(FreezeClause.new)
+# .addBattleRule(SelfdestructClause.new)
+# .setDoubleBattle(false)
+# .setLevelRule(1, 50, 150)
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :VENUSAUR, :DUGTRIO, :ALAKAZAM, :GOLEM, :MAGNETON,
+#    :GENGAR, :HYPNO, :ELECTRODE, :EXEGGUTOR, :CHANSEY,
+#    :KANGASKHAN, :STARMIE, :JYNX, :TAUROS, :GYARADOS,
+#    :LAPRAS, :DITTO, :VAPOREON, :JOLTEON, :SNORLAX,
+#    :ARTICUNO, :ZAPDOS, :DRAGONITE, :MEWTWO, :MEW))
+#
 # 2005 Tournament Rules
-PokemonChallengeRules.new
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :DRAGONITE, :MEW, :MEWTWO,
-   :TYRANITAR, :LUGIA, :CELEBI, :HOOH,
-   :GROUDON, :KYOGRE, :RAYQUAZA, :JIRACHI, :DEOXYS))
-.setDoubleBattle(true)
-.addLevelRule(1, 50, 200)
-.addTeamRule(ItemClause.new)
-.addPokemonRule(BannedItemRestriction.new(:SOULDEW, :ENIGMABERRY))
-.addBattleRule(SleepClause.new)
-.addBattleRule(FreezeClause.new)
-.addBattleRule(SelfdestructClause.new)
-.addBattleRule(PerishSongClause.new)
-
+# PokemonChallengeRules.new
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :DRAGONITE, :MEW, :MEWTWO,
+#    :TYRANITAR, :LUGIA, :CELEBI, :HOOH,
+#    :GROUDON, :KYOGRE, :RAYQUAZA, :JIRACHI, :DEOXYS))
+# .setDoubleBattle(true)
+# .addLevelRule(1, 50, 200)
+# .addTeamRule(ItemClause.new)
+# .addPokemonRule(BannedItemRestriction.new(:SOULDEW, :ENIGMABERRY))
+# .addBattleRule(SleepClause.new)
+# .addBattleRule(FreezeClause.new)
+# .addBattleRule(SelfdestructClause.new)
+# .addBattleRule(PerishSongClause.new)
+#
 # 2008 Tournament Rules
-PokemonChallengeRules.new
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :MEWTWO, :MEW,
-   :TYRANITAR, :LUGIA, :HOOH, :CELEBI,
-   :GROUDON, :KYOGRE, :RAYQUAZA, :JIRACHI, :DEOXYS,
-   :PALKIA, :DIALGA, :PHIONE, :MANAPHY, :ROTOM, :SHAYMIN, :DARKRAI))
-.setDoubleBattle(true)
-.addLevelRule(1, 50, 200)
-.addTeamRule(NicknameClause.new)
-.addTeamRule(ItemClause.new)
-.addBattleRule(SoulDewBattleClause.new)
-
+# PokemonChallengeRules.new
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :MEWTWO, :MEW,
+#    :TYRANITAR, :LUGIA, :HOOH, :CELEBI,
+#    :GROUDON, :KYOGRE, :RAYQUAZA, :JIRACHI, :DEOXYS,
+#    :PALKIA, :DIALGA, :PHIONE, :MANAPHY, :ROTOM, :SHAYMIN, :DARKRAI))
+# .setDoubleBattle(true)
+# .addLevelRule(1, 50, 200)
+# .addTeamRule(NicknameClause.new)
+# .addTeamRule(ItemClause.new)
+# .addBattleRule(SoulDewBattleClause.new)
+#
 # 2010 Tournament Rules
-PokemonChallengeRules.new
-.addPokemonRule(BannedSpeciesRestriction.new(
-   :MEW,
-   :CELEBI,
-   :JIRACHI, :DEOXYS,
-   :PHIONE, :MANAPHY, :SHAYMIN, :DARKRAI, :ARCEUS))
-.addSubsetRule(RestrictedSpeciesSubsetRestriction.new(
-   :MEWTWO,
-   :LUGIA, :HOOH,
-   :GROUDON, :KYOGRE, :RAYQUAZA,
-   :PALKIA, :DIALGA, :GIRATINA))
-.setDoubleBattle(true)
-.addLevelRule(1, 100, 600)
-.setLevelAdjustment(CappedLevelAdjustment.new(50))
-.addTeamRule(NicknameClause.new)
-.addTeamRule(ItemClause.new)
-.addPokemonRule(SoulDewClause.new)
-
+# PokemonChallengeRules.new
+# .addPokemonRule(BannedSpeciesRestriction.new(
+#    :MEW,
+#    :CELEBI,
+#    :JIRACHI, :DEOXYS,
+#    :PHIONE, :MANAPHY, :SHAYMIN, :DARKRAI, :ARCEUS))
+# .addSubsetRule(RestrictedSpeciesSubsetRestriction.new(
+#    :MEWTWO,
+#    :LUGIA, :HOOH,
+#    :GROUDON, :KYOGRE, :RAYQUAZA,
+#    :PALKIA, :DIALGA, :GIRATINA))
+# .setDoubleBattle(true)
+# .addLevelRule(1, 100, 600)
+# .setLevelAdjustment(CappedLevelAdjustment.new(50))
+# .addTeamRule(NicknameClause.new)
+# .addTeamRule(ItemClause.new)
+# .addPokemonRule(SoulDewClause.new)
+#
 # Pokemon Colosseum -- Anything Goes
-PokemonChallengeRules.new
-.addLevelRule(1, 100, 600)
-.addBattleRule(SleepClause.new)
-.addBattleRule(FreezeClause.new)
-.addBattleRule(SelfdestructClause.new)
-.addBattleRule(PerishSongClause.new)
-
+# PokemonChallengeRules.new
+# .addLevelRule(1, 100, 600)
+# .addBattleRule(SleepClause.new)
+# .addBattleRule(FreezeClause.new)
+# .addBattleRule(SelfdestructClause.new)
+# .addBattleRule(PerishSongClause.new)
+#
 # Pokemon Colosseum -- Max Lv. 50
-PokemonChallengeRules.new
-.addLevelRule(1, 50, 300)
-.addTeamRule(SpeciesClause.new)
-.addTeamRule(ItemClause.new)
-.addBattleRule(SleepClause.new)
-.addBattleRule(FreezeClause.new)
-.addBattleRule(SelfdestructClause.new)
-.addBattleRule(PerishSongClause.new)
-
+# PokemonChallengeRules.new
+# .addLevelRule(1, 50, 300)
+# .addTeamRule(SpeciesClause.new)
+# .addTeamRule(ItemClause.new)
+# .addBattleRule(SleepClause.new)
+# .addBattleRule(FreezeClause.new)
+# .addBattleRule(SelfdestructClause.new)
+# .addBattleRule(PerishSongClause.new)
+#
 # Pokemon Colosseum -- Max Lv. 100
-PokemonChallengeRules.new
-.addLevelRule(1, 100, 600)
-.addTeamRule(SpeciesClause.new)
-.addTeamRule(ItemClause.new)
-.addBattleRule(SleepClause.new)
-.addBattleRule(FreezeClause.new)
-.addBattleRule(SelfdestructClause.new)
-.addBattleRule(PerishSongClause.new)
-=end
+# PokemonChallengeRules.new
+# .addLevelRule(1, 100, 600)
+# .addTeamRule(SpeciesClause.new)
+# .addTeamRule(ItemClause.new)
+# .addBattleRule(SleepClause.new)
+# .addBattleRule(FreezeClause.new)
+# .addBattleRule(SelfdestructClause.new)
+# .addBattleRule(PerishSongClause.new)

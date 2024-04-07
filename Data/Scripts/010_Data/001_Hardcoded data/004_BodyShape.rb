@@ -8,7 +8,7 @@ module GameData
     attr_reader :real_name
     attr_reader :icon_position   # Where this shape's icon is within icon_shapes.png
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

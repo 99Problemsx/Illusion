@@ -16,7 +16,7 @@ class PokemonTilesetScene
   def initialize
     @tilesets_data = load_data("Data/Tilesets.rxdata")
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize(
       _INTL("Tileset Editor\nA/S: SCROLL\nZ: MENU"),
@@ -41,14 +41,12 @@ class PokemonTilesetScene
     pbDisposeSpriteHash(@sprites)
     @viewport.dispose
     @tilehelper.dispose
-    if $game_map && $map_factory
-      $map_factory.setup($game_map.map_id)
-      $game_player.center($game_player.x, $game_player.y)
-      if $scene.is_a?(Scene_Map)
-        $scene.dispose
-        $scene.createSpritesets
-      end
-    end
+    return unless $game_map && $map_factory
+    $map_factory.setup($game_map.map_id)
+    $game_player.center($game_player.x, $game_player.y)
+    return unless $scene.is_a?(Scene_Map)
+    $scene.dispose
+    $scene.createSpritesets
   end
 
   def load_tileset(id)
@@ -76,7 +74,7 @@ class PokemonTilesetScene
     @sprites["background"].bitmap.clear
     @sprites["tileset"].bitmap.clear
     @visible_height.times do |yy|
-      autotile_row = (@top_y == 0 && yy == 0)   # Autotiles
+      autotile_row = @top_y == 0 && yy == 0   # Autotiles
       id_y_offset = (autotile_row) ? 0 : TILESET_START_ID + ((@top_y + yy - 1) * TILES_PER_ROW)
       break if @top_y + yy >= @height
       TILES_PER_ROW.times do |xx|

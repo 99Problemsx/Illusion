@@ -21,9 +21,7 @@ def pbWarpToMap
       next if !map.passableStrict?(x, y, 0, $game_player)
       blocked = false
       map.events.each_value do |event|
-        if event.at_coordinate?(x, y) && !event.through && event.character_name != ""
-          blocked = true
-        end
+        blocked = true if event.at_coordinate?(x, y) && !event.through && event.character_name != ""
       end
       next if blocked
       success = true
@@ -82,7 +80,7 @@ class SpriteWindow_DebugVariables < Window_DrawableCommand
     codeswitch = false
     if @mode == 0
       name = $data_system.switches[index + 1]
-      codeswitch = (name[/^s\:/])
+      codeswitch = (name[/^s:/])
       if codeswitch
         code = $~.post_match
         code_parts = code.split(/[(\[=<>. ]/)
@@ -91,16 +89,40 @@ class SpriteWindow_DebugVariables < Window_DrawableCommand
         val = nil
         if code_parts[0][0][/[a-z]/i]
           if code_parts[0][0].upcase == code_parts[0][0] &&
-             (Kernel.const_defined?(code_parts[0]) rescue false)
-            val = (eval(code) rescue nil)   # Code starts with a class/method name
+             begin
+               Kernel.const_defined?(code_parts[0])
+             rescue StandardError
+               false
+             end
+            val = begin
+              eval(code)
+            rescue StandardError
+              nil
+            end
           elsif code_parts[0][0].downcase == code_parts[0][0] &&
-                !(Interpreter.method_defined?(code_parts[0].to_sym) rescue false) &&
-                !(Game_Event.method_defined?(code_parts[0].to_sym) rescue false)
-            val = (eval(code) rescue nil)   # Code starts with a method name (that isn't in Interpreter/Game_Event)
+                !begin
+                  Interpreter.method_defined?(code_parts[0].to_sym)
+                rescue StandardError
+                  false
+                end &&
+                !begin
+                  Game_Event.method_defined?(code_parts[0].to_sym)
+                rescue StandardError
+                  false
+                end
+            val = begin
+              eval(code)
+            rescue StandardError
+              nil
+            end
           end
         else
           # Code doesn't start with a letter, probably $, just evaluate it
-          val = (eval(code) rescue nil)
+          val = begin
+            eval(code)
+          rescue StandardError
+            nil
+          end
         end
       else
         val = $game_switches[index + 1]
@@ -139,12 +161,11 @@ end
 #===============================================================================
 def pbDebugSetVariable(id, diff)
   $game_variables[id] = 0 if $game_variables[id].nil?
-  if $game_variables[id].is_a?(Numeric)
-    pbPlayCursorSE
-    $game_variables[id] = [$game_variables[id] + diff, 99_999_999].min
-    $game_variables[id] = [$game_variables[id], -99_999_999].max
-    $game_map.need_refresh = true
-  end
+  return unless $game_variables[id].is_a?(Numeric)
+  pbPlayCursorSE
+  $game_variables[id] = [$game_variables[id] + diff, 99_999_999].min
+  $game_variables[id] = [$game_variables[id], -99_999_999].max
+  $game_map.need_refresh = true
 end
 
 def pbDebugVariableScreen(id)
@@ -169,7 +190,7 @@ end
 
 def pbDebugVariables(mode)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   sprites = {}
   sprites["right_window"] = SpriteWindow_DebugVariables.new(viewport)
   right_window = sprites["right_window"]
@@ -460,7 +481,7 @@ end
 #===============================================================================
 def pbDebugRoamers
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   sprites = {}
   sprites["cmdwindow"] = SpriteWindow_DebugRoamers.new(viewport)
   cmdwindow = sprites["cmdwindow"]
@@ -552,7 +573,11 @@ end
 #===============================================================================
 def pbExportAllAnimations
   begin
-    Dir.mkdir("Animations") rescue nil
+    begin
+      Dir.mkdir("Animations")
+    rescue StandardError
+      nil
+    end
     animations = pbLoadBattleAnimations
     if animations
       msgwindow = pbCreateMessageWindow
@@ -561,10 +586,12 @@ def pbExportAllAnimations
         pbMessageDisplay(msgwindow, anim.name, false)
         Graphics.update
         safename = anim.name.gsub(/\W/, "_")
-        Dir.mkdir("Animations/#{safename}") rescue nil
-        File.open("Animations/#{safename}/#{safename}.anm", "wb") do |f|
-          f.write(BattleAnimationEditor.dumpBase64Anim(anim))
+        begin
+          Dir.mkdir("Animations/#{safename}")
+        rescue StandardError
+          nil
         end
+        File.binwrite("Animations/#{safename}/#{safename}.anm", BattleAnimationEditor.dumpBase64Anim(anim))
         if anim.graphic && anim.graphic != ""
           graphicname = RTP.getImagePath("Graphics/Animations/" + anim.graphic)
           pbSafeCopyFile(graphicname, "Animations/#{safename}/" + File.basename(graphicname))
@@ -588,7 +615,7 @@ def pbExportAllAnimations
     else
       pbMessage(_INTL("There are no animations to export."))
     end
-  rescue
+  rescue StandardError
     p $!.message, $!.backtrace
     pbMessage(_INTL("The export failed."))
   end
@@ -631,7 +658,11 @@ def pbImportAllAnimations
         pbSafeCopyFile(image, RTP.getImagePath("Graphics/Animations/" + File.basename(image)), "Graphics/Animations/" + File.basename(image))
       end
       Dir.glob(folder + "/*.anm") do |f|
-        textdata = BattleAnimationEditor.loadBase64Anim(IO.read(f)) rescue nil
+        textdata = begin
+          BattleAnimationEditor.loadBase64Anim(File.read(f))
+        rescue StandardError
+          nil
+        end
         if textdata.is_a?(PBAnimation)
           index = pbAllocateAnimation(animations, textdata.name)
           missingFiles = []
@@ -744,7 +775,7 @@ end
 class PokemonDebugPartyScreen
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @messageBox = Window_AdvancedTextPokemon.new("")
     @messageBox.viewport       = @viewport
     @messageBox.visible        = false
@@ -777,9 +808,7 @@ class PokemonDebugPartyScreen
           @messageBox.resume
         end
       else
-        if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
-          break
-        end
+        break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
       end
     end
     @messageBox.visible = false

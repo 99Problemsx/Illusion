@@ -195,14 +195,14 @@ class Window_PokemonOption < Window_DrawableCommand
     when EnumOption
       if @options[index].values.length > 1
         totalwidth = 0
-        @options[index].values.each do |value|
+        @options[index].each_value do |value|
           totalwidth += self.contents.text_size(value).width
         end
         spacing = (rect.width - rect.x - optionwidth - totalwidth) / (@options[index].values.length - 1)
         spacing = 0 if spacing < 0
         xpos = optionwidth + rect.x
         ivalue = 0
-        @options[index].values.each do |value|
+        @options[index].each_value do |value|
           pbDrawShadowText(self.contents, xpos, rect.y, optionwidth, rect.height, value,
                            (ivalue == self[index]) ? SEL_VALUE_BASE_COLOR : self.baseColor,
                            (ivalue == self[index]) ? SEL_VALUE_SHADOW_COLOR : self.shadowColor)
@@ -282,7 +282,7 @@ class PokemonOption_Scene
     end
     # Create sprites
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     addBackgroundOrColoredPlane(@sprites, "bg", "optionsbg", Color.new(192, 200, 208), @viewport)
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize(

@@ -50,10 +50,9 @@ class Battle::Move::SwitchOutUserStatusMove < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    if user.wild?
-      @battle.pbDisplay(_INTL("{1} fled from battle!", user.pbThis))
-      @battle.decision = 3   # Escaped
-    end
+    return unless user.wild?
+    @battle.pbDisplay(_INTL("{1} fled from battle!", user.pbThis))
+    @battle.decision = 3   # Escaped
   end
 end
 
@@ -802,18 +801,17 @@ class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
       # Moves that call other moves (see also below)
       "UseLastMoveUsedByTarget"                        # Mirror Move
     ]
-    if Settings::MECHANICS_GENERATION >= 7
-      @moveBlacklist += [
-        # Moves that call other moves
-#        "UseLastMoveUsedByTarget",                    # Mirror Move   # See above
-        "UseLastMoveUsed",                             # Copycat
-        "UseMoveTargetIsAboutToUse",                   # Me First
-        "UseMoveDependingOnEnvironment",               # Nature Power
-        "UseRandomUserMoveIfAsleep",                   # Sleep Talk
-        "UseRandomMoveFromUserParty",                  # Assist
-        "UseRandomMove"                                # Metronome
-      ]
-    end
+    return unless Settings::MECHANICS_GENERATION >= 7
+    @moveBlacklist += [
+      # Moves that call other moves
+      #        "UseLastMoveUsedByTarget",                    # Mirror Move   # See above
+      "UseLastMoveUsed",                             # Copycat
+      "UseMoveTargetIsAboutToUse",                   # Me First
+      "UseMoveDependingOnEnvironment",               # Nature Power
+      "UseRandomUserMoveIfAsleep",                   # Sleep Talk
+      "UseRandomMoveFromUserParty",                  # Assist
+      "UseRandomMove"                                # Metronome
+    ]
   end
 
   def pbFailsAgainstTarget?(user, target, show_message)

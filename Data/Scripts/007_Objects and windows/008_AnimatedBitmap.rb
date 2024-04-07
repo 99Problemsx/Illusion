@@ -47,8 +47,8 @@ class PngAnimatedBitmap
     panorama = RPG::Cache.load_bitmap(dir, filename, hue)
     if filename[/^\[(\d+)(?:,(\d+))?\]/]   # Starts with 1 or 2 numbers in brackets
       # File has a frame count
-      numFrames = $1.to_i
-      duration  = $2.to_i   # In 1/20ths of a second
+      numFrames = ::Regexp.last_match(1).to_i
+      duration  = ::Regexp.last_match(2).to_i   # In 1/20ths of a second
       duration  = 5 if duration == 0
       raise "Invalid frame count in #{filename}" if numFrames <= 0
       raise "Invalid frame duration in #{filename}" if duration <= 0
@@ -125,9 +125,8 @@ class PngAnimatedBitmap
 
   def update
     return if disposed?
-    if @frames.length > 1
-      @currentFrame = ((System.uptime - @timer_start) / @frame_duration).to_i % @frames.length
-    end
+    return unless @frames.length > 1
+    @currentFrame = ((System.uptime - @timer_start) / @frame_duration).to_i % @frames.length
   end
 end
 
@@ -144,7 +143,7 @@ class GifBitmap
     filename  = "" if !filename
     begin
       @bitmap = RPG::Cache.load_bitmap(dir, filename, hue)
-    rescue
+    rescue StandardError
       @bitmap = nil
     end
     @bitmap = Bitmap.new(32, 32) if @bitmap.nil?

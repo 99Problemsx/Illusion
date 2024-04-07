@@ -164,9 +164,7 @@ class Battle
     side  = battler.idxOwnSide
     owner = pbGetOwnerIndexFromBattlerIndex(idxBattler)
     @megaEvolution[side][owner] = -2
-    if battler.isSpecies?(:GENGAR) && battler.mega?
-      battler.effects[PBEffects::Telekinesis] = 0
-    end
+    battler.effects[PBEffects::Telekinesis] = 0 if battler.isSpecies?(:GENGAR) && battler.mega?
     # Trigger ability
     battler.pbOnLosingAbility(old_ability)
     battler.pbTriggerAbilityOnGainingIt

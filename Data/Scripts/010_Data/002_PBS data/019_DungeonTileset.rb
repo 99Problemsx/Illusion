@@ -12,9 +12,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "dungeon_tilesets.dat"
-    PBS_BASE_FILENAME = "dungeon_tilesets"
+    DATA = {}.freeze
+    DATA_FILENAME = "dungeon_tilesets.dat".freeze
+    PBS_BASE_FILENAME = "dungeon_tilesets".freeze
 
     SCHEMA = {
       "SectionName"          => [:id,                      "u"],
@@ -28,7 +28,7 @@ module GameData
       "FloorPatchUnderWalls" => [:floor_patch_under_walls, "b"],
       "ThinNorthWallOffset"  => [:thin_north_wall_offset,  "i"],
       "Flags"                => [:flags,                   "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsIDNumbers
     include InstanceMethods
@@ -53,7 +53,7 @@ module GameData
       @flags                   = hash[:flags]                   || []
       @tile_type_ids           = {}
       set_tile_type_ids(hash)
-      @pbs_file_suffix         = hash[:pbs_file_suffix]         || ""
+      @pbs_file_suffix = hash[:pbs_file_suffix] || ""
     end
 
     def set_tile_type_ids(hash)
@@ -189,8 +189,8 @@ module GameData
         # Different wall tiles for northern walls if there's another wall directly
         # north of them (i.e. tree tiles that shouldn't have shaded grass because
         # there isn't a tree-enclosed area there)
-        if @thin_north_wall_offset != 0 && [:wall_7, :wall_8, :wall_9].include?(tile_type)
-          ret += @thin_north_wall_offset if dungeon.tile_is_wall?(dungeon[x, y - 1, 1])
+        if @thin_north_wall_offset != 0 && [:wall_7, :wall_8, :wall_9].include?(tile_type) && dungeon.tile_is_wall?(dungeon[x, y - 1, 1])
+          ret += @thin_north_wall_offset
         end
       end
       return ret

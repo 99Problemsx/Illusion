@@ -11,9 +11,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "types.dat"
-    PBS_BASE_FILENAME = "types"
+    DATA = {}.freeze
+    DATA_FILENAME = "types.dat".freeze
+    PBS_BASE_FILENAME = "types".freeze
 
     SCHEMA = {
       "SectionName"   => [:id,            "m"],
@@ -25,7 +25,7 @@ module GameData
       "Resistances"   => [:resistances,   "*m"],
       "Immunities"    => [:immunities,    "*m"],
       "Flags"         => [:flags,         "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -38,9 +38,9 @@ module GameData
       @pseudo_type     = hash[:pseudo_type]     || false
       @weaknesses      = hash[:weaknesses]      || []
       @weaknesses      = [@weaknesses] if !@weaknesses.is_a?(Array)
-      @resistances     = hash[:resistances]     || []
+      @resistances     = hash[:resistances] || []
       @resistances     = [@resistances] if !@resistances.is_a?(Array)
-      @immunities      = hash[:immunities]      || []
+      @immunities      = hash[:immunities] || []
       @immunities      = [@immunities] if !@immunities.is_a?(Array)
       @flags           = hash[:flags]           || []
       @pbs_file_suffix = hash[:pbs_file_suffix] || ""

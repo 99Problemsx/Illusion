@@ -19,16 +19,28 @@ end
 #
 #===============================================================================
 def pbGetBTTrainers(challengeID)
-  trlists = (load_data("Data/trainer_lists.dat") rescue [])
-  trlists.each { |tr| return tr[0] if !tr[5] && tr[2].include?(challengeID) }
-  trlists.each { |tr| return tr[0] if tr[5] }   # is default list
+  trlists = begin
+    load_data("Data/trainer_lists.dat")
+  rescue StandardError
+    []
+  end
+  trlists.each { |tr|
+    return tr[0] if !tr[5] && tr[2].include?(challengeID)
+    return tr[0] if tr[5]
+  }   # is default list
   return []
 end
 
 def pbGetBTPokemon(challengeID)
-  trlists = (load_data("Data/trainer_lists.dat") rescue [])
-  trlists.each { |tr| return tr[1] if !tr[5] && tr[2].include?(challengeID) }
-  trlists.each { |tr| return tr[1] if tr[5] }   # is default list
+  trlists = begin
+    load_data("Data/trainer_lists.dat")
+  rescue StandardError
+    []
+  end
+  trlists.each { |tr|
+    return tr[1] if !tr[5] && tr[2].include?(challengeID)
+    return tr[1] if tr[5]
+  }   # is default list
   return []
 end
 
@@ -44,7 +56,7 @@ def pbEntryScreen(*arg)
     # Set party
     pbBattleChallenge.setParty(ret) if ret
     # Continue (return true) if Pokémon were chosen
-    retval = (ret && ret.length > 0)
+    retval = ret && ret.length > 0
   end
   return retval
 end
@@ -77,13 +89,17 @@ end
 def pbBattleChallengeGraphic(event)
   nextTrainer = pbBattleChallenge.nextTrainer
   bttrainers = pbGetBTTrainers(pbBattleChallenge.currentChallenge)
-  filename = GameData::TrainerType.charset_filename_brief((bttrainers[nextTrainer][0] rescue nil))
+  filename = GameData::TrainerType.charset_filename_brief(begin
+    bttrainers[nextTrainer][0]
+  rescue StandardError
+    nil
+  end)
   begin
     filename = "NPC 01" if nil_or_empty?(filename)
     bitmap = AnimatedBitmap.new("Graphics/Characters/" + filename)
     bitmap.dispose
     event.character_name = filename
-  rescue
+  rescue StandardError
     event.character_name = "NPC 01"
   end
 end
@@ -184,14 +200,14 @@ class PBPokemon
     return "#{species},#{item},#{nature},#{move1},#{move2},#{move3},#{move4},#{ev}"
   end
 
-#  def _dump(depth)
-#    return [@species, @item, @nature, @move1, @move2, @move3, @move4, @ev].pack("vvCvvvvC")
-#  end
+  #  def _dump(depth)
+  #    return [@species, @item, @nature, @move1, @move2, @move3, @move4, @ev].pack("vvCvvvvC")
+  #  end
 
-#  def self._load(str)
-#    data = str.unpack("vvCvvvvC")
-#    return self.new(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])
-#  end
+  #  def self._load(str)
+  #    data = str.unpack("vvCvvvvC")
+  #    return self.new(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])
+  #  end
 
   def convertMove(move)
     move = :FRUSTRATION if move == :RETURN && GameData::Move.exists?(:FRUSTRATION)
@@ -209,9 +225,7 @@ class PBPokemon
     pkmn.moves.push(Pokemon::Move.new(self.convertMove(@move3))) if @move3
     pkmn.moves.push(Pokemon::Move.new(self.convertMove(@move4))) if @move4
     pkmn.moves.compact!
-    if ev.length > 0
-      ev.each { |stat| pkmn.ev[stat] = Pokemon::EV_LIMIT / ev.length }
-    end
+    ev.each { |stat| pkmn.ev[stat] = Pokemon::EV_LIMIT / ev.length } if ev.length > 0
     GameData::Stat.each_main { |s| pkmn.iv[s.id] = iv }
     pkmn.calc_stats
     return pkmn

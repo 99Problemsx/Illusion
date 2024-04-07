@@ -55,7 +55,7 @@ class ReadyMenuButton < Sprite
   end
 
   def refresh
-    sel = (@selected == @index && (@side == 0) == @command[2])
+    sel = @selected == @index && (@side == 0) == @command[2]
     self.y = ((Graphics.height - (@button.height / 2)) / 2) - ((@selected - @index) * ((@button.height / 2) + 4))
     if @command[2]   # Pokémon
       self.x = (sel) ? 0 : -16
@@ -112,19 +112,15 @@ class PokemonReadyMenu_Scene
       @itemcommands.push(@commands[1][i][1])
     end
     @index = $bag.ready_menu_selection
-    if @index[0] >= @movecommands.length && @movecommands.length > 0
-      @index[0] = @movecommands.length - 1
-    end
-    if @index[1] >= @itemcommands.length && @itemcommands.length > 0
-      @index[1] = @itemcommands.length - 1
-    end
+    @index[0] = @movecommands.length - 1 if @index[0] >= @movecommands.length && @movecommands.length > 0
+    @index[1] = @itemcommands.length - 1 if @index[1] >= @itemcommands.length && @itemcommands.length > 0
     if @index[2] == 0 && @movecommands.length == 0
       @index[2] = 1
     elsif @index[2] == 1 && @itemcommands.length == 0
       @index[2] = 0
     end
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @sprites["cmdwindow"] = Window_CommandPokemon.new((@index[2] == 0) ? @movecommands : @itemcommands)
     @sprites["cmdwindow"].height = 192
@@ -261,7 +257,7 @@ class PokemonReadyMenu
         user = $player.party[commands[0][command[1]][3]]
         if move == :FLY
           ret = nil
-          pbFadeOutInWithUpdate(99999, @scene.sprites) do
+          pbFadeOutInWithUpdate(99_999, @scene.sprites) do
             pbHideMenu
             scene = PokemonRegionMap_Scene.new(-1, false)
             screen = PokemonRegionMapScreen.new(scene)

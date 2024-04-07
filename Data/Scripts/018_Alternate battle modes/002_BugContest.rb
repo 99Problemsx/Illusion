@@ -16,7 +16,7 @@ class BugContestState
     _INTL("Lass Abby"),
     _INTL("Picnicker Cindy"),
     _INTL("Youngster Samuel")
-  ]
+  ].freeze
   TIME_ALLOWED = Settings::BUG_CONTEST_TIME   # In seconds
 
   def initialize
@@ -55,7 +55,7 @@ class BugContestState
   end
 
   def undecided?
-    return (@inProgress && @decision == 0)
+    return @inProgress && @decision == 0
   end
 
   def decided?
@@ -104,16 +104,12 @@ class BugContestState
 
   def pbJudge
     judgearray = []
-    if @lastPokemon
-      judgearray.push([-1, @lastPokemon.species, pbBugContestScore(@lastPokemon)])
-    end
+    judgearray.push([-1, @lastPokemon.species, pbBugContestScore(@lastPokemon)]) if @lastPokemon
     maps_with_encounters = []
     @contestMaps.each do |map|
       enc_type = :BugContest
       enc_type = :Land if !$PokemonEncounters.map_has_encounter_type?(map, enc_type)
-      if $PokemonEncounters.map_has_encounter_type?(map, enc_type)
-        maps_with_encounters.push([map, enc_type])
-      end
+      maps_with_encounters.push([map, enc_type]) if $PokemonEncounters.map_has_encounter_type?(map, enc_type)
     end
     raise _INTL("There are no Bug Contest/Land encounters for any Bug Contest maps.") if maps_with_encounters.empty?
     @contestants.each do |cont|
@@ -150,17 +146,16 @@ class BugContestState
   def pbStartJudging
     @decision = 1
     pbJudge
-    if $scene.is_a?(Scene_Map)
-      pbFadeOutIn do
-        $game_temp.player_transferring  = true
-        $game_temp.player_new_map_id    = @start[0]
-        $game_temp.player_new_x         = @start[1]
-        $game_temp.player_new_y         = @start[2]
-        $game_temp.player_new_direction = @start[3]
-        pbDismountBike
-        $scene.transfer_player
-        $game_map.need_refresh = true   # in case player moves to the same map
-      end
+    return unless $scene.is_a?(Scene_Map)
+    pbFadeOutIn do
+      $game_temp.player_transferring  = true
+      $game_temp.player_new_map_id    = @start[0]
+      $game_temp.player_new_x         = @start[1]
+      $game_temp.player_new_y         = @start[2]
+      $game_temp.player_new_direction = @start[3]
+      pbDismountBike
+      $scene.transfer_player
+      $game_map.need_refresh = true   # in case player moves to the same map
     end
   end
 
@@ -232,7 +227,7 @@ class TimerDisplay # :nodoc:
 
   def initialize(start_time, max_time)
     @timer = Window_AdvancedTextPokemon.newWithSize("", Graphics.width - 120, 0, 120, 64)
-    @timer.z = 99999
+    @timer.z = 99_999
     @start_time = start_time
     @max_time = max_time
     @display_time = nil
@@ -249,12 +244,11 @@ class TimerDisplay # :nodoc:
   def update
     time_left = @max_time - (System.uptime - @start_time).to_i
     time_left = 0 if time_left < 0
-    if @display_time != time_left
-      @display_time = time_left
-      min = @display_time / 60
-      sec = @display_time % 60
-      @timer.text = _ISPRINTF("<ac>{1:02d}:{2:02d}", min, sec)
-    end
+    return unless @display_time != time_left
+    @display_time = time_left
+    min = @display_time / 60
+    sec = @display_time % 60
+    @timer.text = _ISPRINTF("<ac>{1:02d}:{2:02d}", min, sec)
   end
 end
 
@@ -277,9 +271,7 @@ def pbBugContestScore(pkmn)
 end
 
 def pbBugContestState
-  if !$PokemonGlobal.bugContestState
-    $PokemonGlobal.bugContestState = BugContestState.new
-  end
+  $PokemonGlobal.bugContestState = BugContestState.new if !$PokemonGlobal.bugContestState
   return $PokemonGlobal.bugContestState
 end
 
@@ -311,51 +303,51 @@ end
 #
 #===============================================================================
 EventHandlers.add(:on_map_or_spriteset_change, :show_bug_contest_timer,
-  proc { |scene, _map_changed|
-    next if !pbInBugContest? || pbBugContestState.decision != 0 || BugContestState::TIME_ALLOWED == 0
-    scene.spriteset.addUserSprite(
-      TimerDisplay.new(pbBugContestState.timer_start, BugContestState::TIME_ALLOWED)
-    )
-  }
+                  proc { |scene, _map_changed|
+                    next if !pbInBugContest? || pbBugContestState.decision != 0 || BugContestState::TIME_ALLOWED == 0
+                    scene.spriteset.addUserSprite(
+                      TimerDisplay.new(pbBugContestState.timer_start, BugContestState::TIME_ALLOWED)
+                    )
+                  }
 )
 
 EventHandlers.add(:on_frame_update, :bug_contest_counter,
-  proc {
-    next if !pbBugContestState.expired?
-    next if $game_player.move_route_forcing || pbMapInterpreterRunning? ||
-            $game_temp.message_window_showing
-    pbMessage(_INTL("ANNOUNCER: BEEEEEP!"))
-    pbMessage(_INTL("Time's up!"))
-    pbBugContestState.pbStartJudging
-  }
+                  proc {
+                    next if !pbBugContestState.expired?
+                    next if $game_player.move_route_forcing || pbMapInterpreterRunning? ||
+                            $game_temp.message_window_showing
+                    pbMessage(_INTL("ANNOUNCER: BEEEEEP!"))
+                    pbMessage(_INTL("Time's up!"))
+                    pbBugContestState.pbStartJudging
+                  }
 )
 
 EventHandlers.add(:on_enter_map, :end_bug_contest,
-  proc { |_old_map_id|
-    pbBugContestState.pbClearIfEnded
-  }
+                  proc { |_old_map_id|
+                    pbBugContestState.pbClearIfEnded
+                  }
 )
 
 EventHandlers.add(:on_leave_map, :end_bug_contest,
-  proc { |new_map_id, new_map|
-    next if !pbInBugContest? || !pbBugContestState.pbOffLimits?(new_map_id)
-    # Clear bug contest if player flies/warps/teleports out of the contest
-    pbBugContestState.pbEnd(true)
-  }
+                  proc { |new_map_id, new_map|
+                    next if !pbInBugContest? || !pbBugContestState.pbOffLimits?(new_map_id)
+                    # Clear bug contest if player flies/warps/teleports out of the contest
+                    pbBugContestState.pbEnd(true)
+                  }
 )
 
 #===============================================================================
 #
 #===============================================================================
 EventHandlers.add(:on_calling_wild_battle, :bug_contest_battle,
-  proc { |pkmn, handled|
-    # handled is an array: [nil]. If [true] or [false], the battle has already
-    # been overridden (the boolean is its outcome), so don't do anything that
-    # would override it again
-    next if !handled[0].nil?
-    next if !pbInBugContest?
-    handled[0] = pbBugContestBattle(pkmn)
-  }
+                  proc { |pkmn, handled|
+                    # handled is an array: [nil]. If [true] or [false], the battle has already
+                    # been overridden (the boolean is its outcome), so don't do anything that
+                    # would override it again
+                    next if !handled[0].nil?
+                    next if !pbInBugContest?
+                    handled[0] = pbBugContestBattle(pkmn)
+                  }
 )
 
 def pbBugContestBattle(pkmn, level = 1)
@@ -400,7 +392,7 @@ def pbBugContestBattle(pkmn, level = 1)
   # Used by the Poké Radar to update/break the chain
   EventHandlers.trigger(:on_wild_battle_end, pkmn.species_data.id, pkmn.level, decision)
   # Return false if the player lost or drew the battle, and true if any other result
-  return (decision != 2 && decision != 5)
+  return decision != 2 && decision != 5
 end
 
 #===============================================================================

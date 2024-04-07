@@ -120,9 +120,8 @@ class Battle::Move::PoisonTargetLowerTargetSpeed1 < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.pbPoison(user) if target.pbCanPoison?(user, false, self)
-    if target.pbCanLowerStatStage?(@statDown[0], user, self)
-      target.pbLowerStatStage(@statDown[0], @statDown[1], user)
-    end
+    return unless target.pbCanLowerStatStage?(@statDown[0], user, self)
+    target.pbLowerStatStage(@statDown[0], @statDown[1], user)
   end
 end
 
@@ -136,7 +135,7 @@ class Battle::Move::BadPoisonTarget < Battle::Move::PoisonTarget
   end
 
   def pbOverrideSuccessCheckPerHit(user, target)
-    return (Settings::MORE_TYPE_EFFECTS && statusMove? && user.pbHasType?(:POISON))
+    return Settings::MORE_TYPE_EFFECTS && statusMove? && user.pbHasType?(:POISON)
   end
 end
 
@@ -204,9 +203,7 @@ class Battle::Move::ParalyzeFlinchTarget < Battle::Move
     return if target.damageState.substitute
     chance = pbAdditionalEffectChance(user, target, 10)
     return if chance == 0
-    if target.pbCanParalyze?(user, false, self) && @battle.pbRandom(100) < chance
-      target.pbParalyze(user)
-    end
+    target.pbParalyze(user) if target.pbCanParalyze?(user, false, self) && @battle.pbRandom(100) < chance
     target.pbFlinch(user) if @battle.pbRandom(100) < chance
   end
 end
@@ -253,9 +250,7 @@ class Battle::Move::BurnFlinchTarget < Battle::Move
     return if target.damageState.substitute
     chance = pbAdditionalEffectChance(user, target, 10)
     return if chance == 0
-    if target.pbCanBurn?(user, false, self) && @battle.pbRandom(100) < chance
-      target.pbBurn(user)
-    end
+    target.pbBurn(user) if target.pbCanBurn?(user, false, self) && @battle.pbRandom(100) < chance
     target.pbFlinch(user) if @battle.pbRandom(100) < chance
   end
 end
@@ -312,9 +307,7 @@ class Battle::Move::FreezeFlinchTarget < Battle::Move
     return if target.damageState.substitute
     chance = pbAdditionalEffectChance(user, target, 10)
     return if chance == 0
-    if target.pbCanFreeze?(user, false, self) && @battle.pbRandom(100) < chance
-      target.pbFreeze
-    end
+    target.pbFreeze if target.pbCanFreeze?(user, false, self) && @battle.pbRandom(100) < chance
     target.pbFlinch(user) if @battle.pbRandom(100) < chance
   end
 end
@@ -372,10 +365,9 @@ class Battle::Move::GiveUserStatusToTarget < Battle::Move
       target.pbFreeze
       msg = _INTL("{1} was thawed out.", user.pbThis)
     end
-    if msg != ""
-      user.pbCureStatus(false)
-      @battle.pbDisplay(msg)
-    end
+    return unless msg != ""
+    user.pbCureStatus(false)
+    @battle.pbDisplay(msg)
   end
 end
 
@@ -423,9 +415,7 @@ class Battle::Move::CureUserPartyStatus < Battle::Move
 
   def pbMoveFailed?(user, targets)
     has_effect = @battle.allSameSideBattlers(user).any? { |b| b.status != :NONE }
-    if !has_effect
-      has_effect = @battle.pbParty(user.index).any? { |pkmn| pkmn&.able? && pkmn.status != :NONE }
-    end
+    has_effect = @battle.pbParty(user.index).any? { |pkmn| pkmn&.able? && pkmn.status != :NONE } if !has_effect
     if !has_effect
       @battle.pbDisplay(_INTL("But it failed!"))
       return true
@@ -662,7 +652,7 @@ class Battle::Move::SetUserTypesBasedOnEnvironment < Battle::Move
     :Grassy   => :GRASS,
     :Misty    => :FAIRY,
     :Psychic  => :PSYCHIC
-  }
+  }.freeze
   ENVIRONMENT_TYPES = {
     :None        => :NORMAL,
     :Grass       => :GRASS,
@@ -683,7 +673,7 @@ class Battle::Move::SetUserTypesBasedOnEnvironment < Battle::Move
     :Sky         => :FLYING,
     :Space       => :DRAGON,
     :UltraSpace  => :PSYCHIC
-  }
+  }.freeze
 
   def canSnatch?; return true; end
 
@@ -926,10 +916,9 @@ class Battle::Move::UserLosesFireType < Battle::Move
   end
 
   def pbEffectAfterAllHits(user, target)
-    if !user.effects[PBEffects::BurnUp]
-      user.effects[PBEffects::BurnUp] = true
-      @battle.pbDisplay(_INTL("{1} burned itself out!", user.pbThis))
-    end
+    return if user.effects[PBEffects::BurnUp]
+    user.effects[PBEffects::BurnUp] = true
+    @battle.pbDisplay(_INTL("{1} burned itself out!", user.pbThis))
   end
 end
 
@@ -1325,9 +1314,7 @@ class Battle::Move::StartGravity < Battle::Move
         b.effects[PBEffects::SkyDrop]     = -1
         showMessage = true
       end
-      if showMessage
-        @battle.pbDisplay(_INTL("{1} couldn't stay airborne because of gravity!", b.pbThis))
-      end
+      @battle.pbDisplay(_INTL("{1} couldn't stay airborne because of gravity!", b.pbThis)) if showMessage
     end
   end
 end

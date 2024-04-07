@@ -6,9 +6,9 @@ class Pokemon
     validate value => Integer
     if value < 1 || value > GameData::GrowthRate.max_level
       max_lvl = GameData::GrowthRate.max_level
-      limit = (value < 1)? ["below the minimum  of level 1", "1"] : ["above the maximum of level #{max_lvl}", max_lvl.to_s]
+      limit = (value < 1) ? ["below the minimum  of level 1", "1"] : ["above the maximum of level #{max_lvl}", max_lvl.to_s]
       echoln _INTL("Level {1} for {2} is not a valid level as it goes {3}. The level has been reset to {4}",
-                    value, self, limit[0], limit[1])
+                   value, self, limit[0], limit[1])
       value.clamp(1, GameData::GrowthRate.max_level)
     end
     @exp = growth_rate.minimum_exp_for_level(value)
@@ -38,7 +38,6 @@ end
 # Soft Level Cap related Additions
 #-------------------------------------------------------------------------------
 class Battle
-
   def pbGainExpOne(idxParty, defeatedBattler, numPartic, expShare, expAll, showMessages = true)
     pkmn = pbParty(0)[idxParty]   # The Pokémon gaining Exp from defeatedBattler
     growth_rate = pkmn.growth_rate
@@ -85,8 +84,8 @@ class Battle
       exp /= 7
     end
     # Foreign Pokémon gain more Exp
-    isOutsider = (pkmn.owner.id != pbPlayer.id ||
-                 (pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language))
+    isOutsider = pkmn.owner.id != pbPlayer.id ||
+                 (pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language)
     if isOutsider
       if pkmn.owner.language != 0 && pkmn.owner.language != pbPlayer.language
         exp = (exp * 1.7).floor
@@ -98,9 +97,7 @@ class Battle
     exp = exp * 3 / 2 if $bag.has?(:EXPCHARM)
     # Modify Exp gain based on pkmn's held item
     i = Battle::ItemEffects.triggerExpGainModifier(pkmn.item, pkmn, exp)
-    if i < 0
-      i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp)
-    end
+    i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp) if i < 0
     exp = i if i >= 0
     # Boost Exp gained with high affection
     if Settings::AFFECTION_EFFECTS && @internalBattle && pkmn.affection_level >= 4 && !pkmn.mega?
@@ -184,7 +181,6 @@ end
 # Obedience Related Level Cap Additions
 #-------------------------------------------------------------------------------
 class Battle::Battler
-
   alias __level_cap__pbObedienceCheck? pbObedienceCheck? unless method_defined?(:__level_cap__pbObedienceCheck?)
   def pbObedienceCheck?(*args)
     ret = __level_cap__pbObedienceCheck?(*args)

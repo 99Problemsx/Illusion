@@ -6,7 +6,7 @@
 # You should change it to your file's url once you upload it.
 #===============================================================================
 module MysteryGift
-  URL = "https://pastebin.com/raw/w6BqqUsm"
+  URL = "https://pastebin.com/raw/w6BqqUsm".freeze
 end
 
 #===============================================================================
@@ -60,7 +60,7 @@ def pbEditMysteryGift(type, item, id = 0, giftname = "")
       master = []
       idlist = []
       if FileTest.exist?("MysteryGiftMaster.txt")
-        master = IO.read("MysteryGiftMaster.txt")
+        master = File.read("MysteryGiftMaster.txt")
         master = pbMysteryGiftDecrypt(master)
       end
       master.each do |i|
@@ -91,7 +91,7 @@ def pbEditMysteryGift(type, item, id = 0, giftname = "")
       return nil if pbConfirmMessage(_INTL("Stop editing this gift?"))
     end
     return [id, type, item, giftname]
-  rescue
+  rescue StandardError
     pbMessage(_INTL("Couldn't edit the gift."))
     return nil
   end
@@ -102,16 +102,16 @@ def pbCreateMysteryGift(type, item)
   if gift
     begin
       if FileTest.exist?("MysteryGiftMaster.txt")
-        master = IO.read("MysteryGiftMaster.txt")
+        master = File.read("MysteryGiftMaster.txt")
         master = pbMysteryGiftDecrypt(master)
         master.push(gift)
       else
         master = [gift]
       end
       string = pbMysteryGiftEncrypt(master)
-      File.open("MysteryGiftMaster.txt", "wb") { |f| f.write(string) }
+      File.binwrite("MysteryGiftMaster.txt", string)
       pbMessage(_INTL("The gift was saved to MysteryGiftMaster.txt."))
-    rescue
+    rescue StandardError
       pbMessage(_INTL("Couldn't save the gift to MysteryGiftMaster.txt."))
     end
   else
@@ -129,7 +129,7 @@ def pbManageMysteryGifts
     return
   end
   # Load all gifts from the Master file.
-  master = IO.read("MysteryGiftMaster.txt")
+  master = File.read("MysteryGiftMaster.txt")
   master = pbMysteryGiftDecrypt(master)
   if !master || !master.is_a?(Array) || master.length == 0
     pbMessage(_INTL("There are no Mystery Gifts defined."))
@@ -165,10 +165,10 @@ def pbManageMysteryGifts
           newfile.push(gift) if online.include?(gift[0])
         end
         string = pbMysteryGiftEncrypt(newfile)
-        File.open("MysteryGift.txt", "wb") { |f| f.write(string) }
+        File.binwrite("MysteryGift.txt", string)
         pbMessage(_INTL("The gifts were saved to MysteryGift.txt."))
         pbMessage(_INTL("Upload MysteryGift.txt to the Internet."))
-      rescue
+      rescue StandardError
         pbMessage(_INTL("Couldn't save the gifts to MysteryGift.txt."))
       end
     elsif command >= 0 && command < commands.length - 2   # A gift
@@ -241,7 +241,7 @@ end
 def pbDownloadMysteryGift(trainer)
   sprites = {}
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
+  viewport.z = 99_999
   addBackgroundPlane(sprites, "background", "mysterygift_bg", viewport)
   pbFadeInAndShow(sprites)
   sprites["msgwindow"] = pbCreateMessageWindow
@@ -270,48 +270,47 @@ def pbDownloadMysteryGift(trainer)
         commands.push(_INTL("Cancel"))
         pbMessageDisplay(sprites["msgwindow"], _INTL("Choose the gift you want to receive.") + "\\wtnp[0]")
         command = pbShowCommands(sprites["msgwindow"], commands, -1)
-        if command == -1 || command == commands.length - 1
-          break
+        break if command == -1 || command == commands.length - 1
+
+        gift = pending[command]
+        sprites["msgwindow"].visible = false
+        if gift[1] == 0
+          sprite = PokemonSprite.new(viewport)
+          sprite.setOffset(PictureOrigin::CENTER)
+          sprite.setPokemonBitmap(gift[2])
+          sprite.x = Graphics.width / 2
+          sprite.y = -sprite.bitmap.height / 2
         else
-          gift = pending[command]
-          sprites["msgwindow"].visible = false
-          if gift[1] == 0
-            sprite = PokemonSprite.new(viewport)
-            sprite.setOffset(PictureOrigin::CENTER)
-            sprite.setPokemonBitmap(gift[2])
-            sprite.x = Graphics.width / 2
-            sprite.y = -sprite.bitmap.height / 2
-          else
-            sprite = ItemIconSprite.new(0, 0, gift[2], viewport)
-            sprite.x = Graphics.width / 2
-            sprite.y = -sprite.height / 2
-          end
-          timer_start = System.uptime
-          start_y = sprite.y
-          loop do
-            sprite.y = lerp(start_y, Graphics.height / 2, 1.5, timer_start, System.uptime)
-            Graphics.update
-            Input.update
-            sprite.update
-            break if sprite.y >= Graphics.height / 2
-          end
-          pbMEPlay("Battle capture success")
-          pbWait(3.0) { sprite.update }
-          sprites["msgwindow"].visible = true
-          pbMessageDisplay(sprites["msgwindow"], _INTL("The gift has been received!") + "\1") { sprite.update }
-          pbMessageDisplay(sprites["msgwindow"], _INTL("Please pick up your gift from the deliveryman in any Poké Mart.")) { sprite.update }
-          trainer.mystery_gifts.push(gift)
-          pending.delete_at(command)
-          timer_start = System.uptime
-          loop do
-            sprite.opacity = lerp(255, 0, 1.5, timer_start, System.uptime)
-            Graphics.update
-            Input.update
-            sprite.update
-            break if sprite.opacity <= 0
-          end
-          sprite.dispose
+          sprite = ItemIconSprite.new(0, 0, gift[2], viewport)
+          sprite.x = Graphics.width / 2
+          sprite.y = -sprite.height / 2
         end
+        timer_start = System.uptime
+        start_y = sprite.y
+        loop do
+          sprite.y = lerp(start_y, Graphics.height / 2, 1.5, timer_start, System.uptime)
+          Graphics.update
+          Input.update
+          sprite.update
+          break if sprite.y >= Graphics.height / 2
+        end
+        pbMEPlay("Battle capture success")
+        pbWait(3.0) { sprite.update }
+        sprites["msgwindow"].visible = true
+        pbMessageDisplay(sprites["msgwindow"], _INTL("The gift has been received!") + "\1") { sprite.update }
+        pbMessageDisplay(sprites["msgwindow"], _INTL("Please pick up your gift from the deliveryman in any Poké Mart.")) { sprite.update }
+        trainer.mystery_gifts.push(gift)
+        pending.delete_at(command)
+        timer_start = System.uptime
+        loop do
+          sprite.opacity = lerp(255, 0, 1.5, timer_start, System.uptime)
+          Graphics.update
+          Input.update
+          sprite.update
+          break if sprite.opacity <= 0
+        end
+        sprite.dispose
+
         if pending.length == 0
           pbMessageDisplay(sprites["msgwindow"], _INTL("No new gifts are available."))
           break
@@ -335,7 +334,7 @@ end
 
 def pbMysteryGiftDecrypt(gift)
   return [] if nil_or_empty?(gift)
-  ret = Marshal.restore(Zlib::Inflate.inflate(gift.unpack("m")[0]))
+  ret = Marshal.restore(Zlib::Inflate.inflate(gift.unpack1("m")))
   if ret
     ret.each do |gft|
       if gft[1] == 0   # Pokémon

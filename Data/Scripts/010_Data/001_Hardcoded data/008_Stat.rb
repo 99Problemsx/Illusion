@@ -11,7 +11,7 @@ module GameData
     attr_reader :type
     attr_reader :pbs_order
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

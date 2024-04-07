@@ -113,13 +113,11 @@ class Battle::Battler
     # Pokémon may be disobedient; calculate if it is
     badge_level = 10 * (@battle.pbPlayer.badge_count + 1)
     badge_level = GameData::GrowthRate.max_level if @battle.pbPlayer.badge_count >= 8
-    if Settings::ANY_HIGH_LEVEL_POKEMON_CAN_DISOBEY ||
-       (Settings::FOREIGN_HIGH_LEVEL_POKEMON_CAN_DISOBEY && @pokemon.foreign?(@battle.pbPlayer))
-      if @level > badge_level
-        a = ((@level + badge_level) * @battle.pbRandom(256) / 256).floor
-        disobedient |= (a >= badge_level)
+    if (Settings::ANY_HIGH_LEVEL_POKEMON_CAN_DISOBEY ||
+       (Settings::FOREIGN_HIGH_LEVEL_POKEMON_CAN_DISOBEY && @pokemon.foreign?(@battle.pbPlayer))) && (@level > badge_level)
+      a = ((@level + badge_level) * @battle.pbRandom(256) / 256).floor
+      disobedient |= (a >= badge_level)
       end
-    end
     disobedient |= !pbHyperModeObedience(choice[2])
     return true if !disobedient
     # Pokémon is disobedient; make it do something else
@@ -250,9 +248,7 @@ class Battle::Battler
     if @effects[PBEffects::Flinch]
       @battle.pbDisplay(_INTL("{1} flinched and couldn't move!", pbThis))
       PBDebug.log("[Move failed] #{pbThis} flinched")
-      if abilityActive?
-        Battle::AbilityEffects.triggerOnFlinch(self.ability, self, @battle)
-      end
+      Battle::AbilityEffects.triggerOnFlinch(self.ability, self, @battle) if abilityActive?
       @lastMoveFailed = true
       return false
     end

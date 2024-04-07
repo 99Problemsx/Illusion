@@ -149,9 +149,8 @@ class HeldItemIconSprite < Sprite
   def update
     super
     self.item = @pokemon.item_id
-    if @animbitmap
-      @animbitmap.update
-      self.bitmap = @animbitmap.bitmap
-    end
+    return unless @animbitmap
+    @animbitmap.update
+    self.bitmap = @animbitmap.bitmap
   end
 end

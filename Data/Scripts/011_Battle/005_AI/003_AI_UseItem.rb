@@ -17,22 +17,22 @@ class Battle::AI
     :SITRUSBERRY  => 1,   # Actual amount is determined below (pkmn.totalhp / 4)
     :ENERGYPOWDER => (Settings::REBALANCED_HEALING_ITEM_AMOUNTS) ? 60 : 50,
     :ENERGYROOT   => (Settings::REBALANCED_HEALING_ITEM_AMOUNTS) ? 120 : 200
-  }
+  }.freeze
   HP_HEAL_ITEMS[:RAGECANDYBAR] = 20 if !Settings::RAGE_CANDY_BAR_CURES_STATUS_PROBLEMS
   FULL_RESTORE_ITEMS = [
     :FULLRESTORE
-  ]
+  ].freeze
   ONE_STATUS_CURE_ITEMS = [   # Preferred over items that heal all status problems
     :AWAKENING, :CHESTOBERRY, :BLUEFLUTE,
     :ANTIDOTE, :PECHABERRY,
     :BURNHEAL, :RAWSTBERRY,
     :PARALYZEHEAL, :PARLYZHEAL, :CHERIBERRY,
     :ICEHEAL, :ASPEARBERRY
-  ]
+  ].freeze
   ALL_STATUS_CURE_ITEMS = [
     :FULLHEAL, :LAVACOOKIE, :OLDGATEAU, :CASTELIACONE, :LUMIOSEGALETTE,
     :SHALOURSABLE, :BIGMALASADA, :PEWTERCRUNCHIES, :LUMBERRY, :HEALPOWDER
-  ]
+  ].freeze
   ALL_STATUS_CURE_ITEMS.push(:RAGECANDYBAR) if Settings::RAGE_CANDY_BAR_CURES_STATUS_PROBLEMS
   ONE_STAT_RAISE_ITEMS = {
     :XATTACK    => [:ATTACK, (Settings::X_STAT_ITEMS_RAISE_BY_TWO_STAGES) ? 2 : 1],
@@ -67,24 +67,22 @@ class Battle::AI
     :XACCURACY2 => [:ACCURACY, 2],
     :XACCURACY3 => [:ACCURACY, 3],
     :XACCURACY6 => [:ACCURACY, 6]
-  }
+  }.freeze
   ALL_STATS_RAISE_ITEMS = [
     :MAXMUSHROOMS
-  ]
+  ].freeze
   REVIVE_ITEMS = {
     :REVIVE      => 5,
     :MAXREVIVE   => 7,
     :REVIVALHERB => 7,
     :MAXHONEY    => 7
-  }
+  }.freeze
 
   #-----------------------------------------------------------------------------
 
   # Decide whether the opponent should use an item on the Pokémon.
+  # Party index (battle_use type 1/2/3) or battler index
   def pbChooseToUseItem
-    item = nil
-    idxTarget = nil   # Party index (battle_use type 1/2/3) or battler index
-    idxMove = nil
     item, idxTarget, idxMove = choose_item_to_use
     return false if !item
     # Register use of item
@@ -181,7 +179,7 @@ class Battle::AI
         ret[:hp_heal].push([item, party_index, 5, heal_amount])
       end
     elsif FULL_RESTORE_ITEMS.include?(item)
-      prefer_full_restore = (pkmn.hp <= pkmn.totalhp * 2 / 3 && want_to_cure_status)
+      prefer_full_restore = pkmn.hp <= pkmn.totalhp * 2 / 3 && want_to_cure_status
       if pkmn.hp < pkmn.totalhp
         ret[:hp_heal] ||= []
         ret[:hp_heal].push([item, party_index, (prefer_full_restore) ? 3 : 7, 999])

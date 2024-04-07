@@ -29,10 +29,9 @@ def pbDrawGauge(bitmap, rect, color, value, maxValue)
   return if !bitmap
   bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, Color.black)
   width = (maxValue <= 0) ? 0 : (rect.width - 4) * value / maxValue
-  if rect.width >= 4 && rect.height >= 4
-    bitmap.fill_rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4, Color.new(248, 248, 248))
-    bitmap.fill_rect(rect.x + 2, rect.y + 2, width, rect.height - 4, color)
-  end
+  return unless rect.width >= 4 && rect.height >= 4
+  bitmap.fill_rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4, Color.new(248, 248, 248))
+  bitmap.fill_rect(rect.x + 2, rect.y + 2, width, rect.height - 4, color)
 end
 
 # angle is in degrees.
@@ -120,21 +119,19 @@ class PurifyChamberSet
   def insertAfter(index, value)
     return if self.length >= PurifyChamber::SETSIZE
     return if index < 0 || index >= PurifyChamber::SETSIZE
-    unless value&.shadowPokemon?
-      @list.insert(index + 1, value)
-      @list.compact!
-      @facing += 1 if @facing > index && value
-      @facing = [[@facing, @list.length - 1].min, 0].max
-    end
+    return if value&.shadowPokemon?
+    @list.insert(index + 1, value)
+    @list.compact!
+    @facing += 1 if @facing > index && value
+    @facing = [[@facing, @list.length - 1].min, 0].max
   end
 
   def insertAt(index, value)
     return if index < 0 || index >= PurifyChamber::SETSIZE
-    unless value&.shadowPokemon?
-      @list[index] = value
-      @list.compact!
-      @facing = [[@facing, @list.length - 1].min, 0].max
-    end
+    return if value&.shadowPokemon?
+    @list[index] = value
+    @list.compact!
+    @facing = [[@facing, @list.length - 1].min, 0].max
   end
 
   # Purify Chamber treats Normal/Normal matchup as super effective
@@ -292,11 +289,11 @@ module PurifyChamberHelper
       return chamber.getShadow(set)
     elsif position > 0
       position -= 1
-      if position.even?
-        return chamber[set, position / 2]
-      else # In between two indices
-        return nil
-      end
+      return chamber[set, position / 2] if position.even?
+
+      # In between two indices
+      return nil
+
     end
     return nil
   end
@@ -306,11 +303,11 @@ module PurifyChamberHelper
       return chamber.getShadow(chamber.currentSet)
     elsif position > 0
       position -= 1
-      if position.even?
-        return chamber[chamber.currentSet, position / 2]
-      else # In between two indices
-        return nil
-      end
+      return chamber[chamber.currentSet, position / 2] if position.even?
+
+      # In between two indices
+      return nil
+
     end
     return nil
   end
@@ -319,11 +316,10 @@ module PurifyChamberHelper
     if position > 0
       position -= 1
       oldpos = position / 2
-      if position.even?
-        return position + 1
-      else
-        return ((oldpos + 1) * 2) + 1
-      end
+      return position + 1 if position.even?
+
+      return ((oldpos + 1) * 2) + 1
+
     end
     return position
   end
@@ -349,13 +345,13 @@ class PurifyChamberScreen
   def initialize(scene)
     @scene = scene
     @chamber = $PokemonGlobal.purifyChamber
-#    for j in 0...PurifyChamber::NUMSETS
-#      @chamber.debugAddShadow(j,rand(100)+1)
-#      @chamber[j].shadow.heart_gauge = 0
-#      for i in 0...PurifyChamber::SETSIZE
-#        @chamber.debugAddNormal(j,rand(100)+1)
-#      end
-#    end
+    #    for j in 0...PurifyChamber::NUMSETS
+    #      @chamber.debugAddShadow(j,rand(100)+1)
+    #      @chamber[j].shadow.heart_gauge = 0
+    #      for i in 0...PurifyChamber::SETSIZE
+    #        @chamber.debugAddNormal(j,rand(100)+1)
+    #      end
+    #    end
   end
 
   def pbPlace(pkmn, position)
@@ -409,13 +405,12 @@ class PurifyChamberScreen
 
   def pbOnPlace(pkmn)
     set = @chamber.currentSet
-    if @chamber.setCount(set) == 0 && @chamber.isPurifiableIgnoreRegular?(set)
-      pkmn = @chamber.getShadow(set)
-      @scene.pbDisplay(
-        _INTL("This {1} is ready to open its heart. However, there must be at least one regular Pokémon in the set to perform a purification ceremony.",
-              pkmn.name)
-      )
-    end
+    return unless @chamber.setCount(set) == 0 && @chamber.isPurifiableIgnoreRegular?(set)
+    pkmn = @chamber.getShadow(set)
+    @scene.pbDisplay(
+      _INTL("This {1} is ready to open its heart. However, there must be at least one regular Pokémon in the set to perform a purification ceremony.",
+            pkmn.name)
+    )
   end
 
   def pbOpenSetDetail
@@ -444,9 +439,7 @@ class PurifyChamberScreen
              @chamber[@chamber.currentSet].length > 0
             commands[cmdRotate = commands.length] = _INTL("ROTATE")
           end
-          if !heldpkmn && curpkmn
-            commands[cmdReplace = commands.length] = _INTL("REPLACE")
-          end
+          commands[cmdReplace = commands.length] = _INTL("REPLACE") if !heldpkmn && curpkmn
           commands.push(_INTL("CANCEL"))
           choice = @scene.pbShowCommands(
             _INTL("What shall I do with this {1}?", heldpkmn ? heldpkmn.name : curpkmn.name),
@@ -560,9 +553,7 @@ class PurifyChamberScreen
   def pbCheckPurify
     purifiables = []
     PurifyChamber::NUMSETS.times do |set|
-      if @chamber.isPurifiable?(set) # if ready for purification
-        purifiables.push(set)
-      end
+      purifiables.push(set) if @chamber.isPurifiable?(set) # if ready for purification
     end
     return purifiables.length > 0
   end
@@ -570,9 +561,7 @@ class PurifyChamberScreen
   def pbDoPurify
     purifiables = []
     PurifyChamber::NUMSETS.times do |set|
-      if @chamber.isPurifiable?(set) # if ready for purification
-        purifiables.push(set)
-      end
+      purifiables.push(set) if @chamber.isPurifiable?(set) # if ready for purification
     end
     purifiables.length.times do |i|
       set = purifiables[i]
@@ -789,19 +778,15 @@ class FlowDiagram
   def setRange(angle1, angle2)
     @startAngle = angle1 - ((angle1 / 360).floor * 360)
     @endAngle = angle2 - ((angle2 / 360).floor * 360)
-    if @startAngle == @endAngle && angle1 != angle2
-      @startAngle = 0
-      @endAngle = 359.99
-    end
+    return unless @startAngle == @endAngle && angle1 != angle2
+    @startAngle = 0
+    @endAngle = 359.99
   end
 
   def withinRange(angle, startAngle, endAngle)
-    if startAngle > endAngle
-      return (angle >= startAngle || angle <= endAngle) &&
-             (angle >= 0 && angle <= 360)
-    else
-      return (angle >= startAngle && angle <= endAngle)
-    end
+    return angle >= startAngle && angle <= endAngle unless startAngle > endAngle
+    return (angle >= startAngle || angle <= endAngle) &&
+           (angle >= 0 && angle <= 360)
   end
 
   def update
@@ -922,11 +907,10 @@ class PurifyChamberSetView < Sprite
   end
 
   def checkCursor(index)
-    if @cursor == index
-      @view.x = @__sprites[index].x - (@view.bitmap.width / 2)
-      @view.y = @__sprites[index].y - (@view.bitmap.height / 2)
-      @view.visible = true
-    end
+    return unless @cursor == index
+    @view.x = @__sprites[index].x - (@view.bitmap.width / 2)
+    @view.y = @__sprites[index].y - (@view.bitmap.height / 2)
+    @view.visible = true
   end
 
   def refresh
@@ -1075,10 +1059,9 @@ class PurifyChamberScene
   end
 
   def pbRefresh
-    if @sprites["setview"]
-      @sprites["setview"].refresh
-      @sprites["setwindow"].refresh
-    end
+    return unless @sprites["setview"]
+    @sprites["setview"].refresh
+    @sprites["setwindow"].refresh
   end
 
   def pbStart(chamber)
@@ -1090,9 +1073,9 @@ class PurifyChamberScene
   def pbOpenSet(set)
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @viewportmsg = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewportmsg.z = 99999
+    @viewportmsg.z = 99_999
     addBackgroundOrColoredPlane(@sprites, "bg", "purifychamber_bg",
                                 Color.new(64, 48, 96), @viewport)
     @sprites["setwindow"] = Window_PurifyChamberSets.new(

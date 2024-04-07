@@ -54,7 +54,7 @@ class Game_Temp
   attr_accessor :status_pulse
 
   def status_pulse
-    @status_pulse = [50.0, 50.0, 150.0, (100/(Graphics.frame_rate * 2.0))] if !@status_pulse
+    @status_pulse = [50.0, 50.0, 150.0, (100 / (Graphics.frame_rate * 2.0))] if !@status_pulse
     return @status_pulse
   end
 
@@ -73,8 +73,16 @@ class Game_Character
     ret = __followingpkmn__passable?(x, y, d, strict)
     return ret if !FollowingPkmn.active? || !FollowingPkmn::IMPASSABLE_FOLLOWER
     if ret && self != $game_player && !self.is_a?(Game_FollowingPkmn)
-      new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
-      new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+      new_x = x + (if d == 6
+                     1
+                   else
+                     d == 4 ? -1 : 0
+end)
+      new_y = y + (if d == 2
+                     1
+                   else
+                     d == 8 ? -1 : 0
+end)
       $game_temp.followers.each_follower do |e, _|
         return false if e.at_coordinate?(new_x, new_y) && !e.through
       end
@@ -103,6 +111,7 @@ module Followers
     alias __followingpkmn__remove_event remove_event unless method_defined?(:__followingpkmn__remove_event)
     alias __followingpkmn__clear clear unless method_defined?(:__followingpkmn__clear)
   end
+
   module_function
 
   def remove(*args)
@@ -131,14 +140,18 @@ end
 #-------------------------------------------------------------------------------
 class Game_Player
   # The player can travel anywhere with their Following Pokemon
-  alias __followingpkmn__can_map_transfer_with_follower? can_map_transfer_with_follower? unless method_defined?(:__followingpkmn__can_map_transfer_with_follower?)
+  unless method_defined?(:__followingpkmn__can_map_transfer_with_follower?)
+    alias __followingpkmn__can_map_transfer_with_follower? can_map_transfer_with_follower?
+  end
   def can_map_transfer_with_follower?(*args)
     return true if FollowingPkmn.get && $PokemonGlobal.followers.length == 1
     return __followingpkmn__can_map_transfer_with_follower?(*args)
   end
 
   # The player can ride (almost) any vehicle with their Following Pokemon
-  alias __followingpkmn__can_ride_vehicle_with_follower? can_ride_vehicle_with_follower? unless method_defined?(:__followingpkmn__can_ride_vehicle_with_follower?)
+  unless method_defined?(:__followingpkmn__can_ride_vehicle_with_follower?)
+    alias __followingpkmn__can_ride_vehicle_with_follower? can_ride_vehicle_with_follower?
+  end
   def can_ride_vehicle_with_follower?(*args)
     return true if FollowingPkmn.get && $PokemonGlobal.followers.length == 1
     return __followingpkmn__can_ride_vehicle_with_follower?(*args)

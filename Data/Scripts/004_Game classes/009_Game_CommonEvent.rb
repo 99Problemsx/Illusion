@@ -30,11 +30,9 @@ class Game_CommonEvent
   def switchIsOn?(id)
     switchName = $data_system.switches[id]
     return false if !switchName
-    if switchName[/^s\:/]
-      return eval($~.post_match)
-    else
-      return $game_switches[id]
-    end
+    return eval($~.post_match) if switchName[/^s:/]
+
+    return $game_switches[id]
   end
 
   def refresh

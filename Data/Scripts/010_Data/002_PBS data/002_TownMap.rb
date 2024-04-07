@@ -7,9 +7,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "town_map.dat"
-    PBS_BASE_FILENAME = "town_map"
+    DATA = {}.freeze
+    DATA_FILENAME = "town_map.dat".freeze
+    PBS_BASE_FILENAME = "town_map".freeze
 
     SCHEMA = {
       "SectionName" => [:id,        "u"],
@@ -17,14 +17,14 @@ module GameData
       "Filename"    => [:filename,  "s"],
       "Point"       => [:point,     "^uusSUUUU"],
       "Flags"       => [:flags,     "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsIDNumbers
     include InstanceMethods
 
     def initialize(hash)
       @id              = hash[:id]
-      @real_name       = hash[:real_name]       || "???"
+      @real_name       = hash[:real_name] || "???"
       @filename        = hash[:filename]
       @point           = hash[:point]           || []
       @flags           = hash[:flags]           || []

@@ -12,9 +12,7 @@ module Deprecation
     unless removal_version.nil?
       text += "\n" + _INTL("The method is slated to be removed in Essentials {1}.", removal_version)
     end
-    unless alternative.nil?
-      text += "\n" + _INTL("Use \"{1}\" instead.", alternative)
-    end
+    text += "\n" + _INTL("Use \"{1}\" instead.", alternative) unless alternative.nil?
     Console.echo_warn text
   end
 end

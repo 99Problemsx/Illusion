@@ -50,9 +50,7 @@ class Battle
     return if !item
     return if !GameData::Item.get(item).consumed_after_use?
     if pbOwnedByPlayer?(idxBattler)
-      if !$bag.remove(item)
-        raise _INTL("Tried to consume item that wasn't in the Bag somehow.")
-      end
+      raise _INTL("Tried to consume item that wasn't in the Bag somehow.") if !$bag.remove(item)
     else
       items = pbGetOwnerItems(idxBattler)
       items.delete_at(items.index(item)) if items
@@ -63,11 +61,9 @@ class Battle
     return if !item
     return if !GameData::Item.get(item).consumed_after_use?
     if pbOwnedByPlayer?(idxBattler)
-      if $bag&.can_add?(item)
-        $bag.add(item)
-      else
-        raise _INTL("Couldn't return unused item to Bag somehow.")
-      end
+      raise _INTL("Couldn't return unused item to Bag somehow.") unless $bag&.can_add?(item)
+      $bag.add(item)
+
     else
       items = pbGetOwnerItems(idxBattler)
       items&.push(item)

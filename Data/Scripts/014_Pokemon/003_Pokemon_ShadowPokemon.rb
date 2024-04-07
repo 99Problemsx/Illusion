@@ -47,21 +47,21 @@ class Pokemon
     return if !shadowPokemon?
     heart_amounts = {
       # [sending into battle, call to, walking 256 steps, using scent]
-      :HARDY   => [110, 300, 100,  90],
+      :HARDY   => [110, 300, 100, 90],
       :LONELY  => [ 70, 330, 100, 130],
-      :BRAVE   => [130, 270,  90,  80],
+      :BRAVE   => [130, 270, 90,  80],
       :ADAMANT => [110, 270, 110,  80],
       :NAUGHTY => [120, 270, 110,  70],
       :BOLD    => [110, 270,  90, 100],
       :DOCILE  => [100, 360,  80, 120],
       :RELAXED => [ 90, 270, 110, 100],
-      :IMPISH  => [120, 300, 100,  80],
-      :LAX     => [100, 270,  90, 110],
+      :IMPISH  => [120, 300, 100, 80],
+      :LAX     => [100, 270, 90, 110],
       :TIMID   => [ 70, 330, 110, 120],
-      :HASTY   => [130, 300,  70, 100],
-      :SERIOUS => [100, 330, 110,  90],
-      :JOLLY   => [120, 300,  90,  90],
-      :NAIVE   => [100, 300, 120,  80],
+      :HASTY   => [130, 300, 70, 100],
+      :SERIOUS => [100, 330, 110, 90],
+      :JOLLY   => [120, 300, 90, 90],
+      :NAIVE   => [100, 300, 120, 80],
       :MODEST  => [ 70, 300, 120, 110],
       :MILD    => [ 80, 270, 100, 120],
       :QUIET   => [100, 300, 100, 100],
@@ -69,9 +69,9 @@ class Pokemon
       :RASH    => [ 90, 300,  90, 120],
       :CALM    => [ 80, 300, 110, 110],
       :GENTLE  => [ 70, 300, 130, 100],
-      :SASSY   => [130, 240, 100,  70],
+      :SASSY   => [130, 240, 100, 70],
       :CAREFUL => [ 90, 300, 100, 110],
-      :QUIRKY  => [130, 270,  80,  90]
+      :QUIRKY  => [130, 270, 80, 90]
     }
     amt = 100
     case method
@@ -117,7 +117,7 @@ class Pokemon
     @saved_exp    = 0
     @saved_ev     = {}
     GameData::Stat.each_main { |s| @saved_ev[s.id] = 0 }
-    @heart_gauge  = max_gauge_size
+    @heart_gauge = max_gauge_size
     @heart_gauge_step_counter = 0
     @shadow_moves = []
     # Retrieve Shadow moveset for this Pokémon
@@ -129,14 +129,11 @@ class Pokemon
         break if @shadow_moves.length >= MAX_MOVES
       end
     end
-    if @shadow_moves.empty? && GameData::Move.exists?(:SHADOWRUSH)
-      @shadow_moves.push(:SHADOWRUSH)
-    end
+    @shadow_moves.push(:SHADOWRUSH) if @shadow_moves.empty? && GameData::Move.exists?(:SHADOWRUSH)
     # Record this Pokémon's original moves
-    if !@shadow_moves.empty?
-      @moves.each_with_index { |m, i| @shadow_moves[MAX_MOVES + i] = m.id }
-      update_shadow_moves
-    end
+    return if @shadow_moves.empty?
+    @moves.each_with_index { |m, i| @shadow_moves[MAX_MOVES + i] = m.id }
+    update_shadow_moves
   end
 
   def update_shadow_moves
@@ -212,9 +209,7 @@ class Pokemon
   alias __shadow_clone clone unless method_defined?(:__shadow_clone)
   def clone
     ret = __shadow_clone
-    if @saved_ev
-      GameData::Stat.each_main { |s| ret.saved_ev[s.id] = @saved_ev[s.id] }
-    end
+    GameData::Stat.each_main { |s| ret.saved_ev[s.id] = @saved_ev[s.id] } if @saved_ev
     ret.shadow_moves = @shadow_moves.clone if @shadow_moves
     return ret
   end

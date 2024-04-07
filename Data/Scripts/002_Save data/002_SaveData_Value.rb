@@ -60,9 +60,7 @@ module SaveData
     # from the defined new game value proc.
     # @raise (see #load)
     def load_new_game_value
-      unless self.has_new_game_proc?
-        raise "Save value #{@id.inspect} has no new_game_value defined"
-      end
+      raise "Save value #{@id.inspect} has no new_game_value defined" unless self.has_new_game_proc?
       self.load(@new_game_value_proc.call)
     end
 
@@ -192,12 +190,10 @@ module SaveData
   #   end
   # @param id [Symbol] value id
   # @yield the block of code to be saved as a Value
-  def self.register(id, &block)
+  def self.register(id, ...)
     validate id => Symbol
-    unless block_given?
-      raise ArgumentError, "No block given to SaveData.register"
-    end
-    @values << Value.new(id, &block)
+    raise ArgumentError, "No block given to SaveData.register" unless block_given?
+    @values << Value.new(id, ...)
   end
 
   def self.unregister(id)

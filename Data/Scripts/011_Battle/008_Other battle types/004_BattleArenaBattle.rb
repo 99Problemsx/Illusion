@@ -78,7 +78,7 @@ class BattleArenaBattle < Battle
       @skill[side]   = 0
       @starthp[side] = battlers[side].hp
     end
-    @count           = 0
+    @count = 0
     return super
   end
 
@@ -89,7 +89,7 @@ class BattleArenaBattle < Battle
       @skill[side]   = 0
       @starthp[side] = @battlers[side].hp
     end
-    @count           = 0
+    @count = 0
     return super
   end
 
@@ -118,9 +118,7 @@ class BattleArenaBattle < Battle
     return if @decision != 0
     # Update mind rating (asserting that a move was chosen)
     2.times do |side|
-      if @choices[side][2] && @choices[side][0] == :UseMove
-        @mind[side] += pbMindScore(@choices[side][2])
-      end
+      @mind[side] += pbMindScore(@choices[side][2]) if @choices[side][2] && @choices[side][0] == :UseMove
     end
   end
 
@@ -131,7 +129,7 @@ class BattleArenaBattle < Battle
     2.times do |side|
       @skill[side] += self.successStates[side].skill
     end
-#    PBDebug.log("[Mind: #{@mind.inspect}, Skill: #{@skill.inspect}]")
+    #    PBDebug.log("[Mind: #{@mind.inspect}, Skill: #{@skill.inspect}]")
     # Increment turn counter
     @count += 1
     return if @count < 3
@@ -206,9 +204,7 @@ end
 class Battle::AI
   attr_accessor :battleArena
 
-  unless method_defined?(:_battleArena_pbChooseToSwitchOut)
-    alias _battleArena_pbChooseToSwitchOut pbChooseToSwitchOut
-  end
+  alias _battleArena_pbChooseToSwitchOut pbChooseToSwitchOut unless method_defined?(:_battleArena_pbChooseToSwitchOut)
 
   def pbChooseToSwitchOut(force_switch = false)
     return _battleArena_pbChooseToSwitchOut(force_switch) if !@battleArena
@@ -248,9 +244,17 @@ class Battle::Scene
     images = []
     phase.times do |i|
       y = [48, 80, 112][i]
-      x = (ratings1[i] == ratings2[i]) ? 64 : ((ratings1[i] > ratings2[i]) ? 0 : 32)
+      x = if ratings1[i] == ratings2[i]
+            64
+          else
+            ((ratings1[i] > ratings2[i]) ? 0 : 32)
+end
       images.push(["Graphics/UI/Battle/judgment", 64 - 16, y, x, 0, 32, 32])
-      x = (ratings1[i] == ratings2[i]) ? 64 : ((ratings1[i] < ratings2[i]) ? 0 : 32)
+      x = if ratings1[i] == ratings2[i]
+            64
+          else
+            ((ratings1[i] < ratings2[i]) ? 0 : 32)
+end
       images.push(["Graphics/UI/Battle/judgment", 224 - 16, y, x, 0, 32, 32])
     end
     pbDrawImagePositions(window.contents, images)
@@ -274,11 +278,11 @@ class Battle::Scene
         pbBattleArenaUpdate
         dimmingvp.update
       end
-      dimmingvp.z = 99999
+      dimmingvp.z = 99_999
       infowindow = SpriteWindow_Base.new(80, 0, 320, 224)
       infowindow.contents = Bitmap.new(infowindow.width - infowindow.borderX,
                                        infowindow.height - infowindow.borderY)
-      infowindow.z        = 99999
+      infowindow.z        = 99_999
       infowindow.visible  = false
       11.times do |i|
         pbGraphicsUpdate

@@ -93,29 +93,33 @@ class Battle::AI
 
   # Returns whether the target raising the given stat will have any impact.
   def stat_raise_worthwhile?(target, stat, fixed_change = false)
-    if !fixed_change
-      return false if !target.battler.pbCanRaiseStatStage?(stat, @user.battler, @move.move)
-    end
+    return false if !fixed_change && !target.battler.pbCanRaiseStatStage?(stat, @user.battler, @move.move)
     # Check if target won't benefit from the stat being raised
     return true if target.has_move_with_function?("SwitchOutUserPassOnEffects",
                                                   "PowerHigherWithUserPositiveStatStages")
     case stat
     when :ATTACK
-      return false if !target.check_for_move { |m| m.physicalMove?(m.type) &&
-                                                   m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
-                                                   m.function_code != "UseTargetAttackInsteadOfUserAttack" }
+      return false if !target.check_for_move { |m|
+                        m.physicalMove?(m.type) &&
+                        m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
+                        m.function_code != "UseTargetAttackInsteadOfUserAttack"
+                      }
     when :DEFENSE
       each_foe_battler(target.side) do |b, i|
-        return true if b.check_for_move { |m| m.physicalMove?(m.type) ||
-                                              m.function_code == "UseTargetDefenseInsteadOfTargetSpDef" }
+        return true if b.check_for_move { |m|
+                         m.physicalMove?(m.type) ||
+                         m.function_code == "UseTargetDefenseInsteadOfTargetSpDef"
+                       }
       end
       return false
     when :SPECIAL_ATTACK
       return false if !target.check_for_move { |m| m.specialMove?(m.type) }
     when :SPECIAL_DEFENSE
       each_foe_battler(target.side) do |b, i|
-        return true if b.check_for_move { |m| m.specialMove?(m.type) &&
-                                              m.function_code != "UseTargetDefenseInsteadOfTargetSpDef" }
+        return true if b.check_for_move { |m|
+                         m.specialMove?(m.type) &&
+                         m.function_code != "UseTargetDefenseInsteadOfTargetSpDef"
+                       }
       end
       return false
     when :SPEED
@@ -158,9 +162,7 @@ class Battle::AI
   def get_target_stat_raise_score_generic(score, target, stat_changes, desire_mult = 1)
     total_increment = stat_changes.sum { |change| change[1] }
     # Prefer if move is a status move and it's the user's first/second turn
-    if @user.turnCount < 2 && @move.statusMove?
-      score += total_increment * desire_mult * 5
-    end
+    score += total_increment * desire_mult * 5 if @user.turnCount < 2 && @move.statusMove?
     if @trainer.has_skill_flag?("HPAware")
       # Prefer if user is at high HP, don't prefer if user is at low HP
       if target.index != @user.index
@@ -214,9 +216,11 @@ class Battle::AI
       if old_stage >= 2 && increment == 1
         score -= 10 * ((target.opposes?(@user)) ? 1 : desire_mult)
       else
-        has_physical_moves = target.check_for_move { |m| m.physicalMove?(m.type) &&
-                                                         m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
-                                                         m.function_code != "UseTargetAttackInsteadOfUserAttack" }
+        has_physical_moves = target.check_for_move { |m|
+          m.physicalMove?(m.type) &&
+            m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
+            m.function_code != "UseTargetAttackInsteadOfUserAttack"
+        }
         inc = (has_physical_moves) ? 8 : 12
         score += inc * inc_mult
       end
@@ -246,9 +250,7 @@ class Battle::AI
         "PowerHigherWithUserFasterThanTarget",
         "PowerHigherWithUserPositiveStatStages"
       ]
-      if target.has_move_with_function?(*moves_that_prefer_high_speed)
-        score += 5 * inc_mult
-      end
+      score += 5 * inc_mult if target.has_move_with_function?(*moves_that_prefer_high_speed)
       # Don't prefer if any foe has Gyro Ball
       each_foe_battler(target.side) do |b, i|
         next if !b.has_move_with_function?("PowerHigherWithTargetFasterThanUser")
@@ -269,9 +271,7 @@ class Battle::AI
           min_accuracy = m.accuracy if m.accuracy < min_accuracy
         end
         min_accuracy = min_accuracy * stage_mul[old_stage] / stage_div[old_stage]
-        if min_accuracy < 90
-          score += 10 * inc_mult
-        end
+        score += 10 * inc_mult if min_accuracy < 90
       end
     when :EVASION
       # Prefer if a foe of the target will take damage at the end of the round
@@ -287,9 +287,7 @@ class Battle::AI
       end
     end
     # Prefer if target has Stored Power
-    if target.has_move_with_function?("PowerHigherWithUserPositiveStatStages")
-      score += 5 * increment * desire_mult
-    end
+    score += 5 * increment * desire_mult if target.has_move_with_function?("PowerHigherWithUserPositiveStatStages")
     # Don't prefer if any foe has Punishment
     each_foe_battler(target.side) do |b, i|
       next if !b.has_move_with_function?("PowerHigherWithTargetPositiveStatStages")
@@ -390,27 +388,31 @@ class Battle::AI
 
   # Returns whether the target lowering the given stat will have any impact.
   def stat_drop_worthwhile?(target, stat, fixed_change = false)
-    if !fixed_change
-      return false if !target.battler.pbCanLowerStatStage?(stat, @user.battler, @move.move)
-    end
+    return false if !fixed_change && !target.battler.pbCanLowerStatStage?(stat, @user.battler, @move.move)
     # Check if target won't benefit from the stat being lowered
     case stat
     when :ATTACK
-      return false if !target.check_for_move { |m| m.physicalMove?(m.type) &&
-                                                   m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
-                                                   m.function_code != "UseTargetAttackInsteadOfUserAttack" }
+      return false if !target.check_for_move { |m|
+                        m.physicalMove?(m.type) &&
+                        m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
+                        m.function_code != "UseTargetAttackInsteadOfUserAttack"
+                      }
     when :DEFENSE
       each_foe_battler(target.side) do |b, i|
-        return true if b.check_for_move { |m| m.physicalMove?(m.type) ||
-                                              m.function_code == "UseTargetDefenseInsteadOfTargetSpDef" }
+        return true if b.check_for_move { |m|
+                         m.physicalMove?(m.type) ||
+                         m.function_code == "UseTargetDefenseInsteadOfTargetSpDef"
+                       }
       end
       return false
     when :SPECIAL_ATTACK
       return false if !target.check_for_move { |m| m.specialMove?(m.type) }
     when :SPECIAL_DEFENSE
       each_foe_battler(target.side) do |b, i|
-        return true if b.check_for_move { |m| m.specialMove?(m.type) &&
-                                              m.function_code != "UseTargetDefenseInsteadOfTargetSpDef" }
+        return true if b.check_for_move { |m|
+                         m.specialMove?(m.type) &&
+                         m.function_code != "UseTargetDefenseInsteadOfTargetSpDef"
+                       }
       end
       return false
     when :SPEED
@@ -446,9 +448,7 @@ class Battle::AI
   def get_target_stat_drop_score_generic(score, target, stat_changes, desire_mult = 1)
     total_decrement = stat_changes.sum { |change| change[1] }
     # Prefer if move is a status move and it's the user's first/second turn
-    if @user.turnCount < 2 && @move.statusMove?
-      score += total_decrement * desire_mult * 5
-    end
+    score += total_decrement * desire_mult * 5 if @user.turnCount < 2 && @move.statusMove?
     if @trainer.has_skill_flag?("HPAware")
       # Prefer if user is at high HP, don't prefer if user is at low HP
       if target.index != @user.index
@@ -459,9 +459,7 @@ class Battle::AI
     end
     # Don't prefer if target has an ability that triggers upon stat loss
     # (Competitive, Defiant)
-    if target.opposes?(@user) && Battle::AbilityEffects::OnStatLoss[target.ability]
-      score -= 10
-    end
+    score -= 10 if target.opposes?(@user) && Battle::AbilityEffects::OnStatLoss[target.ability]
     return score
   end
 
@@ -505,9 +503,11 @@ class Battle::AI
       if old_stage <= -2 && decrement == 1
         score -= 10 * ((target.opposes?(@user)) ? 1 : desire_mult)
       else
-        has_physical_moves = target.check_for_move { |m| m.physicalMove?(m.type) &&
-                                                         m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
-                                                         m.function_code != "UseTargetAttackInsteadOfUserAttack" }
+        has_physical_moves = target.check_for_move { |m|
+          m.physicalMove?(m.type) &&
+            m.function_code != "UseUserDefenseInsteadOfUserAttack" &&
+            m.function_code != "UseTargetAttackInsteadOfUserAttack"
+        }
         dec = (has_physical_moves) ? 8 : 12
         score += dec * dec_mult
       end
@@ -531,9 +531,7 @@ class Battle::AI
           score += 8 * dec_mult
         end
         break
-      end
-      # Prefer if any ally has Electro Ball
-      each_foe_battler(target.side) do |b, i|
+        # Prefer if any ally has Electro Ball
         next if !b.has_move_with_function?("PowerHigherWithUserFasterThanTarget")
         score += 5 * dec_mult
       end
@@ -557,9 +555,7 @@ class Battle::AI
       end
     end
     # Prefer if target has Stored Power
-    if target.has_move_with_function?("PowerHigherWithUserPositiveStatStages")
-      score += 5 * decrement * desire_mult
-    end
+    score += 5 * decrement * desire_mult if target.has_move_with_function?("PowerHigherWithUserPositiveStatStages")
     # Don't prefer if any foe has Punishment
     each_foe_battler(target.side) do |b, i|
       next if !b.has_move_with_function?("PowerHigherWithTargetPositiveStatStages")
@@ -631,60 +627,59 @@ class Battle::AI
         end
       end
       # Check each battler's abilities/other moves affected by the new weather
-      if @trainer.medium_skill? && !b.has_active_item?(:UTILITYUMBRELLA)
-        beneficial_abilities = {
-          :Sun       => [:CHLOROPHYLL, :FLOWERGIFT, :FORECAST, :HARVEST, :LEAFGUARD, :SOLARPOWER],
-          :Rain      => [:DRYSKIN, :FORECAST, :HYDRATION, :RAINDISH, :SWIFTSWIM],
-          :Sandstorm => [:SANDFORCE, :SANDRUSH, :SANDVEIL],
-          :Hail      => [:FORECAST, :ICEBODY, :SLUSHRUSH, :SNOWCLOAK]
-        }[weather]
-        if beneficial_abilities && beneficial_abilities.length > 0 &&
-           b.has_active_ability?(beneficial_abilities)
-          ret += (b.opposes?(move_user)) ? -5 : 5
-        end
-        if weather == :Hail && b.ability == :ICEFACE
-          ret += (b.opposes?(move_user)) ? -5 : 5
-        end
-        negative_abilities = {
-          :Sun => [:DRYSKIN]
-        }[weather]
-        if negative_abilities && negative_abilities.length > 0 &&
-           b.has_active_ability?(negative_abilities)
-          ret += (b.opposes?(move_user)) ? 5 : -5
-        end
-        beneficial_moves = {
-          :Sun       => ["HealUserDependingOnWeather",
-                         "RaiseUserAtkSpAtk1Or2InSun",
-                         "TwoTurnAttackOneTurnInSun",
-                         "TypeAndPowerDependOnWeather"],
-          :Rain      => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
-                         "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky",
-                         "TypeAndPowerDependOnWeather"],
-          :Sandstorm => ["HealUserDependingOnSandstorm",
-                         "TypeAndPowerDependOnWeather"],
-          :Hail      => ["FreezeTargetAlwaysHitsInHail",
-                         "StartWeakenDamageAgainstUserSideIfHail",
-                         "TypeAndPowerDependOnWeather"],
-          :ShadowSky => ["TypeAndPowerDependOnWeather"]
-        }[weather]
-        if beneficial_moves && beneficial_moves.length > 0 &&
-           b.has_move_with_function?(*beneficial_moves)
-          ret += (b.opposes?(move_user)) ? -5 : 5
-        end
-        negative_moves = {
-          :Sun       => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
-                         "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky"],
-          :Rain      => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"],
-          :Sandstorm => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"],
-          :Hail      => ["HealUserDependingOnWeather",
-                         "TwoTurnAttackOneTurnInSun"]
-        }[weather]
-        if negative_moves && negative_moves.length > 0 &&
-           b.has_move_with_function?(*negative_moves)
-          ret += (b.opposes?(move_user)) ? 5 : -5
-        end
+      next unless @trainer.medium_skill? && !b.has_active_item?(:UTILITYUMBRELLA)
+      beneficial_abilities = {
+        :Sun       => [:CHLOROPHYLL, :FLOWERGIFT, :FORECAST, :HARVEST, :LEAFGUARD, :SOLARPOWER],
+        :Rain      => [:DRYSKIN, :FORECAST, :HYDRATION, :RAINDISH, :SWIFTSWIM],
+        :Sandstorm => [:SANDFORCE, :SANDRUSH, :SANDVEIL],
+        :Hail      => [:FORECAST, :ICEBODY, :SLUSHRUSH, :SNOWCLOAK]
+      }[weather]
+      if beneficial_abilities && beneficial_abilities.length > 0 &&
+         b.has_active_ability?(beneficial_abilities)
+        ret += (b.opposes?(move_user)) ? -5 : 5
+      end
+      if weather == :Hail && b.ability == :ICEFACE
+        ret += (b.opposes?(move_user)) ? -5 : 5
+      end
+      negative_abilities = {
+        :Sun => [:DRYSKIN]
+      }[weather]
+      if negative_abilities && negative_abilities.length > 0 &&
+         b.has_active_ability?(negative_abilities)
+        ret += (b.opposes?(move_user)) ? 5 : -5
+      end
+      beneficial_moves = {
+        :Sun       => ["HealUserDependingOnWeather",
+                       "RaiseUserAtkSpAtk1Or2InSun",
+                       "TwoTurnAttackOneTurnInSun",
+                       "TypeAndPowerDependOnWeather"],
+        :Rain      => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
+                       "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky",
+                       "TypeAndPowerDependOnWeather"],
+        :Sandstorm => ["HealUserDependingOnSandstorm",
+                       "TypeAndPowerDependOnWeather"],
+        :Hail      => ["FreezeTargetAlwaysHitsInHail",
+                       "StartWeakenDamageAgainstUserSideIfHail",
+                       "TypeAndPowerDependOnWeather"],
+        :ShadowSky => ["TypeAndPowerDependOnWeather"]
+      }[weather]
+      if beneficial_moves && beneficial_moves.length > 0 &&
+         b.has_move_with_function?(*beneficial_moves)
+        ret += (b.opposes?(move_user)) ? -5 : 5
+      end
+      negative_moves = {
+        :Sun       => ["ConfuseTargetAlwaysHitsInRainHitsTargetInSky",
+                       "ParalyzeTargetAlwaysHitsInRainHitsTargetInSky"],
+        :Rain      => ["HealUserDependingOnWeather",
+                       "TwoTurnAttackOneTurnInSun"],
+        :Sandstorm => ["HealUserDependingOnWeather",
+                       "TwoTurnAttackOneTurnInSun"],
+        :Hail      => ["HealUserDependingOnWeather",
+                       "TwoTurnAttackOneTurnInSun"]
+      }[weather]
+      if negative_moves && negative_moves.length > 0 &&
+         b.has_move_with_function?(*negative_moves)
+        ret += (b.opposes?(move_user)) ? 5 : -5
       end
     end
     return ret

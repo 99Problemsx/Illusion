@@ -38,15 +38,10 @@ module FileLineData
   end
 
   def self.linereport
-    if @section
-      if @key.nil?
-        return _INTL("File {1}, section {2}\n{3}", @file, @section, @value) + "\n\n"
-      else
-        return _INTL("File {1}, section {2}, key {3}\n{4}", @file, @section, @key, @value) + "\n\n"
-      end
-    else
-      return _INTL("File {1}, line {2}\n{3}", @file, @lineno, @linedata) + "\n\n"
-    end
+    return _INTL("File {1}, line {2}\n{3}", @file, @lineno, @linedata) + "\n\n" unless @section
+    return _INTL("File {1}, section {2}\n{3}", @file, @section, @value) + "\n\n" if @key.nil?
+
+    return _INTL("File {1}, section {2}, key {3}\n{4}", @file, @section, @key, @value) + "\n\n"
   end
 end
 
@@ -79,7 +74,7 @@ module Compiler
   def csvQuote(str, always = false)
     return "" if nil_or_empty?(str)
     if always || str[/[,\"]/]   # || str[/^\s/] || str[/\s$/] || str[/^#/]
-      str = str.gsub(/\"/, "\\\"")
+      str = str.gsub('\"', "\\\"")
       str = "\"#{str}\""
     end
     return str
@@ -278,10 +273,8 @@ module Compiler
           values[j + 1] = nil
         end
         # Recheck for enclosing quote marks to remove
-        if quote_count != 2
-          if value.count('"') == 2 && value.start_with?('\\"') && value.end_with?('\\"')
-            values[i] = values[i][2..-3]
-          end
+        if quote_count != 2 && (value.count('"') == 2 && value.start_with?('\\"') && value.end_with?('\\"'))
+          values[i] = values[i][2..-3]
         end
       end
       # Remove leading and trailing whitespace from value
@@ -343,25 +336,25 @@ module Compiler
   # Unused
   def csvInt!(str, _line = -1)
     ret = csvfield!(str)
-    if !ret[/^\-?\d+$/]
-      raise _INTL("Field '{1}' is not an integer.", ret) + "\n" + FileLineData.linereport
-    end
+    raise _INTL("Field '{1}' is not an integer.", ret) + "\n" + FileLineData.linereport if !ret[/^-?\d+$/]
     return ret.to_i
   end
 
   # Unused
   def csvPosInt!(str, _line = -1)
     ret = csvfield!(str)
-    if !ret[/^\d+$/]
-      raise _INTL("Field '{1}' is not a positive integer.", ret) + "\n" + FileLineData.linereport
-    end
+    raise _INTL("Field '{1}' is not a positive integer.", ret) + "\n" + FileLineData.linereport if !ret[/^\d+$/]
     return ret.to_i
   end
 
   # Unused
   def csvFloat!(str, _line = -1)
     ret = csvfield!(str)
-    return Float(ret) rescue raise _INTL("Field '{1}' is not a number.", ret) + "\n" + FileLineData.linereport
+    begin
+      return Float(ret)
+    rescue StandardError
+      raise _INTL("Field '{1}' is not a number.", ret) + "\n" + FileLineData.linereport
+    end
   end
 
   # Unused
@@ -373,7 +366,7 @@ module Compiler
   # Unused
   def csvEnumFieldOrInt!(value, enumer, _key, _section)
     ret = csvfield!(value)
-    return ret.to_i if ret[/\-?\d+/]
+    return ret.to_i if ret[/-?\d+/]
     return checkEnumField(ret, enumer)
   end
 
@@ -384,7 +377,7 @@ module Compiler
   def cast_csv_value(value, schema, enumer = nil)
     case schema.downcase
     when "i"   # Integer
-      if !value || !value[/^\-?\d+$/]
+      if !value || !value[/^-?\d+$/]
         raise _INTL("Field '{1}' is not an integer.", value) + "\n" + FileLineData.linereport
       end
       return value.to_i
@@ -397,9 +390,7 @@ module Compiler
       if !value || !value[/^\d+$/]
         raise _INTL("Field '{1}' is not a positive integer.", value) + "\n" + FileLineData.linereport
       end
-      if value.to_i == 0
-        raise _INTL("Field '{1}' must be greater than 0.", value) + "\n" + FileLineData.linereport
-      end
+      raise _INTL("Field '{1}' must be greater than 0.", value) + "\n" + FileLineData.linereport if value.to_i == 0
       return value.to_i
     when "x"   # Hexadecimal number
       if !value || !value[/^[A-F0-9]+$/i]
@@ -407,7 +398,7 @@ module Compiler
       end
       return value.hex
     when "f"   # Floating point number
-      if !value || !value[/^\-?^\d*\.?\d*$/]
+      if !value || !value[/^-?^\d*\.?\d*$/]
         raise _INTL("Field '{1}' is not a number.", value) + "\n" + FileLineData.linereport
       end
       return value.to_f
@@ -429,7 +420,7 @@ module Compiler
     when "e"   # Enumerable
       return checkEnumField(value, enumer)
     when "y"   # Enumerable or integer
-      return value.to_i if value && value[/^\-?\d+$/]
+      return value.to_i if value && value[/^-?\d+$/]
       return checkEnumField(value, enumer)
     end
     return value
@@ -487,7 +478,11 @@ module Compiler
   def checkEnumFieldOrNil(ret, enumer)
     case enumer
     when Module
-      return nil if nil_or_empty?(ret) || !(enumer.const_defined?(ret) rescue false)
+      return nil if nil_or_empty?(ret) || !begin
+        enumer.const_defined?(ret)
+      rescue StandardError
+        false
+      end
       return enumer.const_get(ret.to_sym)
     when Symbol, String
       if GameData.const_defined?(enumer.to_sym)
@@ -496,7 +491,11 @@ module Compiler
         return ret.to_sym
       end
       enumer = Object.const_get(enumer.to_sym)
-      return nil if nil_or_empty?(ret) || !(enumer.const_defined?(ret) rescue false)
+      return nil if nil_or_empty?(ret) || !begin
+        enumer.const_defined?(ret)
+      rescue StandardError
+        false
+      end
       return enumer.const_get(ret.to_sym)
     when Array
       idx = findIndex(enumer) { |item| ret == item }
@@ -539,7 +538,7 @@ module Compiler
           field = csvfield!(rec)
           if nil_or_empty?(field)
             subrecord.push(nil)
-          elsif !field[/^\-?\d+$/]
+          elsif !field[/^-?\d+$/]
             raise _INTL("Field '{1}' is not an integer.", field) + "\n" + FileLineData.linereport
           else
             subrecord.push(field.to_i)
@@ -591,7 +590,7 @@ module Compiler
           field = csvfield!(rec)
           if nil_or_empty?(field)
             subrecord.push(nil)
-          elsif !field[/^\-?^\d*\.?\d*$/]
+          elsif !field[/^-?^\d*\.?\d*$/]
             raise _INTL("Field '{1}' is not a floating point number.", field) + "\n" + FileLineData.linereport
           else
             subrecord.push(field.to_f)
@@ -664,7 +663,7 @@ module Compiler
           field = csvfield!(rec)
           if nil_or_empty?(field)
             subrecord.push(nil)
-          elsif field[/^\-?\d+$/]
+          elsif field[/^-?\d+$/]
             subrecord.push(field.to_i)
           else
             subrecord.push(checkEnumFieldOrNil(field, schema[2 + i - start]))
@@ -710,12 +709,10 @@ module Compiler
       (start...schema[1].length).each do |i|
         idx += 1
         sche = schema[1][i, 1]
-        if sche[/[A-Z]/]   # Upper case = optional
-          if nil_or_empty?(values[idx])
-            record.push(nil)
-            next
+        if sche[/[A-Z]/] && nil_or_empty?(values[idx])
+          record.push(nil)
+          next
           end
-        end
         if sche.downcase == "q"   # Unformatted text
           record.push(rec)
           idx = values.length
@@ -851,7 +848,7 @@ module Compiler
     begin
       mod = Object.const_get(mod) if mod.is_a?(Symbol)
       isDef = mod.const_defined?(item.to_sym)
-    rescue
+    rescue StandardError
       raise sprintf(err, item)
     end
     raise sprintf(err, item) if !isDef
@@ -929,11 +926,10 @@ module Compiler
     end
     changed = false
     lines.each { |line| changed = true if yield line }
-    if changed
-      Console.markup_style("Changes made to file #{filename}.", text: :yellow)
-      File.open(filename, "wb") do |f|
-        lines.each { |line| f.write(line) }
-      end
+    return unless changed
+    Console.markup_style("Changes made to file #{filename}.", text: :yellow)
+    File.open(filename, "wb") do |f|
+      lines.each { |line| f.write(line) }
     end
   end
 
@@ -1042,7 +1038,11 @@ module Compiler
       mustCompile = false
       # If no PBS file, create one and fill it, then recompile
       if !FileTest.directory?("PBS")
-        Dir.mkdir("PBS") rescue nil
+        begin
+          Dir.mkdir("PBS")
+        rescue StandardError
+          nil
+        end
         GameData.load_all
         write_all
         mustCompile = true
@@ -1075,7 +1075,7 @@ module Compiler
         end
       end
       # Check PBS files for their latest modify time
-      text_files.each do |key, value|
+      text_files.each_value do |value|
         next if !value || !value[1].is_a?(Array)
         value[1].each do |filepath|
           begin
@@ -1093,7 +1093,7 @@ module Compiler
       if mustCompile
         data_files.each do |filename|
           begin
-            File.delete("Data/#{filename[0]}") if FileTest.exist?("Data/#{filename[0]}")
+            FileUtils.rm_f("Data/#{filename[0]}")
           rescue SystemCallError
           end
         end
@@ -1102,15 +1102,15 @@ module Compiler
       compile_all(mustCompile)
     rescue Exception
       e = $!
-      raise e if e.class.to_s == "Reset" || e.is_a?(Reset) || e.is_a?(SystemExit)
+      raise e if e.instance_of?(::Reset) || e.is_a?(Reset) || e.is_a?(SystemExit)
       pbPrintException(e)
       data_files.each do |filename|
         begin
-          File.delete("Data/#{filename[0]}") if FileTest.exist?("Data/#{filename[0]}")
+          FileUtils.rm_f("Data/#{filename[0]}")
         rescue SystemCallError
         end
       end
-      raise Reset.new if e.is_a?(Hangup)
+      raise Reset if e.is_a?(Hangup)
       raise "Unknown exception when compiling."
     end
   end

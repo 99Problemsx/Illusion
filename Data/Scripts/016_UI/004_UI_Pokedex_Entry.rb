@@ -4,7 +4,7 @@
 class PokemonPokedexInfo_Scene
   def pbStartScene(dexlist, index, region)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @dexlist = dexlist
     @index   = index
     @region  = region
@@ -70,7 +70,7 @@ class PokemonPokedexInfo_Scene
   # For standalone access, shows first page only.
   def pbStartSceneBrief(species)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     dexnum = 0
     dexnumshift = false
     if $player.pokedex.unlocked?(-1)   # National Dex is unlocked
@@ -502,7 +502,7 @@ class PokemonPokedexInfo_Scene
           @show_battled_count = !@show_battled_count
           dorefresh = true
         when 2   # Area
-#          dorefresh = true
+        #          dorefresh = true
         when 3   # Forms
           if @available.length > 1
             pbPlayDecisionSE

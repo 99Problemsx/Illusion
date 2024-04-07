@@ -9,10 +9,10 @@
 if defined?(PkmnAR)
   EventHandlers.add(:following_pkmn_talk, :amie, proc { |_pkmn, _random_val|
     cmd = pbMessage(_INTL("What would you like to do?"), [
-      _INTL("Play"),
-      _INTL("Talk"),
-      _INTL("Cancel")
-    ])
+                      _INTL("Play"),
+                      _INTL("Talk"),
+                      _INTL("Cancel")
+                    ])
     PkmnAR.show if cmd == 0
     next true if [0, 2].include?(cmd)
   })

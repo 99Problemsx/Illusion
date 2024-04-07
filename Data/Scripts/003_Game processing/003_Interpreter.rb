@@ -91,9 +91,7 @@ class Interpreter
       end
       # If this interpreter's map isn't the current map or connected to it,
       # forget this interpreter's event ID
-      if $game_map.map_id != @map_id && !$map_factory.areConnected?($game_map.map_id, @map_id)
-        @event_id = 0
-      end
+      @event_id = 0 if $game_map.map_id != @map_id && !$map_factory.areConnected?($game_map.map_id, @map_id)
       # Update child interpreter if one exists
       if @child_interpreter
         @child_interpreter.update
@@ -141,7 +139,7 @@ class Interpreter
       return result
     rescue Exception
       e = $!
-      raise if e.is_a?(SystemExit) || e.class.to_s == "Reset"
+      raise if e.is_a?(SystemExit) || e.instance_of?(::Reset)
       event = get_self
       # Gather text for error message
       message = pbGetExceptionMessage(e)
@@ -158,13 +156,21 @@ class Interpreter
         backtrace_text += "\r\n"
         backtrace_text += "Backtrace:"
         e.backtrace[0, 10].each { |i| backtrace_text += "\r\n#{i}" }
-        backtrace_text.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[$1.to_i][1] } rescue nil
+        begin
+          backtrace_text.gsub!(/Section(\d+)/) { $RGSS_SCRIPTS[::Regexp.last_match(1).to_i][1] }
+        rescue StandardError
+          nil
+        end
         backtrace_text += "\r\n"
       end
       # Assemble error message
       err = "Script error in Interpreter\r\n"
       if $game_map
-        map_name = (pbGetBasicMapNameFromId($game_map.map_id) rescue nil) || "???"
+        map_name = begin
+          pbGetBasicMapNameFromId($game_map.map_id)
+        rescue StandardError
+          nil
+        end || "???"
         if event
           err = "Script error in event #{event.id} (coords #{event.x},#{event.y}), map #{$game_map.map_id} (#{map_name})\r\n"
         else
@@ -176,7 +182,7 @@ class Interpreter
       err += "***Full script:\r\n#{script}"   # \r\n"
       err += backtrace_text
       # Raise error
-      raise EventScriptError.new(err)
+      raise EventScriptError, err
     end
   end
 
@@ -324,9 +330,8 @@ class Interpreter
     mapid = @map_id if mapid < 0
     old_value = $game_self_switches[[mapid, eventid, switch_name]]
     $game_self_switches[[mapid, eventid, switch_name]] = value
-    if value != old_value && $map_factory.hasMap?(mapid)
-      $map_factory.getMap(mapid, false).need_refresh = true
-    end
+    return unless value != old_value && $map_factory.hasMap?(mapid)
+    $map_factory.getMap(mapid, false).need_refresh = true
   end
 
   def tsOff?(c)
@@ -348,12 +353,9 @@ class Interpreter
   end
 
   def getVariable(*arg)
-    if arg.length == 0
-      return nil if !$PokemonGlobal.eventvars
-      return $PokemonGlobal.eventvars[[@map_id, @event_id]]
-    else
-      return $game_variables[arg[0]]
-    end
+    return $game_variables[arg[0]] unless arg.length == 0
+    return nil if !$PokemonGlobal.eventvars
+    return $PokemonGlobal.eventvars[[@map_id, @event_id]]
   end
 
   def setVariable(*arg)
@@ -398,17 +400,16 @@ class Interpreter
     when 8 then event.move_up
     end
     $PokemonMap&.addMovedEvent(@event_id)
-    if old_x != event.x || old_y != event.y
-      pbSEPlay("Strength push") if strength
-      $game_player.lock
-      loop do
-        Graphics.update
-        Input.update
-        pbUpdateSceneMap
-        break if !event.moving?
-      end
-      $game_player.unlock
+    return unless old_x != event.x || old_y != event.y
+    pbSEPlay("Strength push") if strength
+    $game_player.lock
+    loop do
+      Graphics.update
+      Input.update
+      pbUpdateSceneMap
+      break if !event.moving?
     end
+    $game_player.unlock
   end
 
   def pbPushThisBoulder

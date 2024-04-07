@@ -4,13 +4,11 @@ module Battle::CatchAndStoreMixin
   #=============================================================================
   def pbStorePokemon(pkmn)
     # Nickname the Pokémon (unless it's a Shadow Pokémon)
-    if !pkmn.shadowPokemon?
-      if $PokemonSystem.givenicknames == 0 &&
-         pbDisplayConfirm(_INTL("Would you like to give a nickname to {1}?", pkmn.name))
-        nickname = @scene.pbNameEntry(_INTL("{1}'s nickname?", pkmn.speciesName), pkmn)
-        pkmn.name = nickname
+    if !pkmn.shadowPokemon? && ($PokemonSystem.givenicknames == 0 &&
+         pbDisplayConfirm(_INTL("Would you like to give a nickname to {1}?", pkmn.name)))
+      nickname = @scene.pbNameEntry(_INTL("{1}'s nickname?", pkmn.speciesName), pkmn)
+      pkmn.name = nickname
       end
-    end
     # Store the Pokémon
     if pbPlayer.party_full? && (@sendToBoxes == 0 || @sendToBoxes == 2)   # Ask/must add to party
       cmds = [_INTL("Add to your party"),
@@ -176,9 +174,7 @@ module Battle::CatchAndStoreMixin
         @decision = (trainerBattle?) ? 1 : 4   # Battle ended by win/capture
       end
       # Modify the Pokémon's properties because of the capture
-      if GameData::Item.get(ball).is_snag_ball?
-        pkmn.owner = Pokemon::Owner.new_from_trainer(pbPlayer)
-      end
+      pkmn.owner = Pokemon::Owner.new_from_trainer(pbPlayer) if GameData::Item.get(ball).is_snag_ball?
       Battle::PokeBallEffects.onCatch(ball, self, pkmn)
       pkmn.poke_ball = ball
       pkmn.makeUnmega if pkmn.mega?
@@ -193,10 +189,9 @@ module Battle::CatchAndStoreMixin
       # Save the Pokémon for storage at the end of battle
       @caughtPokemon.push(pkmn)
     end
-    if numShakes != 4
-      @first_poke_ball = ball if !@poke_ball_failed
-      @poke_ball_failed = true
-    end
+    return unless numShakes != 4
+    @first_poke_ball = ball if !@poke_ball_failed
+    @poke_ball_failed = true
   end
 
   #=============================================================================

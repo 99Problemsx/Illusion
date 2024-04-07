@@ -11,7 +11,7 @@ module GameData
     attr_reader :animation
     attr_reader :icon_position   # Where this status's icon is within statuses.png
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods
@@ -21,7 +21,7 @@ module GameData
 
     def initialize(hash)
       @id            = hash[:id]
-      @real_name     = hash[:name]          || "Unnamed"
+      @real_name     = hash[:name] || "Unnamed"
       @animation     = hash[:animation]
       @icon_position = hash[:icon_position] || 0
     end
@@ -36,8 +36,8 @@ end
 #===============================================================================
 
 GameData::Status.register({
-  :id            => :NONE,
-  :name          => _INTL("None")
+  :id   => :NONE,
+  :name => _INTL("None")
 })
 
 GameData::Status.register({

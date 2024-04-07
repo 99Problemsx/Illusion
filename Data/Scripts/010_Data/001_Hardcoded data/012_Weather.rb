@@ -22,7 +22,7 @@ module GameData
     attr_reader :tile_delta_y
     attr_reader :tone_proc
 
-    DATA = {}
+    DATA = {}.freeze
 
     extend ClassMethods
     include InstanceMethods
@@ -63,8 +63,8 @@ end
 #===============================================================================
 
 GameData::Weather.register({
-  :id               => :None,
-  :id_number        => 0   # Must be 0 (preset RMXP weather)
+  :id        => :None,
+  :id_number => 0   # Must be 0 (preset RMXP weather)
 })
 
 GameData::Weather.register({
@@ -147,19 +147,19 @@ GameData::Weather.register({
 
 # NOTE: This alters the screen tone in RPG::Weather#update_screen_tone.
 GameData::Weather.register({
-  :id               => :Sun,
-  :id_number        => 7,
-  :category         => :Sun,
-  :tone_proc        => proc { |strength|
+  :id        => :Sun,
+  :id_number => 7,
+  :category  => :Sun,
+  :tone_proc => proc { |strength|
     next Tone.new(64, 64, 32, 0)
   }
 })
 
 GameData::Weather.register({
-  :id               => :Fog,
-  :category         => :Fog,
-  :id_number        => 8,
-  :tile_delta_x     => -32,
-  :tile_delta_y     => 0,
-  :graphics         => [nil, ["fog_tile"]]
+  :id           => :Fog,
+  :category     => :Fog,
+  :id_number    => 8,
+  :tile_delta_x => -32,
+  :tile_delta_y => 0,
+  :graphics     => [nil, ["fog_tile"]]
 })

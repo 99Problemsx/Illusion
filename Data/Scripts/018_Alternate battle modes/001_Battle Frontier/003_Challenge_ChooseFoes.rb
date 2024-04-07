@@ -110,7 +110,7 @@ def pbBattleFactoryPokemon(rules, win_count, swap_count, rentals)
     ]
   else
     table = [
-      [  0, 173],   # Group 1
+      [ 0, 173],   # Group 1
       [174, 272],   # Group 2 (first half)
       [273, 371],   # Group 2 (second half)
       [372, 491],   # Group 3 (first quarter)

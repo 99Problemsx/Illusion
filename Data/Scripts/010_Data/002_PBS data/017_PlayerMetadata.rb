@@ -6,8 +6,8 @@ module GameData
     attr_reader :home
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "player_metadata.dat"
+    DATA = {}.freeze
+    DATA_FILENAME = "player_metadata.dat".freeze
 
     SCHEMA = {
       "SectionName"     => [:id,                "u"],
@@ -20,7 +20,7 @@ module GameData
       "FishCharset"     => [:fish_charset,      "s"],
       "SurfFishCharset" => [:surf_fish_charset, "s"],
       "Home"            => [:home,              "vuuu"]
-    }
+    }.freeze
 
     extend ClassMethodsIDNumbers
     include InstanceMethods

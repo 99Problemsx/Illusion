@@ -9,9 +9,9 @@ module GameData
     attr_reader :pokemon
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "trainers.dat"
-    PBS_BASE_FILENAME = "trainers"
+    DATA = {}.freeze
+    DATA_FILENAME = "trainers.dat".freeze
+    PBS_BASE_FILENAME = "trainers".freeze
 
     # "Pokemon" is specially mentioned in def compile_trainers and def
     # write_trainers, and acts as a subheading for a particular Pokémon.
@@ -20,7 +20,7 @@ module GameData
       "Items"       => [:items,          "*e", :Item],
       "LoseText"    => [:real_lose_text, "q"],
       "Pokemon"     => [:pokemon,        "ev", :Species]   # Species, level
-    }
+    }.freeze
     # This schema is for definable properties of individual Pokémon (apart from
     # species and level which are above).
     SUB_SCHEMA = {
@@ -40,7 +40,7 @@ module GameData
       "SuperShiny"   => [:super_shininess, "b"],
       "Shadow"       => [:shadowness,      "b"],
       "Ball"         => [:poke_ball,       "e", :Item]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

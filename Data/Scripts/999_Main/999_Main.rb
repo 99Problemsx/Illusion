@@ -27,9 +27,7 @@ def mainFunctionDebug
     MessageTypes.load_default_messages if FileTest.exist?("Data/messages_core.dat")
     if $DEBUG && !FileTest.exist?("Game.rgssad") && Settings::PROMPT_TO_COMPILE
       pbSetResizeFactor(1)   # Needed to make the message look good
-      if pbConfirmMessage("\\ts[]" + "Do you want to compile your data and plugins?")
-        $full_compile = true
-      end
+      $full_compile = true if pbConfirmMessage("\\ts[]" + "Do you want to compile your data and plugins?")
     end
     PluginManager.runPlugins
     Compiler.main

@@ -384,9 +384,7 @@ MenuHandlers.add(:battle_debug_menu, :environment_time, {
         new_environment = pbMessage(
           "\\ts[]" + _INTL("Choose the new environment."), environment_cmds, -1, nil, environment_cmd
         )
-        if new_environment >= 0
-          battle.environment = environment_types[new_environment]
-        end
+        battle.environment = environment_types[new_environment] if new_environment >= 0
       when 1   # Change time of day
         new_time = pbMessage("\\ts[]" + _INTL("Choose the new time."),
                              [_INTL("Day"), _INTL("Evening"), _INTL("Night")], -1, nil, battle.time)

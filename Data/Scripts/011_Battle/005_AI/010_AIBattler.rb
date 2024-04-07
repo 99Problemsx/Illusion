@@ -13,7 +13,6 @@ class Battle::AI::AIBattler
   end
 
   def refresh_battler
-    old_party_index = @party_index
     @battler = @ai.battle.battlers[@index]
     @party_index = battler.pokemonIndex
   end
@@ -31,7 +30,7 @@ class Battle::AI::AIBattler
   def stages;      return battler.stages;      end
   def statStageAtMax?(stat); return battler.statStageAtMax?(stat); end
   def statStageAtMin?(stat); return battler.statStageAtMin?(stat); end
-  def moves;       return battler.moves;       end
+  def moves; return battler.moves; end
 
   def wild?
     return @ai.battle.wildBattle? && opposes?
@@ -121,9 +120,7 @@ class Battle::AI::AIBattler
     end
     # Leech Seed
     if self.effects[PBEffects::LeechSeed] >= 0
-      if battler.takesIndirectDamage?
-        ret += [self.totalhp / 8, 1].max if battler.takesIndirectDamage?
-      end
+      ret += [self.totalhp / 8, 1].max if battler.takesIndirectDamage? && battler.takesIndirectDamage?
     else
       @ai.each_battler do |b, i|
         next if i == @index || b.effects[PBEffects::LeechSeed] != @index
@@ -133,9 +130,7 @@ class Battle::AI::AIBattler
       end
     end
     # Hyper Mode (Shadow Pokémon)
-    if battler.inHyperMode?
-      ret += [self.totalhp / 24, 1].max
-    end
+    ret += [self.totalhp / 24, 1].max if battler.inHyperMode?
     # Poison/burn/Nightmare
     if self.status == :POISON
       if has_active_ability?(:POISONHEAL)
@@ -155,9 +150,7 @@ class Battle::AI::AIBattler
       ret += [self.totalhp / 4, 1].max if battler.takesIndirectDamage?
     end
     # Curse
-    if self.effects[PBEffects::Curse]
-      ret += [self.totalhp / 4, 1].max if battler.takesIndirectDamage?
-    end
+    ret += [self.totalhp / 4, 1].max if self.effects[PBEffects::Curse] && battler.takesIndirectDamage?
     # Trapping damage
     if self.effects[PBEffects::Trapping] > 1 && battler.takesIndirectDamage?
       amt = (Settings::MECHANICS_GENERATION >= 6) ? self.totalhp / 8 : self.totalhp / 16
@@ -176,9 +169,7 @@ class Battle::AI::AIBattler
       end
     end
     # Sticky Barb
-    if has_active_item?(:STICKYBARB) && battler.takesIndirectDamage?
-      ret += [self.totalhp / 8, 1].max
-    end
+    ret += [self.totalhp / 8, 1].max if has_active_item?(:STICKYBARB) && battler.takesIndirectDamage?
     return ret
   end
 
@@ -339,12 +330,8 @@ class Battle::AI::AIBattler
   def can_become_trapped?
     return false if fainted?
     # Ability/item effects that allow switching no matter what
-    if ability_active? && Battle::AbilityEffects.triggerCertainSwitching(ability, battler, @ai.battle)
-      return false
-    end
-    if item_active? && Battle::ItemEffects.triggerCertainSwitching(item, battler, @ai.battle)
-      return false
-    end
+    return false if ability_active? && Battle::AbilityEffects.triggerCertainSwitching(ability, battler, @ai.battle)
+    return false if item_active? && Battle::ItemEffects.triggerCertainSwitching(item, battler, @ai.battle)
     # Other certain switching effects
     return false if Settings::MORE_TYPE_EFFECTS && has_type?(:GHOST)
     # Other certain trapping effects
@@ -389,8 +376,8 @@ class Battle::AI::AIBattler
       end
     end
     return true if new_status == :SLEEP && check_for_move { |m| m.usableWhenAsleep? }
-    if has_move_with_function?("DoublePowerIfUserPoisonedBurnedParalyzed")
-      return true if [:POISON, :BURN, :PARALYSIS].include?(new_status)
+    if has_move_with_function?("DoublePowerIfUserPoisonedBurnedParalyzed") && [:POISON, :BURN, :PARALYSIS].include?(new_status)
+      return true
     end
     return false
   end
@@ -414,9 +401,7 @@ class Battle::AI::AIBattler
       break
     end
     # Modify the rating based on ability-specific contexts
-    if @ai.trainer.medium_skill?
-      ret = Battle::AI::Handlers.modify_ability_ranking(ability, ret, self, @ai)
-    end
+    ret = Battle::AI::Handlers.modify_ability_ranking(ability, ret, self, @ai) if @ai.trainer.medium_skill?
     return ret
   end
 
@@ -440,9 +425,7 @@ class Battle::AI::AIBattler
       break
     end
     # Modify the rating based on item-specific contexts
-    if @ai.trainer.medium_skill?
-      ret = Battle::AI::Handlers.modify_item_ranking(item, ret, self, @ai)
-    end
+    ret = Battle::AI::Handlers.modify_item_ranking(item, ret, self, @ai) if @ai.trainer.medium_skill?
     # Prefer if this battler knows Fling and it will do a lot of damage/have an
     # additional (negative) effect when flung
     if item != :NONE && has_move_with_function?("ThrowUserItemAtTarget")
@@ -453,9 +436,7 @@ class Battle::AI::AIBattler
         ret += 1 if amt >= 100
         break
       end
-      if [:FLAMEORB, :KINGSROCK, :LIGHTBALL, :POISONBARB, :RAZORFANG, :TOXICORB].include?(item)
-        ret += 1
-      end
+      ret += 1 if [:FLAMEORB, :KINGSROCK, :LIGHTBALL, :POISONBARB, :RAZORFANG, :TOXICORB].include?(item)
     end
     # Don't prefer if this battler knows Acrobatics
     if has_move_with_function?("DoublePowerIfUserHasNoItem")
@@ -492,8 +473,8 @@ class Battle::AI::AIBattler
           :MAGOBERRY   => :SPEED,
           :WIKIBERRY   => :SPECIAL_ATTACK
         }[item]
-        if @battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 }
-          ret -= 3 if @battler.pbCanConfuseSelf?(false)
+        if @battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 } && @battler.pbCanConfuseSelf?(false)
+          ret -= 3
         end
       end
     when :ASPEARBERRY, :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY
@@ -568,18 +549,14 @@ class Battle::AI::AIBattler
     ret = Effectiveness.calculate(type, defend_type)
     if Effectiveness.ineffective_type?(type, defend_type)
       # Ring Target
-      if has_active_item?(:RINGTARGET)
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if has_active_item?(:RINGTARGET)
       # Foresight
       if (user&.has_active_ability?(:SCRAPPY) || self.effects[PBEffects::Foresight]) &&
          defend_type == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Miracle Eye
-      if self.effects[PBEffects::MiracleEye] && defend_type == :DARK
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if self.effects[PBEffects::MiracleEye] && defend_type == :DARK
     elsif Effectiveness.super_effective_type?(type, defend_type)
       # Delta Stream's weather
       if battler.effectiveWeather == :StrongWinds && defend_type == :FLYING
@@ -587,9 +564,7 @@ class Battle::AI::AIBattler
       end
     end
     # Grounded Flying-type Pokémon become susceptible to Ground moves
-    if !battler.airborne? && defend_type == :FLYING && type == :GROUND
-      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-    end
+    ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if !battler.airborne? && defend_type == :FLYING && type == :GROUND
     return ret
   end
 end

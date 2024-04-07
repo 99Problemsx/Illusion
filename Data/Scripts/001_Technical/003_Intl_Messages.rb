@@ -62,7 +62,7 @@ module Translator
             list = event.list[j]
             if neednewline && list.code != 401   # Continuation of 101 Show Text
               if lastitem != ""
-                lastitem.gsub!(/([^\.\!\?])\s\s+/) { |m| $1 + " " }
+                lastitem.gsub!(/([^\.\!\?])\s\s+/) { |m| ::Regexp.last_match(1) + " " }
                 items.push(lastitem)
                 lastitem = ""
               end
@@ -132,7 +132,7 @@ module Translator
                 list = event.pages[i].list[j]
                 if neednewline && list.code != 401   # Continuation of 101 Show Text
                   if lastitem != ""
-                    lastitem.gsub!(/([^\.\!\?])\s\s+/) { |m| $1 + " " }
+                    lastitem.gsub!(/([^\.\!\?])\s\s+/) { |m| ::Regexp.last_match(1) + " " }
                     items.push(lastitem)
                     lastitem = ""
                   end
@@ -190,23 +190,23 @@ module Translator
 
   def find_translatable_text_from_RGSS_script(items, script)
     script.force_encoding(Encoding::UTF_8)
-    script.scan(/(?:_INTL|_ISPRINTF)\s*\(\s*\"((?:[^\\\"]*\\\"?)*[^\"]*)\"/) do |s|
+    script.scan(/(?:_INTL|_ISPRINTF)\s*\(\s*"((?:[^\\\"]*\\"?)*[^\"]*)"/) do |s|
       string = s[0]
-      string.gsub!(/\\r/, "\r")
-      string.gsub!(/\\n/, "\n")
-      string.gsub!(/\\1/, "\1")
-      string.gsub!(/\\\"/, "\"")
-      string.gsub!(/\\\\/, "\\")
+      string.gsub!("\\r", "\r")
+      string.gsub!("\\n", "\n")
+      string.gsub!("\\1", "\1")
+      string.gsub!('\\\"', "\"")
+      string.gsub!("\\\\", "\\")
       items.push(string)
     end
   end
 
   def find_translatable_text_from_event_script(items, script)
     script.force_encoding(Encoding::UTF_8)
-    script.scan(/(?:_I)\s*\(\s*\"((?:[^\\\"]*\\\"?)*[^\"]*)\"/) do |s|
+    script.scan(/(?:_I)\s*\(\s*"((?:[^\\\"]*\\"?)*[^\"]*)"/) do |s|
       string = s[0]
-      string.gsub!(/\\\"/, "\"")
-      string.gsub!(/\\\\/, "\\")
+      string.gsub!('\\\"', "\"")
+      string.gsub!("\\\\", "\\")
       items.push(string)
     end
   end
@@ -214,12 +214,12 @@ module Translator
   def normalize_value(value)
     if value[/[\r\n\t\x01]|^[\[\]]/]
       ret = value.dup
-      ret.gsub!(/\r/, "<<r>>")
-      ret.gsub!(/\n/, "<<n>>")
-      ret.gsub!(/\t/, "<<t>>")
-      ret.gsub!(/\[/, "<<[>>")
-      ret.gsub!(/\]/, "<<]>>")
-      ret.gsub!(/\x01/, "<<1>>")
+      ret.gsub!("\r", "<<r>>")
+      ret.gsub!("\n", "<<n>>")
+      ret.gsub!("\t", "<<t>>")
+      ret.gsub!("[", "<<[>>")
+      ret.gsub!("]", "<<]>>")
+      ret.gsub!("\x01", "<<1>>")
       return ret
     end
     return value
@@ -228,12 +228,12 @@ module Translator
   def denormalize_value(value)
     if value[/<<[rnt1\[\]]>>/]
       ret = value.dup
-      ret.gsub!(/<<1>>/, "\1")
-      ret.gsub!(/<<r>>/, "\r")
-      ret.gsub!(/<<n>>/, "\n")
-      ret.gsub!(/<<\[>>/, "[")
-      ret.gsub!(/<<\]>>/, "]")
-      ret.gsub!(/<<t>>/, "\t")
+      ret.gsub!("<<1>>", "\1")
+      ret.gsub!("<<r>>", "\r")
+      ret.gsub!("<<n>>", "\n")
+      ret.gsub!("<<[>>", "[")
+      ret.gsub!("<<]>>", "]")
+      ret.gsub!("<<t>>", "\t")
       return ret
     end
     return value
@@ -286,7 +286,7 @@ module Translator
       f.write(0xBF.chr)
       f.write("# To localize this text for a particular language, please" + "\r\n")
       f.write("# translate every second line of this file." + "\r\n")
-      f.write("\#-------------------------------\r\n") if with_line
+      f.write("#-------------------------------\r\n") if with_line
     end
     # Extract the text
     pbMessageDisplay(msg_window, "\\ts[]" + _INTL("Extracting text, please wait.") + "\\wtnp[0]")
@@ -321,7 +321,7 @@ module Translator
             write_header.call(f, false)
             default_messages[i].each_with_index do |map_msgs, map_id|
               next if !map_msgs || map_msgs.length == 0
-              f.write("\#-------------------------------\r\n")
+              f.write("#-------------------------------\r\n")
               translated_msgs = (language_messages && language_messages[i]) ? language_messages[i][map_id] : nil
               write_section_texts_to_file(f, sprintf("Map%03d", map_id), translated_msgs, map_msgs)
             end
@@ -382,14 +382,14 @@ module Translator
       text_files = Dir.get("Text_" + dir_name, "*.txt")
       text_files.each { |file| compile_text_from_file(file, all_text) }
       Marshal.dump(all_text, outfile)
-    rescue
+    rescue StandardError
       raise
     ensure
       outfile.close
     end
     msg_window.textspeed = MessageConfig.pbSettingToTextSpeed($PokemonSystem.textspeed)
     pbMessageDisplay(msg_window,
-       _INTL("Text files in the folder \"Text_{1}\" were successfully compiled into file \"Data/messages_{2}.dat\".", dir_name, dat_filename))
+                     _INTL("Text files in the folder \"Text_{1}\" were successfully compiled into file \"Data/messages_{2}.dat\".", dir_name, dat_filename))
     pbMessageDisplay(msg_window, _INTL("You may need to close the game to see any changes to messages."))
     pbDisposeMessageWindow(msg_window)
   end
@@ -397,7 +397,7 @@ module Translator
   def compile_text_from_file(text_file, all_text)
     begin
       file = File.open(text_file, "rb")
-    rescue
+    rescue StandardError
       raise _INTL("Can't find or open '{1}'.", text_file)
     end
     begin
@@ -522,7 +522,7 @@ class Translation
         @game_messages = load_data(game_filename)
         @game_messages = nil if !@game_messages.is_a?(Array)
       end
-    rescue
+    rescue StandardError
       @core_messages = nil
       @game_messages = nil
     end
@@ -539,7 +539,7 @@ class Translation
         pbRgssOpen("Data/messages_game.dat", "rb") { |f| @default_game_messages = Marshal.load(f) }
       end
       @default_game_messages = [] if !@default_game_messages.is_a?(Array)
-    rescue
+    rescue StandardError
       @default_core_messages = []
       @default_game_messages = []
     end
@@ -588,12 +588,8 @@ class Translation
 
   def get(type, id)
     delayed_load_message_files
-    if @game_messages && @game_messages[type] && @game_messages[type][id]
-      return @game_messages[type][id]
-    end
-    if @core_messages && @core_messages[type] && @core_messages[type][id]
-      return @core_messages[type][id]
-    end
+    return @game_messages[type][id] if @game_messages && @game_messages[type] && @game_messages[type][id]
+    return @core_messages[type][id] if @core_messages && @core_messages[type] && @core_messages[type][id]
     return ""
   end
 
@@ -601,12 +597,8 @@ class Translation
     delayed_load_message_files
     key = Translation.stringToKey(text)
     return text if nil_or_empty?(key)
-    if @game_messages && @game_messages[type] && @game_messages[type][key]
-      return @game_messages[type][key]
-    end
-    if @core_messages && @core_messages[type] && @core_messages[type][key]
-      return @core_messages[type][key]
-    end
+    return @game_messages[type][key] if @game_messages && @game_messages[type] && @game_messages[type][key]
+    return @core_messages[type][key] if @core_messages && @core_messages[type] && @core_messages[type][key]
     return text
   end
 
@@ -774,7 +766,7 @@ end
 def _INTL(*arg)
   begin
     string = MessageTypes.getFromHash(MessageTypes::SCRIPT_TEXTS, arg[0])
-  rescue
+  rescue StandardError
     string = arg[0]
   end
   string = string.clone
@@ -790,12 +782,12 @@ end
 def _ISPRINTF(*arg)
   begin
     string = MessageTypes.getFromHash(MessageTypes::SCRIPT_TEXTS, arg[0])
-  rescue
+  rescue StandardError
     string = arg[0]
   end
   string = string.clone
   (1...arg.length).each do |i|
-    string.gsub!(/\{#{i}\:([^\}]+?)\}/) { |m| next sprintf("%" + $1, arg[i]) }
+    string.gsub!(/\{#{i}:([^\}]+?)\}/) { |m| next sprintf("%" + Regexp.last_match(1), arg[i]) }
   end
   return string
 end
@@ -817,7 +809,7 @@ def _MAPISPRINTF(mapid, *arg)
   string = MessageTypes.getFromMapHash(mapid, arg[0])
   string = string.clone
   (1...arg.length).each do |i|
-    string.gsub!(/\{#{i}\:([^\}]+?)\}/) { |m| next sprintf("%" + $1, arg[i]) }
+    string.gsub!(/\{#{i}:([^\}]+?)\}/) { |m| next sprintf("%" + Regexp.last_match(1), arg[i]) }
   end
   return string
 end

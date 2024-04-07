@@ -76,15 +76,15 @@ module Battle::Scene::Animation::BallAnimationMixin
     when :MASTERBALL  then return Color.new(189, 165, 231)
     when :NETBALL     then return Color.new(173, 255, 206)
     when :DIVEBALL    then return Color.new(99, 206, 247)
-    when :NESTBALL    then return Color.new(247, 222,  82)
+    when :NESTBALL    then return Color.new(247, 222, 82)
     when :REPEATBALL  then return Color.new(255, 198, 132)
     when :TIMERBALL   then return Color.new(239, 247, 247)
-    when :LUXURYBALL  then return Color.new(255, 140,  82)
-    when :PREMIERBALL then return Color.new(255,  74,  82)
+    when :LUXURYBALL  then return Color.new(255, 140, 82)
+    when :PREMIERBALL then return Color.new(255, 74,  82)
     when :DUSKBALL    then return Color.new(115, 115, 140)
     when :HEALBALL    then return Color.new(255, 198, 231)
     when :QUICKBALL   then return Color.new(140, 214, 255)
-    when :CHERISHBALL then return Color.new(247,  66,  41)
+    when :CHERISHBALL then return Color.new(247, 66, 41)
     end
     return Color.new(255, 181, 247)   # Poké Ball, Sport Ball, Apricorn Balls, others
   end
@@ -209,17 +209,15 @@ module Battle::Scene::Animation::BallAnimationMixin
   def ballSetOpen(ball, delay, poke_ball)
     file_path = sprintf("Graphics/Battle animations/ball_%s_open", poke_ball)
     ball.setName(delay, file_path)
-    if @ballSprite && @ballSprite.bitmap.width >= @ballSprite.bitmap.height
-      ball.setSrcSize(delay, @ballSprite.bitmap.height / 2, @ballSprite.bitmap.height)
-    end
+    return unless @ballSprite && @ballSprite.bitmap.width >= @ballSprite.bitmap.height
+    ball.setSrcSize(delay, @ballSprite.bitmap.height / 2, @ballSprite.bitmap.height)
   end
 
   def ballSetClosed(ball, delay, poke_ball)
     file_path = sprintf("Graphics/Battle animations/ball_%s", poke_ball)
     ball.setName(delay, file_path)
-    if @ballSprite && @ballSprite.bitmap.width >= @ballSprite.bitmap.height
-      ball.setSrcSize(delay, @ballSprite.bitmap.height / 2, @ballSprite.bitmap.height)
-    end
+    return unless @ballSprite && @ballSprite.bitmap.width >= @ballSprite.bitmap.height
+    ball.setSrcSize(delay, @ballSprite.bitmap.height / 2, @ballSprite.bitmap.height)
   end
 
   def ballOpenUp(ball, delay, poke_ball, showSquish = true, playSE = true)
@@ -342,7 +340,7 @@ module Battle::Scene::Animation::BallAnimationMixin
                      "particle", Tone.new(0, 0, 0), Tone.new(0, 0, -192),   # White ,yellow
                      "particle", Tone.new(0, 0, 0), Tone.new(0, 0, 0),   # White, white
                      "particle", Tone.new(0, 0, -96), Tone.new(0, 0, -192)]   # Light yellow, yellow
-  }
+  }.freeze
 
   # The regular Poké Ball burst animation, for when a Pokémon appears from a
   # Poké Ball.
@@ -370,8 +368,6 @@ module Battle::Scene::Animation::BallAnimationMixin
       particle.setZoom(0, 0)
       particle.setTone(0, variances[12 - (3 * num)])
       particle.setVisible(0, false)
-    end
-    [glare1, glare2].each_with_index do |particle, num|
       particle.moveTone(delay + glare_fade_duration + 3, glare_fade_duration / 2, variances[13 - (3 * num)])
     end
     # Animate glare particles
@@ -562,7 +558,7 @@ module Battle::Scene::Animation::BallAnimationMixin
                      "particle", Tone.new(0, 0, 0), Tone.new(0, 0, 0),   # White, white
                      "ring4", Tone.new(-16, -40, -80), Tone.new(-16, -136, -176),   # Light orange, dark orange
                      Tone.new(0, 0, 0), Tone.new(0, 0, 0)]   # White, white
-  }
+  }.freeze
 
   # The Poké Ball burst animation used when absorbing a wild Pokémon during a
   # capture attempt.

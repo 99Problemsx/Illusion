@@ -99,9 +99,7 @@ def pbGainExpFromExpCandy(pkmn, base_amt, qty, scene, item)
   end
   pbSEPlay("Pkmn level up")
   scene.scene.pbSetHelpText("") if scene.is_a?(PokemonPartyScreen)
-  if qty > 1
-    (qty - 1).times { pkmn.changeHappiness("vitamin") }
-  end
+  (qty - 1).times { pkmn.changeHappiness("vitamin") } if qty > 1
   pbChangeExp(pkmn, pkmn.exp + (base_amt * qty), scene)
   scene.pbHardRefresh
   return true
@@ -149,7 +147,6 @@ end
 # Main Level Cap Module
 #-------------------------------------------------------------------------------
 module LevelCapsEX
-
   module_function
 
   def level_cap
@@ -176,7 +173,7 @@ module LevelCapsEX
     return max_lv if !$game_variables
     lv_cap_mode = $game_variables[LEVEL_CAP_MODE_VARIABLE]
     lv_cap = $game_variables[LevelCapsEX::LEVEL_CAP_VARIABLE]
-    return max_lv if lv_cap > max_lv 
+    return max_lv if lv_cap > max_lv
     return lv_cap if lv_cap > 0 && lv_cap_mode == 1
     return max_lv
   end

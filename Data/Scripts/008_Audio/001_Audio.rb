@@ -3,15 +3,23 @@
 #===============================================================================
 def getOggPage(file)
   fgetdw = proc { |f|
-    (f.eof? ? 0 : (f.read(4).unpack("V")[0] || 0))
+    (f.eof? ? 0 : (f.read(4).unpack1("V") || 0))
   }
   dw = fgetdw.call(file)
   return nil if dw != 0x5367674F
   header = file.read(22)
   bodysize = 0
-  hdrbodysize = (file.read(1)[0].ord rescue 0)
+  hdrbodysize = begin
+    file.read(1)[0].ord
+  rescue StandardError
+    0
+  end
   hdrbodysize.times do
-    bodysize += (file.read(1)[0].ord rescue 0)
+    bodysize += begin
+      file.read(1)[0].ord
+    rescue StandardError
+      0
+    end
   end
   ret = [header, file.pos, bodysize, file.pos + bodysize]
   return ret
@@ -20,7 +28,7 @@ end
 # internal function
 def oggfiletime(file)
   fgetdw = proc { |f|
-    (f.eof? ? 0 : (f.read(4).unpack("V")[0] || 0))
+    (f.eof? ? 0 : (f.read(4).unpack1("V") || 0))
   }
   pages = []
   page = nil
@@ -50,7 +58,11 @@ def oggfiletime(file)
     if serial != curserial
       curserial = serial
       file.pos = pg[1]
-      packtype = (file.read(1)[0].ord rescue 0)
+      packtype = begin
+        file.read(1)[0].ord
+      rescue StandardError
+        0
+      end
       string = file.read(6)
       return -1 if string != "vorbis"
       return -1 if packtype != 1
@@ -84,10 +96,10 @@ def getPlayTime2(filename)
   return -1 if !FileTest.exist?(filename)
   time = -1
   fgetdw = proc { |file|
-    (file.eof? ? 0 : (file.read(4).unpack("V")[0] || 0))
+    (file.eof? ? 0 : (file.read(4).unpack1("V") || 0))
   }
   fgetw = proc { |file|
-    (file.eof? ? 0 : (file.read(2).unpack("v")[0] || 0))
+    (file.eof? ? 0 : (file.read(2).unpack1("v") || 0))
   }
   File.open(filename, "rb") do |file|
     file.pos = 0
@@ -123,31 +135,33 @@ def getPlayTime2(filename)
       rstr = ""
       ateof = false
       until file.eof?
-        if (file.read(1)[0] rescue 0) == 0xFF
-          begin
-            rstr = file.read(3)
-          rescue
-            ateof = true
-          end
-          break
+        next unless begin
+          file.read(1)[0]
+        rescue StandardError
+          0
+        end == 0xFF
+        begin
+          rstr = file.read(3)
+        rescue StandardError
+          ateof = true
         end
-      end
-      break if ateof || !rstr || rstr.length != 3
-      if rstr[0] == 0xFB
-        t = rstr[1] >> 4
-        next if [0, 15].include?(t)
-        freqs = [44_100, 22_050, 11_025, 48_000]
-        bitrates = [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
-        bitrate = bitrates[t]
-        t = (rstr[1] >> 2) & 3
-        freq = freqs[t]
-        t = (rstr[1] >> 1) & 1
-        filesize = FileTest.size(filename)
-        frameLength = ((144_000 * bitrate) / freq) + t
-        numFrames = filesize / (frameLength + 4)
-        time = (numFrames * 1152.0 / freq)
         break
       end
+      break if ateof || !rstr || rstr.length != 3
+      next unless rstr[0] == 0xFB
+      t = rstr[1] >> 4
+      next if [0, 15].include?(t)
+      freqs = [44_100, 22_050, 11_025, 48_000]
+      bitrates = [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
+      bitrate = bitrates[t]
+      t = (rstr[1] >> 2) & 3
+      freq = freqs[t]
+      t = (rstr[1] >> 1) & 1
+      filesize = FileTest.size(filename)
+      frameLength = ((144_000 * bitrate) / freq) + t
+      numFrames = filesize / (frameLength + 4)
+      time = (numFrames * 1152.0 / freq)
+      break
     end
   end
   return time

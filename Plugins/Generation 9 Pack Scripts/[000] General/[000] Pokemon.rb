@@ -1,9 +1,8 @@
 ################################################################################
-# 
+#
 # GameData::Species changes.
-# 
+#
 ################################################################################
-
 
 module GameData
   class Species
@@ -17,27 +16,23 @@ module GameData
       ret["Moves"] = [:moves, "*ie", nil, :Move]
       return ret
     end
-	
+
     #---------------------------------------------------------------------------
     # Aliased so that Incense is no longer required for hatching baby Pokemon.
     #---------------------------------------------------------------------------
     alias paldea_get_baby_species get_baby_species
     def get_baby_species(*args)
-      if Settings::MECHANICS_GENERATION >= 9
-        return paldea_get_baby_species(false, nil, nil)
-      end
+      return paldea_get_baby_species(false, nil, nil) if Settings::MECHANICS_GENERATION >= 9
       return paldea_get_baby_species(*args)
     end
   end
 end
 
-
 ################################################################################
-# 
+#
 # Pokemon class additions.
-# 
+#
 ################################################################################
-
 
 class Pokemon
   alias paldea_initialize initialize
@@ -48,105 +43,101 @@ class Pokemon
     @evo_recoil_count = 0
     @evo_step_count   = 0
   end
-  
+
   #-----------------------------------------------------------------------------
   # Move count evolution utilities.
   #-----------------------------------------------------------------------------
   def init_evo_move_count(move)
-    @evo_move_count = Hash.new if !@evo_move_count
+    @evo_move_count = {} if !@evo_move_count
     @evo_move_count[move] = 0 if !@evo_move_count[move]
   end
-  
+
   def move_count_evolution(move, qty = 1)
     species_data.get_evolutions.each do |evo|
-      if evo[1] == :LevelUseMoveCount && evo[2] == move
-        init_evo_move_count(move)
-        @evo_move_count[move] += qty
-        break
-      end
+      next unless evo[1] == :LevelUseMoveCount && evo[2] == move
+      init_evo_move_count(move)
+      @evo_move_count[move] += qty
+      break
     end
   end
-  
+
   def evo_move_count(move)
     init_evo_move_count(move)
     return @evo_move_count[move]
   end
-  
+
   def set_evo_move_count(move, value)
     init_evo_move_count(move)
     @evo_move_count[move] = value
   end
-  
+
   #-----------------------------------------------------------------------------
   # Leader's crest evolution utilities.
   #-----------------------------------------------------------------------------
   def init_evo_crest_count(item)
-    @evo_crest_count = Hash.new if !@evo_crest_count
+    @evo_crest_count = {} if !@evo_crest_count
     @evo_crest_count[item] = 0 if !@evo_crest_count[item]
   end
-  
+
   def leaders_crest_evolution(item, qty = 1)
     species_data.get_evolutions.each do |evo|
-      if evo[1] == :LevelDefeatItsKindWithItem && evo[2] == item
-        init_evo_crest_count(item)
-        @evo_crest_count[item] += qty
-        break
-      end
+      next unless evo[1] == :LevelDefeatItsKindWithItem && evo[2] == item
+      init_evo_crest_count(item)
+      @evo_crest_count[item] += qty
+      break
     end
   end
-  
+
   def evo_crest_count(item)
     init_evo_crest_count(item)
     return @evo_crest_count[item]
   end
-  
+
   def set_evo_crest_count(item, value)
     init_crest_count(item)
     @evo_crest_count[item] = value
   end
-  
+
   #-----------------------------------------------------------------------------
   # Recoil damage evolution utilities.
   #-----------------------------------------------------------------------------
   def recoil_evolution(qty = 1)
     species_data.get_evolutions.each do |evo|
-      if evo[1] == :LevelRecoilDamage
-        @evo_recoil_count = 0 if !@evo_recoil_count
-        @evo_recoil_count += qty
-        break
-      end
+      next unless evo[1] == :LevelRecoilDamage
+      @evo_recoil_count = 0 if !@evo_recoil_count
+      @evo_recoil_count += qty
+      break
     end
   end
-  
+
   def evo_recoil_count
     return @evo_recoil_count || 0
   end
-  
+
   def evo_recoil_count=(value)
     @evo_recoil_count = value
   end
-  
+
   #-----------------------------------------------------------------------------
   # Walking evolution utilities.
   #-----------------------------------------------------------------------------
   def walking_evolution(qty = 1)
     species_data.get_evolutions.each do |evo|
-      if evo[1] == :LevelWalk
-        @evo_step_count = 0 if !@evo_step_count
-        @evo_step_count += qty
-        break
-      end
+      next unless evo[1] == :LevelWalk
+      @evo_step_count = 0 if !@evo_step_count
+      @evo_step_count += qty
+      break
     end
   end
-    
+
   def evo_step_count
     return @evo_step_count || 0
   end
-  
+
   def evo_step_count=(value)
     @evo_step_count = value
   end
-  
+
   #-----------------------------------------------------------------------------
   # Edited for Move Relearner-exclusive moves.
   #-----------------------------------------------------------------------------
@@ -167,19 +158,17 @@ class Pokemon
   end
 end
 
-
 ################################################################################
-# 
+#
 # New evolution methods.
-# 
+#
 ################################################################################
-
 
 GameData::Evolution.register({
-  :id            => :CollectItems,
-  :parameter     => :Item,
-  :any_level_up  => true,   # Needs any level up
-  :level_up_proc => proc { |pkmn, parameter|
+  :id                   => :CollectItems,
+  :parameter            => :Item,
+  :any_level_up         => true,   # Needs any level up
+  :level_up_proc        => proc { |pkmn, parameter|
     next $bag.quantity(parameter) >= 999
   },
   :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
@@ -198,10 +187,10 @@ GameData::Evolution.register({
 })
 
 GameData::Evolution.register({
-  :id            => :LevelUseMoveCount,
-  :parameter     => :Move,
-  :any_level_up  => true,   # Needs any level up
-  :level_up_proc => proc { |pkmn, parameter|
+  :id                   => :LevelUseMoveCount,
+  :parameter            => :Move,
+  :any_level_up         => true,   # Needs any level up
+  :level_up_proc        => proc { |pkmn, parameter|
     next pkmn.evo_move_count(parameter) >= 20
   },
   :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
@@ -212,24 +201,24 @@ GameData::Evolution.register({
 })
 
 GameData::Evolution.register({
-  :id            => :LevelDefeatItsKindWithItem,
-  :parameter     => :Item,
-  :any_level_up  => true,   # Needs any level up
-  :level_up_proc => proc { |pkmn, parameter|
+  :id                   => :LevelDefeatItsKindWithItem,
+  :parameter            => :Item,
+  :any_level_up         => true,   # Needs any level up
+  :level_up_proc        => proc { |pkmn, parameter|
     next pkmn.evo_crest_count(parameter) >= 3
   },
   :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
     next false if evo_species != new_species || pkmn.evo_crest_count(parameter) < 3
-    pkmn.set_evo_crest_count(parameter,0)
+    pkmn.set_evo_crest_count(parameter, 0)
     next true
   }
 })
 
 GameData::Evolution.register({
-  :id            => :LevelRecoilDamage,
-  :parameter     => Integer,
-  :any_level_up  => true,   # Needs any level up
-  :level_up_proc => proc { |pkmn, parameter|
+  :id                   => :LevelRecoilDamage,
+  :parameter            => Integer,
+  :any_level_up         => true,   # Needs any level up
+  :level_up_proc        => proc { |pkmn, parameter|
     next pkmn.evo_recoil_count >= parameter
   },
   :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
@@ -240,10 +229,10 @@ GameData::Evolution.register({
 })
 
 GameData::Evolution.register({
-  :id            => :LevelWalk,
-  :parameter     => Integer,
-  :any_level_up  => true,   # Needs any level up
-  :level_up_proc => proc { |pkmn, parameter|
+  :id                   => :LevelWalk,
+  :parameter            => Integer,
+  :any_level_up         => true,   # Needs any level up
+  :level_up_proc        => proc { |pkmn, parameter|
     next pkmn.evo_step_count >= parameter
   },
   :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
@@ -253,13 +242,11 @@ GameData::Evolution.register({
   }
 })
 
-
 ################################################################################
-# 
+#
 # Step-based event handlers.
-# 
+#
 ################################################################################
-
 
 #-------------------------------------------------------------------------------
 # Tracks steps taken to trigger walking evolutions for the lead Pokemon.
@@ -311,26 +298,24 @@ EventHandlers.add(:on_player_step_taken, :mirrorherb_step, proc {
   end
 })
 
-
 ################################################################################
-# 
+#
 # Form handlers.
-# 
+#
 ################################################################################
-
 
 #-------------------------------------------------------------------------------
 # Regional forms upon creating an egg.
 #-------------------------------------------------------------------------------
 MultipleForms.copy(:RATTATA, :SANDSHREW, :VULPIX, :DIGLETT, :MEOWTH, :GEODUDE, :GRIMER,      # Alolan
-                   :PONYTA, :FARFETCHD, :CORSOLA, :ZIGZAGOON, :DARUMAKA, :YAMASK, :STUNFISK, # Galarian                                   
+                   :PONYTA, :FARFETCHD, :CORSOLA, :ZIGZAGOON, :DARUMAKA, :YAMASK, :STUNFISK, # Galarian
                    :SLOWPOKE, :ARTICUNO, :ZAPDOS, :MOLTRES,                                  # Galarian (DLC)
                    :WOOPER, :TAUROS                                                          # Paldean
-                  )                                                
+)
 
 #-------------------------------------------------------------------------------
 # Species with regional evolutions (Hisuian forms).
-#-------------------------------------------------------------------------------              
+#-------------------------------------------------------------------------------
 MultipleForms.register(:QUILAVA, {
   "getForm" => proc { |pkmn|
     next if pkmn.form_simple >= 2
@@ -403,7 +388,7 @@ MultipleForms.register(:SHAYMIN, {
 # Basculegion - Gender forms.
 #-------------------------------------------------------------------------------
 MultipleForms.register(:BASCULEGION, {
-  "getForm" => proc { |pkmn|
+  "getForm"           => proc { |pkmn|
     next pkmn.gender
   },
   "getFormOnCreation" => proc { |pkmn|
@@ -415,7 +400,7 @@ MultipleForms.register(:BASCULEGION, {
 # Oinkologne - Gender forms.
 #-------------------------------------------------------------------------------
 MultipleForms.register(:LECHONK, {
-  "getForm" => proc { |pkmn|
+  "getForm"           => proc { |pkmn|
     next pkmn.gender
   },
   "getFormOnCreation" => proc { |pkmn|
@@ -463,7 +448,7 @@ MultipleForms.copy(:SINISTEA, :POLTEAGEIST, :POLTCHAGEIST, :SINISTCHA)
 # Ogerpon - Masked forms.
 #-------------------------------------------------------------------------------
 MultipleForms.register(:OGERPON, {
-  "getForm" => proc { |pkmn|
+  "getForm"                 => proc { |pkmn|
     next 1 if pkmn.hasItem?(:WELLSPRINGMASK)
     next 2 if pkmn.hasItem?(:HEARTHFLAMEMASK)
     next 3 if pkmn.hasItem?(:CORNERSTONEMASK)
@@ -472,17 +457,17 @@ MultipleForms.register(:OGERPON, {
   "getFormOnEnteringBattle" => proc { |pkmn, wild|
     next pkmn.form + 4 if pkmn.form <= 3
   },
-  "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+  "getFormOnLeavingBattle"  => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 4 if pkmn.form > 3 && endBattle
   },
-  "getTerastalForm" => proc { |pkmn|
+  "getTerastalForm"         => proc { |pkmn|
     next pkmn.form + 4
   },
-  "getUnTerastalForm" => proc { |pkmn|
+  "getUnTerastalForm"       => proc { |pkmn|
     next pkmn.form - 4
   },
   # Compability for Pokedex Data Page plugin
-  "getDataPageInfo" => proc { |pkmn|
+  "getDataPageInfo"         => proc { |pkmn|
     next if pkmn.form < 8
     mask = nil
     case pkmn.form
@@ -501,13 +486,13 @@ MultipleForms.register(:TERAPAGOS, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if pkmn.form > 0 && endBattle
   },
-  "getTerastalForm" => proc { |pkmn|
+  "getTerastalForm"        => proc { |pkmn|
     next 2
   },
-  "getUnTerastalForm" => proc { |pkmn|
+  "getUnTerastalForm"      => proc { |pkmn|
     next 1
   },
-  "getDataPageInfo" => proc { |pkmn|
+  "getDataPageInfo"        => proc { |pkmn|
     next if pkmn.form < 2
     next [pkmn.form, 1]
   }

@@ -7,9 +7,9 @@ module GameData
     attr_reader :flags
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "ribbons.dat"
-    PBS_BASE_FILENAME = "ribbons"
+    DATA = {}.freeze
+    DATA_FILENAME = "ribbons.dat".freeze
+    PBS_BASE_FILENAME = "ribbons".freeze
 
     SCHEMA = {
       "SectionName"  => [:id,               "m"],
@@ -17,7 +17,7 @@ module GameData
       "IconPosition" => [:icon_position,    "u"],
       "Description"  => [:real_description, "q"],
       "Flags"        => [:flags,            "*s"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

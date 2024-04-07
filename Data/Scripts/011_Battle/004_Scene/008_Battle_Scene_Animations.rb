@@ -272,14 +272,13 @@ class Battle::Scene::Animation::TrainerAppear < Battle::Scene::Animation
       delay = oldTrainer.totalDuration
     end
     # Make new trainer sprite move on-screen
-    if @sprites["trainer_#{@idxTrainer + 1}"]
-      trainerX, trainerY = Battle::Scene.pbTrainerPosition(1)
-      trainerX += 64 + (Graphics.width / 4)
-      newTrainer = addSprite(@sprites["trainer_#{@idxTrainer + 1}"], PictureOrigin::BOTTOM)
-      newTrainer.setVisible(delay, true)
-      newTrainer.setXY(delay, trainerX, trainerY)
-      newTrainer.moveDelta(delay, 8, -Graphics.width / 4, 0)
-    end
+    return unless @sprites["trainer_#{@idxTrainer + 1}"]
+    trainerX, trainerY = Battle::Scene.pbTrainerPosition(1)
+    trainerX += 64 + (Graphics.width / 4)
+    newTrainer = addSprite(@sprites["trainer_#{@idxTrainer + 1}"], PictureOrigin::BOTTOM)
+    newTrainer.setVisible(delay, true)
+    newTrainer.setXY(delay, trainerX, trainerY)
+    newTrainer.moveDelta(delay, 8, -Graphics.width / 4, 0)
   end
 end
 
@@ -443,14 +442,13 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     battler.setColor(0, col)
     # Battler animation
     battlerAppear(battler, delay, battlerEndX, battlerEndY, batSprite, col)
-    if @shadowVisible
-      # Set up shadow sprite
-      shadow = addSprite(shaSprite, PictureOrigin::CENTER)
-      shadow.setOpacity(0, 0)
-      # Shadow animation
-      shadow.setVisible(delay, @shadowVisible)
-      shadow.moveOpacity(delay + 5, 10, 255)
-    end
+    return unless @shadowVisible
+    # Set up shadow sprite
+    shadow = addSprite(shaSprite, PictureOrigin::CENTER)
+    shadow.setOpacity(0, 0)
+    # Shadow animation
+    shadow.setVisible(delay, @shadowVisible)
+    shadow.moveOpacity(delay + 5, 10, 255)
   end
 end
 
@@ -505,14 +503,13 @@ class Battle::Scene::Animation::PokeballTrainerSendOut < Battle::Scene::Animatio
     battler.setColor(0, col)
     # Battler animation
     battlerAppear(battler, delay, battlerEndX, battlerEndY, batSprite, col)
-    if @shadowVisible
-      # Set up shadow sprite
-      shadow = addSprite(shaSprite, PictureOrigin::CENTER)
-      shadow.setOpacity(0, 0)
-      # Shadow animation
-      shadow.setVisible(delay, @shadowVisible)
-      shadow.moveOpacity(delay + 5, 10, 255)
-    end
+    return unless @shadowVisible
+    # Set up shadow sprite
+    shadow = addSprite(shaSprite, PictureOrigin::CENTER)
+    shadow.setOpacity(0, 0)
+    # Shadow animation
+    shadow.setVisible(delay, @shadowVisible)
+    shadow.moveOpacity(delay + 5, 10, 255)
   end
 
   def createBallTrajectory(ball, destX, destY)
@@ -561,13 +558,12 @@ class Battle::Scene::Animation::BattlerRecall < Battle::Scene::Animation
     ball.moveOpacity(10, 2, 0)
     # Battler animation
     battlerAbsorb(battler, delay, battlerEndX, battlerEndY, col)
-    if shaSprite.visible
-      # Set up shadow sprite
-      shadow = addSprite(shaSprite, PictureOrigin::CENTER)
-      # Shadow animation
-      shadow.moveOpacity(0, 10, 0)
-      shadow.setVisible(delay, false)
-    end
+    return unless shaSprite.visible
+    # Set up shadow sprite
+    shadow = addSprite(shaSprite, PictureOrigin::CENTER)
+    # Shadow animation
+    shadow.moveOpacity(0, 10, 0)
+    shadow.setVisible(delay, false)
   end
 end
 

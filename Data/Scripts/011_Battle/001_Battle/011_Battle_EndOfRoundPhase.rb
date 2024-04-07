@@ -156,11 +156,10 @@ class Battle
   def pbEORTerrainHealing(battler)
     return if battler.fainted?
     # Grassy Terrain (healing)
-    if @field.terrain == :Grassy && battler.affectedByTerrain? && battler.canHeal?
-      PBDebug.log("[Lingering effect] Grassy Terrain heals #{battler.pbThis(true)}")
-      battler.pbRecoverHP(battler.totalhp / 16)
-      pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
-    end
+    return unless @field.terrain == :Grassy && battler.affectedByTerrain? && battler.canHeal?
+    PBDebug.log("[Lingering effect] Grassy Terrain heals #{battler.pbThis(true)}")
+    battler.pbRecoverHP(battler.totalhp / 16)
+    pbDisplay(_INTL("{1}'s HP was restored.", battler.pbThis))
   end
 
   #=============================================================================
@@ -175,18 +174,14 @@ class Battle
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
       pbDisplay(_INTL("Aqua Ring restored {1}'s HP!", battler.pbThis(true)))
-    end
-    # Ingrain
-    priority.each do |battler|
+      # Ingrain
       next if !battler.effects[PBEffects::Ingrain]
       next if !battler.canHeal?
       hpGain = battler.totalhp / 16
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
       pbDisplay(_INTL("{1} absorbed nutrients with its roots!", battler.pbThis))
-    end
-    # Leech Seed
-    priority.each do |battler|
+      # Leech Seed
       next if battler.effects[PBEffects::LeechSeed] < 0
       next if !battler.takesIndirectDamage?
       recipient = @battlers[battler.effects[PBEffects::LeechSeed]]
@@ -236,9 +231,7 @@ class Battle
         battler.pbFaint if battler.fainted?
         battler.droppedBelowHalfHP = false
       end
-    end
-    # Damage from burn
-    priority.each do |battler|
+      # Damage from burn
       next if battler.status != :BURN || !battler.takesIndirectDamage?
       battler.droppedBelowHalfHP = false
       dmg = (Settings::MECHANICS_GENERATION >= 7) ? battler.totalhp / 16 : battler.totalhp / 8
@@ -262,9 +255,7 @@ class Battle
       battler.pbTakeEffectDamage(battler.totalhp / 4) do |hp_lost|
         pbDisplay(_INTL("{1} is locked in a nightmare!", battler.pbThis))
       end
-    end
-    # Curse
-    priority.each do |battler|
+      # Curse
       next if !battler.effects[PBEffects::Curse] || !battler.takesIndirectDamage?
       battler.pbTakeEffectDamage(battler.totalhp / 4) do |hp_lost|
         pbDisplay(_INTL("{1} is afflicted by the curse!", battler.pbThis))
@@ -283,7 +274,7 @@ class Battle
     :SANDTOMB    => "SandTomb",
     :WRAP        => "Wrap",
     :INFESTATION => "Infestation"
-  }
+  }.freeze
 
   def pbEORTrappingDamage(battler)
     return if battler.fainted? || battler.effects[PBEffects::Trapping] == 0
@@ -439,9 +430,8 @@ class Battle
     @field.effects[effect] -= 1
     return if @field.effects[effect] > 0
     pbDisplay(msg)
-    if effect == PBEffects::MagicRoom
-      pbPriority(true).each { |battler| battler.pbItemTerrainStatBoostCheck }
-    end
+    return unless effect == PBEffects::MagicRoom
+    pbPriority(true).each { |battler| battler.pbItemTerrainStatBoostCheck }
   end
 
   def pbEOREndFieldEffects(priority)
@@ -488,8 +478,10 @@ class Battle
       # Start up the default terrain
       if @field.defaultTerrain != :None
         pbStartTerrain(nil, @field.defaultTerrain, false)
-        allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
-        allBattlers.each { |battler| battler.pbItemTerrainStatBoostCheck }
+        allBattlers.each { |battler|
+          battler.pbAbilityOnTerrainChange
+          battler.pbItemTerrainStatBoostCheck
+        }
       end
       return if @field.terrain == :None
     end
@@ -528,12 +520,10 @@ class Battle
       end
     end
     # Slow Start's end message
-    if battler.effects[PBEffects::SlowStart] > 0
-      battler.effects[PBEffects::SlowStart] -= 1
-      if battler.effects[PBEffects::SlowStart] == 0
-        pbDisplay(_INTL("{1} finally got its act together!", battler.pbThis))
-      end
-    end
+    return unless battler.effects[PBEffects::SlowStart] > 0
+    battler.effects[PBEffects::SlowStart] -= 1
+    return unless battler.effects[PBEffects::SlowStart] == 0
+    pbDisplay(_INTL("{1} finally got its act together!", battler.pbThis))
   end
 
   #=============================================================================
@@ -543,50 +533,49 @@ class Battle
     # Move battlers around if none are near to each other
     # NOTE: This code assumes each side has a maximum of 3 battlers on it, and
     #       is not generalised to larger side sizes.
-    if !singleBattle?
-      swaps = []   # Each element is an array of two battler indices to swap
-      2.times do |side|
-        next if pbSideSize(side) == 1   # Only battlers on sides of size 2+ need to move
-        # Check if any battler on this side is near any battler on the other side
-        anyNear = false
-        allSameSideBattlers(side).each do |battler|
-          anyNear = allOtherSideBattlers(battler).any? { |other| nearBattlers?(other.index, battler.index) }
-          break if anyNear
-        end
+    return if singleBattle?
+    swaps = []   # Each element is an array of two battler indices to swap
+    2.times do |side|
+      next if pbSideSize(side) == 1   # Only battlers on sides of size 2+ need to move
+      # Check if any battler on this side is near any battler on the other side
+      anyNear = false
+      allSameSideBattlers(side).each do |battler|
+        anyNear = allOtherSideBattlers(battler).any? { |other| nearBattlers?(other.index, battler.index) }
         break if anyNear
-        # No battlers on this side are near any battlers on the other side; try
-        # to move them
-        # NOTE: If we get to here (assuming both sides are of size 3 or less),
-        #       there is definitely only 1 able battler on this side, so we
-        #       don't need to worry about multiple battlers trying to move into
-        #       the same position. If you add support for a side of size 4+,
-        #       this code will need revising to account for that, as well as to
-        #       add more complex code to ensure battlers will end up near each
-        #       other.
-        allSameSideBattlers(side).each do |battler|
-          # Get the position to move to
-          pos = -1
-          case pbSideSize(side)
-          when 2 then pos = [2, 3, 0, 1][battler.index]   # The unoccupied position
-          when 3 then pos = (side == 0) ? 2 : 3    # The centre position
-          end
-          next if pos < 0
-          # Can't move if the same trainer doesn't control both positions
-          idxOwner = pbGetOwnerIndexFromBattlerIndex(battler.index)
-          next if pbGetOwnerIndexFromBattlerIndex(pos) != idxOwner
-          swaps.push([battler.index, pos])
-        end
       end
-      # Move battlers around
-      swaps.each do |pair|
-        next if pbSideSize(pair[0]) == 2 && swaps.length > 1
-        next if !pbSwapBattlers(pair[0], pair[1])
-        case pbSideSize(pair[1])
-        when 2
-          pbDisplay(_INTL("{1} moved across!", @battlers[pair[1]].pbThis))
-        when 3
-          pbDisplay(_INTL("{1} moved to the center!", @battlers[pair[1]].pbThis))
+      break if anyNear
+      # No battlers on this side are near any battlers on the other side; try
+      # to move them
+      # NOTE: If we get to here (assuming both sides are of size 3 or less),
+      #       there is definitely only 1 able battler on this side, so we
+      #       don't need to worry about multiple battlers trying to move into
+      #       the same position. If you add support for a side of size 4+,
+      #       this code will need revising to account for that, as well as to
+      #       add more complex code to ensure battlers will end up near each
+      #       other.
+      allSameSideBattlers(side).each do |battler|
+        # Get the position to move to
+        pos = -1
+        case pbSideSize(side)
+        when 2 then pos = [2, 3, 0, 1][battler.index]   # The unoccupied position
+        when 3 then pos = (side == 0) ? 2 : 3    # The centre position
         end
+        next if pos < 0
+        # Can't move if the same trainer doesn't control both positions
+        idxOwner = pbGetOwnerIndexFromBattlerIndex(battler.index)
+        next if pbGetOwnerIndexFromBattlerIndex(pos) != idxOwner
+        swaps.push([battler.index, pos])
+      end
+    end
+    # Move battlers around
+    swaps.each do |pair|
+      next if pbSideSize(pair[0]) == 2 && swaps.length > 1
+      next if !pbSwapBattlers(pair[0], pair[1])
+      case pbSideSize(pair[1])
+      when 2
+        pbDisplay(_INTL("{1} moved across!", @battlers[pair[1]].pbThis))
+      when 3
+        pbDisplay(_INTL("{1} moved to the center!", @battlers[pair[1]].pbThis))
       end
     end
   end
@@ -613,13 +602,9 @@ class Battle
     priority.each do |battler|
       pbEORTerrainHealing(battler)
       # Healer, Hydration, Shed Skin
-      if battler.abilityActive?
-        Battle::AbilityEffects.triggerEndOfRoundHealing(battler.ability, battler, self)
-      end
+      Battle::AbilityEffects.triggerEndOfRoundHealing(battler.ability, battler, self) if battler.abilityActive?
       # Black Sludge, Leftovers
-      if battler.itemActive?
-        Battle::ItemEffects.triggerEndOfRoundHealing(battler.item, battler, self)
-      end
+      Battle::ItemEffects.triggerEndOfRoundHealing(battler.item, battler, self) if battler.itemActive?
     end
     # Self-curing of status due to affection
     if Settings::AFFECTION_EFFECTS && @internalBattle
@@ -659,15 +644,15 @@ class Battle
     # Damage from Nightmare and Curse
     pbEOREffectDamage(priority)
     # Trapping attacks (Bind/Clamp/Fire Spin/Magma Storm/Sand Tomb/Whirlpool/Wrap)
-    priority.each { |battler| pbEORTrappingDamage(battler) }
-    # Octolock
-    priority.each do |battler|
+    priority.each { |battler|
+      pbEORTrappingDamage(battler)
+      # Octolock
       next if battler.fainted? || battler.effects[PBEffects::Octolock] < 0
       pbCommonAnimation("Octolock", battler)
       battler.pbLowerStatStage(:DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:DEFENSE)
       battler.pbLowerStatStage(:SPECIAL_DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:SPECIAL_DEFENSE)
       battler.pbItemOnStatDropped
-    end
+    }
     # Effects that apply to a battler that wear off after a number of rounds
     pbEOREndBattlerEffects(priority)
     # Check for end of battle (i.e. because of Perish Song)
@@ -685,17 +670,11 @@ class Battle
       # Self-inflicted effects that wear off after a number of rounds
       pbEOREndBattlerSelfEffects(battler)
       # Bad Dreams, Moody, Speed Boost
-      if battler.abilityActive?
-        Battle::AbilityEffects.triggerEndOfRoundEffect(battler.ability, battler, self)
-      end
+      Battle::AbilityEffects.triggerEndOfRoundEffect(battler.ability, battler, self) if battler.abilityActive?
       # Flame Orb, Sticky Barb, Toxic Orb
-      if battler.itemActive?
-        Battle::ItemEffects.triggerEndOfRoundEffect(battler.item, battler, self)
-      end
+      Battle::ItemEffects.triggerEndOfRoundEffect(battler.item, battler, self) if battler.itemActive?
       # Harvest, Pickup, Ball Fetch
-      if battler.abilityActive?
-        Battle::AbilityEffects.triggerEndOfRoundGainItem(battler.ability, battler, self)
-      end
+      Battle::AbilityEffects.triggerEndOfRoundGainItem(battler.ability, battler, self) if battler.abilityActive?
     end
     pbGainExp
     return if @decision > 0
@@ -711,8 +690,8 @@ class Battle
     priority.each { |battler| battler.pbContinualAbilityChecks }
     # Reset/count down battler-specific effects (no messages)
     allBattlers.each do |battler|
-      battler.effects[PBEffects::BanefulBunker]    = false
-      battler.effects[PBEffects::Charge]           -= 1 if battler.effects[PBEffects::Charge] > 0
+      battler.effects[PBEffects::BanefulBunker] = false
+      battler.effects[PBEffects::Charge] -= 1 if battler.effects[PBEffects::Charge] > 0
       battler.effects[PBEffects::Counter]          = -1
       battler.effects[PBEffects::CounterTarget]    = -1
       battler.effects[PBEffects::Electrify]        = false
@@ -722,12 +701,12 @@ class Battle
       battler.effects[PBEffects::FocusPunch]       = false
       battler.effects[PBEffects::FollowMe]         = 0
       battler.effects[PBEffects::HelpingHand]      = false
-      battler.effects[PBEffects::HyperBeam]        -= 1 if battler.effects[PBEffects::HyperBeam] > 0
-      battler.effects[PBEffects::KingsShield]      = false
-      battler.effects[PBEffects::LaserFocus]       -= 1 if battler.effects[PBEffects::LaserFocus] > 0
+      battler.effects[PBEffects::HyperBeam] -= 1 if battler.effects[PBEffects::HyperBeam] > 0
+      battler.effects[PBEffects::KingsShield] = false
+      battler.effects[PBEffects::LaserFocus] -= 1 if battler.effects[PBEffects::LaserFocus] > 0
       if battler.effects[PBEffects::LockOn] > 0   # Also Mind Reader
-        battler.effects[PBEffects::LockOn]         -= 1
-        battler.effects[PBEffects::LockOnPos]      = -1 if battler.effects[PBEffects::LockOn] == 0
+        battler.effects[PBEffects::LockOn] -= 1
+        battler.effects[PBEffects::LockOnPos] = -1 if battler.effects[PBEffects::LockOn] == 0
       end
       battler.effects[PBEffects::MagicBounce]      = false
       battler.effects[PBEffects::MagicCoat]        = false
@@ -744,7 +723,7 @@ class Battle
       battler.effects[PBEffects::Snatch]           = 0
       battler.effects[PBEffects::SpikyShield]      = false
       battler.effects[PBEffects::Spotlight]        = 0
-      battler.effects[PBEffects::ThroatChop]       -= 1 if battler.effects[PBEffects::ThroatChop] > 0
+      battler.effects[PBEffects::ThroatChop] -= 1 if battler.effects[PBEffects::ThroatChop] > 0
       battler.lastHPLost                           = 0
       battler.lastHPLostFromFoe                    = 0
       battler.droppedBelowHalfHP                   = false
@@ -761,10 +740,8 @@ class Battle
     end
     # Reset/count down side-specific effects (no messages)
     2.times do |side|
-      @sides[side].effects[PBEffects::CraftyShield]         = false
-      if !@sides[side].effects[PBEffects::EchoedVoiceUsed]
-        @sides[side].effects[PBEffects::EchoedVoiceCounter] = 0
-      end
+      @sides[side].effects[PBEffects::CraftyShield] = false
+      @sides[side].effects[PBEffects::EchoedVoiceCounter] = 0 if !@sides[side].effects[PBEffects::EchoedVoiceUsed]
       @sides[side].effects[PBEffects::EchoedVoiceUsed]      = false
       @sides[side].effects[PBEffects::MatBlock]             = false
       @sides[side].effects[PBEffects::QuickGuard]           = false
@@ -772,8 +749,8 @@ class Battle
       @sides[side].effects[PBEffects::WideGuard]            = false
     end
     # Reset/count down field-specific effects (no messages)
-    @field.effects[PBEffects::IonDeluge]   = false
-    @field.effects[PBEffects::FairyLock]   -= 1 if @field.effects[PBEffects::FairyLock] > 0
+    @field.effects[PBEffects::IonDeluge] = false
+    @field.effects[PBEffects::FairyLock] -= 1 if @field.effects[PBEffects::FairyLock] > 0
     @field.effects[PBEffects::FusionBolt]  = false
     @field.effects[PBEffects::FusionFlare] = false
     @endOfRound = false

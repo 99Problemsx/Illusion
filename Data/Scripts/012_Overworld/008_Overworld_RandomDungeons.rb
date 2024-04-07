@@ -46,10 +46,10 @@ module RandomDungeon
   class Maze
     attr_accessor :node_count_x, :node_count_y
 
-    DIRECTIONS = [EdgeMasks::NORTH, EdgeMasks::SOUTH, EdgeMasks::EAST, EdgeMasks::WEST]
+    DIRECTIONS = [EdgeMasks::NORTH, EdgeMasks::SOUTH, EdgeMasks::EAST, EdgeMasks::WEST].freeze
 
     def initialize(cw, ch, parameters)
-      raise ArgumentError.new if cw == 0 || ch == 0
+      raise ArgumentError if cw == 0 || ch == 0
       @node_count_x = cw
       @node_count_y = ch
       @parameters = parameters
@@ -83,7 +83,7 @@ module RandomDungeon
       return if !valid_node?(x, y)
       @nodes[(y * @node_count_x) + x].connect_edge(edge)
       new_x, new_y, new_edge = get_coords_in_direction(x, y, edge, true)
-      raise ArgumentError.new if new_edge == 0
+      raise ArgumentError if new_edge == 0
       @nodes[(new_y * @node_count_x) + new_x].connect_edge(new_edge) if valid_node?(new_x, new_y)
     end
 
@@ -258,7 +258,7 @@ module RandomDungeon
       :upper_wall_in_3        => Console.markup_style("~", bg: :gray),
       :upper_wall_in_7        => Console.markup_style("~", bg: :gray),
       :upper_wall_in_9        => Console.markup_style("~", bg: :gray)
-    }
+    }.freeze
 
     def initialize(width, height)
       @width  = width
@@ -342,7 +342,7 @@ module RandomDungeon
       19, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0,
       6, 13, 13, 13, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0,
       19, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0
-    ]
+    ].freeze
 
     def initialize(width, height, tileset, parameters = nil)
       @tileset     = tileset
@@ -781,11 +781,10 @@ module RandomDungeon
                           @parameters.cell_width - x_offset, @parameters.corridor_width,
                           :corridor)
       end
-      if (pattern & RandomDungeon::EdgeMasks::WEST) == 0
-        paint_ground_rect(cell_x, cell_y + y_offset,
-                          x_offset + @parameters.corridor_width, @parameters.corridor_width,
-                          :corridor)
-      end
+      return unless (pattern & RandomDungeon::EdgeMasks::WEST) == 0
+      paint_ground_rect(cell_x, cell_y + y_offset,
+                        x_offset + @parameters.corridor_width, @parameters.corridor_width,
+                        :corridor)
     end
 
     # Draws a room at (cell_x, cell_y).
@@ -879,11 +878,7 @@ module RandomDungeon
                    rand(100) < @parameters.floor_patch_chance
                   @map_data[x + @buffer_x, y + @buffer_y, 0] = :floor_patch
                 end
-              end
-            end
-            # Smoothing of placed floor patch tiles
-            ((mid_y - @parameters.floor_patch_radius)..(mid_y + @parameters.floor_patch_radius)).each do |y|
-              ((mid_x - @parameters.floor_patch_radius)..(mid_x + @parameters.floor_patch_radius)).each do |x|
+                # Smoothing of placed floor patch tiles
                 if @map_data[x + @buffer_x, y + @buffer_y, 0] == :floor_patch
                   adj_count = 0
                   adj_count += 1 if @map_data[x + @buffer_x - 1, y + @buffer_y, 0] == :floor_patch
@@ -907,7 +902,7 @@ module RandomDungeon
                   if adj_count >= 2 && rand(100) < adj_count * @parameters.floor_patch_smooth_rate
                     @map_data[x + @buffer_x, y + @buffer_y, 0] = :floor_patch
                   end
-                end
+                  end
               end
             end
           end
@@ -955,13 +950,12 @@ module RandomDungeon
         end
       end
       # 1x1 void decoration (rock)
-      if @tileset.has_decoration?(:void_decoration)
-        ((@width * @height) / @parameters.void_decoration_density).times do
-          x = rand(@width)
-          y = rand(@height)
-          next if @map_data.value(x, y) != :void
-          @map_data[x, y, 0] = :void_decoration
-        end
+      return unless @tileset.has_decoration?(:void_decoration)
+      ((@width * @height) / @parameters.void_decoration_density).times do
+        x = rand(@width)
+        y = rand(@height)
+        next if @map_data.value(x, y) != :void
+        @map_data[x, y, 0] = :void_decoration
       end
     end
 
@@ -1061,47 +1055,45 @@ end
 # Code that generates a random dungeon layout, and implements it in a given map.
 #===============================================================================
 EventHandlers.add(:on_game_map_setup, :random_dungeon,
-  proc { |map_id, map, _tileset_data|
-    next if !GameData::MapMetadata.try_get(map_id)&.random_dungeon
-    # Generate a random dungeon
-    tileset_data = GameData::DungeonTileset.try_get(map.tileset_id)
-    params = GameData::DungeonParameters.try_get($PokemonGlobal.dungeon_area,
-                                                 $PokemonGlobal.dungeon_version)
-    dungeon = RandomDungeon::Dungeon.new(params.cell_count_x, params.cell_count_y,
-                                         tileset_data, params)
-    dungeon.generate
-    map.width = dungeon.width
-    map.height = dungeon.height
-    map.data.resize(map.width, map.height, 3)
-    dungeon.generateMapInPlace(map)
-    failed = false
-    100.times do |i|
-      failed = false
-      occupied_tiles = []
-      # Reposition events
-      map.events.each_value do |event|
-        event_width = 1
-        event_height = 1
-        if event.name[/size\((\d+),(\d+)\)/i]
-          event_width = $~[1].to_i
-          event_height = $~[2].to_i
-        end
-        tile = dungeon.get_random_room_tile(occupied_tiles, event_width, event_height)
-        failed = true if !tile
-        break if failed
-        event.x = tile[0]
-        event.y = tile[1]
-      end
-      next if failed
-      # Reposition the player
-      tile = dungeon.get_random_room_tile(occupied_tiles)
-      next if !tile
-      $game_temp.player_new_x = tile[0]
-      $game_temp.player_new_y = tile[1]
-      break
-    end
-    if failed
-      raise _INTL("Couldn't place all events and the player in rooms.")
-    end
-  }
+                  proc { |map_id, map, _tileset_data|
+                    next if !GameData::MapMetadata.try_get(map_id)&.random_dungeon
+                    # Generate a random dungeon
+                    tileset_data = GameData::DungeonTileset.try_get(map.tileset_id)
+                    params = GameData::DungeonParameters.try_get($PokemonGlobal.dungeon_area,
+                                                                 $PokemonGlobal.dungeon_version)
+                    dungeon = RandomDungeon::Dungeon.new(params.cell_count_x, params.cell_count_y,
+                                                         tileset_data, params)
+                    dungeon.generate
+                    map.width = dungeon.width
+                    map.height = dungeon.height
+                    map.data.resize(map.width, map.height, 3)
+                    dungeon.generateMapInPlace(map)
+                    failed = false
+                    100.times do |i|
+                      failed = false
+                      occupied_tiles = []
+                      # Reposition events
+                      map.events.each_value do |event|
+                        event_width = 1
+                        event_height = 1
+                        if event.name[/size\((\d+),(\d+)\)/i]
+                          event_width = $~[1].to_i
+                          event_height = $~[2].to_i
+                        end
+                        tile = dungeon.get_random_room_tile(occupied_tiles, event_width, event_height)
+                        failed = true if !tile
+                        break if failed
+                        event.x = tile[0]
+                        event.y = tile[1]
+                      end
+                      next if failed
+                      # Reposition the player
+                      tile = dungeon.get_random_room_tile(occupied_tiles)
+                      next if !tile
+                      $game_temp.player_new_x = tile[0]
+                      $game_temp.player_new_y = tile[1]
+                      break
+                    end
+                    raise _INTL("Couldn't place all events and the player in rooms.") if failed
+                  }
 )

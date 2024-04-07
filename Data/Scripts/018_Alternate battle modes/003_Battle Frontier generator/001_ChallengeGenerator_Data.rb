@@ -173,8 +173,16 @@ def pbGenerateChallenge(rule, tag)
   yield(_INTL("Preparing to generate teams"))
   rule = rule.copy.setNumber(2)
   yield(nil)
-  party = load_data(tag + ".rxdata") rescue []
-  teams = load_data(tag + "_teams.rxdata") rescue []
+  party = begin
+    load_data(tag + ".rxdata")
+  rescue StandardError
+    []
+  end
+  teams = begin
+    load_data(tag + "_teams.rxdata")
+  rescue StandardError
+    []
+  end
   if teams.length < 10
     btpokemon = pbGetBTPokemon(tag)
     if btpokemon && btpokemon.length != 0
@@ -275,14 +283,18 @@ end
 #===============================================================================
 def pbWriteCup(id, rules)
   return if !$DEBUG
-  trlists = (load_data("Data/trainer_lists.dat") rescue [])
+  trlists = begin
+    load_data("Data/trainer_lists.dat")
+  rescue StandardError
+    []
+  end
   list = []
   trlists.length.times do |i|
     tr = trlists[i]
     if tr[5]
-      list.push("*" + (tr[3].sub(/\.txt$/, "")))
+      list.push("*" + tr[3].sub(/\.txt$/, ""))
     else
-      list.push((tr[3].sub(/\.txt$/, "")))
+      list.push(tr[3].sub(/\.txt$/, ""))
     end
   end
   cmd = 0

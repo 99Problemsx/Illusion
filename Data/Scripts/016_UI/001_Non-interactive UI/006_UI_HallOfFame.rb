@@ -32,7 +32,7 @@ class HallOfFame_Scene
   # If a player exceed this limit, the first one will be removed.
   HALL_ENTRIES_LIMIT = 50
   # The entry music name. Put "" to doesn't play anything.
-  HALL_OF_FAME_BGM = "Hall of Fame"
+  HALL_OF_FAME_BGM = "Hall of Fame".freeze
   # Allow eggs to be show and saved in hall.
   ALLOW_EGGS = true
   # Remove the hallbars when the trainer sprite appears.
@@ -48,7 +48,7 @@ class HallOfFame_Scene
   def pbStartScene
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     # Comment the below line to doesn't use a background
     addBackgroundPlane(@sprites, "bg", "Hall of Fame/bg", @viewport)
     @sprites["hallbars"] = IconSprite.new(@viewport)
@@ -66,7 +66,7 @@ class HallOfFame_Scene
 
   def pbStartSceneEntry
     pbStartScene
-    @useMusic = (HALL_OF_FAME_BGM && HALL_OF_FAME_BGM != "")
+    @useMusic = HALL_OF_FAME_BGM && HALL_OF_FAME_BGM != ""
     pbBGMPlay(HALL_OF_FAME_BGM) if @useMusic
     saveHallEntry
     @movements = []
@@ -125,9 +125,8 @@ class HallOfFame_Scene
     # Update the global variables
     $PokemonGlobal.hallOfFame.push(@hallEntry)
     $PokemonGlobal.hallOfFameLastNumber += 1
-    if HALL_ENTRIES_LIMIT >= 0 && $PokemonGlobal.hallOfFame.size > HALL_ENTRIES_LIMIT
-      $PokemonGlobal.hallOfFame.delete_at(0)
-    end
+    return unless HALL_ENTRIES_LIMIT >= 0 && $PokemonGlobal.hallOfFame.size > HALL_ENTRIES_LIMIT
+    $PokemonGlobal.hallOfFame.delete_at(0)
   end
 
   # Return the x/y point position in screen for battler index number

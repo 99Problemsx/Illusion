@@ -830,10 +830,9 @@ class Battle::Move::RemoveScreens < Battle::Move
       user.pbOpposingSide.effects[PBEffects::Reflect] = 0
       @battle.pbDisplay(_INTL("{1}'s Reflect wore off!", user.pbOpposingTeam))
     end
-    if user.pbOpposingSide.effects[PBEffects::AuroraVeil] > 0
-      user.pbOpposingSide.effects[PBEffects::AuroraVeil] = 0
-      @battle.pbDisplay(_INTL("{1}'s Aurora Veil wore off!", user.pbOpposingTeam))
-    end
+    return unless user.pbOpposingSide.effects[PBEffects::AuroraVeil] > 0
+    user.pbOpposingSide.effects[PBEffects::AuroraVeil] = 0
+    @battle.pbDisplay(_INTL("{1}'s Aurora Veil wore off!", user.pbOpposingTeam))
   end
 
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
@@ -1096,9 +1095,7 @@ end
 class Battle::Move::EffectivenessIncludesFlyingType < Battle::Move
   def pbCalcTypeModSingle(moveType, defType, user, target)
     ret = super
-    if GameData::Type.exists?(:FLYING)
-      ret *= Effectiveness.calculate(:FLYING, defType)
-    end
+    ret *= Effectiveness.calculate(:FLYING, defType) if GameData::Type.exists?(:FLYING)
     return ret
   end
 end

@@ -11,37 +11,33 @@ module BattleAnimationEditor
   def tryLoadData(file)
     begin
       return load_data(file)
-    rescue
+    rescue StandardError
       return nil
     end
   end
 
   def dumpBase64Anim(s)
-    return [Zlib::Deflate.deflate(Marshal.dump(s))].pack("m").gsub(/\n/, "\r\n")
+    return [Zlib::Deflate.deflate(Marshal.dump(s))].pack("m").gsub("\n", "\r\n")
   end
 
   def loadBase64Anim(s)
-    return Marshal.restore(Zlib::Inflate.inflate(s.unpack("m")[0]))
+    return Marshal.restore(Zlib::Inflate.inflate(s.unpack1("m")))
   end
 
   def pbExportAnim(animations)
     filename = pbMessageFreeText(_INTL("Enter a filename."), "", false, 32)
-    if filename != ""
-      begin
-        filename += ".anm"
-        File.open(filename, "wb") do |f|
-          f.write(dumpBase64Anim(animations[animations.selected]))
-        end
-        failed = false
-      rescue
-        pbMessage(_INTL("Couldn't save the animation to {1}.", filename))
-        failed = true
-      end
-      if !failed
-        pbMessage(_INTL("Animation was saved to {1} in the game folder.", filename))
-        pbMessage(_INTL("It's a text file, so it can be transferred to others easily."))
-      end
+    return unless filename != ""
+    begin
+      filename += ".anm"
+      File.binwrite(filename, dumpBase64Anim(animations[animations.selected]))
+      failed = false
+    rescue StandardError
+      pbMessage(_INTL("Couldn't save the animation to {1}.", filename))
+      failed = true
     end
+    return if failed
+    pbMessage(_INTL("Animation was saved to {1} in the game folder.", filename))
+    pbMessage(_INTL("It's a text file, so it can be transferred to others easily."))
   end
 
   def pbImportAnim(animations, canvas, animwin)
@@ -57,12 +53,12 @@ module BattleAnimationEditor
       cmdwin.update
       if Input.trigger?(Input::USE) && animfiles.length > 0
         begin
-          textdata = loadBase64Anim(IO.read(animfiles[cmdwin.index]))
+          textdata = loadBase64Anim(File.read(animfiles[cmdwin.index]))
           throw "Bad data" if !textdata.is_a?(PBAnimation)
           textdata.id = -1 # this is not an RPG Maker XP animation
           pbConvertAnimToNewFormat(textdata)
           animations[animations.selected] = textdata
-        rescue
+        rescue StandardError
           pbMessage(_INTL("The animation is invalid or could not be loaded."))
           next
         end
@@ -75,9 +71,7 @@ module BattleAnimationEditor
         animwin.animbitmap = canvas.animbitmap
         break
       end
-      if Input.trigger?(Input::BACK)
-        break
-      end
+      break if Input.trigger?(Input::BACK)
     end
     cmdwin.dispose
     return

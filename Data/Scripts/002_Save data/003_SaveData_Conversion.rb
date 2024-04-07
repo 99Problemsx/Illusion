@@ -32,17 +32,16 @@ module SaveData
     attr_reader :version
 
     # @param id [String] conversion ID
-    def initialize(id, &block)
+    def initialize(id, ...)
       @id = id
       @value_procs = {}
       @all_proc = nil
       @title = "Running conversion #{@id}"
       @trigger_type = nil
       @version = nil
-      instance_eval(&block)
-      if @trigger_type.nil? || @version.nil?
-        raise "Conversion #{@id} is missing a condition"
-      end
+      instance_eval(...)
+      return unless @trigger_type.nil? || @version.nil?
+      raise "Conversion #{@id} is missing a condition"
     end
 
     # Returns whether the conversion should be run with the given version.
@@ -56,9 +55,7 @@ module SaveData
     # @param save_data [Hash]
     def run(save_data)
       @value_procs.each do |value_id, proc|
-        unless save_data.has_key?(value_id)
-          raise "Save data does not have value #{value_id.inspect}"
-        end
+        raise "Save data does not have value #{value_id.inspect}" unless save_data.has_key?(value_id)
         proc.call(save_data[value_id])
       end
       @all_proc.call(save_data) if @all_proc.is_a?(Proc)
@@ -115,9 +112,7 @@ module SaveData
     def to_value(value_id, &block)
       validate value_id => Symbol
       raise ArgumentError, "No block given to to_value" unless block_given?
-      if @value_procs[value_id].is_a?(Proc)
-        raise "Multiple to_value definitions in conversion #{@id} for #{value_id}"
-      end
+      raise "Multiple to_value definitions in conversion #{@id} for #{value_id}" if @value_procs[value_id].is_a?(Proc)
       @value_procs[value_id] = block
     end
 
@@ -125,9 +120,7 @@ module SaveData
     # @see SaveData.register_conversion
     def to_all(&block)
       raise ArgumentError, "No block given to to_all" unless block_given?
-      if @all_proc.is_a?(Proc)
-        raise "Multiple to_all definitions in conversion #{@id}"
-      end
+      raise "Multiple to_all definitions in conversion #{@id}" if @all_proc.is_a?(Proc)
       @all_proc = block
     end
 
@@ -155,12 +148,10 @@ module SaveData
   #     end
   #   end
   # @yield the block of code to be saved as a Conversion
-  def self.register_conversion(id, &block)
+  def self.register_conversion(id, ...)
     validate id => Symbol
-    unless block_given?
-      raise ArgumentError, "No block given to SaveData.register_conversion"
-    end
-    conversion = Conversion.new(id, &block)
+    raise ArgumentError, "No block given to SaveData.register_conversion" unless block_given?
+    conversion = Conversion.new(id, ...)
     @conversions[conversion.trigger_type][conversion.version] ||= []
     @conversions[conversion.trigger_type][conversion.version] << conversion
   end

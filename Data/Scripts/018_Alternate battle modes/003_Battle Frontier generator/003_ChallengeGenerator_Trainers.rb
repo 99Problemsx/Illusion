@@ -91,9 +91,7 @@ def pbTrainerInfo(pokemonlist, trfile, rules)
     end
     types[:NORMAL] = 1 if count == 0   # All type counts are 0; add 1 to Normal
     # Trainer had no Pokémon available to it; make all the type counts 1
-    if pokemonnumbers.length == 0
-      GameData::Type.each { |t| types[t.id] = 1 }
-    end
+    GameData::Type.each { |t| types[t.id] = 1 } if pokemonnumbers.length == 0
     # Get Pokémon from pokemonlist, if there are any, and make sure enough are
     # gotten that a valid team can be made from them
     numbers = []
@@ -182,7 +180,11 @@ def pbTrainerInfo(pokemonlist, trfile, rules)
   pokemonlist.each do |pkmn|
     pbpokemonlist.push(PBPokemon.fromPokemon(pkmn))
   end
-  trlists = (load_data("Data/trainer_lists.dat") rescue [])
+  trlists = begin
+    load_data("Data/trainer_lists.dat")
+  rescue StandardError
+    []
+  end
   hasDefault = false
   trIndex = -1
   trlists.length.times do |i|

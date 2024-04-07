@@ -198,7 +198,7 @@ class Pokemon
   # @param value [Integer] new level (between 1 and the maximum level)
   def level=(value)
     if value < 1 || value > GameData::GrowthRate.max_level
-      raise ArgumentError.new(_INTL("The level number ({1}) is invalid.", value))
+      raise ArgumentError, _INTL("The level number ({1}) is invalid.", value)
     end
     @exp = growth_rate.minimum_exp_for_level(value)
     @level = value
@@ -254,9 +254,7 @@ class Pokemon
   def status=(value)
     return if !able?
     new_status = GameData::Status.try_get(value)
-    if !new_status
-      raise ArgumentError, _INTL("Attempted to set {1} as Pokémon status", value.class.name)
-    end
+    raise ArgumentError, _INTL("Attempted to set {1} as Pokémon status", value.class.name) if !new_status
     @status = new_status.id
   end
 
@@ -592,9 +590,7 @@ class Pokemon
   # removes the held mail.
   # @param mail [Mail, nil] mail to be held by this Pokémon
   def mail=(mail)
-    if !mail.nil? && !mail.is_a?(Mail)
-      raise ArgumentError, _INTL("Invalid value {1} given", mail.inspect)
-    end
+    raise ArgumentError, _INTL("Invalid value {1} given", mail.inspect) if !mail.nil? && !mail.is_a?(Mail)
     @mail = mail
   end
 
@@ -1104,9 +1100,7 @@ class Pokemon
     nature_mod = {}
     GameData::Stat.each_main { |s| nature_mod[s.id] = 100 }
     this_nature = self.nature_for_stats
-    if this_nature
-      this_nature.stat_changes.each { |change| nature_mod[change[0]] += change[1] }
-    end
+    this_nature.stat_changes.each { |change| nature_mod[change[0]] += change[1] } if this_nature
     # Calculate stats
     stats = {}
     GameData::Stat.each_main do |s|
@@ -1142,7 +1136,7 @@ class Pokemon
       ret.ivMaxed[s.id] = @ivMaxed[s.id]
       ret.ev[s.id]      = @ev[s.id]
     end
-    ret.moves       = []
+    ret.moves = []
     @moves.each_with_index { |m, i| ret.moves[i] = m.clone }
     ret.first_moves = @first_moves.clone
     ret.owner       = @owner.clone
@@ -1216,12 +1210,10 @@ class Pokemon
     @hp               = 1
     @totalhp          = 1
     calc_stats
-    if @form == 0 && recheck_form
-      f = MultipleForms.call("getFormOnCreation", self)
-      if f
-        self.form = f
-        reset_moves if withMoves
-      end
-    end
+    return unless @form == 0 && recheck_form
+    f = MultipleForms.call("getFormOnCreation", self)
+    return unless f
+    self.form = f
+    reset_moves if withMoves
   end
 end

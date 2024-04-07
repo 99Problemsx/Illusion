@@ -366,7 +366,11 @@ module Followers
   # Removes all followers.
   def clear
     $game_temp.followers.remove_all_followers
-    pbDeregisterPartner rescue nil
+    begin
+      pbDeregisterPartner
+    rescue StandardError
+      nil
+    end
   end
 
   # @param name [String, nil] name of the follower to get, or nil for the first follower

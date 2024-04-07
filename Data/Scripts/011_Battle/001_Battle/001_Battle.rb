@@ -97,9 +97,9 @@ class Battle
   #=============================================================================
   def initialize(scene, p1, p2, player, opponent)
     if p1.length == 0
-      raise ArgumentError.new(_INTL("Party 1 has no Pokémon."))
+      raise ArgumentError, _INTL("Party 1 has no Pokémon.")
     elsif p2.length == 0
-      raise ArgumentError.new(_INTL("Party 2 has no Pokémon."))
+      raise ArgumentError, _INTL("Party 2 has no Pokémon.")
     end
     @scene             = scene
     @peer              = Peer.new
@@ -148,7 +148,7 @@ class Battle
       [-1] * (@player ? @player.length : 1),
       [-1] * (@opponent ? @opponent.length : 1)
     ]
-    @initialItems      = [
+    @initialItems = [
       Array.new(@party1.length) { |i| (@party1[i]) ? @party1[i].item_id : nil },
       Array.new(@party2.length) { |i| (@party2[i]) ? @party2[i].item_id : nil }
     ]
@@ -170,7 +170,7 @@ class Battle
     @struggle          = Move::Struggle.new(self, nil)
     @mega_rings        = []
     GameData::Item.each { |item| @mega_rings.push(item.id) if item.has_flag?("MegaRing") }
-    @battleAI          = AI.new(self)
+    @battleAI = AI.new(self)
   end
 
   #=============================================================================
@@ -751,21 +751,18 @@ class Battle
         pbDisplay("The mysterious air current has dissipated!")
       end
     end
-    if @field.weather != oldWeather
-      # Check for form changes caused by the weather changing
-      allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
-      # Start up the default weather
-      pbStartWeather(nil, @field.defaultWeather) if @field.defaultWeather != :None
-    end
+    return unless @field.weather != oldWeather
+    # Check for form changes caused by the weather changing
+    allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
+    # Start up the default weather
+    pbStartWeather(nil, @field.defaultWeather) if @field.defaultWeather != :None
   end
 
   def pbStartWeatherAbility(new_weather, battler, ignore_primal = false)
     return if !ignore_primal && [:HarshSun, :HeavyRain, :StrongWinds].include?(@field.weather)
     return if @field.weather == new_weather
     pbShowAbilitySplash(battler)
-    if !Scene::USE_ABILITY_SPLASH
-      pbDisplay(_INTL("{1}'s {2} activated!", battler.pbThis, battler.abilityName))
-    end
+    pbDisplay(_INTL("{1}'s {2} activated!", battler.pbThis, battler.abilityName)) if !Scene::USE_ABILITY_SPLASH
     fixed_duration = false
     fixed_duration = true if Settings::FIXED_DURATION_WEATHER_FROM_ABILITY &&
                              ![:HarshSun, :HeavyRain, :StrongWinds].include?(new_weather)
@@ -805,23 +802,25 @@ class Battle
       pbDisplay(_INTL("The battlefield got weird!"))
     end
     # Check for abilities/items that trigger upon the terrain changing
-    allBattlers.each { |b| b.pbAbilityOnTerrainChange }
-    allBattlers.each { |b| b.pbItemTerrainStatBoostCheck }
+    allBattlers.each { |b|
+      b.pbAbilityOnTerrainChange
+      b.pbItemTerrainStatBoostCheck
+    }
   end
 
   #=============================================================================
   # Messages and animations
   #=============================================================================
-  def pbDisplay(msg, &block)
-    @scene.pbDisplayMessage(msg, &block)
+  def pbDisplay(msg, ...)
+    @scene.pbDisplayMessage(msg, ...)
   end
 
   def pbDisplayBrief(msg)
     @scene.pbDisplayMessage(msg, true)
   end
 
-  def pbDisplayPaused(msg, &block)
-    @scene.pbDisplayPausedMessage(msg, &block)
+  def pbDisplayPaused(msg, ...)
+    @scene.pbDisplayPausedMessage(msg, ...)
   end
 
   def pbDisplayConfirm(msg)
@@ -846,11 +845,10 @@ class Battle
     PBDebug.log("[Ability triggered] #{battler.pbThis}'s #{battler.abilityName}") if logTrigger
     return if !Scene::USE_ABILITY_SPLASH
     @scene.pbShowAbilitySplash(battler)
-    if delay
-      timer_start = System.uptime
-      until System.uptime - timer_start >= 1   # 1 second
-        @scene.pbUpdate
-      end
+    return unless delay
+    timer_start = System.uptime
+    until System.uptime - timer_start >= 1   # 1 second
+      @scene.pbUpdate
     end
   end
 

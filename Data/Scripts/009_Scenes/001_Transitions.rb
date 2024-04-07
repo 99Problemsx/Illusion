@@ -28,10 +28,9 @@ module Graphics
     rescue Exception
       transition_KGC_SpecialTransition(duration, "", vague) if filename != ""
     end
-    if STOP_WHILE_TRANSITION && !@_interrupt_transition
-      while @@transition && !@@transition.disposed?
-        update
-      end
+    return unless STOP_WHILE_TRANSITION && !@_interrupt_transition
+    while @@transition && !@@transition.disposed?
+      update
     end
   end
 
@@ -119,7 +118,7 @@ module Transitions
       initialize_bitmaps
       return if disposed?
       @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @viewport.z = 99999
+      @viewport.z = 99_999
       @sprites = []
       @overworld_sprite = new_sprite(0, 0, @overworld_bitmap)
       @overworld_sprite.z = -1
@@ -388,12 +387,9 @@ module Transitions
   class ScrollScreen < Transition_Base
     def update_anim
       proportion = timer / @duration
-      if (@parameters[0] % 3) != 2
-        @overworld_sprite.x = [1, -1, 0][@parameters[0] % 3] * Graphics.width * proportion
-      end
-      if ((@parameters[0] - 1) / 3) != 1
-        @overworld_sprite.y = [1, 0, -1][(@parameters[0] - 1) / 3] * Graphics.height * proportion
-      end
+      @overworld_sprite.x = [1, -1, 0][@parameters[0] % 3] * Graphics.width * proportion if (@parameters[0] % 3) != 2
+      return unless ((@parameters[0] - 1) / 3) != 1
+      @overworld_sprite.y = [1, 0, -1][(@parameters[0] - 1) / 3] * Graphics.height * proportion
     end
   end
 
@@ -428,9 +424,8 @@ module Transitions
       # Take shrunken area from buffer_temp and stretch it into buffer
       @overworld_bitmap.stretch_blt(Rect.new(0, 0, @overworld_bitmap.width, @overworld_bitmap.height),
                                     @buffer_temp, new_size_rect)
-      if timer >= @start_black_fade
-        @overworld_sprite.opacity = 255 * (1 - ((timer - @start_black_fade) / (@duration - @start_black_fade)))
-      end
+      return unless timer >= @start_black_fade
+      @overworld_sprite.opacity = 255 * (1 - ((timer - @start_black_fade) / (@duration - @start_black_fade)))
     end
   end
 
@@ -661,10 +656,9 @@ module Transitions
         @splash_sprite.y = Graphics.height * (1 - (proportion * 2))
       end
       # Move black sprite up
-      if timer >= @black_rising_start
-        proportion = (timer - @black_rising_start) / (@duration - @black_rising_start)
-        @black_sprite.y = Graphics.height * (1 - proportion)
-      end
+      return unless timer >= @black_rising_start
+      proportion = (timer - @black_rising_start) / (@duration - @black_rising_start)
+      @black_sprite.y = Graphics.height * (1 - proportion)
     end
   end
 
@@ -732,9 +726,7 @@ module Transitions
       else
         proportion = (timer - @ball_roll_end) / (@duration - @ball_roll_end)
         # Hide ball sprites
-        if @ball_sprites[0].visible
-          @ball_sprites.each { |s| s.visible = false }
-        end
+        @ball_sprites.each { |s| s.visible = false } if @ball_sprites[0].visible
         # Zoom in overworld sprite
         @overworld_sprite.zoom_x = 1.0 + (proportion * proportion)   # Ends at 2x zoom
         @overworld_sprite.zoom_y = @overworld_sprite.zoom_x
@@ -846,7 +838,7 @@ module Transitions
     NUM_SPRITES_X = 8
     NUM_SPRITES_Y = 6
     TOTAL_SPRITES = NUM_SPRITES_X * NUM_SPRITES_Y
-    BALL_START_Y_OFFSETS = [400, 0, 100]
+    BALL_START_Y_OFFSETS = [400, 0, 100].freeze
 
     def initialize_bitmaps
       @black_bitmap = RPG::Cache.transition("black_square")
@@ -915,12 +907,10 @@ module Transitions
         @ball_sprites.each_with_index do |sprite, i|
           sprite.y = -@ball_bitmap.height - BALL_START_Y_OFFSETS[i]
           sprite.y += (Graphics.height + BALL_START_Y_OFFSETS.max + (@ball_bitmap.height * 2)) * proportion
-          sprite.angle = 1.5 * 360 * proportion * ([1, -1][(i == 2) ? 0 : 1])
+          sprite.angle = 1.5 * 360 * proportion * [1, -1][(i == 2) ? 0 : 1]
         end
       else
-        if @ball_sprites[0].visible
-          @ball_sprites.each { |s| s.visible = false }
-        end
+        @ball_sprites.each { |s| s.visible = false } if @ball_sprites[0].visible
         # Black squares appear
         @timings.each_with_index do |timing, i|
           next if timing < 0 || timer < timing
@@ -1008,7 +998,7 @@ module Transitions
   #=============================================================================
   class WavyThreeBallUp < Transition_Base
     DURATION           = 1.1
-    BALL_OFFSETS       = [1.5, 3.25, 2.5]
+    BALL_OFFSETS       = [1.5, 3.25, 2.5].freeze
     MAX_WAVE_AMPLITUDE = 24
     WAVE_SPACING       = Math::PI / 24   # Density of overworld waves (48 strips per wave)
     WAVE_SPEED         = Math::PI * 4   # Speed of overworld waves going up the screen
@@ -1073,14 +1063,13 @@ module Transitions
         sprite.x = (1 - ((i % 2) * 2)) * amplitude * Math.sin((timer * WAVE_SPEED) + (i * WAVE_SPACING))
       end
       # Move balls and trailing blackness up
-      if timer >= @ball_rising_start
-        proportion = (timer - @ball_rising_start) / (@duration - @ball_rising_start)
-        @ball_sprites.each_with_index do |sprite, i|
-          sprite.y = (BALL_OFFSETS[i] * Graphics.height) - (Graphics.height * 3.5 * proportion)
-          sprite.angle = [-1, -1, 1][i] * 360 * 2 * proportion
-          @black_trail_sprites[i].y = sprite.y
-          @black_trail_sprites[i].y = 0 if @black_trail_sprites[i].y < 0
-        end
+      return unless timer >= @ball_rising_start
+      proportion = (timer - @ball_rising_start) / (@duration - @ball_rising_start)
+      @ball_sprites.each_with_index do |sprite, i|
+        sprite.y = (BALL_OFFSETS[i] * Graphics.height) - (Graphics.height * 3.5 * proportion)
+        sprite.angle = [-1, -1, 1][i] * 360 * 2 * proportion
+        @black_trail_sprites[i].y = sprite.y
+        @black_trail_sprites[i].y = 0 if @black_trail_sprites[i].y < 0
       end
     end
   end
@@ -1245,7 +1234,7 @@ module Transitions
     DURATION           = 4.0
     BAR_Y              = 80
     BAR_SCROLL_SPEED   = 1800
-    BAR_MASK           = [8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7]
+    BAR_MASK           = [8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7].freeze
     FOE_SPRITE_X_LIMIT = 384   # Slides to here before jumping to final position
     FOE_SPRITE_X       = 428   # Final position of foe sprite
 
@@ -1260,7 +1249,7 @@ module Transitions
 
     def initialize_sprites
       @flash_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @flash_viewport.z     = 99999
+      @flash_viewport.z     = 99_999
       @flash_viewport.color = Color.new(255, 255, 255, 0)
       # Background black
       @rear_black_sprite = new_sprite(0, 0, @black_bitmap)
@@ -1458,7 +1447,7 @@ module Transitions
 
     def initialize_sprites
       @flash_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @flash_viewport.z     = 99999
+      @flash_viewport.z     = 99_999
       @flash_viewport.color = Color.new(255, 255, 255, 0)
       # Background black
       @rear_black_sprite = new_sprite(0, 0, @black_bitmap)
@@ -1676,9 +1665,9 @@ module Transitions
   #=============================================================================
   class RocketGrunt < Transition_Base
     DURATION     = 1.6
-    ROCKET_X     = [ 1.5, -0.5, -0.5, 0.75,  1.5, -0.5]   # * Graphics.width
-    ROCKET_Y     = [-0.5,  1.0, -0.5,  1.5,  0.5, 0.75]   # * Graphics.height
-    ROCKET_ANGLE = [   1,  0.5, -1.5,   -1, -1.5,  0.5]   # * 360 * sprite.zoom_x
+    ROCKET_X     = [ 1.5, -0.5, -0.5, 0.75, 1.5, -0.5].freeze   # * Graphics.width
+    ROCKET_Y     = [-0.5, 1.0, -0.5, 1.5, 0.5, 0.75].freeze   # * Graphics.height
+    ROCKET_ANGLE = [ 1, 0.5, -1.5, -1, -1.5, 0.5].freeze   # * 360 * sprite.zoom_x
 
     def initialize_bitmaps
       @black_1_bitmap = RPG::Cache.transition("black_wedge_1")
@@ -1781,7 +1770,7 @@ module Transitions
 
     def initialize_sprites
       @flash_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @flash_viewport.z     = 99999
+      @flash_viewport.z     = 99_999
       @flash_viewport.color = Color.new(255, 255, 255, 0)
       # Strobe sprites (need 2 of them to make them loop around)
       ((Graphics.width.to_f / @strobes_bitmap.width).ceil + 1).times do |i|

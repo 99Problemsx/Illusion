@@ -38,7 +38,7 @@ class PokemonSave_Scene
 
   def pbStartScreen
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     totalsec = $stats.play_time.to_i
     hour = totalsec / 60 / 60

@@ -153,14 +153,13 @@ class Game_Picture
         @tone_timer_start = nil
       end
     end
-    if @rotate_speed != 0
-      @rotate_timer = System.uptime if !@rotate_timer
-      @angle += @rotate_speed * (System.uptime - @rotate_timer) * 20.0
-      @rotate_timer = System.uptime
-      while @angle < 0
-        @angle += 360
-      end
-      @angle %= 360
+    return unless @rotate_speed != 0
+    @rotate_timer = System.uptime if !@rotate_timer
+    @angle += @rotate_speed * (System.uptime - @rotate_timer) * 20.0
+    @rotate_timer = System.uptime
+    while @angle < 0
+      @angle += 360
     end
+    @angle %= 360
   end
 end

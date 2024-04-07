@@ -137,11 +137,10 @@ module BattleAnimationEditor
         @captured = true
         self.invalidate
       end
-      if Input.release?(Input::MOUSELEFT) && @captured
-        self.changed = true if rect.contains?(mousepos[0], mousepos[1])
-        @captured = false
-        self.invalidate
-      end
+      return unless Input.release?(Input::MOUSELEFT) && @captured
+      self.changed = true if rect.contains?(mousepos[0], mousepos[1])
+      @captured = false
+      self.invalidate
     end
 
     def refresh
@@ -197,10 +196,9 @@ module BattleAnimationEditor
 
     def update
       super
-      if self.changed
-        @checked = !@checked
-        self.invalidate
-      end
+      return unless self.changed
+      @checked = !@checked
+      self.invalidate
     end
 
     def refresh
@@ -356,15 +354,11 @@ module BattleAnimationEditor
         # Draw text
         shadowtext(bitmap, x, y, textwidth + 4, 32, c)
         # Draw cursor if necessary
-        if i == @cursor && @cursor_shown
-          bitmap.fill_rect(x, y + 4, 2, 24, Color.new(120, 120, 120))
-        end
+        bitmap.fill_rect(x, y + 4, 2, 24, Color.new(120, 120, 120)) if i == @cursor && @cursor_shown
         # Add x to drawn text width
         x += textwidth
       end
-      if textscan.length == @cursor && @cursor_shown
-        bitmap.fill_rect(x, y + 4, 2, 24, Color.new(120, 120, 120))
-      end
+      bitmap.fill_rect(x, y + 4, 2, 24, Color.new(120, 120, 120)) if textscan.length == @cursor && @cursor_shown
       # Draw outline
       bitmap.fill_rect(outline_x + 1, outline_y + 1, width - 2, 1, color)
       bitmap.fill_rect(outline_x + 1, outline_y + 1, 1, height - 2, color)
@@ -422,9 +416,7 @@ module BattleAnimationEditor
     def update
       mousepos = Mouse.getMousePos
       self.changed = false
-      if self.minvalue < self.maxvalue && self.curvalue < self.minvalue
-        self.curvalue = self.minvalue
-      end
+      self.curvalue = self.minvalue if self.minvalue < self.maxvalue && self.curvalue < self.minvalue
       return false if self.disabled
       return false if !Input.repeat?(Input::MOUSELEFT)
       return false if !mousepos
@@ -446,18 +438,17 @@ module BattleAnimationEditor
         self.invalidate
       end
       # Right arrow
-      if right.contains?(mousepos[0], mousepos[1])
-        if repeattime > 3.0
-          self.curvalue += 10
-        elsif repeattime > 1.5
-          self.curvalue += 5
-        else
-          self.curvalue += 1
-        end
-        self.curvalue = self.curvalue.floor
-        self.changed = (self.curvalue != oldvalue)
-        self.invalidate
+      return unless right.contains?(mousepos[0], mousepos[1])
+      if repeattime > 3.0
+        self.curvalue += 10
+      elsif repeattime > 1.5
+        self.curvalue += 5
+      else
+        self.curvalue += 1
       end
+      self.curvalue = self.curvalue.floor
+      self.changed = (self.curvalue != oldvalue)
+      self.invalidate
     end
 
     def refresh
@@ -674,9 +665,7 @@ module BattleAnimationEditor
     def update
       mousepos = Mouse.getMousePos
       self.changed = false
-      if self.minvalue < self.maxvalue && self.curvalue < self.minvalue
-        self.curvalue = self.minvalue
-      end
+      self.curvalue = self.minvalue if self.minvalue < self.maxvalue && self.curvalue < self.minvalue
       return false if self.disabled
       return false if !Input.repeat?(Input::MOUSELEFT)
       return false if !mousepos
@@ -697,17 +686,16 @@ module BattleAnimationEditor
         self.invalidate
       end
       # Right arrow
-      if right.contains?(mousepos[0], mousepos[1])
-        if repeattime > 3.0
-          self.curvalue += 10
-        elsif repeattime > 1.5
-          self.curvalue += 5
-        else
-          self.curvalue += 1
-        end
-        self.changed = (self.curvalue != oldvalue)
-        self.invalidate
+      return unless right.contains?(mousepos[0], mousepos[1])
+      if repeattime > 3.0
+        self.curvalue += 10
+      elsif repeattime > 1.5
+        self.curvalue += 5
+      else
+        self.curvalue += 1
       end
+      self.changed = (self.curvalue != oldvalue)
+      self.invalidate
     end
 
     def refresh

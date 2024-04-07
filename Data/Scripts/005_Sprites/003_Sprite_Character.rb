@@ -67,7 +67,11 @@ class Sprite_Character < RPG::Sprite
     @character    = character
     @oldbushdepth = 0
     @spriteoffset = false
-    if !character || character == $game_player || (character.name[/reflection/i] rescue false)
+    if !character || character == $game_player || begin
+      character.name[/reflection/i]
+    rescue StandardError
+      false
+    end
       @reflection = Sprite_Reflection.new(self, viewport)
     end
     @surfbase = Sprite_SurfBase.new(self, viewport) if character == $game_player
@@ -157,7 +161,15 @@ class Sprite_Character < RPG::Sprite
       sx = @character.pattern * @cw
       sy = ((@character.direction - 2) / 2) * @ch
       self.src_rect.set(sx, sy, @cw, @ch)
-      self.oy = (@spriteoffset rescue false) ? @ch - 16 : @ch
+      self.oy = if begin
+        @spriteoffset
+      rescue StandardError
+        false
+      end
+                  @ch - 16
+                else
+                  @ch
+end
       self.oy -= @character.bob_height
     end
     if self.visible
@@ -168,10 +180,14 @@ class Sprite_Character < RPG::Sprite
       end
     end
     this_x = @character.screen_x
-    this_x = ((this_x - (Graphics.width / 2)) * TilemapRenderer::ZOOM_X) + (Graphics.width / 2) if TilemapRenderer::ZOOM_X != 1
+    if TilemapRenderer::ZOOM_X != 1
+      this_x = ((this_x - (Graphics.width / 2)) * TilemapRenderer::ZOOM_X) + (Graphics.width / 2)
+    end
     self.x = this_x
     this_y = @character.screen_y
-    this_y = ((this_y - (Graphics.height / 2)) * TilemapRenderer::ZOOM_Y) + (Graphics.height / 2) if TilemapRenderer::ZOOM_Y != 1
+    if TilemapRenderer::ZOOM_Y != 1
+      this_y = ((this_y - (Graphics.height / 2)) * TilemapRenderer::ZOOM_Y) + (Graphics.height / 2)
+    end
     self.y = this_y
     self.z = @character.screen_z(@ch)
     self.opacity = @character.opacity

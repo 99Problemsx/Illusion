@@ -138,11 +138,11 @@ class ChooseNumberParams
   end
 
   def maxDigits
-    if @maxDigits > 0
-      return @maxDigits
-    else
+    return @maxDigits if @maxDigits > 0
+      
+    
       return [numDigits(self.minNumber), numDigits(self.maxNumber)].max
-    end
+    
   end
 
   #-----------------------------------------------------------------------------
@@ -171,7 +171,7 @@ def pbChooseNumber(msgwindow, params)
   defaultNumber = params.initialNumber
   cancelNumber = params.cancelNumber
   cmdwindow = Window_InputNumberPokemon.new(params.maxDigits)
-  cmdwindow.z = 99999
+  cmdwindow.z = 99_999
   cmdwindow.visible = true
   cmdwindow.setSkin(params.skin) if params.skin
   cmdwindow.sign = params.negativesAllowed # must be set before number
@@ -225,11 +225,11 @@ class FaceWindowVX < SpriteWindow_Base
 
   def update
     super
-    if @facebitmaptmp.totalFrames > 1
+    return unless @facebitmaptmp.totalFrames > 1
       @facebitmaptmp.update
       @facebitmap.blt(0, 0, @facebitmaptmp.bitmap,
                       Rect.new((@faceIndex % 4) * 96, (@faceIndex / 4) * 96, 96, 96))
-    end
+    
   end
 
   def dispose
@@ -247,7 +247,7 @@ def pbGetBasicMapNameFromId(id)
     map = pbLoadMapInfos
     return "" if !map
     return map[id].name
-  rescue
+  rescue StandardError
     return ""
   end
 end
@@ -256,7 +256,7 @@ def pbGetMapNameFromId(id)
   name = GameData::MapMetadata.try_get(id)&.name
   if nil_or_empty?(name)
     name = pbGetBasicMapNameFromId(id)
-    name.gsub!(/\\PN/, $player.name) if $player
+    name.gsub!("\\PN", $player.name) if $player
   end
   return name
 end
@@ -279,9 +279,7 @@ def pbCsvField!(str)
       end
     end
     str[0, fieldbytes] = ""
-    if !str[/\A\s*,/] && !str[/\A\s*$/]
-      raise _INTL("Invalid quoted field (in: {1})", ret)
-    end
+    raise _INTL("Invalid quoted field (in: {1})", ret) if !str[/\A\s*,/] && !str[/\A\s*$/]
     str[0, str.length] = $~.post_match
   else
     if str[/,/]
@@ -298,9 +296,7 @@ end
 
 def pbCsvPosInt!(str)
   ret = pbCsvField!(str)
-  if !ret[/\A\d+$/]
-    raise _INTL("Field {1} is not a positive integer", ret)
-  end
+  raise _INTL("Field {1} is not a positive integer", ret) if !ret[/\A\d+$/]
   return ret.to_i
 end
 
@@ -367,7 +363,7 @@ def pbCreateStatusWindow(viewport = nil)
   if viewport
     msgwindow.viewport = viewport
   else
-    msgwindow.z = 99999
+    msgwindow.z = 99_999
   end
   msgwindow.visible = false
   msgwindow.letterbyletter = false
@@ -382,7 +378,7 @@ def pbCreateMessageWindow(viewport = nil, skin = nil)
   if viewport
     msgwindow.viewport = viewport
   else
-    msgwindow.z = 99999
+    msgwindow.z = 99_999
   end
   msgwindow.visible = true
   msgwindow.letterbyletter = true
@@ -422,11 +418,9 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
   text.gsub!(/\\sign\[([^\]]*)\]/i) do      # \sign[something] gets turned into
     next "\\op\\cl\\ts[]\\w[" + $1 + "]"    # \op\cl\ts[]\w[something]
   end
-  text.gsub!(/\\\\/, "\5")
-  text.gsub!(/\\1/, "\1")
-  if $game_actors
-    text.gsub!(/\\n\[([1-8])\]/i) { next $game_actors[$1.to_i].name }
-  end
+  text.gsub!("\\\\", "\5")
+  text.gsub!("\\1", "\1")
+  text.gsub!(/\\n\[([1-8])\]/i) { next $game_actors[$1.to_i].name } if $game_actors
   text.gsub!(/\\pn/i,  $player.name) if $player
   text.gsub!(/\\pm/i,  _INTL("${1}", $player.money.to_s_formatted)) if $player
   text.gsub!(/\\n/i,   "\n")
@@ -477,7 +471,7 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
   ### Controls
   textchunks = []
   controls = []
-  while text[/(?:\\(f|ff|ts|cl|me|se|wt|wtnp|ch)\[([^\]]*)\]|\\(g|cn|pt|wd|wm|op|cl|wu|\.|\||\!|\^))/i]
+  while text[/(?:\\(f|ff|ts|cl|me|se|wt|wtnp|ch)\[([^\]]*)\]|\\(g|cn|pt|wd|wm|op|cl|wu|\.|\||!|\^))/i]
     textchunks.push($~.pre_match)
     if $~[1]
       controls.push([$~[1].downcase, $~[2], -1])
@@ -594,9 +588,7 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
         atTop = true
         msgwindow.y = 0
         pbPositionNearMsgWindow(facewindow, msgwindow, :left)
-        if appear_timer_start
-          msgwindow.y = lerp(y_start, y_end, appear_duration, appear_timer_start, System.uptime)
-        end
+        msgwindow.y = lerp(y_start, y_end, appear_duration, appear_timer_start, System.uptime) if appear_timer_start
       when "wm"
         atTop = false
         msgwindow.y = (Graphics.height - msgwindow.height) / 2
@@ -605,9 +597,7 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
         atTop = false
         msgwindow.y = Graphics.height - msgwindow.height
         pbPositionNearMsgWindow(facewindow, msgwindow, :left)
-        if appear_timer_start
-          msgwindow.y = lerp(y_start, y_end, appear_duration, appear_timer_start, System.uptime)
-        end
+        msgwindow.y = lerp(y_start, y_end, appear_duration, appear_timer_start, System.uptime) if appear_timer_start
       when "ts"     # Change text speed
         msgwindow.textspeed = (param == "") ? 0 : param.to_i / 80.0
       when "."      # Wait 0.25 seconds
@@ -688,10 +678,7 @@ def pbMessage(message, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd =
   ret = 0
   msgwindow = pbCreateMessageWindow(nil, skin)
   if commands
-    ret = pbMessageDisplay(msgwindow, message, true,
-                           proc { |msgwndw|
-                             next Kernel.pbShowCommands(msgwndw, commands, cmdIfCancel, defaultCmd, &block)
-                           }, &block)
+    ret = pbMessageDisplay(msgwindow, message, ...)
   else
     pbMessageDisplay(msgwindow, message, &block)
   end
@@ -700,20 +687,17 @@ def pbMessage(message, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd =
   return ret
 end
 
-def pbConfirmMessage(message, &block)
-  return (pbMessage(message, [_INTL("Yes"), _INTL("No")], 2, &block) == 0)
+def pbConfirmMessage(message, ...)
+  return (pbMessage(message, ...) == 0)
 end
 
-def pbConfirmMessageSerious(message, &block)
-  return (pbMessage(message, [_INTL("No"), _INTL("Yes")], 1, &block) == 1)
+def pbConfirmMessageSerious(message, ...)
+  return (pbMessage(message, ...) == 1)
 end
 
 def pbMessageChooseNumber(message, params, &block)
   msgwindow = pbCreateMessageWindow(nil, params.messageSkin)
-  ret = pbMessageDisplay(msgwindow, message, true,
-                         proc { |msgwndw|
-                           next pbChooseNumber(msgwndw, params, &block)
-                         }, &block)
+  ret = pbMessageDisplay(msgwindow, message, ...)
   pbDisposeMessageWindow(msgwindow)
   return ret
 end
@@ -721,7 +705,7 @@ end
 def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   return 0 if !commands
   cmdwindow = Window_CommandPokemonEx.new(commands)
-  cmdwindow.z = 99999
+  cmdwindow.z = 99_999
   cmdwindow.visible = true
   cmdwindow.resizeToFit(cmdwindow.commands)
   pbPositionNearMsgWindow(cmdwindow, msgwindow, :right)
@@ -761,7 +745,7 @@ def pbShowCommandsWithHelp(msgwindow, commands, help, cmdIfCancel = 0, defaultCm
   msgwin.letterbyletter = false
   if commands
     cmdwindow = Window_CommandPokemonEx.new(commands)
-    cmdwindow.z = 99999
+    cmdwindow.z = 99_999
     cmdwindow.visible = true
     cmdwindow.resizeToFit(cmdwindow.commands)
     cmdwindow.height = msgwin.y if cmdwindow.height > msgwin.y
@@ -823,7 +807,7 @@ def pbFreeText(msgwindow, currenttext, passwordbox, maxlength, width = 240)
   ret = ""
   window.maxlength = maxlength
   window.visible = true
-  window.z = 99999
+  window.z = 99_999
   pbPositionNearMsgWindow(window, msgwindow, :right)
   window.text = currenttext
   window.passwordChar = "*" if passwordbox
@@ -850,10 +834,7 @@ end
 
 def pbMessageFreeText(message, currenttext, passwordbox, maxlength, width = 240, &block)
   msgwindow = pbCreateMessageWindow
-  retval = pbMessageDisplay(msgwindow, message, true,
-                            proc { |msgwndw|
-                              next pbFreeText(msgwndw, currenttext, passwordbox, maxlength, width, &block)
-                            }, &block)
+  retval = pbMessageDisplay(msgwindow, message, ...)
   pbDisposeMessageWindow(msgwindow)
   return retval
 end

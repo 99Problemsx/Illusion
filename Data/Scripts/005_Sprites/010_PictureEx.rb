@@ -451,29 +451,27 @@ class PictureEx
         @cropBottom = process[5]
       end
       # Erase process if its duration has elapsed
-      if process[1] + process[2] <= this_frame
-        callback(process[4]) if process[4]
-        @processes[i] = nil
-        procEnded = true
-      end
+      next unless process[1] + process[2] <= this_frame
+      callback(process[4]) if process[4]
+      @processes[i] = nil
+      procEnded = true
     end
     # Clear out empty spaces in @processes array caused by finished processes
     @processes.compact! if procEnded
     @timer_start = nil if @processes.empty? && @rotate_speed == 0
     # Add the constant rotation speed
-    if @rotate_speed != 0
-      @frameUpdates.push(Processes::ANGLE) if !@frameUpdates.include?(Processes::ANGLE)
-      @auto_angle = @rotate_speed * (time_now - @timer_start)
-      while @auto_angle < 0
-        @auto_angle += 360
-      end
-      @auto_angle %= 360
-      @angle += @rotate_speed
-      while @angle < 0
-        @angle += 360
-      end
-      @angle %= 360
+    return unless @rotate_speed != 0
+    @frameUpdates.push(Processes::ANGLE) if !@frameUpdates.include?(Processes::ANGLE)
+    @auto_angle = @rotate_speed * (time_now - @timer_start)
+    while @auto_angle < 0
+      @auto_angle += 360
     end
+    @auto_angle %= 360
+    @angle += @rotate_speed
+    while @angle < 0
+      @angle += 360
+    end
+    @angle %= 360
   end
 end
 
@@ -535,12 +533,10 @@ def setPictureSprite(sprite, picture, iconSprite = false)
       sprite.src_rect.height = picture.src_rect.height
     end
   end
-  if iconSprite && sprite.src_rect && picture.cropBottom >= 0
-    spriteBottom = sprite.y - sprite.oy + sprite.src_rect.height
-    if spriteBottom > picture.cropBottom
-      sprite.src_rect.height = [picture.cropBottom - sprite.y + sprite.oy, 0].max
-    end
-  end
+  return unless iconSprite && sprite.src_rect && picture.cropBottom >= 0
+  spriteBottom = sprite.y - sprite.oy + sprite.src_rect.height
+  return unless spriteBottom > picture.cropBottom
+  sprite.src_rect.height = [picture.cropBottom - sprite.y + sprite.oy, 0].max
 end
 
 def setPictureIconSprite(sprite, picture)

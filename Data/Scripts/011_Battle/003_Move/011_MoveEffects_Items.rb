@@ -119,9 +119,7 @@ class Battle::Move::UserTargetSwapItems < Battle::Move
     target.effects[PBEffects::ChoiceBand] = nil if !target.hasActiveAbility?(:GORILLATACTICS)
     target.effects[PBEffects::Unburden]   = (!target.item && oldTargetItem) if target.hasActiveAbility?(:UNBURDEN)
     # Permanently steal the item from wild Pokémon
-    if target.wild? && !user.initialItem && oldTargetItem == target.initialItem
-      user.setInitialItem(oldTargetItem)
-    end
+    user.setInitialItem(oldTargetItem) if target.wild? && !user.initialItem && oldTargetItem == target.initialItem
     @battle.pbDisplay(_INTL("{1} switched items with its opponent!", user.pbThis))
     @battle.pbDisplay(_INTL("{1} obtained {2}.", user.pbThis, oldTargetItemName)) if oldTargetItem
     @battle.pbDisplay(_INTL("{1} obtained {2}.", target.pbThis, oldUserItemName)) if oldUserItem
@@ -421,9 +419,8 @@ class Battle::Move::ThrowUserItemAtTarget < Battle::Move
   def pbDisplayUseMessage(user)
     super
     pbCheckFlingSuccess(user)
-    if !@willFail
-      @battle.pbDisplay(_INTL("{1} flung its {2}!", user.pbThis, user.itemName))
-    end
+    return if @willFail
+    @battle.pbDisplay(_INTL("{1} flung its {2}!", user.pbThis, user.itemName))
   end
 
   def pbNumHits(user, targets); return 1; end

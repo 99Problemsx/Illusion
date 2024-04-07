@@ -42,7 +42,7 @@ class BerryPlantData
   def replant
     @time_alive         = 0
     @growth_stage       = 2
-    @replant_count      += 1
+    @replant_count += 1
     @watered_this_stage = false
     @watering_count     = 0
     @moisture_level     = 100
@@ -74,10 +74,9 @@ class BerryPlantData
 
   def water
     @moisture_level = 100
-    if !@watered_this_stage
-      @watered_this_stage = true
-      @watering_count += 1
-    end
+    return if @watered_this_stage
+    @watered_this_stage = true
+    @watering_count += 1
   end
 
   def berry_yield
@@ -199,9 +198,7 @@ class BerryPlantMoistureSprite
     return if !@sprite || !@event
     new_moisture = -1
     berry_plant = @event.variable
-    if berry_plant.is_a?(BerryPlantData) && berry_plant.planted?
-      new_moisture = berry_plant.moisture_stage
-    end
+    new_moisture = berry_plant.moisture_stage if berry_plant.is_a?(BerryPlantData) && berry_plant.planted?
     if new_moisture != @moisture_stage
       @moisture_stage = new_moisture
       update_graphic
@@ -292,14 +289,14 @@ end
 #
 #===============================================================================
 EventHandlers.add(:on_new_spriteset_map, :add_berry_plant_graphics,
-  proc { |spriteset, viewport|
-    map = spriteset.map
-    map.events.each do |event|
-      next if !event[1].name[/berryplant/i]
-      spriteset.addUserSprite(BerryPlantMoistureSprite.new(event[1], map, viewport))
-      spriteset.addUserSprite(BerryPlantSprite.new(event[1], map, viewport))
-    end
-  }
+                  proc { |spriteset, viewport|
+                    map = spriteset.map
+                    map.events.each do |event|
+                      next if !event[1].name[/berryplant/i]
+                      spriteset.addUserSprite(BerryPlantMoistureSprite.new(event[1], map, viewport))
+                      spriteset.addUserSprite(BerryPlantSprite.new(event[1], map, viewport))
+                    end
+                  }
 )
 
 #===============================================================================
@@ -407,27 +404,25 @@ def pbBerryPlant
     return if !pbConfirmMessage(_INTL("It's soft, loamy soil. Want to plant a berry?"))
     ask_to_plant = false
   end
-  if !ask_to_plant || pbConfirmMessage(_INTL("Want to plant a Berry?"))
-    pbFadeOutIn do
-      scene = PokemonBag_Scene.new
-      screen = PokemonBagScreen.new(scene, $bag)
-      berry = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_berry? })
-    end
-    if berry
-      $stats.berries_planted += 1
-      berry_plant.plant(berry)
-      $bag.remove(berry)
-      if Settings::NEW_BERRY_PLANTS
-        pbMessage(_INTL("The {1} was planted in the soft, earthy soil.",
-                        GameData::Item.get(berry).name))
-      elsif GameData::Item.get(berry).name.starts_with_vowel?
-        pbMessage(_INTL("{1} planted an {2} in the soft loamy soil.",
-                        $player.name, GameData::Item.get(berry).name))
-      else
-        pbMessage(_INTL("{1} planted a {2} in the soft loamy soil.",
-                        $player.name, GameData::Item.get(berry).name))
-      end
-    end
+  return unless !ask_to_plant || pbConfirmMessage(_INTL("Want to plant a Berry?"))
+  pbFadeOutIn do
+    scene = PokemonBag_Scene.new
+    screen = PokemonBagScreen.new(scene, $bag)
+    berry = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_berry? })
+  end
+  return unless berry
+  $stats.berries_planted += 1
+  berry_plant.plant(berry)
+  $bag.remove(berry)
+  if Settings::NEW_BERRY_PLANTS
+    pbMessage(_INTL("The {1} was planted in the soft, earthy soil.",
+                    GameData::Item.get(berry).name))
+  elsif GameData::Item.get(berry).name.starts_with_vowel?
+    pbMessage(_INTL("{1} planted an {2} in the soft loamy soil.",
+                    $player.name, GameData::Item.get(berry).name))
+  else
+    pbMessage(_INTL("{1} planted a {2} in the soft loamy soil.",
+                    $player.name, GameData::Item.get(berry).name))
   end
 end
 
@@ -448,9 +443,7 @@ def pbPickBerry(berry, qty = 1)
     return false
   end
   $stats.berry_plants_picked += 1
-  if qty >= GameData::BerryPlant.get(berry.id).maximum_yield
-    $stats.max_yield_berry_plants += 1
-  end
+  $stats.max_yield_berry_plants += 1 if qty >= GameData::BerryPlant.get(berry.id).maximum_yield
   $bag.add(berry, qty)
   if qty > 1
     pbMessage("\\me[Berry get]" + _INTL("You picked the {1} \\c[1]{2}\\c[0].", qty, berry_name) + "\\wtnp[30]")

@@ -11,9 +11,9 @@ module GameData
     attr_reader :victory_BGM
     attr_reader :pbs_file_suffix
 
-    DATA = {}
-    DATA_FILENAME = "trainer_types.dat"
-    PBS_BASE_FILENAME = "trainer_types"
+    DATA = {}.freeze
+    DATA_FILENAME = "trainer_types.dat".freeze
+    PBS_BASE_FILENAME = "trainer_types".freeze
 
     SCHEMA = {
       "SectionName" => [:id,          "m"],
@@ -28,7 +28,7 @@ module GameData
       "IntroBGM"    => [:intro_BGM,   "s"],
       "BattleBGM"   => [:battle_BGM,  "s"],
       "VictoryBGM"  => [:victory_BGM, "s"]
-    }
+    }.freeze
 
     extend ClassMethodsSymbols
     include InstanceMethods

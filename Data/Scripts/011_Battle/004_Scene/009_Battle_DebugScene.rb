@@ -72,7 +72,8 @@ class Battle::DebugSceneNoVisuals
   def pbFaintBattler(battler); end
   def pbEXPBar(battler, startExp, endExp, tempExp1, tempExp2); end
   def pbLevelUp(pkmn, battler, oldTotalHP, oldAttack, oldDefense, oldSpAtk, oldSpDef, oldSpeed); end
-  def pbForgetMove(pkmn, moveToLearn); return 0; end   # Always forget first move
+  # Always forget first move
+  def pbForgetMove(pkmn, moveToLearn); return 0; end
 
   def pbCommandMenu(idxBattler, firstAction)
     return 1 if rand(15) == 0   # Bag

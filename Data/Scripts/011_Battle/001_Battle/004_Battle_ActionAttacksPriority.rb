@@ -49,17 +49,13 @@ class Battle
       @choices[idxBattler][3] = -1               # No target chosen yet
       return true if singleBattle?
       if pbOwnedByPlayer?(idxBattler)
-        if showMessages
-          pbDisplayPaused(_INTL("{1} has to use {2}!", battler.name, encoreMove.name))
-        end
+        pbDisplayPaused(_INTL("{1} has to use {2}!", battler.name, encoreMove.name)) if showMessages
         return pbChooseTarget(battler, encoreMove)
       end
       return true
     end
     # Struggle
-    if pbOwnedByPlayer?(idxBattler) && showMessages
-      pbDisplayPaused(_INTL("{1} has no moves left!", battler.name))
-    end
+    pbDisplayPaused(_INTL("{1} has no moves left!", battler.name)) if pbOwnedByPlayer?(idxBattler) && showMessages
     @choices[idxBattler][0] = :UseMove    # "Use move"
     @choices[idxBattler][1] = -1          # Index of move to be used
     @choices[idxBattler][2] = @struggle   # Struggle Battle::Move object
@@ -80,9 +76,7 @@ class Battle
 
   def pbChoseMove?(idxBattler, moveID)
     return false if !@battlers[idxBattler] || @battlers[idxBattler].fainted?
-    if @choices[idxBattler][0] == :UseMove && @choices[idxBattler][1]
-      return @choices[idxBattler][2].id == moveID
-    end
+    return @choices[idxBattler][2].id == moveID if @choices[idxBattler][0] == :UseMove && @choices[idxBattler][1]
     return false
   end
 
@@ -155,21 +149,15 @@ class Battle
           if @choices[b.index][0] == :UseMove
             move = @choices[b.index][2]
             pri = move.pbPriority(b)
-            if b.abilityActive?
-              pri = Battle::AbilityEffects.triggerPriorityChange(b.ability, b, move, pri)
-            end
+            pri = Battle::AbilityEffects.triggerPriorityChange(b.ability, b, move, pri) if b.abilityActive?
             entry[5] = pri
             @choices[b.index][4] = pri
           end
           # Calculate sub-priority changes (first/last within priority bracket)
           # Abilities (Stall)
-          if b.abilityActive?
-            entry[2] = Battle::AbilityEffects.triggerPriorityBracketChange(b.ability, b, self)
-          end
+          entry[2] = Battle::AbilityEffects.triggerPriorityBracketChange(b.ability, b, self) if b.abilityActive?
           # Items (Quick Claw, Custap Berry, Lagging Tail, Full Incense)
-          if b.itemActive?
-            entry[3] = Battle::ItemEffects.triggerPriorityBracketChange(b.item, b, self)
-          end
+          entry[3] = Battle::ItemEffects.triggerPriorityBracketChange(b.item, b, self) if b.itemActive?
         end
         @priority.push(entry)
       end
@@ -189,16 +177,15 @@ class Battle
         entry[1] = newSpeed
         # Recalculate move's priority in case ability has changed
         choice = @choices[entry[0].index]
-        if choice[0] == :UseMove
-          move = choice[2]
-          pri = move.pbPriority(entry[0])
-          if entry[0].abilityActive?
-            pri = Battle::AbilityEffects.triggerPriorityChange(entry[0].ability, entry[0], move, pri)
-          end
-          needRearranging = true if pri != entry[5]
-          entry[5] = pri
-          choice[4] = pri
+        next unless choice[0] == :UseMove
+        move = choice[2]
+        pri = move.pbPriority(entry[0])
+        if entry[0].abilityActive?
+          pri = Battle::AbilityEffects.triggerPriorityChange(entry[0].ability, entry[0], move, pri)
         end
+        needRearranging = true if pri != entry[5]
+        entry[5] = pri
+        choice[4] = pri
         # NOTE: If the battler's ability at the start of this round was one with
         #       a PriorityBracketChange handler (i.e. Quick Draw), but it Mega
         #       Evolved and now doesn't have that ability, that old ability's
@@ -233,32 +220,30 @@ class Battle
       entry[4] = subpri   # Final sub-priority
     end
     # Reorder the priority array
-    if needRearranging
-      @priority.sort! do |a, b|
-        if a[5] != b[5]
-          # Sort by priority (highest value first)
-          b[5] <=> a[5]
-        elsif a[4] != b[4]
-          # Sort by sub-priority (highest value first)
-          b[4] <=> a[4]
-        elsif @priorityTrickRoom
-          # Sort by speed (lowest first), and use tie-breaker if necessary
-          (a[1] == b[1]) ? b[6] <=> a[6] : a[1] <=> b[1]
-        else
-          # Sort by speed (highest first), and use tie-breaker if necessary
-          (a[1] == b[1]) ? b[6] <=> a[6] : b[1] <=> a[1]
-        end
-      end
-      # Write the priority order to the debug log
-      if fullCalc && $INTERNAL
-        logMsg = "[Round order] "
-        @priority.each_with_index do |entry, i|
-          logMsg += ", " if i > 0
-          logMsg += "#{entry[0].pbThis(i > 0)} (#{entry[0].index})"
-        end
-        PBDebug.log(logMsg)
+    return unless needRearranging
+    @priority.sort! do |a, b|
+      if a[5] != b[5]
+        # Sort by priority (highest value first)
+        b[5] <=> a[5]
+      elsif a[4] != b[4]
+        # Sort by sub-priority (highest value first)
+        b[4] <=> a[4]
+      elsif @priorityTrickRoom
+        # Sort by speed (lowest first), and use tie-breaker if necessary
+        (a[1] == b[1]) ? b[6] <=> a[6] : a[1] <=> b[1]
+      else
+        # Sort by speed (highest first), and use tie-breaker if necessary
+        (a[1] == b[1]) ? b[6] <=> a[6] : b[1] <=> a[1]
       end
     end
+    # Write the priority order to the debug log
+    return unless fullCalc && $INTERNAL
+    logMsg = "[Round order] "
+    @priority.each_with_index do |entry, i|
+      logMsg += ", " if i > 0
+      logMsg += "#{entry[0].pbThis(i > 0)} (#{entry[0].index})"
+    end
+    PBDebug.log(logMsg)
   end
 
   def pbPriority(onlySpeedSort = false)

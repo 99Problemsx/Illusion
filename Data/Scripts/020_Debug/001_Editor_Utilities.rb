@@ -14,43 +14,38 @@ def pbGetLegalMoves(species)
 end
 
 def pbSafeCopyFile(x, y, z = nil)
-  if FileTest.exist?(x)
-    safetocopy = true
-    filedata = nil
-    if FileTest.exist?(y)
-      different = false
-      if FileTest.size(x) == FileTest.size(y)
-        filedata2 = ""
-        File.open(x, "rb") { |f| filedata  = f.read }
-        File.open(y, "rb") { |f| filedata2 = f.read }
-        different = true if filedata != filedata2
-      else
-        different = true
-      end
-      if different
-        safetocopy = pbConfirmMessage(_INTL("A different file named '{1}' already exists. Overwrite it?", y))
-      else
-        # No need to copy
-        return
-      end
+  return unless FileTest.exist?(x)
+  safetocopy = true
+  filedata = nil
+  if FileTest.exist?(y)
+    different = false
+    if FileTest.size(x) == FileTest.size(y)
+      filedata2 = ""
+      File.open(x, "rb") { |f| filedata  = f.read }
+      File.open(y, "rb") { |f| filedata2 = f.read }
+      different = true if filedata != filedata2
+    else
+      different = true
     end
-    if safetocopy
-      if !filedata
-        File.open(x, "rb") { |f| filedata = f.read }
-      end
-      File.open((z) ? z : y, "wb") { |f| f.write(filedata) }
-    end
+    return unless different
+    safetocopy = pbConfirmMessage(_INTL("A different file named '{1}' already exists. Overwrite it?", y))
+
+    # No need to copy
+
   end
+  return unless safetocopy
+  File.open(x, "rb") { |f| filedata = f.read } if !filedata
+  File.binwrite((z) ? z : y, filedata)
 end
 
 def pbAllocateAnimation(animations, name)
   (1...animations.length).each do |i|
     anim = animations[i]
     return i if !anim
-#    if name && name!="" && anim.name==name
-#      # use animation with same name
-#      return i
-#    end
+    #    if name && name!="" && anim.name==name
+    #      # use animation with same name
+    #      return i
+    #    end
     if anim.length == 1 && anim[0].length == 2 && anim.name == ""
       # assume empty
       return i
@@ -255,7 +250,7 @@ def pbCommands2(cmdwindow, commands, cmdIfCancel, defaultindex = -1, noresize = 
     cmdwindow.width  = Graphics.width / 2
   end
   cmdwindow.height   = Graphics.height if cmdwindow.height > Graphics.height
-  cmdwindow.z        = 99999
+  cmdwindow.z        = 99_999
   cmdwindow.visible  = true
   cmdwindow.active   = true
   command = 0
@@ -292,7 +287,7 @@ def pbCommands3(cmdwindow, commands, cmdIfCancel, defaultindex = -1, noresize = 
     cmdwindow.width  = Graphics.width / 2
   end
   cmdwindow.height   = Graphics.height if cmdwindow.height > Graphics.height
-  cmdwindow.z        = 99999
+  cmdwindow.z        = 99_999
   cmdwindow.visible  = true
   cmdwindow.active   = true
   command = 0
@@ -386,7 +381,7 @@ def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sort
   cmdwindow.y        = 0
   cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
   cmdwindow.height   = Graphics.height
-  cmdwindow.z        = 99999
+  cmdwindow.z        = 99_999
   cmdwindow.active   = true
   command = 0
   loop do

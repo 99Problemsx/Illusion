@@ -270,15 +270,15 @@ class PokemonPokedex_Scene
     @searchsliderbitmap = AnimatedBitmap.new(_INTL("Graphics/UI/Pokedex/icon_searchslider"))
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     addBackgroundPlane(@sprites, "background", "Pokedex/bg_list", @viewport)
     # Suggestion for changing the background depending on region. You can
     # comment out the line above and uncomment the following lines:
-#    if pbGetPokedexRegion == -1   # Using national Pokédex
-#      addBackgroundPlane(@sprites, "background", "Pokedex/bg_national", @viewport)
-#    elsif pbGetPokedexRegion == 0   # Using first regional Pokédex
-#      addBackgroundPlane(@sprites, "background", "Pokedex/bg_regional", @viewport)
-#    end
+    #    if pbGetPokedexRegion == -1   # Using national Pokédex
+    #      addBackgroundPlane(@sprites, "background", "Pokedex/bg_national", @viewport)
+    #    elsif pbGetPokedexRegion == 0   # Using first regional Pokédex
+    #      addBackgroundPlane(@sprites, "background", "Pokedex/bg_regional", @viewport)
+    #    end
     addBackgroundPlane(@sprites, "searchbg", "Pokedex/bg_search", @viewport)
     @sprites["searchbg"].visible = false
     @sprites["pokedex"] = Window_Pokedex.new(206, 30, 276, 364, @viewport)
@@ -315,13 +315,12 @@ class PokemonPokedex_Scene
   # return value of pbGetCurrentRegion, and thus will change according to the
   # current map's MapPosition metadata setting.
   def pbGetPokedexRegion
-    if Settings::USE_CURRENT_REGION_DEX
-      region = pbGetCurrentRegion
-      region = -1 if region >= $player.pokedex.dexes_count - 1
-      return region
-    else
-      return $PokemonGlobal.pokedexDex   # National Dex -1, regional Dexes 0, 1, etc.
-    end
+    return $PokemonGlobal.pokedexDex unless Settings::USE_CURRENT_REGION_DEX
+    region = pbGetCurrentRegion
+    region = -1 if region >= $player.pokedex.dexes_count - 1
+    return region
+
+    # National Dex -1, regional Dexes 0, 1, etc.
   end
 
   # Determines which index of the array $PokemonGlobal.pokedexIndex to save the
@@ -329,9 +328,7 @@ class PokemonPokedex_Scene
   # National Dex at the end.
   def pbGetSavePositionIndex
     index = pbGetPokedexRegion
-    if index == -1   # National Dex (comes after regional Dex indices)
-      index = $player.pokedex.dexes_count - 1
-    end
+    index = $player.pokedex.dexes_count - 1 if index == -1 # National Dex (comes after regional Dex indices)
     return index
   end
 
@@ -458,22 +455,21 @@ class PokemonPokedex_Scene
       showslider = true
     end
     # Draw slider box
-    if showslider
-      sliderheight = 268
-      boxheight = (sliderheight * itemlist.page_row_max / itemlist.row_max).floor
-      boxheight += [(sliderheight - boxheight) / 2, sliderheight / 6].min
-      boxheight = [boxheight.floor, 40].max
-      y = 78
-      y += ((sliderheight - boxheight) * itemlist.top_row / (itemlist.row_max - itemlist.page_row_max)).floor
-      overlay.blt(468, y, @sliderbitmap.bitmap, Rect.new(40, 0, 40, 8))
-      i = 0
-      while i * 16 < boxheight - 8 - 16
-        height = [boxheight - 8 - 16 - (i * 16), 16].min
-        overlay.blt(468, y + 8 + (i * 16), @sliderbitmap.bitmap, Rect.new(40, 8, 40, height))
-        i += 1
-      end
-      overlay.blt(468, y + boxheight - 16, @sliderbitmap.bitmap, Rect.new(40, 24, 40, 16))
+    return unless showslider
+    sliderheight = 268
+    boxheight = (sliderheight * itemlist.page_row_max / itemlist.row_max).floor
+    boxheight += [(sliderheight - boxheight) / 2, sliderheight / 6].min
+    boxheight = [boxheight.floor, 40].max
+    y = 78
+    y += ((sliderheight - boxheight) * itemlist.top_row / (itemlist.row_max - itemlist.page_row_max)).floor
+    overlay.blt(468, y, @sliderbitmap.bitmap, Rect.new(40, 0, 40, 8))
+    i = 0
+    while i * 16 < boxheight - 8 - 16
+      height = [boxheight - 8 - 16 - (i * 16), 16].min
+      overlay.blt(468, y + 8 + (i * 16), @sliderbitmap.bitmap, Rect.new(40, 8, 40, height))
+      i += 1
     end
+    overlay.blt(468, y + boxheight - 16, @sliderbitmap.bitmap, Rect.new(40, 24, 40, 16))
   end
 
   def pbRefreshDexSearch(params, _index)
@@ -515,10 +511,26 @@ class PokemonPokedex_Scene
       textpos.push(["----", 304, 176, :center, base, shadow, :outline])
     end
     # Write height and weight limits
-    ht1 = (params[4] < 0) ? 0 : (params[4] >= @heightCommands.length) ? 999 : @heightCommands[params[4]]
-    ht2 = (params[5] < 0) ? 999 : (params[5] >= @heightCommands.length) ? 0 : @heightCommands[params[5]]
-    wt1 = (params[6] < 0) ? 0 : (params[6] >= @weightCommands.length) ? 9999 : @weightCommands[params[6]]
-    wt2 = (params[7] < 0) ? 9999 : (params[7] >= @weightCommands.length) ? 0 : @weightCommands[params[7]]
+    ht1 = if params[4] < 0
+            0
+          else
+            (params[4] >= @heightCommands.length) ? 999 : @heightCommands[params[4]]
+end
+    ht2 = if params[5] < 0
+            999
+          else
+            (params[5] >= @heightCommands.length) ? 0 : @heightCommands[params[5]]
+end
+    wt1 = if params[6] < 0
+            0
+          else
+            (params[6] >= @weightCommands.length) ? 9999 : @weightCommands[params[6]]
+end
+    wt2 = if params[7] < 0
+            9999
+          else
+            (params[7] >= @weightCommands.length) ? 0 : @weightCommands[params[7]]
+end
     hwoffset = false
     if System.user_language[3..4] == "US"   # If the user is in the United States
       ht1 = (params[4] >= @heightCommands.length) ? 99 * 12 : (ht1 / 0.254).round
@@ -629,8 +641,16 @@ class PokemonPokedex_Scene
         end
       end
     when 3   # Height range
-      ht1 = (sel[0] < 0) ? 0 : (sel[0] >= @heightCommands.length) ? 999 : @heightCommands[sel[0]]
-      ht2 = (sel[1] < 0) ? 999 : (sel[1] >= @heightCommands.length) ? 0 : @heightCommands[sel[1]]
+      ht1 = if sel[0] < 0
+              0
+            else
+              (sel[0] >= @heightCommands.length) ? 999 : @heightCommands[sel[0]]
+end
+      ht2 = if sel[1] < 0
+              999
+            else
+              (sel[1] >= @heightCommands.length) ? 0 : @heightCommands[sel[1]]
+end
       hwoffset = false
       if System.user_language[3..4] == "US"    # If the user is in the United States
         ht1 = (sel[0] >= @heightCommands.length) ? 99 * 12 : (ht1 / 0.254).round
@@ -646,8 +666,16 @@ class PokemonPokedex_Scene
       textpos.push([txt2, 414, 66, :center, base, shadow, :outline])
       overlay.blt(462, 52, @hwbitmap.bitmap, Rect.new(0, (hwoffset) ? 44 : 0, 32, 44))
     when 4   # Weight range
-      wt1 = (sel[0] < 0) ? 0 : (sel[0] >= @weightCommands.length) ? 9999 : @weightCommands[sel[0]]
-      wt2 = (sel[1] < 0) ? 9999 : (sel[1] >= @weightCommands.length) ? 0 : @weightCommands[sel[1]]
+      wt1 = if sel[0] < 0
+              0
+            else
+              (sel[0] >= @weightCommands.length) ? 9999 : @weightCommands[sel[0]]
+end
+      wt2 = if sel[1] < 0
+              9999
+            else
+              (sel[1] >= @weightCommands.length) ? 0 : @weightCommands[sel[1]]
+end
       hwoffset = false
       if System.user_language[3..4] == "US"   # If the user is in the United States
         wt1 = (sel[0] >= @weightCommands.length) ? 99_990 : (wt1 / 0.254).round
@@ -803,8 +831,16 @@ class PokemonPokedex_Scene
     end
     # Filter by height range
     if params[4] >= 0 || params[5] >= 0
-      minh = (params[4] < 0) ? 0 : (params[4] >= @heightCommands.length) ? 999 : @heightCommands[params[4]]
-      maxh = (params[5] < 0) ? 999 : (params[5] >= @heightCommands.length) ? 0 : @heightCommands[params[5]]
+      minh = if params[4] < 0
+               0
+             else
+               (params[4] >= @heightCommands.length) ? 999 : @heightCommands[params[4]]
+end
+      maxh = if params[5] < 0
+               999
+             else
+               (params[5] >= @heightCommands.length) ? 0 : @heightCommands[params[5]]
+end
       dexlist = dexlist.find_all do |item|
         next false if !$player.owned?(item[:species])
         height = item[:height]
@@ -813,8 +849,16 @@ class PokemonPokedex_Scene
     end
     # Filter by weight range
     if params[6] >= 0 || params[7] >= 0
-      minw = (params[6] < 0) ? 0 : (params[6] >= @weightCommands.length) ? 9999 : @weightCommands[params[6]]
-      maxw = (params[7] < 0) ? 9999 : (params[7] >= @weightCommands.length) ? 0 : @weightCommands[params[7]]
+      minw = if params[6] < 0
+               0
+             else
+               (params[6] >= @weightCommands.length) ? 9999 : @weightCommands[params[6]]
+end
+      maxw = if params[7] < 0
+               9999
+             else
+               (params[7] >= @weightCommands.length) ? 0 : @weightCommands[params[7]]
+end
       dexlist = dexlist.find_all do |item|
         next false if !$player.owned?(item[:species])
         weight = item[:weight]
@@ -870,9 +914,7 @@ class PokemonPokedex_Scene
     region = -1
     if !Settings::USE_CURRENT_REGION_DEX
       dexnames = Settings.pokedex_names
-      if dexnames[pbGetSavePositionIndex].is_a?(Array)
-        region = dexnames[pbGetSavePositionIndex][1]
-      end
+      region = dexnames[pbGetSavePositionIndex][1] if dexnames[pbGetSavePositionIndex].is_a?(Array)
     end
     scene = PokemonPokedexInfo_Scene.new
     screen = PokemonPokedexInfoScreen.new(scene)
@@ -1066,7 +1108,11 @@ class PokemonPokedex_Scene
             if index == -1
               nextparam = (selindex[1] >= 0) ? 1 : 0
             elsif index >= 0
-              nextparam = (selindex[0] < 0) ? 0 : (selindex[1] < 0) ? 1 : nextparam
+              nextparam = if selindex[0] < 0
+                            0
+                          else
+                            (selindex[1] < 0) ? 1 : nextparam
+end
             end
             if index < 0 || selindex[(nextparam + 1) % 2] != index
               pbPlayDecisionSE
@@ -1270,11 +1316,9 @@ class PokemonPokedex_Scene
           @sprites["pokedex"].active = true
         elsif Input.trigger?(Input::BACK)
           pbPlayCloseMenuSE
-          if @searchResults
-            pbCloseSearch
-          else
-            break
-          end
+          break unless @searchResults
+          pbCloseSearch
+
         elsif Input.trigger?(Input::USE)
           if $player.seen?(@sprites["pokedex"].species)
             pbSEPlay("GUI pokedex open")

@@ -39,7 +39,7 @@ class MapBottomSprite < Sprite
   def refresh
     bitmap.clear
     textpos = [
-      [@mapname,                     18,   4, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
+      [@mapname,                     18, 4, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
       [@maplocation,                 18, 360, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
       [@mapdetails, Graphics.width - 16, 360, :right, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR]
     ]
@@ -70,7 +70,7 @@ class PokemonRegionMap_Scene
   def pbStartScene(as_editor = false, fly_map = false)
     @editor   = as_editor
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = 99_999
     @sprites = {}
     @fly_map = fly_map
     @mode    = fly_map ? 1 : 0
@@ -197,15 +197,14 @@ class PokemonRegionMap_Scene
     currentobj  = point
     currentname = (point) ? point[2] : ""
     currentname = pbMessageFreeText(_INTL("Set the name for this point."), currentname, false, 250) { pbUpdate }
-    if currentname
-      if currentobj
-        currentobj[2] = currentname
-      else
-        newobj = [x, y, currentname, ""]
-        @map.point.push(newobj)
-      end
-      @changed = true
+    return unless currentname
+    if currentobj
+      currentobj[2] = currentname
+    else
+      newobj = [x, y, currentname, ""]
+      @map.point.push(newobj)
     end
+    @changed = true
   end
 
   def pbGetMapDetails(x, y)
@@ -292,12 +291,10 @@ class PokemonRegionMap_Scene
       @sprites["mapbottom"].maplocation = pbGetMapLocation(@map_x, @map_y)
       @sprites["mapbottom"].mapdetails  = pbGetMapDetails(@map_x, @map_y)
       if Input.trigger?(Input::BACK)
-        if @editor && @changed
-          pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
-          break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
-        else
-          break
-        end
+        break unless @editor && @changed
+        pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
+        break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
+
       elsif Input.trigger?(Input::USE) && @mode == 1   # Choosing an area to fly to
         healspot = pbGetHealingSpot(@map_x, @map_y)
         if healspot && ($PokemonGlobal.visitedMaps[healspot[0]] ||

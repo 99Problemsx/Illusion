@@ -25,17 +25,16 @@ class SafariState
   end
 
   def pbGoToStart
-    if $scene.is_a?(Scene_Map)
-      pbFadeOutIn do
-        $game_temp.player_transferring   = true
-        $game_temp.transition_processing = true
-        $game_temp.player_new_map_id    = @start[0]
-        $game_temp.player_new_x         = @start[1]
-        $game_temp.player_new_y         = @start[2]
-        $game_temp.player_new_direction = 2
-        pbDismountBike
-        $scene.transfer_player
-      end
+    return unless $scene.is_a?(Scene_Map)
+    pbFadeOutIn do
+      $game_temp.player_transferring   = true
+      $game_temp.transition_processing = true
+      $game_temp.player_new_map_id    = @start[0]
+      $game_temp.player_new_x         = @start[1]
+      $game_temp.player_new_y         = @start[2]
+      $game_temp.player_new_direction = 2
+      pbDismountBike
+      $scene.transfer_player
     end
   end
 
@@ -80,39 +79,39 @@ end
 #
 #===============================================================================
 EventHandlers.add(:on_enter_map, :end_safari_game,
-  proc { |_old_map_id|
-    pbSafariState.pbEnd if !pbInSafari?
-  }
+                  proc { |_old_map_id|
+                    pbSafariState.pbEnd if !pbInSafari?
+                  }
 )
 
 EventHandlers.add(:on_player_step_taken_can_transfer, :safari_game_counter,
-  proc { |handled|
-    # handled is an array: [nil]. If [true], a transfer has happened because of
-    # this event, so don't do anything that might cause another one
-    next if handled[0]
-    next if Settings::SAFARI_STEPS == 0 || !pbInSafari? || pbSafariState.decision != 0
-    pbSafariState.steps -= 1
-    next if pbSafariState.steps > 0
-    pbMessage("\\se[Safari Zone end]" + _INTL("PA: Ding-dong!") + "\1")
-    pbMessage(_INTL("PA: Your safari game is over!"))
-    pbSafariState.decision = 1
-    pbSafariState.pbGoToStart
-    handled[0] = true
-  }
+                  proc { |handled|
+                    # handled is an array: [nil]. If [true], a transfer has happened because of
+                    # this event, so don't do anything that might cause another one
+                    next if handled[0]
+                    next if Settings::SAFARI_STEPS == 0 || !pbInSafari? || pbSafariState.decision != 0
+                    pbSafariState.steps -= 1
+                    next if pbSafariState.steps > 0
+                    pbMessage("\\se[Safari Zone end]" + _INTL("PA: Ding-dong!") + "\1")
+                    pbMessage(_INTL("PA: Your safari game is over!"))
+                    pbSafariState.decision = 1
+                    pbSafariState.pbGoToStart
+                    handled[0] = true
+                  }
 )
 
 #===============================================================================
 #
 #===============================================================================
 EventHandlers.add(:on_calling_wild_battle, :safari_battle,
-  proc { |pkmn, handled|
-    # handled is an array: [nil]. If [true] or [false], the battle has already
-    # been overridden (the boolean is its outcome), so don't do anything that
-    # would override it again
-    next if !handled[0].nil?
-    next if !pbInSafari?
-    handled[0] = pbSafariBattle(pkmn)
-  }
+                  proc { |pkmn, handled|
+                    # handled is an array: [nil]. If [true] or [false], the battle has already
+                    # been overridden (the boolean is its outcome), so don't do anything that
+                    # would override it again
+                    next if !handled[0].nil?
+                    next if !pbInSafari?
+                    handled[0] = pbSafariBattle(pkmn)
+                  }
 )
 
 def pbSafariBattle(pkmn, level = 1)
