@@ -3,7 +3,6 @@
 #===============================================================================
 module Compiler
   module_function
-
   #-----------------------------------------------------------------------------
   # Applies PBS updates located in the Auto-Updates folder.
   #-----------------------------------------------------------------------------
@@ -29,7 +28,7 @@ module Compiler
           next if !nil_or_empty?(sp.pbs_file_suffix)
           species_hash[sp.id] = game_data.initialize_from(sp.id)
         end
-        species_hash.each_value do |hash|
+        species_hash.each do |id, hash|
           next if hash[:form] == 0
           [:moves, :tutor_moves, :egg_moves, :evolutions].each do |property|
             hash[property].clear if hash[property] == species_hash[hash[:species]][property]
@@ -75,7 +74,9 @@ module Compiler
             when :Move
               validate_compiled_move(data_hash)
             when :Item
-              data_hash[:sell_price] = data_hash[:price] / 2 if !data_hash.has_key?(:sell_price)
+              if !data_hash.has_key?(:sell_price)
+                data_hash[:sell_price] = data_hash[:price] / 2
+              end
             end
             game_data::DATA[id] = game_data.new(data_hash)
           end
@@ -84,7 +85,7 @@ module Compiler
       if data_type == :Species
         game_data::DATA.clear
         finalize_all_recompiled_pokemon(species_hash)
-        species_hash.each_value { |h| game_data.register(h) }
+        species_hash.each { |k, h| game_data.register(h) }
       end
       process_pbs_file_message_end
       game_data.save
@@ -97,12 +98,12 @@ module Compiler
     end
     Compiler.compile_all(true)
   end
-
+  
   #-----------------------------------------------------------------------------
   # The following methods are used only for validating :Species GameData.
   #-----------------------------------------------------------------------------
   def validate_recompiled_pokemon(hash)
-    hash.each_value do |data|
+    hash.each do |id, data|
       if data[:base_stats].is_a?(Array)
         new_stats = {}
         GameData::Stat.each_main do |s|
@@ -122,9 +123,9 @@ module Compiler
       end
     end
   end
-
+  
   def validate_recompiled_forms(hash)
-    hash.each_value do |data|
+    hash.each do |id, data|
       next if data[:form] == 0
       base_data = hash[data[:species]]
       [:real_name, :real_category, :real_pokedex_entry, :base_exp, :growth_rate,
@@ -132,17 +133,18 @@ module Compiler
        :weight, :color, :shape, :habitat, :generation].each do |property|
         data[property] = base_data[property] if data[property].nil?
       end
-      [:types, :base_stats, :evs, :abilities, :hidden_abilities, :egg_groups,
+      [:types, :base_stats, :evs, :abilities, :hidden_abilities, :egg_groups, 
        :offspring, :flags].each do |property|
         data[property] = base_data[property].clone if data[property].nil?
       end
-      next unless data[:wild_item_common].nil? && data[:wild_item_uncommon].nil? && data[:wild_item_rare].nil?
-      data[:wild_item_common] = base_data[:wild_item_common].clone
-      data[:wild_item_uncommon] = base_data[:wild_item_uncommon].clone
-      data[:wild_item_rare] = base_data[:wild_item_rare].clone
+      if data[:wild_item_common].nil? && data[:wild_item_uncommon].nil? && data[:wild_item_rare].nil?
+        data[:wild_item_common] = base_data[:wild_item_common].clone
+        data[:wild_item_uncommon] = base_data[:wild_item_uncommon].clone
+        data[:wild_item_rare] = base_data[:wild_item_rare].clone
+      end
     end
   end
-
+  
   def validate_recompiled_evolutions(hash)
     hash.each do |id, data|
       FileLineData.setSection(id.to_s, "Evolutions", nil)
@@ -158,14 +160,16 @@ module Compiler
       end
     end
     all_evos = {}
-    hash.each_value do |data|
+    hash.each do |id, data|
       data[:evolutions].each do |evo|
         next if evo[3]
         all_evos[evo[0]] = [data[:species], evo[1], evo[2], true] if !all_evos[evo[0]]
-        if data[:form] > 0 && !all_evos[[evo[0], data[:form]]]
-          all_evos[[evo[0], data[:form]]] = [data[:species], evo[1], evo[2], true]
+        if data[:form] > 0
+          all_evos[[evo[0], data[:form]]] = [data[:species], evo[1], evo[2], true] if !all_evos[[evo[0], data[:form]]]
         end
       end
+    end
+    hash.each do |id, data|
       form = data[:form]
       data[:flags].each do |flag|
         form = $~[1].to_i if flag[/^DefaultForm_(\d+)$/i]
@@ -180,12 +184,12 @@ module Compiler
       end
     end
   end
-
-  def finalize_all_recompiled_pokemon(hash)
+  
+  def finalize_all_recompiled_pokemon(hash)    
     validate_recompiled_pokemon(hash)
     validate_recompiled_forms(hash)
     validate_recompiled_evolutions(hash)
-    hash.each_value do |data|
+    hash.each do |id, data|
       data[:moves] = data[:moves].sort_by(&:first)
       data[:moves].compact!
       data[:tutor_moves].sort!
@@ -197,6 +201,7 @@ module Compiler
     end
   end
 end
+
 
 #===============================================================================
 # Initializes various GameData used by the PBS Updater.
@@ -214,7 +219,7 @@ module GameData
       }
     end
   end
-
+  
   class Item
     def self.initialize_from(id)
       data = self.get(id)
@@ -238,7 +243,7 @@ module GameData
       }
     end
   end
-
+  
   class Move
     def self.initialize_from(id)
       data = self.get(id)
@@ -256,10 +261,10 @@ module GameData
         :flags            => data.flags,
         :effect_chance    => data.effect_chance,
         :real_description => data.real_description,
-        :pbs_file_suffix  => data.pbs_file_suffix
+        :pbs_file_suffix  => data.pbs_file_suffix,
       }
     end
-
+	
     def get_property_for_PBS(key)
       ret = __orig__get_property_for_PBS(key)
       ret = nil if ["Power", "Priority", "EffectChance"].include?(key) && ret == 0
@@ -267,7 +272,7 @@ module GameData
       return ret
     end
   end
-
+    
   class Species
     def self.initialize_from(id)
       data = self.get(id)
