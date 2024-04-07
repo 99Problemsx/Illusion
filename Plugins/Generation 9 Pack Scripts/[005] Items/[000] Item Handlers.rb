@@ -1,9 +1,8 @@
 ################################################################################
-# 
+#
 # Updates to old item handlers (overworld use).
-# 
+#
 ################################################################################
-
 
 #===============================================================================
 # Awakening, Chesto Berry, Blue Flute
@@ -111,19 +110,17 @@ ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
     pkmn.ability = nil
     scene.pbRefresh
     scene.pbDisplay(_INTL("{1}'s Ability changed! Its Ability is now {2}!",
-       pkmn.name, new_ability_name))
+                          pkmn.name, new_ability_name))
     next true
   end
   next false
 })
 
-
 ################################################################################
-# 
+#
 # Updates to old battle item handlers (used from the bag).
-# 
+#
 ################################################################################
-
 
 #===============================================================================
 # Awakening, Chesto Berry, Blue Flute
@@ -206,13 +203,11 @@ ItemHandlers::BattleUseOnPokemon.add(:ICEHEAL, proc { |item, pokemon, battler, c
 
 ItemHandlers::BattleUseOnPokemon.copy(:ICEHEAL, :ASPEARBERRY)
 
-
 ################################################################################
-# 
+#
 # Updates to old battle item handlers (held items).
-# 
+#
 ################################################################################
-
 
 #===============================================================================
 # Lum Berry
@@ -220,43 +215,45 @@ ItemHandlers::BattleUseOnPokemon.copy(:ICEHEAL, :ASPEARBERRY)
 # Adds Drowsy/Frostbite as statuses that may be healed.
 #-------------------------------------------------------------------------------
 Battle::ItemEffects::StatusCure.add(:LUMBERRY,
-  proc { |item, battler, battle, forced|
-    next false if !forced && !battler.canConsumeBerry?
-    next false if battler.status == :NONE &&
-                  battler.effects[PBEffects::Confusion] == 0
-    itemName = GameData::Item.get(item).name
-    PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
-    battle.pbCommonAnimation("EatBerry", battler) if !forced
-    oldStatus = battler.status
-    oldConfusion = (battler.effects[PBEffects::Confusion] > 0)
-    battler.pbCureStatus(forced)
-    battler.pbCureConfusion
-    if forced
-      battle.pbDisplay(_INTL("{1} snapped out of its confusion.", battler.pbThis)) if oldConfusion
-    else
-      case oldStatus
-      when :SLEEP
-        battle.pbDisplay(_INTL("{1}'s {2} woke it up!", battler.pbThis, itemName))
-      when :POISON
-        battle.pbDisplay(_INTL("{1}'s {2} cured its poisoning!", battler.pbThis, itemName))
-      when :BURN
-        battle.pbDisplay(_INTL("{1}'s {2} healed its burn!", battler.pbThis, itemName))
-      when :PARALYSIS
-        battle.pbDisplay(_INTL("{1}'s {2} cured its paralysis!", battler.pbThis, itemName))
-      when :FROZEN
-        battle.pbDisplay(_INTL("{1}'s {2} defrosted it!", battler.pbThis, itemName))
-      when :DROWSY
-        battle.pbDisplay(_INTL("{1}'s {2} made it alert again!", battler.pbThis, itemName))
-      when :FROSTBITE
-        battle.pbDisplay(_INTL("{1}'s {2} healed its frostbite!", battler.pbThis, itemName))
-      end
-      if oldConfusion
-        battle.pbDisplay(_INTL("{1}'s {2} snapped it out of its confusion!", battler.pbThis, itemName))
-      end
-    end
-    next true
-  }
-)
+                                    proc { |item, battler, battle, forced|
+                                      next false if !forced && !battler.canConsumeBerry?
+                                      next false if battler.status == :NONE &&
+                                                    battler.effects[PBEffects::Confusion] == 0
+                                      itemName = GameData::Item.get(item).name
+                                      PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
+                                      battle.pbCommonAnimation("EatBerry", battler) if !forced
+                                      oldStatus = battler.status
+                                      oldConfusion = (battler.effects[PBEffects::Confusion] > 0)
+                                      battler.pbCureStatus(forced)
+                                      battler.pbCureConfusion
+                                      if forced
+                                        if oldConfusion
+                                          battle.pbDisplay(_INTL("{1} snapped out of its confusion.", battler.pbThis))
+                                        end
+                                      else
+                                        case oldStatus
+                                        when :SLEEP
+                                          battle.pbDisplay(_INTL("{1}'s {2} woke it up!", battler.pbThis, itemName))
+                                        when :POISON
+                                          battle.pbDisplay(_INTL("{1}'s {2} cured its poisoning!", battler.pbThis, itemName))
+                                        when :BURN
+                                          battle.pbDisplay(_INTL("{1}'s {2} healed its burn!", battler.pbThis, itemName))
+                                        when :PARALYSIS
+                                          battle.pbDisplay(_INTL("{1}'s {2} cured its paralysis!", battler.pbThis, itemName))
+                                        when :FROZEN
+                                          battle.pbDisplay(_INTL("{1}'s {2} defrosted it!", battler.pbThis, itemName))
+                                        when :DROWSY
+                                          battle.pbDisplay(_INTL("{1}'s {2} made it alert again!", battler.pbThis, itemName))
+                                        when :FROSTBITE
+                                          battle.pbDisplay(_INTL("{1}'s {2} healed its frostbite!", battler.pbThis, itemName))
+                                        end
+                                        if oldConfusion
+                                          battle.pbDisplay(_INTL("{1}'s {2} snapped it out of its confusion!", battler.pbThis, itemName))
+                                        end
+                                      end
+                                      next true
+                                    }
+                                   )
 
 #===============================================================================
 # Chesto Berry
@@ -264,21 +261,21 @@ Battle::ItemEffects::StatusCure.add(:LUMBERRY,
 # Adds Drowsiness as a status that may be healed.
 #-------------------------------------------------------------------------------
 Battle::ItemEffects::StatusCure.add(:CHESTOBERRY,
-  proc { |item, battler, battle, forced|
-    next false if !forced && !battler.canConsumeBerry?
-    next false if ![:SLEEP, :DROWSY].include?(battler.status)
-    itemName = GameData::Item.get(item).name
-    PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
-    battle.pbCommonAnimation("EatBerry", battler) if !forced
-    case battler.status
-    when :SLEEP  then msg = _INTL("{1}'s {2} woke it up!", battler.pbThis, itemName)
-    when :DROWSY then msg = _INTL("{1}'s {2} made it alert again!", battler.pbThis, itemName)
-    end
-    battler.pbCureStatus(forced)
-    battle.pbDisplay(msg) if !forced
-    next true
-  }
-)
+                                    proc { |item, battler, battle, forced|
+                                      next false if !forced && !battler.canConsumeBerry?
+                                      next false if ![:SLEEP, :DROWSY].include?(battler.status)
+                                      itemName = GameData::Item.get(item).name
+                                      PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
+                                      battle.pbCommonAnimation("EatBerry", battler) if !forced
+                                      case battler.status
+                                      when :SLEEP  then msg = _INTL("{1}'s {2} woke it up!", battler.pbThis, itemName)
+                                      when :DROWSY then msg = _INTL("{1}'s {2} made it alert again!", battler.pbThis, itemName)
+                                      end
+                                      battler.pbCureStatus(forced)
+                                      battle.pbDisplay(msg) if !forced
+                                      next true
+                                    }
+                                   )
 
 #===============================================================================
 # Aspear Berry
@@ -286,21 +283,21 @@ Battle::ItemEffects::StatusCure.add(:CHESTOBERRY,
 # Adds Frostbite as a status that may be healed.
 #-------------------------------------------------------------------------------
 Battle::ItemEffects::StatusCure.add(:ASPEARBERRY,
-  proc { |item, battler, battle, forced|
-    next false if !forced && !battler.canConsumeBerry?
-    next false if ![:FROZEN, :FROSTBITE].include?(battler.status)
-    itemName = GameData::Item.get(item).name
-    PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
-    battle.pbCommonAnimation("EatBerry", battler) if !forced
-    case battler.status
-    when :FROZEN    then msg = _INTL("{1}'s {2} defrosted it!", battler.pbThis, itemName)
-    when :FROSTBITE then msg = _INTL("{1}'s {2} healed its frostbite!", battler.pbThis, itemName)
-    end
-    battler.pbCureStatus(forced)
-    battle.pbDisplay(msg) if !forced
-    next true
-  }
-)
+                                    proc { |item, battler, battle, forced|
+                                      next false if !forced && !battler.canConsumeBerry?
+                                      next false if ![:FROZEN, :FROSTBITE].include?(battler.status)
+                                      itemName = GameData::Item.get(item).name
+                                      PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
+                                      battle.pbCommonAnimation("EatBerry", battler) if !forced
+                                      case battler.status
+                                      when :FROZEN    then msg = _INTL("{1}'s {2} defrosted it!", battler.pbThis, itemName)
+                                      when :FROSTBITE then msg = _INTL("{1}'s {2} healed its frostbite!", battler.pbThis, itemName)
+                                      end
+                                      battler.pbCureStatus(forced)
+                                      battle.pbDisplay(msg) if !forced
+                                      next true
+                                    }
+                                   )
 
 #===============================================================================
 # Red Card
@@ -308,37 +305,37 @@ Battle::ItemEffects::StatusCure.add(:ASPEARBERRY,
 # Adds Guard Dog immunity.
 #-------------------------------------------------------------------------------
 Battle::ItemEffects::AfterMoveUseFromTarget.add(:REDCARD,
-  proc { |item, battler, user, move, switched_battlers, battle|
-    next if !switched_battlers.empty? || user.fainted?
-    newPkmn = battle.pbGetReplacementPokemonIndex(user.index, true)
-    next if newPkmn < 0
-    battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("{1} held up its {2} against {3}!",
-       battler.pbThis, battler.itemName, user.pbThis(true)))
-    battler.pbConsumeItem
-    next if user.effects[PBEffects::Commander]
-    if user.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !battle.moldBreaker
-      battle.pbShowAbilitySplash(user)
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("{1} anchors itself!", user.pbThis))
-      else
-        battle.pbDisplay(_INTL("{1} anchors itself with {2}!", user.pbThis, user.abilityName))
-      end
-      battle.pbHideAbilitySplash(user)
-      next
-    end
-    if user.effects[PBEffects::Ingrain]
-      battle.pbDisplay(_INTL("{1} anchored itself with its roots!", user.pbThis))
-      next
-    end
-    battle.pbRecallAndReplace(user.index, newPkmn, true)
-    battle.pbDisplay(_INTL("{1} was dragged out!", user.pbThis))
-    battle.pbClearChoice(user.index)
-    switched_battlers.push(user.index)
-    battle.moldBreaker = false
-    battle.pbOnBattlerEnteringBattle(user.index)
-  }
-)
+                                                proc { |item, battler, user, move, switched_battlers, battle|
+                                                  next if !switched_battlers.empty? || user.fainted?
+                                                  newPkmn = battle.pbGetReplacementPokemonIndex(user.index, true)
+                                                  next if newPkmn < 0
+                                                  battle.pbCommonAnimation("UseItem", battler)
+                                                  battle.pbDisplay(_INTL("{1} held up its {2} against {3}!",
+                                                                         battler.pbThis, battler.itemName, user.pbThis(true)))
+                                                  battler.pbConsumeItem
+                                                  next if user.effects[PBEffects::Commander]
+                                                  if user.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !battle.moldBreaker
+                                                    battle.pbShowAbilitySplash(user)
+                                                    if Battle::Scene::USE_ABILITY_SPLASH
+                                                      battle.pbDisplay(_INTL("{1} anchors itself!", user.pbThis))
+                                                    else
+                                                      battle.pbDisplay(_INTL("{1} anchors itself with {2}!", user.pbThis, user.abilityName))
+                                                    end
+                                                    battle.pbHideAbilitySplash(user)
+                                                    next
+                                                  end
+                                                  if user.effects[PBEffects::Ingrain]
+                                                    battle.pbDisplay(_INTL("{1} anchored itself with its roots!", user.pbThis))
+                                                    next
+                                                  end
+                                                  battle.pbRecallAndReplace(user.index, newPkmn, true)
+                                                  battle.pbDisplay(_INTL("{1} was dragged out!", user.pbThis))
+                                                  battle.pbClearChoice(user.index)
+                                                  switched_battlers.push(user.index)
+                                                  battle.moldBreaker = false
+                                                  battle.pbOnBattlerEnteringBattle(user.index)
+                                                }
+                                               )
 
 #===============================================================================
 # Quick Claw
@@ -346,11 +343,11 @@ Battle::ItemEffects::AfterMoveUseFromTarget.add(:REDCARD,
 # Cannot trigger if the user has Mycelium Might and used a status move.
 #-------------------------------------------------------------------------------
 Battle::ItemEffects::PriorityBracketChange.add(:QUICKCLAW,
-  proc { |item, battler, battle|
-    if battler.hasActiveAbility?(:MYCELIUMMIGHT)
-      pri = Battle::AbilityEffects.triggerPriorityBracketChange(battler.ability, battler, battle)
-      next pri if pri != 0
-    end
-    next 1 if battle.pbRandom(100) < 20
-  }
-)
+                                               proc { |item, battler, battle|
+                                                 if battler.hasActiveAbility?(:MYCELIUMMIGHT)
+                                                   pri = Battle::AbilityEffects.triggerPriorityBracketChange(battler.ability, battler, battle)
+                                                   next pri if pri != 0
+                                                 end
+                                                 next 1 if battle.pbRandom(100) < 20
+                                               }
+                                              )

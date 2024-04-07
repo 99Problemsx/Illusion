@@ -1,9 +1,8 @@
 ################################################################################
-# 
+#
 # Settings.
-# 
+#
 ################################################################################
-
 
 module Settings
   #=============================================================================
@@ -13,13 +12,12 @@ module Settings
   # 1 : Snow      (Gen 9+) Snow weather replaces Hail. Boosts Defence of Ice-types.
   # 2 : Hailstorm (Custom) Hailstorm weather combines both versions.
   #-----------------------------------------------------------------------------
-  # Note: In all versions of Snow/Hail, the odds of inflicting the Frostbite 
+  # Note: In all versions of Snow/Hail, the odds of inflicting the Frostbite
   # status is doubled if a move is capable of inflicting Frostbite. Pokemon with
   # the Drowsy status are also twice as likely to be unable to act each turn.
   #-----------------------------------------------------------------------------
   HAIL_WEATHER_TYPE = 1
-  
-  
+
   #=============================================================================
   # Status Settings (Drowsy/Frostbite)
   #=============================================================================
@@ -29,12 +27,11 @@ module Settings
   #-----------------------------------------------------------------------------
   SLEEP_EFFECTS_CAUSE_DROWSY     = false
   FREEZE_EFFECTS_CAUSE_FROSTBITE = false
-  
-  
+
   #=============================================================================
   # Mechanic Settings.
   #=============================================================================
-  # Makes game mechanics function like their Gen 9 equivalents where appropriate. 
+  # Makes game mechanics function like their Gen 9 equivalents where appropriate.
   # Don't change this setting if you want the full Gen 9 experience.
   #-----------------------------------------------------------------------------
   # Updated Effects:

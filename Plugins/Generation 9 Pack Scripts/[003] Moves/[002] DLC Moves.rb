@@ -1,7 +1,7 @@
 ################################################################################
-# 
+#
 # DLC move handlers.
-# 
+#
 ################################################################################
 
 ############################## Teal Mask DLC ###################################
@@ -53,7 +53,7 @@ class Battle::Move::TypeIsUserSecondType < Battle::Move
     userTypes = user.pokemon.types
     return userTypes[1] || userTypes[0] || @type
   end
-  
+
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
     case pbBaseType(user)
     when :WATER then hitNum = 1
@@ -91,15 +91,14 @@ class Battle::Move::TwoTurnAttackOneTurnInRainRaiseUserSpAtk1 < Battle::Move::Tw
     end
     return ret
   end
-  
+
   def pbChargingTurnMessage(user, targets)
     @battle.pbDisplay(_INTL("{1} absorbed electricity!", user.pbThis))
   end
 
   def pbChargingTurnEffect(user, target)
-    if user.pbCanRaiseStatStage?(@statUp[0], user, self)
-      user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
-    end
+    return unless user.pbCanRaiseStatStage?(@statUp[0], user, self)
+    user.pbRaiseStatStage(@statUp[0], @statUp[1], user)
   end
 end
 
@@ -111,15 +110,14 @@ end
 class Battle::Move::RandomlyDealsDoubleDamage < Battle::Move
   def pbOnStartUse(user, targets)
     @allOutAttack = (@battle.pbRandom(100) < 30)
-    if @allOutAttack
-      @battle.pbDisplay(_INTL("{1} is going all out for this attack!", user.pbThis))
-    end
+    return unless @allOutAttack
+    @battle.pbDisplay(_INTL("{1} is going all out for this attack!", user.pbThis))
   end
 
   def pbBaseDamage(baseDmg, user, target)
     return (@allOutAttack) ? baseDmg * 2 : baseDmg
   end
-  
+
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
     hitNum = 1 if @allOutAttack
     super
@@ -229,12 +227,12 @@ end
 #-------------------------------------------------------------------------------
 class Battle::Move::FlinchTargetFailsIfTargetNotUsingPriorityMove < Battle::Move::FlinchTarget
   def pbMoveFailed?(user, targets)
-	hasPriority = false
+    hasPriority = false
     targets.each do |b|
       next if b.movedThisRound?
       choices = @battle.choices[b.index]
       next if !choices[2].damagingMove?
-	  next if !choices[4] || choices[4] <= 0 || choices[4] > @priority
+      next if !choices[4] || choices[4] <= 0 || choices[4] > @priority
       hasPriority = true
     end
     if !hasPriority

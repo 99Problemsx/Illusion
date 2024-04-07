@@ -1,9 +1,8 @@
 ################################################################################
-# 
+#
 # Battle class changes.
-# 
+#
 ################################################################################
-
 
 class Battle
   attr_accessor :abils_triggered # Used to track any once-per-battle ability triggers for each Pokemon.
@@ -22,36 +21,36 @@ class Battle
     @fainted_count   = [0, 0]
     @sideStatUps     = [{}, {}]
   end
-  
+
   #-----------------------------------------------------------------------------
   # Various utilities.
   #-----------------------------------------------------------------------------
   def pbAbilityTriggered?(battler)
     return @abils_triggered[battler.index & 1][battler.pokemonIndex]
   end
-  
+
   def pbSetAbilityTrigger(battler, value = true)
     @abils_triggered[battler.index & 1][battler.pokemonIndex] = value
   end
-  
+
   def pbAddRageHit(battler, value = 1)
     @rage_hit_count[battler.index & 1][battler.pokemonIndex] += value
   end
-  
+
   def pbRageHitCount(battler)
     return @rage_hit_count[battler.index & 1][battler.pokemonIndex]
   end
-  
+
   def pbAddFaintedAlly(idxBattler)
     idxBattler = idxBattler.index if idxBattler.respond_to?("index")
     @fainted_count[idxBattler & 1] += 1 if @fainted_count[idxBattler & 1] < 100
   end
-  
+
   def pbFaintedAllyCount(idxBattler)
     idxBattler = idxBattler.index if idxBattler.respond_to?("index")
     return @fainted_count[idxBattler & 1]
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased to skip Tatsugiri's commands while in Dondozo's mouth.
   #-----------------------------------------------------------------------------
@@ -60,7 +59,7 @@ class Battle
     return false if @battlers[idxBattler].isCommander?
     return paldea_pbCanShowCommands?(idxBattler)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased to ensure Pokemon affected by Commander cannot switch out for any reason.
   #-----------------------------------------------------------------------------
@@ -73,7 +72,7 @@ class Battle
     end
     return ret
   end
-  
+
   #-----------------------------------------------------------------------------
   # Counts down the remaining turns of the Splinter effect until its reset.
   #-----------------------------------------------------------------------------
@@ -93,14 +92,14 @@ class Battle
   def pbEOREndBattlerSelfEffects(battler)
     paldea_pbEOREndBattlerSelfEffects(battler)
     return if battler.fainted?
-    if battler.effects[PBEffects::Syrupy] > 0
-      pbCommonAnimation("Syrupy", battler)
-      battler.effects[PBEffects::Syrupy] -= 1
-      battler.pbLowerStatStage(:SPEED, 1, battler) if battler.pbCanLowerStatStage?(:SPEED)
-      pbDisplay(_INTL("{1} was freed from the sticky candy syrup!", battler.pbThis)) if battler.effects[PBEffects::Syrupy] == 0
-    end
+    return unless battler.effects[PBEffects::Syrupy] > 0
+    pbCommonAnimation("Syrupy", battler)
+    battler.effects[PBEffects::Syrupy] -= 1
+    battler.pbLowerStatStage(:SPEED, 1, battler) if battler.pbCanLowerStatStage?(:SPEED)
+    return unless battler.effects[PBEffects::Syrupy] == 0
+    pbDisplay(_INTL("{1} was freed from the sticky candy syrup!", battler.pbThis))
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased to add splinters and Salt Cure effect damage.
   #-----------------------------------------------------------------------------
@@ -118,8 +117,6 @@ class Battle
       battler.pbTakeEffectDamage(damage) { |hp_lost|
         pbDisplay(_INTL("{1} is hurt by the jagged splinters!", battler.pbThis))
       }
-    end
-    priority.each do |battler|
       next if !battler.effects[PBEffects::SaltCure] || !battler.takesIndirectDamage?
       pbCommonAnimation("SaltCure", battler)
       fraction = (battler.pbHasType?(:STEEL) || battler.pbHasType?(:WATER)) ? 4 : 8
@@ -128,7 +125,7 @@ class Battle
       }
     end
   end
-  
+
   #-----------------------------------------------------------------------------
   # Resets various effects at the end of round.
   #-----------------------------------------------------------------------------
@@ -136,15 +133,15 @@ class Battle
   def pbEndOfRoundPhase
     paldea_pbEndOfRoundPhase
     allBattlers.each_with_index do |battler, i|
-	  battler.effects[PBEffects::AllySwitch]     = false
-	  battler.effects[PBEffects::BurningBulwark] = false
-      if Settings::MECHANICS_GENERATION >= 9
-        battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
+      battler.effects[PBEffects::AllySwitch] = false
+      battler.effects[PBEffects::BurningBulwark] = false
+      if Settings::MECHANICS_GENERATION >= 9 && (battler.effects[PBEffects::Charge] > 0)
+        battler.effects[PBEffects::Charge] += 1
       end
       battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
     end
   end
-  
+
   #-----------------------------------------------------------------------------
   # Adds counter for Bisharp -> Kingambit evolution method.
   #-----------------------------------------------------------------------------
@@ -157,7 +154,7 @@ class Battle
     return if attacker.species != battler.species
     attacker.pokemon.leaders_crest_evolution(battler.item_id)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Used to revive a party Pokemon with Revival Blessing.
   #-----------------------------------------------------------------------------
@@ -181,13 +178,11 @@ class Battle
   end
 end
 
-
 ################################################################################
-# 
+#
 # Battle::Move class changes.
-# 
+#
 ################################################################################
-
 
 class Battle::Move
   #-----------------------------------------------------------------------------
@@ -199,21 +194,19 @@ class Battle::Move
 
   #-----------------------------------------------------------------------------
   # Aliased to add Mind's Eye effect.
-  #-----------------------------------------------------------------------------  
+  #-----------------------------------------------------------------------------
   alias paldea_pbCalcTypeModSingle pbCalcTypeModSingle
   def pbCalcTypeModSingle(moveType, defType, user, target)
     ret = paldea_pbCalcTypeModSingle(moveType, defType, user, target)
-    if Effectiveness.ineffective_type?(moveType, defType)
-      if user.hasActiveAbility?(:MINDSEYE) && defType == :GHOST
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
+    if Effectiveness.ineffective_type?(moveType, defType) && (user.hasActiveAbility?(:MINDSEYE) && defType == :GHOST)
+      ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
     end
     return ret
   end
 
   #-----------------------------------------------------------------------------
   # Aliased to add Tera Shell effect.
-  #-----------------------------------------------------------------------------  
+  #-----------------------------------------------------------------------------
   alias paldea_pbCalcTypeMod pbCalcTypeMod
   def pbCalcTypeMod(moveType, user, target)
     ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
@@ -221,14 +214,14 @@ class Battle::Move
     ret = paldea_pbCalcTypeMod(moveType, user, target)
     if target.abilityActive?
       ret = Battle::AbilityEffects.triggerModifyTypeEffectiveness(
-	    target.ability, user, target, self, @battle, ret)
+        target.ability, user, target, self, @battle, ret)
     end
     return ret
   end
 
   #-----------------------------------------------------------------------------
   # Aliased to add type displays for certain moves that change type.
-  #-----------------------------------------------------------------------------  
+  #-----------------------------------------------------------------------------
   alias paldea_display_type display_type
   def display_type(battler)
     case @function_code
@@ -240,7 +233,7 @@ class Battle::Move
       return paldea_display_type(battler)
     end
   end
-  
+
   #-----------------------------------------------------------------------------
   # -Aliased to reset various checks upon using a move.
   # -Adds counter for Primeape -> Annihilape evolution method (and others).
@@ -253,7 +246,7 @@ class Battle::Move
     user.effects[PBEffects::SuccessiveMove] = nil if user.effects[PBEffects::SuccessiveMove] != @id
     user.pokemon.move_count_evolution(@id) if user.pbOwnedByPlayer?
   end
-  
+
   #-----------------------------------------------------------------------------
   # Adds Punching Glove effect to prevent contact for punching moves.
   #-----------------------------------------------------------------------------
@@ -262,7 +255,7 @@ class Battle::Move
     return false if user.hasActiveItem?(:PUNCHINGGLOVE) && punchingMove?
     return paldea_pbContactMove?(user)
   end
- 
+
   #-----------------------------------------------------------------------------
   # -Aliased to add Covert Cloak effect to block additional effects.
   # -Moves that may cause Frostbite have an increased chance to do so in Hail/Snow.
@@ -285,7 +278,7 @@ class Battle::Move
     return 0 if target.hasActiveItem?(:COVERTCLOAK)
     return paldea_pbFlinchChance(user, target)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased for accuracy checks on targets with certain effects.
   # -Moves on Pokemon who's Commander ability is currently active always miss.
@@ -297,7 +290,7 @@ class Battle::Move
     return true if target.effects[PBEffects::GlaiveRush] > 0
     return paldea_pbAccuracyCheck(user, target)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased to add a variety of new effects that affect damage calculation.
   #  -Applies the effects of the various "of Ruin" abilities.
@@ -315,44 +308,42 @@ class Battle::Move
       category = (i < 2) ? physicalMove? : specialMove?
       category = !category if i.odd? && @battle.field.effects[PBEffects::WonderRoom] > 0
       mult = (i.even?) ? multipliers[:attack_multiplier] : multipliers[:defense_multiplier]
-      mult *= 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
+      mult * 0.75 if @battle.pbCheckGlobalAbility(abil) && !user.hasActiveAbility?(abil) && category
     end
     if @battle.field.terrain == :Electric && user.affectedByTerrain? &&
-       @function_code == "IncreasePowerWhileElectricTerrain"
-      multipliers[:power_multiplier] *= 1.5 if type != :ELECTRIC
+       @function_code == "IncreasePowerWhileElectricTerrain" && (type != :ELECTRIC)
+      multipliers[:power_multiplier] *= 1.5
     end
     case user.effectiveWeather
     when :Sun, :HarshSun
       if @function_code == "IncreasePowerInSunWeather"
-        multipliers[:final_damage_multiplier] *= (type == :FIRE) ? 1 : (type == :WATER) ? 3 : 1.5
+        multipliers[:final_damage_multiplier] *= if type == :FIRE
+                                                   1
+                                                 else
+                                                   (type == :WATER) ? 3 : 1.5
+end
       end
     when :Hail
-      if Settings::HAIL_WEATHER_TYPE > 0 && target.pbHasType?(:ICE) && 
+      if Settings::HAIL_WEATHER_TYPE > 0 && target.pbHasType?(:ICE) &&
          (physicalMove? || @function_code == "UseTargetDefenseInsteadOfTargetSpDef")
         multipliers[:defense_multiplier] *= 1.5
       end
     end
     # Frostbite
-    if user.status == :FROSTBITE && specialMove?
-      multipliers[:final_damage_multiplier] /= 2
-    end
+    multipliers[:final_damage_multiplier] /= 2 if user.status == :FROSTBITE && specialMove?
     # Drowsy
-    if target.status == :DROWSY
-      multipliers[:final_damage_multiplier] *= 4 / 3.0
-    end
+    multipliers[:final_damage_multiplier] *= 4 / 3.0 if target.status == :DROWSY
     # Glaive Rush
     multipliers[:final_damage_multiplier] *= 2 if target.effects[PBEffects::GlaiveRush] > 0
     paldea_pbCalcDamageMultipliers(user, target, numTargets, type, baseDmg, multipliers)
   end
 end
 
-
 ################################################################################
-# 
+#
 # Battle::Scene class changes.
-# 
+#
 ################################################################################
-
 
 class Battle::Scene
   #-----------------------------------------------------------------------------
@@ -378,7 +369,6 @@ class Battle::Scene
       cmdSwitch  = -1
       cmdBoxes   = -1
       cmdSelect  = -1
-      cmdSummary = -1
       commands = []
       commands[cmdSwitch  = commands.length] = _INTL("Switch In") if mode == 0 && modParty[idxParty].able?
       commands[cmdBoxes   = commands.length] = _INTL("Send to Boxes") if mode == 1
@@ -403,7 +393,7 @@ class Battle::Scene
     switchScreen.pbEndScene
     pbFadeInAndShow(@sprites, visibleSprites)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Aliased to keep Tatsugiri's sprite hidden during Commander.
   #-----------------------------------------------------------------------------
@@ -412,14 +402,14 @@ class Battle::Scene
     return if user && user.isCommander?
     target = target[0] if target.is_a?(Array)
     return if target && target.isCommander?
-    paldea_pbCommonAnimation(animName, user, target)  
+    paldea_pbCommonAnimation(animName, user, target)
   end
 end
 
 ################################################################################
-# 
+#
 # Battle::DamageState class changes.
-# 
+#
 ################################################################################
 class Battle::DamageState
   attr_accessor :terashell # Tera Shell ability used
