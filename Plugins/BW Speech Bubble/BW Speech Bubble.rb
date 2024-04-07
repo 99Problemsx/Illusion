@@ -32,20 +32,21 @@ end
 
 class Window_AdvancedTextPokemon
   def text=(value)
-    if value != nil && value != "" && $game_temp.speechbubble_bubble && $game_temp.speechbubble_bubble > 0
-      if $game_temp.speechbubble_bubble == 1
+    if !nil_or_empty?(value) && $game_temp.speechbubble_bubble && $game_temp.speechbubble_bubble > 0
+      event = pbMapInterpreter&.get_character($game_temp.speechbubble_talking)
+      if $game_temp.speechbubble_bubble == 1 && event
         $game_temp.speechbubble_bubble = 0
         resizeToFit2(value,400,100)
-        @x = $game_map.events[$game_temp.speechbubble_talking].screen_x
-        @y = $game_map.events[$game_temp.speechbubble_talking].screen_y - (32 + @height)
+        @x = event.screen_x
+        @y = event.screen_y - (32 + @height)
             
         if @y>(Graphics.height-@height-2)
           @y = (Graphics.height-@height)
         elsif @y<2
           @y=2
         end
-        if @x>(Graphics.width-@width-2)
-          @x = ($game_map.events[$game_temp.speechbubble_talking].screen_x-@width)
+        if @x > Graphics.width - @width - 2
+          @x = event.screen_x-@width
         elsif @x<2
           @x=2
         end
@@ -110,41 +111,42 @@ end
  
 def pbCreateMessageWindow(viewport = nil, skin = nil)
   arrow = nil
-  if $game_temp.speechbubble_bubble==2 && $game_map.events[$game_temp.speechbubble_talking] != nil # Message window set to floating bubble.
+  event = pbMapInterpreter&.get_character($game_temp.speechbubble_talking)
+  if $game_temp.speechbubble_bubble==2 && event != nil # Message window set to floating bubble.
     if $game_player.direction==8 # Player facing up, message window top.
       $game_temp.speechbubble_vp = Viewport.new(0, 104, Graphics.width, 280)
       $game_temp.speechbubble_vp.z = 999999
       arrow = Sprite.new($game_temp.speechbubble_vp)
-      arrow.x = $game_map.events[$game_temp.speechbubble_talking].screen_x - Graphics.width
-      arrow.y = ($game_map.events[$game_temp.speechbubble_talking].screen_y - Graphics.height) - 136
+      arrow.x = event.screen_x - Graphics.width
+      arrow.y = event.screen_y - Graphics.height - 136
       arrow.z = 999999
       arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow4")
       arrow.zoom_x = 2
       arrow.zoom_y = 2
       if arrow.x<-230
-        arrow.x = $game_map.events[$game_temp.speechbubble_talking].screen_x
+        arrow.x = event.screen_x
         arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow3")
       end
-    else # Player facing left, down, right, message window bottom.
+    elsif event # Player facing left, down, right, message window bottom.
       $game_temp.speechbubble_vp = Viewport.new(0, 0, Graphics.width, 280)
       $game_temp.speechbubble_vp.z = 999999
       arrow = Sprite.new($game_temp.speechbubble_vp)
-      arrow.x = $game_map.events[$game_temp.speechbubble_talking].screen_x
-      arrow.y = $game_map.events[$game_temp.speechbubble_talking].screen_y
+      arrow.x = event.screen_x
+      arrow.y = event.screen_y
       arrow.z = 999999
       arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow1")
       if arrow.y>=Graphics.height-120 # Change arrow direction.
         $game_temp.speechbubble_outofrange=true
         $game_temp.speechbubble_vp.rect.y+=104
-        arrow.x = $game_map.events[$game_temp.speechbubble_talking].screen_x - Graphics.width
+        arrow.x = event.screen_x - Graphics.width
         arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow4")
-        arrow.y = ($game_map.events[$game_temp.speechbubble_talking].screen_y - Graphics.height) - 136
+        arrow.y = (event.screen_y - Graphics.height) - 136
         if arrow.x<-250
-          arrow.x = $game_map.events[$game_temp.speechbubble_talking].screen_x
+          arrow.x = event.screen_x
           arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow3")
         end
         if arrow.x>=256
-          arrow.x-=15# = $game_map.events[$game_temp.speechbubble_talking].screen_x-Graphics.width
+          arrow.x-=15# = event.screen_x-Graphics.width
           arrow.bitmap = RPG::Cache.load_bitmap("Graphics/Pictures/","Arrow3")
         end
       else
@@ -181,6 +183,6 @@ def pbDisposeMessageWindow(msgwindow)
 end
 
 def pbCallBub(status=0,value=0)
-  $game_temp.speechbubble_talking=get_character(value).id
-  $game_temp.speechbubble_bubble=status
+  $game_temp.speechbubble_talking = value
+  $game_temp.speechbubble_bubble = status
 end
