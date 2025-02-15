@@ -3,9 +3,8 @@
 #===============================================================================
 class TilesetRearranger
   def choose_tileset
-    commands = []
-    for i in 1...@tilesets_data.length
-      commands.push(sprintf("%03d %s", i, @tilesets_data[i].name))
+    commands = (1...@tilesets_data.length).map do |i|
+      sprintf("%03d %s", i, @tilesets_data[i].name)
     end
     ret = pbShowCommands(nil, commands, -1, (@tileset_id || 1) - 1)
     return false if ret < 0
@@ -15,13 +14,13 @@ class TilesetRearranger
 
   def open_menu
     commands = [
-       _INTL("Go to bottom"),
-       _INTL("Go to top"),
-       _INTL("Clear all unused tiles"),
-       _INTL("Delete all unused rows"),
-       _INTL("List maps using this tileset"),
-       _INTL("Change tileset"),
-       _INTL("Cancel")
+      _INTL("Go to bottom"),
+      _INTL("Go to top"),
+      _INTL("Clear all unused tiles"),
+      _INTL("Delete all unused rows"),
+      _INTL("List maps using this tileset"),
+      _INTL("Change tileset"),
+      _INTL("Cancel")
     ]
     case pbShowCommands(nil, commands, -1)
     when 0   # Go to bottom
@@ -39,8 +38,8 @@ class TilesetRearranger
       loop do
         break if row >= @height
         used = false
-        for i in 0...TILES_PER_ROW
-          tile_id = @tile_ID_map[row * TILES_PER_ROW + i]
+        (0...TILES_PER_ROW).each do |i|
+          tile_id = @tile_ID_map[(row * TILES_PER_ROW) + i]
           next if !tile_id || tile_id < 0 || !@used_ids[TILESET_START_ID + tile_id]
           used = true
           break
@@ -70,9 +69,8 @@ class TilesetRearranger
       draw_help_text
     when 4   # List maps using this tileset
       if @tilesets_usage[@tileset_id] && @tilesets_usage[@tileset_id].length > 0
-        map_names = []
-        @tilesets_usage[@tileset_id].each do |map_id|
-          map_names.push(sprintf("%03d: %s", map_id, @map_names[map_id]))
+        map_names = @tilesets_usage[@tileset_id].map do |map_id|
+          sprintf("%03d: %s", map_id, @map_names[map_id])
         end
         map_names.sort!
         map_names.insert(0, _ISPRINTF("Maps using tileset {1:03d}: {2:s}:", @tileset_id, @tilesets_data[@tileset_id].name))

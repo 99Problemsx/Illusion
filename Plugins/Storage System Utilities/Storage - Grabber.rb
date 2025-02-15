@@ -7,7 +7,7 @@ class StorageGrabber
   def initialize
     clear
   end
-  
+
   #===============================================================================
   # Adds hovered over pokemon to held pokemon
   #===============================================================================
@@ -21,7 +21,7 @@ class StorageGrabber
   def holding_anything?
     return !@mons.empty?
   end
-  
+
   #===============================================================================
   # Sets the pivot (top left Pokemon)
   #===============================================================================
@@ -29,7 +29,7 @@ class StorageGrabber
     @pivot      = selection
     @mock_pivot = selection
   end
-  
+
   #===============================================================================
   # Begins hovering phase
   #===============================================================================
@@ -41,27 +41,27 @@ class StorageGrabber
     @mons = []
     f_row = [p_row, s_row].min # F stands for flow
     f_col = [p_col, s_col].min
-    @mock_pivot = f_col + f_row * PokemonBox::BOX_WIDTH
-    for i in 0...PokemonBox::BOX_WIDTH
+    @mock_pivot = f_col + (f_row * PokemonBox::BOX_WIDTH)
+    (0...PokemonBox::BOX_WIDTH).each do |i|
       next if (i < p_col && i < s_col) || (i > p_col && i > s_col)
-      for j in 0...PokemonBox::BOX_HEIGHT
+      (0...PokemonBox::BOX_HEIGHT).each do |j|
         next if (j < p_row && j < s_row) || (j > p_row && j > s_row)
         add_to(i - f_col,  j - f_row)
       end
     end
   end
-  
+
   #===============================================================================
   # Is the grabber carrying?
   #===============================================================================
   def carrying
     return @carrying
   end
-  
+
   def carrying=(value)
     @carrying = value
   end
-  
+
   #===============================================================================
   # Adds Pokémon and their positions (relative to top left) to @carried_mons
   #===============================================================================
@@ -69,15 +69,15 @@ class StorageGrabber
     ret   = []
     p_col = @mock_pivot % PokemonBox::BOX_WIDTH
     p_row = (@mock_pivot / PokemonBox::BOX_WIDTH).floor
-    for i in @mons
+    @mons.each do |i|
       x, y = i
-      sel  = (p_row + y) * PokemonBox::BOX_WIDTH + (p_col + x)
+      sel  = ((p_row + y) * PokemonBox::BOX_WIDTH) + (p_col + x)
       pkmn = storage[box_num, sel]
       ret.push([pkmn, x, y])
     end
     @carried_mons = ret
   end
-  
+
   #===============================================================================
   # Gets storage index of carried mons for deletion
   #===============================================================================
@@ -85,14 +85,14 @@ class StorageGrabber
     ret   = []
     p_col = @mock_pivot % PokemonBox::BOX_WIDTH
     p_row = (@mock_pivot / PokemonBox::BOX_WIDTH).floor
-    for i in @carried_mons
+    @carried_mons.each do |i|
       x = i[1] + p_col
       y = i[2] + p_row
-      ret.push(y * PokemonBox::BOX_WIDTH + x)
+      ret.push((y * PokemonBox::BOX_WIDTH) + x)
     end
     return ret
   end
-  
+
   #===============================================================================
   # Places mons in those positions
   # STOPS IF THERE IS NOT A SPACE FOR EVERY MON
@@ -101,10 +101,10 @@ class StorageGrabber
     s_col = selection % PokemonBox::BOX_WIDTH
     s_row = (selection / PokemonBox::BOX_WIDTH).floor
     can_place = true
-    for i in @carried_mons
+    @carried_mons.each do |i|
       col = s_col + i[1]
       if col >= PokemonBox::BOX_WIDTH
-        can_place = false 
+        can_place = false
         next
       end
       row = s_row + i[2]
@@ -112,43 +112,42 @@ class StorageGrabber
         can_place = false
         next
       end
-      pseudo_sel = row * PokemonBox::BOX_WIDTH + col
+      pseudo_sel = (row * PokemonBox::BOX_WIDTH) + col
       can_place = false if storage[box_num, pseudo_sel] # Occupied
     end
     return can_place
   end
-  
+
   #===============================================================================
   # Gets index number of mons proposed to be put in boxes in above def.
   #===============================================================================
   def get_new_carried_mons(selection)
-    
     ret   = []
     s_col = selection % PokemonBox::BOX_WIDTH
     s_row = (selection / PokemonBox::BOX_WIDTH).floor
-    for i in @carried_mons
+    @carried_mons.each do |i|
       col = s_col + i[1]
       row = s_row + i[2]
-      pseudo_sel = row * PokemonBox::BOX_WIDTH + col
+      pseudo_sel = (row * PokemonBox::BOX_WIDTH) + col
       ret.push([pseudo_sel, i[0]])
     end
     return ret
   end
-  
+
   #===============================================================================
   # Removes any poured Pokemon
   #===============================================================================
   def pour(count)
     return if count == 0
     to_del = get_new_carried_mons(0)
-	to_del.sort{ |a, b| a[0] <=> b[0] }
-	ret = @carried_mons.clone
-	count.times do
-	  ret.pop
-	end
-	@carried_mons = ret
+    to_del.sort { |a, b| a[0] <=> b[0] }
+    ret = @carried_mons.clone
+    count.times do
+      ret.pop
+    end
+    @carried_mons = ret
   end
-  
+
   #===============================================================================
   # Clears everything
   #===============================================================================
@@ -159,25 +158,25 @@ class StorageGrabber
     @carrying     = false
     @carried_mons = []
   end
-  
+
   #===============================================================================
   # Utilities
   #===============================================================================
   def mons
     return @mons
   end
-  
+
   def mock_pivot
     return @mock_pivot
   end
-  
+
   def contains_an_egg?
-    for i in @carried_mons
+    @carried_mons.each do |i|
       return true if i[0].egg?
     end
     return false
   end
-  
+
   def carried_mons
     return @carried_mons
   end

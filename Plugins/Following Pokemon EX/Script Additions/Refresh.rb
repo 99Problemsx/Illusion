@@ -192,7 +192,7 @@ class Scene_Map
       FollowingPkmn.toggle_off
       loop do
         pkmn = $player.party.shift
- 			  $player.party.push(pkmn)
+        $player.party.push(pkmn)
         $PokemonGlobal.follower_toggled = true
         if FollowingPkmn.active?
           $PokemonGlobal.follower_toggled = false
@@ -240,7 +240,7 @@ end
 alias __followingpkmn__pbSetPokemonCenter pbSetPokemonCenter unless defined?(__followingpkmn__pbSetPokemonCenter)
 def pbSetPokemonCenter(*args)
   ret = __followingpkmn__pbSetPokemonCenter(*args)
-  $game_temp.pokecenter_following_pkmn = 1  if FollowingPkmn::SHOW_POKECENTER_ANIMATION && FollowingPkmn.active?
+  $game_temp.pokecenter_following_pkmn = 1 if FollowingPkmn::SHOW_POKECENTER_ANIMATION && FollowingPkmn.active?
   return ret
 end
 
@@ -253,7 +253,7 @@ class Interpreter
   def command_314(*args)
     ret = __followingpkmn__command_314(*args)
     if FollowingPkmn::SHOW_POKECENTER_ANIMATION && $game_temp.pokecenter_following_pkmn > 0 &&
-      FollowingPkmn.active?
+       FollowingPkmn.active?
       FollowingPkmn.toggle_off
       $game_temp.pokecenter_following_pkmn = 2
     end
@@ -266,10 +266,9 @@ class Interpreter
   alias __followingpkmn__update update unless method_defined?(:__followingpkmn__update)
   def update(*args)
     __followingpkmn__update(*args)
-    if FollowingPkmn::SHOW_POKECENTER_ANIMATION && $game_temp.pokecenter_following_pkmn > 0 && !running?
-      FollowingPkmn.toggle_on
-      $game_temp.pokecenter_following_pkmn = 0
-    end
+    return unless FollowingPkmn::SHOW_POKECENTER_ANIMATION && $game_temp.pokecenter_following_pkmn > 0 && !running?
+    FollowingPkmn.toggle_on
+    $game_temp.pokecenter_following_pkmn = 0
   end
   #-----------------------------------------------------------------------------
 end

@@ -11278,6 +11278,37 @@ List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
+Event ID: 026
+Event Name: EV026
+(X,Y): (000,052)
+
+Page #1
+Conditions
+None
+
+Graphic: AMOONGUSS
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Text: Gen 9 Update
+@>Show Choices: Ja, Nein
+(When Cancel: Choice 2)
+: When [Ja]
+ @>Script: Compiler.update_gen9
+ @>
+: When [Nein]
+ @>
+: Branch End
+@>
+
+#------------------------------------------------------------------------------
 
 #==============================================================================
 Map ID: 033
@@ -11817,6 +11848,7 @@ Map ID: 042
 Map Name: Dein Zuhause
 Tileset: 025: Ins
 Width: 20, Height: 15
+Auto-Change BGM: Titan Town
 
 #------------------------------------------------------------------------------
 Event ID: 001
@@ -11845,35 +11877,14 @@ List of Event Commands:
 
 #------------------------------------------------------------------------------
 Event ID: 002
-Event Name: EV002
-(X,Y): (006,009)
-
-Page #1
-Conditions
-None
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Player Touch
-
-List of Event Commands:
-@>Script: pbSetPokemonCenter
-@>
-
-#------------------------------------------------------------------------------
-Event ID: 003
-Event Name: Mum
+Event Name: Mother
 (X,Y): (005,007)
 
 Page #1
 Conditions
 None
 
-Graphic: HGSS_127
+Graphic: HGSS_110
 
 Autonomous Movement
 Type: Fixed
@@ -11884,39 +11895,14 @@ Move Animation
 Trigger: Action Button
 
 List of Event Commands:
-@>Script: pbCallBub(2, 3)
-@>Text: \rGuten Morgen. Gut geschlafen? Du siehst ein wenig mitgenommen aus? Hast du dich noch immer nicht an die neuen Umgebungsgeräusche gewöhnt? Apropo 
- :    : Geräusche. Vor wenigen Minuten war ein junger Mann an der Tür, er hat nach dir gefragt. Ich habe ihn leider nicht ganz richtig verstanden, er hat Schwierigkeiten 
- :    : mit 
- :    : dem Buchstaben "R“, glaube ich. Geh noch nach draußen und schau nach ihm. Er schien ganz aufgeregt zu sein.
-@>Script: pbSetPokemonCenter
-@>Control Self Switch: A =ON
+@>Text: \rHalte dich von Ärger fern.
 @>
 
 Page #2
 Conditions
-Self Switch A is ON
-
-Graphic: HGSS_127
-
-Autonomous Movement
-Type: Fixed
-Speed: 3: Slow
-Freq: 3: Low
-Options Enabled
-Move Animation
-Trigger: Action Button
-
-List of Event Commands:
-@>Script: pbCallBub(2, 3)
-@>Text: \rGeh nach draußen und schau nach dem aufgeregten Jungen. Viel Spaß!
-@>
-
-Page #3
-Conditions
 Switch 0001: Starting over is ON
 
-Graphic: HGSS_127
+Graphic: HGSS_110
 
 Autonomous Movement
 Type: Fixed
@@ -11927,20 +11913,40 @@ Move Animation
 Trigger: Autorun
 
 List of Event Commands:
-@>Comment: Every map you can end up in after having all your 
- :       : Pokémon faint (typically Poké Centers and home) 
- :       : must have an Autorun event in it like this one.
- :       : This event fully heals all the player's Pokémon, says 
- :       : something to that effect, and turns the "Starting 
- :       : over" switch OFF again.
-@>Comment: For convenience, this can be a single page in an 
- :       : NPC's event (e.g. Mom, a nurse).
-@>Script: pbCallBub(2, 3)
-@>Text: \rOh... Geht es dir gut? Nun, du wirst mehr Glück haben 
- :    : dieses Mal.
+@>Set Move Route: Player
+ :              : $>Turn Down
+@>Text: \rDu solltest vorsichtiger sein!
+@>Change Screen Color Tone: (-255,-255,-255,0), @6
+@>Play ME: 'Pkmn healing', 100, 100
+@>Wait: 58 frame(s)
+@>Change Screen Color Tone: (0,0,0,0), @6
+@>Text: \rYou'll have better luck this time.
 @>Recover All: Entire Party
-@>Script: pbCallBub(2, 3)
 @>Control Switches: [0001: Starting over] = OFF
+@>
+
+Page #3
+Conditions
+Switch 0003: Choosing starter is ON
+
+Graphic: HGSS_110
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>Text: \rDu kannst dich hier ausruhen.
+@>Change Screen Color Tone: (-255,-255,-255,0), @8
+@>Recover All: Entire Party
+@>Play ME: 'Pkmn healing', 100, 100
+@>Wait: 20 frame(s)
+@>Change Screen Color Tone: (0,0,0,0), @8
+@>Text: \rDu bist jetzt startklar!
 @>
 
 #------------------------------------------------------------------------------

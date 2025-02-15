@@ -60,6 +60,7 @@ class Game_FollowingPkmn < Game_Follower
     return if $PokemonGlobal.ice_sliding && (!FollowingPkmn.active? || FollowingPkmn.airborne_follower?)
     __followingpkmn__straighten
   end
+
   #-----------------------------------------------------------------------------
   # Don't show dust animation if Following Pokemon isn't active or is airborne
   #-----------------------------------------------------------------------------
@@ -67,6 +68,7 @@ class Game_FollowingPkmn < Game_Follower
     return if !FollowingPkmn.active? || FollowingPkmn.airborne_follower?
     super
   end
+
   #-----------------------------------------------------------------------------
   # Allow following pokemon to freely walk on water
   #-----------------------------------------------------------------------------
@@ -109,12 +111,13 @@ class Game_FollowingPkmn < Game_Follower
       end
     end
     # Check all events on the map to see if any are in the way
-    this_map.events.values.each do |event|
+    this_map.events.each_value do |event|
       next if !event.at_coordinate?(x, y)
       return false if !event.through && event.character_name != ""
     end
     return true
   end
+
   #-----------------------------------------------------------------------------
   # Updating the event turning to prevent following Pokemon from changing it's
   # direction with the player
@@ -123,6 +126,7 @@ class Game_FollowingPkmn < Game_Follower
     return if FollowingPkmn.active? && !FollowingPkmn::ALWAYS_FACE_PLAYER
     pbTurnTowardEvent(self, leader)
   end
+
   #-----------------------------------------------------------------------------
   # Make Follower Appear above player
   #-----------------------------------------------------------------------------
@@ -148,7 +152,7 @@ class FollowerData
     if !@common_event_id
       event = args[0]
       $game_map.refresh if $game_map.need_refresh
-	  event.lock
+      event.lock
       FollowingPkmn.talk
       event.unlock
     elsif FollowingPkmn.can_talk?
@@ -158,17 +162,19 @@ class FollowerData
   #-----------------------------------------------------------------------------
 end
 
-
 class Game_FollowerFactory
   #-----------------------------------------------------------------------------
   # Define the Following as a different class from Game_Follower ie
   # Game_FollowingPkmn
   #-----------------------------------------------------------------------------
-  alias __followingpkmn__create_follower_object create_follower_object unless private_method_defined?(:__followingpkmn__create_follower_object)
+  unless private_method_defined?(:__followingpkmn__create_follower_object)
+    alias __followingpkmn__create_follower_object create_follower_object
+  end
   def create_follower_object(*args)
     return Game_FollowingPkmn.new(args[0]) if args[0].following_pkmn?
     return __followingpkmn__create_follower_object(*args)
   end
+
   #-----------------------------------------------------------------------------
   # Following Pokemon shouldn't be a leader if it is inactive.
   #-----------------------------------------------------------------------------
@@ -184,6 +190,7 @@ class Game_FollowerFactory
       leader = event if !event.is_a?(Game_FollowingPkmn) || FollowingPkmn.active?
     end
   end
+
   #-----------------------------------------------------------------------------
   # Following Pokemon shouldn't be a leader if it is inactive.
   #-----------------------------------------------------------------------------
@@ -196,6 +203,7 @@ class Game_FollowerFactory
       leader = event if !event.is_a?(Game_FollowingPkmn) || FollowingPkmn.active?
     end
   end
+
   #-----------------------------------------------------------------------------
   # Method to remove all Followers except Following Pokemon
   #-----------------------------------------------------------------------------
