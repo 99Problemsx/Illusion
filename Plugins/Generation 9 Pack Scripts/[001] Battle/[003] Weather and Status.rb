@@ -1,8 +1,9 @@
 ################################################################################
-#
+# 
 # New GameData::Status additions.
-#
+# 
 ################################################################################
+
 
 #-------------------------------------------------------------------------------
 # Drowsy
@@ -37,11 +38,13 @@ GameData::Status.register({
   :icon_position => 6
 })
 
+
 ################################################################################
-#
+# 
 # Battle class changes.
-#
+# 
 ################################################################################
+
 
 class Battle
   #-----------------------------------------------------------------------------
@@ -64,7 +67,7 @@ class Battle
       end
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Used to display the terrain start messages for overworld terrain.
   #-----------------------------------------------------------------------------
@@ -76,7 +79,7 @@ class Battle
     when :Psychic  then pbDisplay(_INTL("The battlefield is weird!"))
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Edited to display the correct start messages for overworld weather/terrain.
   #-----------------------------------------------------------------------------
@@ -122,7 +125,7 @@ class Battle
       paldea_pbStartWeather(user, newWeather, fixedDuration, showAnim)
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased to display the correct weather end messages for Snow.
   #-----------------------------------------------------------------------------
@@ -155,7 +158,7 @@ class Battle
       paldea_pbEOREndWeather(priority)
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased so Hail doesn't cause end of round damage if set to Snow weather.
   #-----------------------------------------------------------------------------
@@ -165,7 +168,7 @@ class Battle
               !battler.fainted? && battler.effectiveWeather == :Hail
     paldea_pbEORWeatherDamage(battler)
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased to add end of round damage from Frostbite.
   #-----------------------------------------------------------------------------
@@ -185,15 +188,17 @@ class Battle
   end
 end
 
+
 ################################################################################
-#
+# 
 # Battle::Battler class changes.
-#
+# 
 ################################################################################
+
 
 class Battle::Battler
   #-----------------------------------------------------------------------------
-  # Drowsy utilities.
+  # Drowsy utilities. 
   #-----------------------------------------------------------------------------
   def drowsy?
     return pbHasStatus?(:DROWSY)
@@ -202,7 +207,7 @@ class Battle::Battler
   def pbCanDrowse?(user, showMessages, move = nil, ignoreStatus = false)
     return pbCanInflictStatus?(:DROWSY, user, showMessages, move, ignoreStatus)
   end
-
+  
   def pbCanDrowseSynchronize?(target)
     return pbCanSynchronizeStatus?(:DROWSY, target)
   end
@@ -216,7 +221,7 @@ class Battle::Battler
   end
 
   #-----------------------------------------------------------------------------
-  # Frostbite utilities.
+  # Frostbite utilities. 
   #-----------------------------------------------------------------------------
   def frostbite?
     return pbHasStatus?(:FROSTBITE)
@@ -235,7 +240,7 @@ class Battle::Battler
   end
 
   #-----------------------------------------------------------------------------
-  # Aliased to check for Drowsy/Frostbite.
+  # Aliased to check for Drowsy/Frostbite. 
   #-----------------------------------------------------------------------------
   alias paldea_pbHasStatus? pbHasStatus?
   def pbHasStatus?(checkStatus)
@@ -262,108 +267,109 @@ class Battle::Battler
     when :SLEEP  then newStatus = :DROWSY    if Settings::SLEEP_EFFECTS_CAUSE_DROWSY
     when :FROZEN then newStatus = :FROSTBITE if Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE
     end
-    unless [:DROWSY, :FROSTBITE].include?(newStatus)
-      return paldea_pbCanInflictStatus?(originalStatus, user, showMessages, move, ignoreStatus)
-end
-    selfInflicted = user && user.index == @index
-    #-------------------------------------------------------------------------
-    # General immunities.
-    #-------------------------------------------------------------------------
-    if self.status == newStatus && !ignoreStatus
-      if showMessages
-        @battle.pbDisplay(_INTL("{1} is already drowsy!", pbThis))      if newStatus == :DROWSY
-        @battle.pbDisplay(_INTL("{1} is already frostbitten!", pbThis)) if newStatus == :FROSTBITE
-      end
-      return false
-    end
-    if (self.status != :NONE && !ignoreStatus && !selfInflicted) ||
-       (@effects[PBEffects::Substitute] > 0 && !(move && move.ignoresSubstitute?(user)) && !selfInflicted)
-      @battle.pbDisplay(_INTL("It doesn't affect {1}...", pbThis(true))) if showMessages
-      return false
-    end
-    case newStatus
-    #-------------------------------------------------------------------------
-    # Drowzy immunities.
-    #-------------------------------------------------------------------------
-    when :DROWSY
-      if affectedByTerrain? && @battle.field.terrain == :Electric
-        @battle.pbDisplay(_INTL("{1} surrounds itself with electrified terrain!", pbThis(true))) if showMessages
+    if [:DROWSY, :FROSTBITE].include?(newStatus)
+      selfInflicted = (user && user.index == @index)
+      #-------------------------------------------------------------------------
+      # General immunities.
+      #-------------------------------------------------------------------------
+      if self.status == newStatus && !ignoreStatus
+        if showMessages
+          @battle.pbDisplay(_INTL("{1} is already drowsy!", pbThis))      if newStatus == :DROWSY
+          @battle.pbDisplay(_INTL("{1} is already frostbitten!", pbThis)) if newStatus == :FROSTBITE
+        end
         return false
       end
-      if !(hasActiveAbility?(:SOUNDPROOF) && !@battle.moldBreaker)
-        @battle.allBattlers.each do |b|
-          next if b.effects[PBEffects::Uproar] == 0
-          @battle.pbDisplay(_INTL("But the uproar kept {1} alert!", pbThis(true))) if showMessages
-          return false
-        end
-      end
-    #-------------------------------------------------------------------------
-    # Frostbite immunities.
-    #-------------------------------------------------------------------------
-    when :FROSTBITE
-      if pbHasType?(:ICE) || [:Sun, :HarshSun].include?(effectiveWeather)
+      if (self.status != :NONE && !ignoreStatus && !selfInflicted) ||
+         (@effects[PBEffects::Substitute] > 0 && !(move && move.ignoresSubstitute?(user)) && !selfInflicted)
         @battle.pbDisplay(_INTL("It doesn't affect {1}...", pbThis(true))) if showMessages
         return false
       end
-    end
-    #-------------------------------------------------------------------------
-    # Ability immunities.
-    # Abilities that block Sleep also block Drowsiness.
-    # Abilities that block Freeze also block Frostbites.
-    #-------------------------------------------------------------------------
-    immuneByAbility = false
-    immAlly = nil
-    if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, originalStatus)
-      immuneByAbility = true
-    elsif selfInflicted || !@battle.moldBreaker
-      if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, originalStatus)
+      case newStatus
+      #-------------------------------------------------------------------------
+      # Drowzy immunities.
+      #-------------------------------------------------------------------------
+      when :DROWSY
+        if affectedByTerrain? && @battle.field.terrain == :Electric
+          @battle.pbDisplay(_INTL("{1} surrounds itself with electrified terrain!", pbThis(true))) if showMessages
+          return false
+        end
+        if !(hasActiveAbility?(:SOUNDPROOF) && !@battle.moldBreaker)
+          @battle.allBattlers.each do |b|
+            next if b.effects[PBEffects::Uproar] == 0
+            @battle.pbDisplay(_INTL("But the uproar kept {1} alert!", pbThis(true))) if showMessages
+            return false
+          end
+        end
+      #-------------------------------------------------------------------------
+      # Frostbite immunities.
+      #-------------------------------------------------------------------------
+      when :FROSTBITE
+        if pbHasType?(:ICE) || [:Sun, :HarshSun].include?(effectiveWeather)
+          @battle.pbDisplay(_INTL("It doesn't affect {1}...", pbThis(true))) if showMessages
+          return false
+        end
+      end
+      #-------------------------------------------------------------------------
+      # Ability immunities. 
+      # Abilities that block Sleep also block Drowsiness.
+      # Abilities that block Freeze also block Frostbites.
+      #-------------------------------------------------------------------------
+      immuneByAbility = false
+      immAlly = nil
+      if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, originalStatus)
         immuneByAbility = true
-      else
-        allAllies.each do |b|
-          next if !b.abilityActive?
-          next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, originalStatus)
+      elsif selfInflicted || !@battle.moldBreaker
+        if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, originalStatus)
           immuneByAbility = true
-          immAlly = b
-          break
-        end
-      end
-    end
-    if immuneByAbility
-      if showMessages
-        @battle.pbShowAbilitySplash(immAlly || self)
-        msg = ""
-        if Battle::Scene::USE_ABILITY_SPLASH
-          case originalStatus
-          when :SLEEP  then msg = _INTL("{1} stays alert!", pbThis)
-          when :FROZEN then msg = _INTL("{1} cannot be frostbitten!", pbThis)
-          end
-        elsif immAlly
-          case originalStatus
-          when :SLEEP  then msg = _INTL("{1} stays alert because of {2}'s {3}!", pbThis, immAlly.pbThis(true), immAlly.abilityName)
-          when :FROZEN then msg = _INTL("{1} cannot be frostbitten because of {2}'s {3}!", pbThis, immAlly.pbThis(true), immAlly.abilityName)
-          end
         else
-          case originalStatus
-          when :SLEEP  then msg = _INTL("{1}'s {2} prevents drowsiness!", pbThis, abilityName)
-          when :FROZEN then msg = _INTL("{1}'s {2} prevents frostbites!", pbThis, abilityName)
+          allAllies.each do |b|
+            next if !b.abilityActive?
+            next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, originalStatus)
+            immuneByAbility = true
+            immAlly = b
+            break
           end
         end
-        @battle.pbDisplay(msg)
-        @battle.pbHideAbilitySplash(immAlly || self)
       end
-      return false
+      if immuneByAbility
+        if showMessages
+          @battle.pbShowAbilitySplash(immAlly || self)
+          msg = ""
+          if Battle::Scene::USE_ABILITY_SPLASH
+            case originalStatus
+            when :SLEEP  then msg = _INTL("{1} stays alert!", pbThis)
+            when :FROZEN then msg = _INTL("{1} cannot be frostbitten!", pbThis)
+            end
+          elsif immAlly
+            case originalStatus
+            when :SLEEP  then msg = _INTL("{1} stays alert because of {2}'s {3}!", pbThis, immAlly.pbThis(true), immAlly.abilityName)
+            when :FROZEN then msg = _INTL("{1} cannot be frostbitten because of {2}'s {3}!", pbThis, immAlly.pbThis(true), immAlly.abilityName)
+            end
+          else
+            case originalStatus
+            when :SLEEP  then msg = _INTL("{1}'s {2} prevents drowsiness!", pbThis, abilityName)
+            when :FROZEN then msg = _INTL("{1}'s {2} prevents frostbites!", pbThis, abilityName)
+            end
+          end
+          @battle.pbDisplay(msg)
+          @battle.pbHideAbilitySplash(immAlly || self)
+        end
+        return false
+      end
+      #-------------------------------------------------------------------------
+      # Safeguard immunity.
+      #-------------------------------------------------------------------------
+      if pbOwnSide.effects[PBEffects::Safeguard] > 0 && !selfInflicted && move &&
+         !(user && user.hasActiveAbility?(:INFILTRATOR))
+        @battle.pbDisplay(_INTL("{1}'s team is protected by Safeguard!", pbThis)) if showMessages
+        return false
+      end
+      return true
+    else
+      return paldea_pbCanInflictStatus?(originalStatus, user, showMessages, move, ignoreStatus)
     end
-    #-------------------------------------------------------------------------
-    # Safeguard immunity.
-    #-------------------------------------------------------------------------
-    if pbOwnSide.effects[PBEffects::Safeguard] > 0 && !selfInflicted && move &&
-       !(user && user.hasActiveAbility?(:INFILTRATOR))
-      @battle.pbDisplay(_INTL("{1}'s team is protected by Safeguard!", pbThis)) if showMessages
-      return false
-    end
-    return true
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased to check if Synchronize should fail to pass Drowsy/Frostbite.
   #-----------------------------------------------------------------------------
@@ -385,7 +391,7 @@ end
     end
     return true
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased for inflicting the Drowsy/Frostbite status conditions.
   #-----------------------------------------------------------------------------
@@ -413,7 +419,9 @@ end
       # Form change check
       pbCheckFormOnStatusChange
       # Synchronize
-      Battle::AbilityEffects.triggerOnStatusInflicted(self.ability, self, user, newStatus) if abilityActive?
+      if abilityActive?
+        Battle::AbilityEffects.triggerOnStatusInflicted(self.ability, self, user, newStatus)
+      end
       # Status cures
       pbItemStatusCureCheck
       pbAbilityStatusCureCheck
@@ -441,7 +449,7 @@ end
       paldea_pbCureStatus(showMessages)
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Edited for Drowsy/Frostbite effect messages.
   #-----------------------------------------------------------------------------
@@ -456,7 +464,7 @@ end
     case self.status
     when :SLEEP
       @battle.pbDisplay(_INTL("{1} is fast asleep.", pbThis))
-      PBDebug.log("[Status continues] #{pbThis}'s sleep count is #{@statusCount}")
+	  PBDebug.log("[Status continues] #{pbThis}'s sleep count is #{@statusCount}")
     when :POISON
       @battle.pbDisplay(_INTL("{1} was hurt by poison!", pbThis))
     when :BURN
@@ -467,12 +475,12 @@ end
       @battle.pbDisplay(_INTL("{1} is frozen solid!", pbThis))
     when :DROWSY
       @battle.pbDisplay(_INTL("{1} is too drowsy to move!", pbThis))
-      PBDebug.log("[Status continues] #{pbThis}'s drowsy count is #{@statusCount}")
+	  PBDebug.log("[Status continues] #{pbThis}'s drowsy count is #{@statusCount}")
     when :FROSTBITE
       @battle.pbDisplay(_INTL("{1} was hurt by its frostbite!", pbThis))
     end
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased to prevent the use of moves due to being Drowsy.
   #-----------------------------------------------------------------------------
@@ -497,17 +505,19 @@ end
     end
     return true
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased so the Frostbite status also reverts Shaymin's form.
   #-----------------------------------------------------------------------------
   alias paldea_pbCheckFormOnStatusChange pbCheckFormOnStatusChange
   def pbCheckFormOnStatusChange
     return if fainted? || @effects[PBEffects::Transform]
-    pbChangeForm(0, _INTL("{1} transformed!", pbThis)) if isSpecies?(:SHAYMIN) && frostbite?
+    if isSpecies?(:SHAYMIN) && frostbite?
+      pbChangeForm(0, _INTL("{1} transformed!", pbThis))
+    end
     paldea_pbCheckFormOnStatusChange
   end
-
+  
   #-----------------------------------------------------------------------------
   # Aliased to add Snow mode check.
   #-----------------------------------------------------------------------------

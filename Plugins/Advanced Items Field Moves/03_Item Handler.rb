@@ -26,33 +26,37 @@ end
 def pbCheckForSwitch(switches)
   return true if switches.length <= 0
   switches.each { |switch|
-    return false if !$game_switches[switch]
+    if !$game_switches[switch]
+      return false
+    end
   }
   return true
 end
 
 def pbCanUseItem(item)
-  return true if item[:use_in_debug] && $DEBUG
+  if item[:use_in_debug]
+    return true if $DEBUG
+  end
   if $bag.has?(item[:internal_name]) && pbCheckForBadge(item[:needed_badge]) && pbCheckForSwitch(item[:needed_switches])
     return true
   end
   return false
 end
-# Obstacle Smash
+#Obstacle Smash
 Item_RockSmash      = AdvancedItemsFieldMoves::ROCKSMASH_CONFIG
 Item_Cut            = AdvancedItemsFieldMoves::CUT_CONFIG
 Item_IceBarriere    = AdvancedItemsFieldMoves::ICEBARRIERE_CONFIG
-# Enocunters
+#Enocunters
 Item_Headbutt       = AdvancedItemsFieldMoves::HEADBUTT_CONFIG
 Item_SweetScent     = AdvancedItemsFieldMoves::SWEETSCENT_CONFIG
-# Environment Interactions
+#Environment Interactions
 Item_Strength       = AdvancedItemsFieldMoves::STRENGTH_CONFIG
 Item_Flash          = AdvancedItemsFieldMoves::FLASH_CONFIG
 Item_Defog          = AdvancedItemsFieldMoves::DEFOG_CONFIG
 Item_WeatherGadget  = AdvancedItemsFieldMoves::WEATHERGADGET_CONFIG
 Item_Camouflage     = AdvancedItemsFieldMoves::CAMOUFLAGE_CONFIG
 
-# Water Movement
+#Water Movement
 Item_Surf           = AdvancedItemsFieldMoves::SURF_CONFIG
 if Item_Surf[:merge]
   Item_Dive         = Item_Surf
@@ -63,11 +67,12 @@ else
   Item_Waterfall    = AdvancedItemsFieldMoves::WATERFALL_CONFIG
   Item_Whirlpool    = AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG
 end
-# Other Movement
+#Other Movement
 Item_Fly            = AdvancedItemsFieldMoves::FLY_CONFIG
 Item_Dig            = AdvancedItemsFieldMoves::DIG_CONFIG
 Item_Teleport       = AdvancedItemsFieldMoves::TELEPORT_CONFIG
 Item_RockClimb      = AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG
+
 
 #===============================================================================
 # Rock Smash
@@ -82,7 +87,7 @@ if Item_RockSmash[:active]
   def pbRockSmash
     if !pbCanUseItem(Item_RockSmash)
       item_name = GameData::Item.get(Item_RockSmash[:internal_name]).name
-      pbMessage(_INTL("It's a rugged rock but a {1} may be able to smash it.", item_name))
+      pbMessage(_INTL("It's a rugged rock but a {1} may be able to smash it.",item_name))
       return false
     end
     item_name = GameData::Item.get(Item_RockSmash[:internal_name]).name
@@ -96,7 +101,9 @@ if Item_RockSmash[:active]
 
   ItemHandlers::UseFromBag.add(Item_RockSmash[:internal_name], proc do |item|
     facingEvent = $game_player.pbFacingEvent
-    next 2 if facingEvent && facingEvent.name[/smashrock/i]
+    if facingEvent && facingEvent.name[/smashrock/i]
+      next 2
+    end
     item_name = GameData::Item.get(Item_RockSmash[:internal_name]).name
     pbMessage(_INTL("There is no sensible reason why you would be trying to use the {1} now!", item_name))
     next 0
@@ -140,7 +147,9 @@ if Item_Cut[:active]
 
   ItemHandlers::UseFromBag.add(Item_Cut[:internal_name], proc do |item|
     facingEvent = $game_player.pbFacingEvent
-    next 2 if facingEvent && facingEvent.name[/cuttree/i]
+    if facingEvent && facingEvent.name[/cuttree/i]
+      next 2
+    end
     item_name = GameData::Item.get(Item_Cut[:internal_name]).name
     pbMessage(_INTL("There is no sensible reason why you would be trying to use the {1} now!", item_name))
     next 0
@@ -179,7 +188,9 @@ if Item_IceBarriere[:active]
 
   ItemHandlers::UseFromBag.add(Item_IceBarriere[:internal_name], proc do |item|
     facingEvent = $game_player.pbFacingEvent
-    next 2 if facingEvent && facingEvent.name[/smashice/i]
+    if facingEvent && facingEvent.name[/smashice/i]
+      next 2
+    end
     item_name = GameData::Item.get(Item_IceBarriere[:internal_name]).name
     pbMessage(_INTL("There is no sensible reason why you would be trying to use the {1} now!", item_name))
     next 0
@@ -224,7 +235,9 @@ if Item_Headbutt[:active]
 
   ItemHandlers::UseFromBag.add(Item_Headbutt[:internal_name], proc do |item|
     facingEvent = $game_player.pbFacingEvent
-    next 2 if facingEvent && facingEvent.name[/headbutttree/i]
+    if facingEvent && facingEvent.name[/headbutttree/i]
+      next 2
+    end
     item_name = GameData::Item.get(Item_Headbutt[:internal_name]).name
     pbMessage(_INTL("There is no sensible reason why you would be trying to use the {1} now!", item_name))
     next 0
@@ -261,7 +274,7 @@ if Item_SweetScent[:active]
       return
     end
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99_999
+    viewport.z = 99999
     count = 0
     viewport.color.red   = 255
     viewport.color.green = 0
@@ -285,7 +298,7 @@ if Item_SweetScent[:active]
     viewport.dispose
     enctype = $PokemonEncounters.encounter_type
     if !enctype || !$PokemonEncounters.encounter_possible_here? ||
-       !pbEncounter(enctype, false)
+      !pbEncounter(enctype, false)
       pbMessage(_INTL("There appears to be nothing here..."))
     end
   end
@@ -296,10 +309,12 @@ if Item_SweetScent[:active]
 
   ItemHandlers::UseInField.add(Item_SweetScent[:internal_name], proc do |item|
     item_name = GameData::Item.get(Item_SweetScent[:internal_name]).name
-    if pbConfirmMessage(_INTL("Would you like to use the {1}?", item_name)) && !pbHiddenMoveAnimation(nil)
-      item_name = GameData::Item.get(Item_SweetScent[:internal_name]).name
-      pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
+    if pbConfirmMessage(_INTL("Would you like to use the {1}?", item_name))
+      if !pbHiddenMoveAnimation(nil)
+        item_name = GameData::Item.get(Item_SweetScent[:internal_name]).name
+        pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
       end
+    end
     aiSweetScent
     next 1
   end)
@@ -338,7 +353,9 @@ if Item_Strength[:active]
       next 0
     end
     facingEvent = $game_player.pbFacingEvent
-    next 2 if facingEvent && facingEvent.name[/strengthboulder/i]
+    if facingEvent && facingEvent.name[/strengthboulder/i]
+      next 2
+    end
     item_name = GameData::Item.get(Item_Strength[:internal_name]).name
     pbMessage(_INTL("There is no sensible reason why you would be trying to flex by using the {1} now!", item_name))
     next 0
@@ -383,13 +400,13 @@ if Item_Flash[:active]
     pbMessage(_INTL("{1} used the {2}!", $player.name, item_name))
     $PokemonGlobal.flashUsed = true
     $stats.flash_count += 1
-    radiusDiff = 8 * 20 / Graphics.frame_rate
-    while darkness.radius < darkness.radiusMax
+    radiusDiff = 8*20/Graphics.frame_rate
+    while darkness.radius<darkness.radiusMax
       Graphics.update
       Input.update
       pbUpdateSceneMap
       darkness.radius += radiusDiff
-      darkness.radius = darkness.radiusMax if darkness.radius > darkness.radiusMax
+      darkness.radius = darkness.radiusMax if darkness.radius>darkness.radiusMax
     end
   end
 
@@ -435,7 +452,7 @@ if Item_Defog[:active]
       pbMessage(_INTL("You can't use the {1} yet.", item_name))
       return false
     end
-    if $game_screen.weather_type == :Fog
+    if $game_screen.weather_type==:Fog
       item_name = GameData::Item.get(Item_Defog[:internal_name]).name
       if pbConfirmMessage(_INTL("This fog is very heavy.\nWould you like to use the {1}", item_name))
         pbMessage(_INTL("{1} used the {2}!", $player.name, item_name))
@@ -539,17 +556,17 @@ if Item_WeatherGadget[:active]
   end)
 
   EventHandlers.add(:on_leave_map, :end_weather,
-                    proc { |new_map_id, new_map|
-                      next if new_map_id == 0
-                      $game_map.metadata
-                      # next if !old_map_metadata || !old_map_metadata.weather
-                      map_infos = pbLoadMapInfos
-                      if $game_map.name == map_infos[new_map_id].name
-                        new_map_metadata = GameData::MapMetadata.try_get(new_map_id)
-                        next if new_map_metadata&.weather
-                      end
-                      $game_screen.weather(:None, 0, 0)
-                    }
+  proc { |new_map_id, new_map|
+    next if new_map_id == 0
+    $game_map.metadata
+    #next if !old_map_metadata || !old_map_metadata.weather
+    map_infos = pbLoadMapInfos
+    if $game_map.name == map_infos[new_map_id].name
+      new_map_metadata = GameData::MapMetadata.try_get(new_map_id)
+      next if new_map_metadata&.weather
+    end
+    $game_screen.weather(:None, 0, 0)
+    }
   )
 
 end
@@ -559,187 +576,188 @@ end
 #===============================================================================
 # This Game $stats handle by this plugin [New from this Plugin]
 def aifmVanish
-  if Item_Camouflage[:orignal_effect] # Orignal_effect choice
+  if !Item_Camouflage[:orignal_effect]
     if $game_player.camouflage == false
       if PluginManager.findDirectory("Following Pokemon EX")
-        pbMoveRoute(FollowingPkmn.get_event, [
-                      PBMoveRoute::Opacity, 229, # 90%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 204, # 80%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 178, # 70%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 153, # 60%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 127, # 50%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 102, # 40%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 76,  # 30%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 51,  # 20%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 25,  # 10%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 0    # 0%
-                    ])
+        pbMoveRoute(FollowingPkmn.get_event,[
+          PBMoveRoute::Opacity,229, #90%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,204, #80%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,178, #70%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,153, #60%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,127, #50%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,102, #40%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,76,  #30%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,51   #20%
+          ])
       end
-      pbMoveRoute($game_player, [
-                    PBMoveRoute::Opacity, 229, # 90%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 204, # 80%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 178, # 70%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 153, # 60%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 127, # 50%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 102, # 40%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 76,  # 30%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 51,  # 20%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 25,  # 10%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 0    # 0%
-                  ])
+      pbMoveRoute($game_player,[
+        PBMoveRoute::Opacity,229, #90%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,204, #80%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,178, #70%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,153, #60%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,127, #50%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,102, #40%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,76,  #30%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,51   #20%
+        ])
       $game_player.camouflage = true
-      $stats.camouflage_count += 1
+      $stats.camouflage_count  += 1
     else
       if PluginManager.findDirectory("Following Pokemon EX")
-        pbMoveRoute(FollowingPkmn.get_event, [
-                      PBMoveRoute::Opacity, 25,  # 10%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 51,  # 20%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 76,  # 30%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 102, # 40%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 127, # 50%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 153, # 60%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 178, # 70%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 204, # 80%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 229, # 90%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 255  # 100%
-                    ])
+        pbMoveRoute(FollowingPkmn.get_event,[
+          PBMoveRoute::Opacity,76,  #30%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,102, #40%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,127, #50%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,153, #60%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,178, #70%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,204, #80%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,229, #90%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,255  #100%
+          ])
       end
-      pbMoveRoute($game_player, [
-                    PBMoveRoute::Opacity, 25,  # 10%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 51,  # 20%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 76,  # 30%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 102, # 40%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 127, # 50%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 153, # 60%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 178, # 70%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 204, # 80%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 229, # 90%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 255  # 100%
-                  ])
+      pbMoveRoute($game_player,[
+        PBMoveRoute::Opacity,76,  #30%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,102, #40%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,127, #50%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,153, #60%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,178, #70%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,204, #80%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,229, #90%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,255  #100%
+        ])
       $game_player.camouflage = false
     end
-  else
+  else # Orignal_effect choice
     if $game_player.camouflage == false
       if PluginManager.findDirectory("Following Pokemon EX")
-        pbMoveRoute(FollowingPkmn.get_event, [
-                      PBMoveRoute::Opacity, 229, # 90%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 204, # 80%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 178, # 70%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 153, # 60%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 127, # 50%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 102, # 40%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 76,  # 30%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 51   # 20%
-                    ])
+        pbMoveRoute(FollowingPkmn.get_event,[
+          PBMoveRoute::Opacity,229, #90%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,204, #80%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,178, #70%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,153, #60%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,127, #50%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,102, #40%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,76,  #30%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,51,  #20%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,25,  #10%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,0    #0%
+          ])
       end
-      pbMoveRoute($game_player, [
-                    PBMoveRoute::Opacity, 229, # 90%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 204, # 80%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 178, # 70%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 153, # 60%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 127, # 50%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 102, # 40%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 76,  # 30%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 51   # 20%
-                  ])
+      pbMoveRoute($game_player,[
+        PBMoveRoute::Opacity,229, #90%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,204, #80%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,178, #70%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,153, #60%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,127, #50%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,102, #40%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,76,  #30%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,51,  #20%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,25,  #10%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,0    #0%
+        ])
       $game_player.camouflage = true
-      $stats.camouflage_count += 1
+      $stats.camouflage_count  += 1
     else
       if PluginManager.findDirectory("Following Pokemon EX")
-        pbMoveRoute(FollowingPkmn.get_event, [
-                      PBMoveRoute::Opacity, 76,  # 30%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 102, # 40%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 127, # 50%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 153, # 60%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 178, # 70%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 204, # 80%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 229, # 90%
-                      PBMoveRoute::Wait, 2,
-                      PBMoveRoute::Opacity, 255  # 100%
-                    ])
+        pbMoveRoute(FollowingPkmn.get_event,[
+          PBMoveRoute::Opacity,25,  #10%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,51,  #20%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,76,  #30%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,102, #40%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,127, #50%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,153, #60%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,178, #70%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,204, #80%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,229, #90%
+          PBMoveRoute::Wait,2,
+          PBMoveRoute::Opacity,255  #100%
+          ])
       end
-      pbMoveRoute($game_player, [
-                    PBMoveRoute::Opacity, 76,  # 30%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 102, # 40%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 127, # 50%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 153, # 60%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 178, # 70%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 204, # 80%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 229, # 90%
-                    PBMoveRoute::Wait, 2,
-                    PBMoveRoute::Opacity, 255  # 100%
-                  ])
+      pbMoveRoute($game_player,[
+        PBMoveRoute::Opacity,25,  #10%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,51,  #20%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,76,  #30%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,102, #40%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,127, #50%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,153, #60%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,178, #70%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,204, #80%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,229, #90%
+        PBMoveRoute::Wait,2,
+        PBMoveRoute::Opacity,255  #100%
+        ])
       $game_player.camouflage = false
     end
   end
 end
 
 def checkVanish
-  return unless $game_player.camouflage == true
-  aifmVanish
-  pbMessage(_INTL("{1} broke the camouflage and turned visible!", $Trainer.name))
+  if $game_player.camouflage == true
+    aifmVanish
+    pbMessage(_INTL("{1} broke the camouflage and turned visible!",$Trainer.name))
+  end
 end
 
 if Item_Camouflage[:active]
@@ -757,15 +775,18 @@ if Item_Camouflage[:active]
       pbMessage(_INTL("It can't be used when you have someone with you."))
       next 0
     end
-    if $game_player.camouflage == true && !pbConfirmMessage(_INTL("Camouflage is already being used. Reappear?"))
-      next false
+    if $game_player.camouflage == true
+        if pbConfirmMessage(_INTL("Camouflage is already being used. Reappear?"))
+          else
+          next false
+        end
     end
     aifmVanish
     if $game_player.camouflage == true
       item_name = GameData::Item.get(Item_Camouflage[:internal_name]).name
-      pbMessage(_INTL("{1} used {2} to turn invisible!", $Trainer.name, item_name))
+      pbMessage(_INTL("{1} used {2} to turn invisible!",$Trainer.name ,item_name))
     else
-      pbMessage(_INTL("{1} used {2} to turn visible!", $Trainer.name, item_name))
+      pbMessage(_INTL("{1} used {2} to turn visible!",$Trainer.name ,item_name))
     end
     next 1
   end)
@@ -941,9 +962,9 @@ if Item_Dive[:active]
   end
 
   EventHandlers.add(:on_player_interact, :diving,
-                    proc {
-                      aiDive
-                    }
+    proc {
+      aiDive
+    }
   )
 
   def aiDive
@@ -955,7 +976,7 @@ if Item_Dive[:active]
         break
       end
       if surface_map_id &&
-         $map_factory.getTerrainTag(surface_map_id, $game_player.x, $game_player.y).can_dive
+        $map_factory.getTerrainTag(surface_map_id, $game_player.x, $game_player.y).can_dive
         pbSurfacing
       end
     elsif $game_player.terrain_tag.can_dive
@@ -1045,14 +1066,14 @@ if Item_Waterfall[:active]
   end
 
   EventHandlers.add(:on_player_interact, :waterfall,
-                    proc {
-                      terrain = $game_player.pbFacingTerrainTag
-                      if terrain.waterfall && $PokemonGlobal.surfing
-                        pbWaterfall
-                      elsif terrain.waterfall_crest
-                        pbMessage(_INTL("A wall of water is crashing down with a mighty roar."))
-                      end
-                    }
+    proc {
+      terrain = $game_player.pbFacingTerrainTag
+      if terrain.waterfall && $PokemonGlobal.surfing
+        pbWaterfall
+      elsif terrain.waterfall_crest
+        pbMessage(_INTL("A wall of water is crashing down with a mighty roar."))
+      end
+    }
   )
 
   ItemHandlers::UseFromBag.add(Item_Waterfall[:internal_name], proc do |item|
@@ -1080,9 +1101,11 @@ end
 if Item_Whirlpool[:active]
 
   EventHandlers.add(:on_player_interact, :whirlpool,
-                    proc {
-                      pbWhirlpool if $game_player.pbFacingTerrainTag.whirlpool && $PokemonGlobal.surfing
-                    }
+    proc {
+      if $game_player.pbFacingTerrainTag.whirlpool && $PokemonGlobal.surfing
+        pbWhirlpool
+      end
+    }
   )
 
   def pbWhirlpool
@@ -1091,49 +1114,50 @@ if Item_Whirlpool[:active]
       return false
     end
     item_name = GameData::Item.get(Item_Whirlpool[:internal_name]).name
-    return unless pbConfirmMessage(_INTL("It's a huge swirl of water.\nWould you like to use the {1}?", item_name))
-    pbMessage(_INTL("{1} used the {2}!", $player.name, item_name))
-    terrain = $game_player.pbFacingTerrainTag
-    return if !terrain.whirlpool
-    $stats.whirlpool_cross_count += 1
-    oldthrough = $game_player.through
-    $game_player.through = true
-    $game_player.move_speed_real = 6.4
-    case $game_player.direction
-    when 2, 8
-      $game_player.always_on_top = true
-    end
-    pbWait(4)
-    loop do
-      case $game_player.direction
-      when 2 # [Player Looking Down]
-        if $game_player.pbFacingTerrainTag.whirlpool
-          $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_down_id], $game_player.x, $game_player.y, true, 1)
+    if pbConfirmMessage(_INTL("It's a huge swirl of water.\nWould you like to use the {1}?", item_name))
+      pbMessage(_INTL("{1} used the {2}!", $player.name, item_name))
+      terrain = $game_player.pbFacingTerrainTag
+      return if !terrain.whirlpool
+      $stats.whirlpool_cross_count += 1
+      oldthrough   = $game_player.through
+      $game_player.through = true
+      $game_player.move_speed_real = 6.4
+      case  $game_player.direction
+      when 2, 8
+        $game_player.always_on_top = true
+      end
+      pbWait(4)
+      loop do
+        case  $game_player.direction
+        when 2 #[Player Looking Down]
+          if $game_player.pbFacingTerrainTag.whirlpool
+            $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_down_id],$game_player.x,$game_player.y,true,1)
+          end
+          $game_player.move_forward
+        when 4 #[Player Looking Left]
+          $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_left_id],$game_player.x,$game_player.y,true,1)
+          $game_player.move_forward
+        when 6 #[Player Looking Right]
+          $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_right_id],$game_player.x,$game_player.y,true,1)
+          $game_player.move_forward
+        when 8 #[Player Lookin Up]
+          $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_up_id],$game_player.x,$game_player.y,true,1)
+          $game_player.move_forward
         end
-        $game_player.move_forward
-      when 4 # [Player Looking Left]
-        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_left_id], $game_player.x, $game_player.y, true, 1)
-        $game_player.move_forward
-      when 6 # [Player Looking Right]
-        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_right_id], $game_player.x, $game_player.y, true, 1)
-        $game_player.move_forward
-      when 8 # [Player Lookin Up]
-        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::WHIRLPOOL_CONFIG[:move_up_id], $game_player.x, $game_player.y, true, 1)
-        $game_player.move_forward
+        terrain = $game_player.pbTerrainTag
+        break if !terrain.whirlpool
+        while $game_player.moving?
+          Graphics.update
+          Input.update
+          pbUpdateSceneMap
+        end
       end
-      terrain = $game_player.pbTerrainTag
-      break if !terrain.whirlpool
-      while $game_player.moving?
-        Graphics.update
-        Input.update
-        pbUpdateSceneMap
-      end
+      pbWait(36)
+      $game_player.through    = oldthrough
+      $game_player.move_speed_real = 25.6
+      $game_player.always_on_top = false
+      $game_player.check_event_trigger_here([1, 2])
     end
-    pbWait(36)
-    $game_player.through = oldthrough
-    $game_player.move_speed_real = 25.6
-    $game_player.always_on_top = false
-    $game_player.check_event_trigger_here([1, 2])
   end
 
   ItemHandlers::UseFromBag.add(Item_Whirlpool[:internal_name], proc do |item|
@@ -1174,7 +1198,7 @@ if Item_Fly[:active]
       return false
     end
     ret = nil
-    pbFadeOutIn(99_999) {
+    pbFadeOutIn(99999) {
       scene = PokemonRegionMap_Scene.new(-1, false)
       screen = PokemonRegionMapScreen.new(scene)
       ret = screen.pbStartFlyScreen
@@ -1248,30 +1272,29 @@ if Item_Dig[:active]
       return false
     end
     mapname = pbGetMapNameFromId(escape[0])
-    return unless pbConfirmMessage(_INTL("Want to escape from here and return to {1}?", mapname))
-    return unless escape
-    return if pbHiddenMoveAnimation(nil)
-    item_name = GameData::Item.get(Item_Dig[:internal_name]).name
-    pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
-    $stats.dig_count += 1
-    pbFadeOutIn {
-      $game_temp.player_new_map_id    = escape[0]
-      $game_temp.player_new_x         = escape[1]
-      $game_temp.player_new_y         = escape[2]
-      $game_temp.player_new_direction = escape[3]
-      $scene.transfer_player
-      $game_map.autoplay
-      $game_map.refresh
-    }
-    pbEraseEscapePoint
+    if pbConfirmMessage(_INTL("Want to escape from here and return to {1}?", mapname))
+      if escape
+        if !pbHiddenMoveAnimation(nil)
+          item_name = GameData::Item.get(Item_Dig[:internal_name]).name
+          pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
+          $stats.dig_count += 1
+          pbFadeOutIn {
+            $game_temp.player_new_map_id    = escape[0]
+            $game_temp.player_new_x         = escape[1]
+            $game_temp.player_new_y         = escape[2]
+            $game_temp.player_new_direction = escape[3]
+            $scene.transfer_player
+            $game_map.autoplay
+            $game_map.refresh
+          }
+          pbEraseEscapePoint
+        end
+      end
+    end
   end
 
   ItemHandlers::UseFromBag.add(Item_Dig[:internal_name], proc do |item|
-    escape = begin
-      $PokemonGlobal.escapePoint
-    rescue StandardError
-      nil
-    end
+    escape = ($PokemonGlobal.escapePoint rescue nil)
     if !escape || escape == []
       pbMessage(_INTL("You can't use that here."))
       next 0
@@ -1284,11 +1307,7 @@ if Item_Dig[:active]
   end)
 
   ItemHandlers::UseInField.add(Item_Dig[:internal_name], proc do |item|
-    escape = begin
-      $PokemonGlobal.escapePoint
-    rescue StandardError
-      nil
-    end
+    escape = ($PokemonGlobal.escapePoint rescue nil)
     if !escape || escape == []
       pbMessage(_INTL("You can't use that here."))
       next 0
@@ -1300,6 +1319,7 @@ if Item_Dig[:active]
     next 1
   end)
 end
+
 
 #===============================================================================
 # Teleport
@@ -1321,21 +1341,23 @@ if Item_Teleport[:active]
     healing = GameData::PlayerMetadata.get($player.character_ID)&.home if !healing
     healing = GameData::Metadata.get.home if !healing   # Home
     mapname = pbGetMapNameFromId(healing[0])
-    return unless pbConfirmMessage(_INTL("Want to return to the healing spot used last in {1}?", mapname))
-    return if pbHiddenMoveAnimation(nil)
-    item_name = GameData::Item.get(Item_Teleport[:internal_name]).name
-    pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
-    $stats.teleport_count += 1
-    pbFadeOutIn {
-      $game_temp.player_new_map_id    = healing[0]
-      $game_temp.player_new_x         = healing[1]
-      $game_temp.player_new_y         = healing[2]
-      $game_temp.player_new_direction = 2
-      $scene.transfer_player
-      $game_map.autoplay
-      $game_map.refresh
-    }
-    pbEraseEscapePoint
+    if pbConfirmMessage(_INTL("Want to return to the healing spot used last in {1}?", mapname))
+      if !pbHiddenMoveAnimation(nil)
+        item_name = GameData::Item.get(Item_Teleport[:internal_name]).name
+        pbMessage(_INTL("{1} used {2}!", $player.name, item_name))
+        $stats.teleport_count += 1
+        pbFadeOutIn {
+          $game_temp.player_new_map_id    = healing[0]
+          $game_temp.player_new_x         = healing[1]
+          $game_temp.player_new_y         = healing[2]
+          $game_temp.player_new_direction = 2
+          $scene.transfer_player
+          $game_map.autoplay
+          $game_map.refresh
+        }
+        pbEraseEscapePoint
+      end
+    end
   end
 
   ItemHandlers::UseFromBag.add(Item_Teleport[:internal_name], proc do |item|
@@ -1398,8 +1420,8 @@ if Item_RockClimb[:active]
     $PokemonGlobal.rockclimbing = true
     pbUpdateVehicle
     loop do
-      $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:move_up_id], $game_player.x, $game_player.y, true, 1)
-      $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:debris_id], $game_player.x, $game_player.y, true, 1)
+      $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:move_up_id],$game_player.x,$game_player.y,true,1)
+      $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:debris_id],$game_player.x,$game_player.y,true,1)
       $game_player.move_up
       terrain = $game_player.pbTerrainTag
       break if !terrain.can_climb
@@ -1412,7 +1434,7 @@ if Item_RockClimb[:active]
     $PokemonGlobal.rockclimbing = false
     pbJumpToward(0)
     pbWait(16)
-    $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:dust_id], $game_player.x, $game_player.y, true, 1)
+    $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:dust_id],$game_player.x,$game_player.y,true,1)
     pbWait(4)
     $game_player.increase_steps
     $game_player.check_event_trigger_here([1, 2])
@@ -1438,8 +1460,8 @@ if Item_RockClimb[:active]
     pbUpdateVehicle
     loop do
       if $game_player.pbFacingTerrainTag.rockclimb
-        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:move_down_id], $game_player.x, $game_player.y, true, 1)
-        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:debris_id], $game_player.x, $game_player.y, true, 1)
+        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:move_down_id],$game_player.x,$game_player.y,true,1)
+        $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:debris_id],$game_player.x,$game_player.y,true,1)
       end
       $game_player.move_down
       terrain = $game_player.pbTerrainTag
@@ -1453,7 +1475,7 @@ if Item_RockClimb[:active]
     $PokemonGlobal.rockclimbing = false
     pbJumpToward(0)
     pbWait(16)
-    $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:dust_id], $game_player.x, $game_player.y, true, 1)
+    $scene.spriteset.addUserAnimation(AdvancedItemsFieldMoves::ROCKCLIMB_CONFIG[:dust_id],$game_player.x,$game_player.y,true,1)
     pbWait(8)
     $game_player.through = oldthrough
     $game_player.move_speed = oldmovespeed
@@ -1482,18 +1504,23 @@ if Item_RockClimb[:active]
     return false
   end
 
+
   EventHandlers.add(:on_player_interact, :rockclimb,
-                    proc {
-                      terrain = $game_player.pbFacingTerrainTag
-                      aiRockClimb if terrain.rockclimb
-                    }
+    proc {
+      terrain = $game_player.pbFacingTerrainTag
+      if terrain.rockclimb
+        aiRockClimb
+      end
+    }
   )
 
   EventHandlers.add(:on_player_interact, :rockclimb_crest,
-                    proc {
-                      terrain = $game_player.pbFacingTerrainTag
-                      aiRockClimb if terrain.rockclimb_crest
-                    }
+    proc {
+      terrain = $game_player.pbFacingTerrainTag
+      if terrain.rockclimb_crest
+        aiRockClimb
+      end
+    }
   )
 
   ItemHandlers::UseFromBag.add(Item_RockClimb[:internal_name], proc do |item|

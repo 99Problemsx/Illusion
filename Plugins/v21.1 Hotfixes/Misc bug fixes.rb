@@ -73,8 +73,8 @@ class PngAnimatedBitmap
     panorama = RPG::Cache.load_bitmap(dir, filename, hue)
     if filename[/^\[(\d+)(?:,(\d+))?\]/]   # Starts with 1 or 2 numbers in brackets
       # File has a frame count
-      numFrames = ::Regexp.last_match(1).to_i
-      duration  = ::Regexp.last_match(2).to_i   # In 1/20ths of a second
+      numFrames = $1.to_i
+      duration  = $2.to_i   # In 1/20ths of a second
       duration  = 5 if duration == 0
       raise "Invalid frame count in #{filename}" if numFrames <= 0
       raise "Invalid frame duration in #{filename}" if duration <= 0
@@ -175,10 +175,12 @@ class PokemonRegionMap_Scene
       @sprites["mapbottom"].maplocation = pbGetMapLocation(@map_x, @map_y)
       @sprites["mapbottom"].mapdetails  = pbGetMapDetails(@map_x, @map_y)
       if Input.trigger?(Input::BACK)
-        break unless @editor && @changed
-        pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
-        break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
-
+        if @editor && @changed
+          pbSaveMapData if pbConfirmMessage(_INTL("Save changes?")) { pbUpdate }
+          break if pbConfirmMessage(_INTL("Exit from the map?")) { pbUpdate }
+        else
+          break
+        end
       elsif Input.trigger?(Input::USE) && @mode == 1   # Choosing an area to fly to
         healspot = pbGetHealingSpot(@map_x, @map_y)
         if healspot && ($PokemonGlobal.visitedMaps[healspot[0]] ||
@@ -221,7 +223,7 @@ class Translation
         @game_messages = load_data(game_filename)
         @game_messages = nil if !@game_messages.is_a?(Array)
       end
-    rescue StandardError
+    rescue
       @core_messages = nil
       @game_messages = nil
     end
@@ -267,16 +269,8 @@ class Game_Player < Game_Character
     # If event is running
     return result if $game_system.map_interpreter.running?
     # Calculate front event coordinates
-    new_x = @x + (if @direction == 6
-                    1
-                  else
-                    @direction == 4 ? -1 : 0
-end)
-    new_y = @y + (if @direction == 2
-                    1
-                  else
-                    @direction == 8 ? -1 : 0
-end)
+    new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
+    new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
     return false if !$game_map.valid?(new_x, new_y)
     # All event loops
     $game_map.events.each_value do |event|
@@ -291,16 +285,8 @@ end)
     # If fitting event is not found
     if result == false && $game_map.counter?(new_x, new_y)
       # Calculate coordinates of 1 tile further away
-      new_x += (if @direction == 6
-                  1
-                else
-                  @direction == 4 ? -1 : 0
-end)
-      new_y += (if @direction == 2
-                  1
-                else
-                  @direction == 8 ? -1 : 0
-end)
+      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
+      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
       return false if !$game_map.valid?(new_x, new_y)
       # All event loops
       $game_map.events.each_value do |event|
@@ -320,16 +306,8 @@ end)
     result = false
     return result if $game_system.map_interpreter.running?
     # All event loops
-    x_offset = if dir == 4
-                 -1
-               else
-                 (dir == 6) ? 1 : 0
-end
-    y_offset = if dir == 8
-                 -1
-               else
-                 (dir == 2) ? 1 : 0
-end
+    x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
+    y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
     $game_map.events.each_value do |event|
       next if ![1, 2].include?(event.trigger)   # Player touch, event touch
       # If event coordinates and triggers are consistent
@@ -396,15 +374,17 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     end
     @lastchar = @curchar
     # Keep displaying more text
-    return unless show_more_characters
-    @display_timer += delta_t
-    return unless curcharSkip
-    if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
-      @scroll_timer_start = time_now
-    elsif @textchars[@curchar] == "\1"
-      @pausing = true if @curchar < @numtextchars - 1
-      self.startPause
-      refresh
+    if show_more_characters
+      @display_timer += delta_t
+      if curcharSkip
+        if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+          @scroll_timer_start = time_now
+        elsif @textchars[@curchar] == "\1"
+          @pausing = true if @curchar < @numtextchars - 1
+          self.startPause
+          refresh
+        end
+      end
     end
   end
 end
@@ -540,16 +520,20 @@ class Game_Character
       if abs_sx >= 1
         (sx > 0) ? move_left : move_right
       end
-      if !moving? && sy != 0 && (abs_sy >= 1)
-        (sy > 0) ? move_up : move_down
+      if !moving? && sy != 0
+        if abs_sy >= 1
+          (sy > 0) ? move_up : move_down
         end
+      end
     else
       if abs_sy >= 1
         (sy > 0) ? move_up : move_down
       end
-      if !moving? && sx != 0 && (abs_sx >= 1)
-        (sx > 0) ? move_left : move_right
+      if !moving? && sx != 0
+        if abs_sx >= 1
+          (sx > 0) ? move_left : move_right
         end
+      end
     end
   end
 end
@@ -562,23 +546,19 @@ class Game_Event < Game_Character
   alias __hotfixes__over_trigger? over_trigger? unless method_defined?(:__hotfixes__over_trigger?)
   def over_trigger?
     return false if @map_id != $game_player.map_id
-    return __hotfixes__over_trigger?
+	return __hotfixes__over_trigger?
   end
 
-  unless method_defined?(:__hotfixes__check_event_trigger_touch)
-    alias __hotfixes__check_event_trigger_touch check_event_trigger_touch
-  end
+  alias __hotfixes__check_event_trigger_touch check_event_trigger_touch unless method_defined?(:__hotfixes__check_event_trigger_touch)
   def check_event_trigger_touch(dir)
     return if @map_id != $game_player.map_id
     __hotfixes__check_event_trigger_touch(dir)
   end
 
-  unless method_defined?(:__hotfixes__pbCheckEventTriggerAfterTurning)
-    alias __hotfixes__pbCheckEventTriggerAfterTurning pbCheckEventTriggerAfterTurning
-  end
+  alias __hotfixes__pbCheckEventTriggerAfterTurning pbCheckEventTriggerAfterTurning unless method_defined?(:__hotfixes__pbCheckEventTriggerAfterTurning)
   def pbCheckEventTriggerAfterTurning
     return if @map_id != $game_player.map_id
-    return __hotfixes__pbCheckEventTriggerAfterTurning
+	return __hotfixes__pbCheckEventTriggerAfterTurning
   end
 
   def onEvent?
@@ -616,9 +596,10 @@ class Game_Event < Game_Character
       refresh
     end
     check_event_trigger_auto
-    return unless @interpreter
-    @interpreter.setup(@list, @event.id, @map_id) if !@interpreter.running?
-    @interpreter.update
+    if @interpreter
+      @interpreter.setup(@list, @event.id, @map_id) if !@interpreter.running?
+      @interpreter.update
+    end
   end
 end
 
@@ -657,16 +638,8 @@ class Game_Player < Game_Character
     # If event is running
     return result if $game_system.map_interpreter.running?
     # Calculate front event coordinates
-    new_x = @x + (if @direction == 6
-                    1
-                  else
-                    @direction == 4 ? -1 : 0
-end)
-    new_y = @y + (if @direction == 2
-                    1
-                  else
-                    @direction == 8 ? -1 : 0
-end)
+    new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
+    new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
     return false if !$game_map.valid?(new_x, new_y)
     # All event loops
     $game_map.events.each_value do |event|
@@ -681,16 +654,8 @@ end)
     # If fitting event is not found
     if result == false && $game_map.counter?(new_x, new_y)
       # Calculate coordinates of 1 tile further away
-      new_x += (if @direction == 6
-                  1
-                else
-                  @direction == 4 ? -1 : 0
-end)
-      new_y += (if @direction == 2
-                  1
-                else
-                  @direction == 8 ? -1 : 0
-end)
+      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
+      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
       return false if !$game_map.valid?(new_x, new_y)
       # All event loops
       $game_map.events.each_value do |event|
@@ -710,16 +675,8 @@ end)
     result = false
     return result if $game_system.map_interpreter.running?
     # All event loops
-    x_offset = if dir == 4
-                 -1
-               else
-                 (dir == 6) ? 1 : 0
-end
-    y_offset = if dir == 8
-                 -1
-               else
-                 (dir == 2) ? 1 : 0
-end
+    x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
+    y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
     $game_map.events.each_value do |event|
       next if ![1, 2].include?(event.trigger)   # Player touch, event touch
       # If event coordinates and triggers are consistent
@@ -743,16 +700,8 @@ end
 def pbEventCanReachPlayer?(event, player, distance)
   return false if event.map_id != player.map_id
   return false if !pbEventFacesPlayer?(event, player, distance)
-  delta_x = if event.direction == 6
-              1
-            else
-              (event.direction == 4) ? -1 : 0
-end
-  delta_y = if event.direction == 2
-              1
-            else
-              (event.direction == 8) ? -1 : 0
-end
+  delta_x = (event.direction == 6) ? 1 : (event.direction == 4) ? -1 : 0
+  delta_y = (event.direction == 2) ? 1 : (event.direction == 8) ? -1 : 0
   case event.direction
   when 2   # Down
     real_distance = player.y - event.y - 1
@@ -765,9 +714,7 @@ end
   end
   if real_distance > 0
     real_distance.times do |i|
-      if !event.can_move_from_coordinate?(event.x + (i * delta_x), event.y + (i * delta_y), event.direction)
-        return false
-      end
+      return false if !event.can_move_from_coordinate?(event.x + (i * delta_x), event.y + (i * delta_y), event.direction)
     end
   end
   return true

@@ -71,9 +71,9 @@ class ItemStorage_Scene
     pbUpdateSpriteHash(@sprites)
   end
 
-  def pbStartScene(bag)
+  def pbStartScene(bag, party)
     @viewport   = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99_999
+    @viewport.z = 99999
     @bag = bag
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
@@ -164,10 +164,12 @@ class ItemStorage_Scene
         if Input.trigger?(Input::BACK)
           return nil
         elsif Input.trigger?(Input::USE)
-          return nil unless itemwindow.index < @bag.length
-          pbRefresh
-          return @bag[itemwindow.index][0]
-
+          if itemwindow.index < @bag.length
+            pbRefresh
+            return @bag[itemwindow.index][0]
+          else
+            return nil
+          end
         end
       end
     end
@@ -210,7 +212,9 @@ module UIHelper
       Graphics.update
       Input.update
       (block_given?) ? yield : cw.update
-      break if !cw.busy? && (brief || (Input.trigger?(Input::USE) && cw.resume))
+      if !cw.busy? && (brief || (Input.trigger?(Input::USE) && cw.resume))
+        break
+      end
     end
     cw.visible = oldvisible
   end
@@ -227,7 +231,9 @@ module UIHelper
       Graphics.update
       Input.update
       (block_given?) ? yield : msgwindow.update
-      break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+      if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+        break
+      end
     end
     msgwindow.visible = oldvisible
     Input.update
@@ -359,10 +365,11 @@ module UIHelper
           pbPlayCancelSE
           break
         end
-        next unless Input.trigger?(Input::USE)
-        ret = cmdwindow.index
-        pbPlayDecisionSE
-        break
+        if Input.trigger?(Input::USE)
+          ret = cmdwindow.index
+          pbPlayDecisionSE
+          break
+        end
       end
     ensure
       cmdwindow&.dispose

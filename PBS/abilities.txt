@@ -1,5 +1,4 @@
-﻿#Drawing: Orange
-#Darrox: Pink
+﻿# See the documentation on the wiki to learn how to edit this file.
 #-------------------------------
 [STENCH]
 Name = Duftnote
@@ -95,7 +94,7 @@ Description = Hindert Gegner an der Flucht beziehungsweise am Auswechseln, indem
 #-------------------------------
 [ROUGHSKIN]
 Name = Rauhaut
-Description = Angreifer werden durch die raue Haut des Pokémon bei direkten Attacken verletzt.
+Description = Angreifer werden durch die raue Haut des Pokémon bei direkten Attacken verletzt.angershell
 #-------------------------------
 [WONDERGUARD]
 Name = Wunderwache
@@ -111,7 +110,7 @@ Description = Wird dieses Pokémon durch eine direkte Attacke angegriffen, kann 
 #-------------------------------
 [SYNCHRONIZE]
 Name = Synchro
-Description =Erleidet das Pokémon Verbrennungen, Vergiftungen oder Paralyse, ereilt das jeweilige Statusproblem auch den Verursacher.
+Description = Erleidet das Pokémon Verbrennungen, Vergiftungen oder Paralyse, ereilt das jeweilige Statusproblem auch den Verursacher.
 #-------------------------------
 [CLEARBODY]
 Name = Neutraltorso
@@ -139,7 +138,7 @@ Description = Erhöht bei Sonnenschein die Initiative.
 #-------------------------------
 [ILLUMINATE]
 Name = Erleuchtung
-Description = Erhellt die Umgebung und erhöht dadurch die Wahrscheinlichkeit, wilden Pokémon zu begegnen.
+Description = Prevents other Pokémon from lowering accuracy.
 #-------------------------------
 [TRACE]
 Name = Erfassen
@@ -159,8 +158,8 @@ Description = Verhindert durch erhöhte Konzentrationsfähigkeit Zurückschrecke
 #-------------------------------
 [MAGMAARMOR]
 Name = Magmapanzer
-Flags = FasterEggHatching
 Description = Dank eines Panzers aus Magma kann dieses Pokémon nicht eingefroren werden.
+Flags = FasterEggHatching
 #-------------------------------
 [WATERVEIL]
 Name = Aquahülle
@@ -196,8 +195,8 @@ Description = Wenn es eingeschlafen ist, kann es doppelt so schnell wieder aufwa
 #-------------------------------
 [FLAMEBODY]
 Name = Flammenkörper
-Flags = FasterEggHatching
 Description = Fügt dem Angreifer bei Berührung eventuell Verbrennungen zu.
+Flags = FasterEggHatching
 #-------------------------------
 [RUNAWAY]
 Name = Angsthase
@@ -469,7 +468,7 @@ Description = Reduziert die Stärke von sehr effektiven Attacken und verringert 
 #-------------------------------
 [SNOWWARNING]
 Name = Schneeschauer
-Description = Das Pokémon erzeugt bei Kampfantritt Schnee.
+Description = The Pokémon summons a snowstorm in battle.
 #-------------------------------
 [HONEYGATHER]
 Name = Honigmaul
@@ -640,7 +639,7 @@ Name = Sandgewalt
 Description = Erhöht in Sandstürmen die Stärke von Gesteins-, Boden- und Stahl-Attacken.
 #-------------------------------
 [IRONBARBS]
-Name =Eisenstachel
+Name = Eisenstachel
 Description = Fügt dem Angreifer bei Berührung mit eisernen Stacheln Schaden zu.
 #-------------------------------
 [ZENMODE]
@@ -673,7 +672,7 @@ Description = Regeneriert beim Konsum von Beeren ungeachtet der Beerensorte KP.
 #-------------------------------
 [PROTEAN]
 Name = Wandlungskunst
-Description = Das Pokémon nimmt bei Einsatz einer Attacke deren Typ an.
+Description = Changes type to the first selected move.
 #-------------------------------
 [FURCOAT]
 Name = Fellkleid
@@ -841,7 +840,7 @@ Description = Kann ein Mal pro Kampf mit seinem gruseligen Kostüm einen Angriff
 #-------------------------------
 [BATTLEBOND]
 Name = Freundschaftsakt
-Description = Besiegt es ein Ziel, vertieft dies die Freundschaft zu seinem Trainer, wodurch es die Ash-Form annimmt und sein Wasser-Shuriken stärker wird.
+Description = Defeating a foe powers up the user one time.
 #-------------------------------
 [POWERCONSTRUCT]
 Name = Scharwandel
@@ -937,15 +936,15 @@ Description = Erhöht die Stärke von sehr effektiven Attacken.
 #-------------------------------
 [INTREPIDSWORD]
 Name = Kühnes Schwert
-Description = Erhöht bei Kampfantritt den Angriff.
+Description = Boosts Attack when entering battle one time.
 #-------------------------------
 [DAUNTLESSSHIELD]
 Name = Wackeres Schild
-Description = Erhöht bei Kampfantritt die Verteidigung.
+Description = Boosts Defense when entering battle one time.
 #-------------------------------
 [LIBERO]
 Name = Libero
-Description = Das Pokémon nimmt bei Einsatz einer Attacke deren Typ an.
+Description = Changes type to the first selected move.
 #-------------------------------
 [BALLFETCH]
 Name = Apport
@@ -961,7 +960,7 @@ Description = Ignoriert die Effekte von Fähigkeiten und Attacken anderer Pokém
 #-------------------------------
 [MIRRORARMOR]
 Name = Spiegelrüstung
-Description =Lenkt ausschließlich Effekte, welche die Statuswerte des Pokémon senken würden, auf den Angreifer um.
+Description = Lenkt ausschließlich Effekte, welche die Statuswerte des Pokémon senken würden, auf den Angreifer um.
 #-------------------------------
 [GULPMISSILE]
 Name = Würggeschoss
@@ -973,8 +972,8 @@ Description = Ignoriert die Effekte von Fähigkeiten und Attacken anderer Pokém
 #-------------------------------
 [STEAMENGINE]
 Name = Dampfantrieb
-Flags = FasterEggHatching
 Description = Wird es von einer Wasser- oder Feuer-Attacke getroffen, steigt seine Initiative drastisch.
+Flags = FasterEggHatching
 #-------------------------------
 [PUNKROCK]
 Name = Punk Rock
@@ -993,7 +992,7 @@ Name = Heranreifen
 Description = Verdoppelt den Effekt von Beeren, indem es sie heranreifen lässt.
 #-------------------------------
 [ICEFACE]
-Name =Tiefkühlkopf
+Name = Tiefkühlkopf
 Description = Der Eisblock um seinen Kopf blockt eine physische Attacke ab. Dies bewirkt jedoch einen Formwechsel. Durch Hagel wird der Eisblock wiederhergestellt.
 #-------------------------------
 [POWERSPOT]
@@ -1071,127 +1070,3 @@ Description = Das Pokémon verfügt sowohl über Coronospas Fähigkeit Anspannun
 [ASONEGRIMNEIGH]
 Name = Reitgespann
 Description = Das Pokémon verfügt sowohl über Coronospas Fähigkeit Anspannung als auch über Phantoross’ Fähigkeit Dunkles Wiehern
-#-------------------------------
-[ANGERSHELL]
-Name = Wutpanzer
-Description = Fallen die KP des Pokémon durch einen Angriff auf die Hälfte des Maximalwerts oder weniger, sinken Vert. und Sp.-Vert., aber Ang., Sp.-Ang. und Initiative steigen.
-#-------------------------------
-[ARMORTAIL]
-Name = Schweifrüstung
-Description = Der rätselhafte Schweif, der den Kopf des Pokémon umhüllt, hindert Gegner daran, Erstschlag-Attacken gegen die Mitstreiterseite einzusetzen.
-#-------------------------------
-[BEADSOFRUIN]
-Name = Unheilsjuwelen 
-Description = Mit der Macht seiner Unheil bringenden Juwelen schwächt das Pokémon die Spezial-Verteidigung aller anderen Pokémon.
-#-------------------------------
-[COMMANDER]
-Name = Kommandant
-Description = Befindet sich ein Heerashai auf der Mitstreiterseite, springt das Pokémon bei Kampfantritt in dessen Maul und gibt von dort aus Befehle.
-#-------------------------------
-[COSTAR]
-Name = Synchronauftritt 
-Description = Das Pokémon kopiert bei Kampfantritt die Statusveränderungen eines Mitstreiters.
-#-------------------------------
-[CUDCHEW]
-Name = Wiederkäuer
-Description = Wenn das Pokémon eine Beere isst, stößt es diese am Ende der nächsten Runde wieder aus seinem Magen auf und verspeist diese erneut.
-#-------------------------------
-[EARTHEATER]
-Name = Bodenschmaus
-Description = Wird das Pokémon von einer Boden-Attacke getroffen, erleidet es keinen Schaden, sondern regeneriert stattdessen KP.
-#-------------------------------
-[ELECTROMORPHOSIS]
-Name = Dynamo
-Description = Wenn das Pokémon Schaden erleidet, lädt es sich auf. Dadurch steigt die Stärke seiner nächsten Elektro-Attacke.
-#-------------------------------
-[GOODASGOLD]
-Name = Goldkörper
-Description = Dank seines robusten Körpers aus reinem, rostfreiem Gold kann das Pokémon nicht von Status-Attacken getroffen werden.
-#-------------------------------
-[GUARDDOG]
-Name = Wachhund
-Description = Wird das Pokémon bedroht, steigt sein Angriff. Attacken und Items, durch die Pokémon ausgetauscht werden, haben keine Wirkung auf es.
-#-------------------------------
-[HADRONENGINE]
-Name = Hadronen-Motor 
-Description = Das Pokémon erzeugt bei Kampfantritt ein Elektrofeld. Wenn ein Elektrofeld aktiv ist, verstärkt ein futuristischer Motor seinen Spezial-Angriff.
-#-------------------------------
-[LINGERINGAROMA]
-Name = Duftschwade 
-Description = Das Pokémon überträgt bei Berührung die Fähigkeit Duftschwade auf den Angreifer. 
-#-------------------------------
-[MYCELIUMMIGHT]
-Name = Myzelienkraft 
-Description = Beim Einsatz von Status-Attacken handelt das Pokémon stets langsamer, aber dafür kann es sie ungeachtet der Fähigkeit des Zieles einsetzen. .
-#-------------------------------
-[OPPORTUNIST]
-Name = Profiteur 
-Description = Wenn ein Statuswert eines Gegners steigt, profitiert das Pokémon ebenfalls davon und der gleiche Statuswert steigt auch bei ihm. 
-#-------------------------------
-[ORICHALCUMPULSE]
-Name =Orichalkum-Puls 
-Description = Das Pokémon erzeugt bei Kampfantritt Sonnenschein. Bei Sonnenschein verstärkt ein urzeitlicher Puls seinen Angriff. 
-#-------------------------------
-[PROTOSYNTHESIS]
-Name = Paläosynthese 
-Description = Bei Sonnenschein oder wenn das Pokémon eine Energiekapsel trägt, steigt sein höchster Statuswert. 
-#-------------------------------
-[PURIFYINGSALT]
-Name = Läutersalz 
-Description = Das Pokémon kann dank seines läuternden Salzes keine Statusprobleme erleiden und der durch Geist-Attacken erlittene Schaden wird halbiert. 
-#-------------------------------
-[QUARKDRIVE]
-Name = Quantenantrieb 
-Description = Im Elektrofeld oder wenn das Pokémon eine Energiekapsel trägt, steigt sein höchster Statuswert. 
-#-------------------------------
-[ROCKYPAYLOAD]
-Name = Steinträger 
-Description =Die Stärke von Gesteins-Attacken des Pokémon steigt. 
-#-------------------------------
-[SEEDSOWER]
-Name = Streusaat 
-Description = Wird das Pokémon von einem Angriff getroffen, erzeugt es ein Grasfeld. 
-#-------------------------------
-[SHARPNESS]
-Name = Scharfkantig 
-Description =Die Stärke von Schnitt-Attacken des Pokémon steigt. 
-#-------------------------------
-[SUPREMEOVERLORD]
-Name = Feldherr 
-Description =Bei Kampfantritt steigen der Angriff und Spezial-Angriff des Pokémon ein bisschen für jedes bis dahin besiegte Team-Mitglied. 
-#-------------------------------
-[SWORDOFRUIN]
-Name = Unheilsschwert 
-Description = Mit der Macht seines Unheil bringenden Schwertes schwächt das Pokémon die Verteidigung aller anderen Pokémon. 
-#-------------------------------
-[TABLETSOFRUIN]
-Name = Unheilstafeln 
-Description = Mit der Macht seiner Unheil bringenden Holztafeln schwächt das Pokémon den Angriff aller anderen Pokémon. 
-#-------------------------------
-[THERMALEXCHANGE]
-Name = Thermowandel 
-Description = Wird das Pokémon von einer Feuer-Attacke getroffen, steigt sein Angriff. Außerdem kann es keine Verbrennung erleiden. 
-#-------------------------------
-[TOXICDEBRIS]
-Name = Giftbelag 
-Description = Erleidet das Pokémon Schaden durch eine physische Attacke, verstreut es giftige Stacheln auf der gegnerischen Seite. 
-#-------------------------------
-[VESSELOFRUIN]
-Name = Unheilsgefäß 
-Description = Mit der Macht seines Unheil bringenden Gefäßes schwächt das Pokémon den Spezial-Angriff aller anderen Pokémon. 
-#-------------------------------
-[WELLBAKEDBODY]
-Name =Knusperkruste 
-Description = Wird das Pokémon von einer Feuer-Attacke getroffen, erleidet es keinen Schaden. Stattdessen steigt seine Verteidigung stark.
-#-------------------------------
-[WINDPOWER]
-Name = Windkraft 
-Description = Wird das Pokémon von einer Wind-Attacke getroffen, lädt es sich auf. Dadurch steigt die Stärke seiner nächsten Elektro-Attacke.
-#-------------------------------
-[WINDRIDER]
-Name = Windreiter 
-Description = Wirkt Rückenwind oder wird das Pokémon von einer Wind-Attacke getroffen, steigt sein Angriff. Außerdem erleidet es keinen Schaden durch Wind-Attacken. 
-#-------------------------------
-[ZEROTOHERO]
-Name = Superwechsel 
-Description = Wird das Pokémon ausgewechselt, nimmt es die Heldenform an.

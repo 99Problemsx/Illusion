@@ -477,7 +477,6 @@ PortionName = hunk of Metal Alloy
 PortionNamePlural = hunks of Metal Alloy
 Pocket = 1
 Price = 3000
-SellPrice = 1500
 BPPrice = 8
 FieldUse = OnPokemon
 Flags = EvolutionStone,Fling_30

@@ -13,7 +13,7 @@
     // Note that the "Game Title" defined in RPG Maker XP should not have
     // accented characters in it, which is why this property is useful.
     //
-    "windowTitle": "Pokémon Illusion",
+    "windowTitle": "Chroniken von Arcadia",
 
     // The game window's width and height, in pixels.
     //
@@ -26,7 +26,7 @@
 
     // Enable F12 to make the game soft reset.
     //
-    // "enableReset": true,
+    "enableReset": false,
 
     // Enable F1 to open the keybinding menu.
     //
@@ -90,12 +90,12 @@
     // Whether the game starts in full-screen mode (this can always be toggled
     // with Alt-Enter during runtime).
     //
-    // "fullscreen": false,
+    "fullscreen": false,
 
     // Whether you can toggle full-screen mode by pressing Alt + Enter with
     // either the left or right Alt key.
     //
-    // "anyAltToggleFS": false,
+    "anyAltToggleFS": true,
 
     // Whether the game window is freely resizable.
     //
@@ -132,7 +132,7 @@
     // Whether to apply Lanczos3 interpolation when the game screen is upscaled
     // (typically higher quality than the linear smoothScaling).
     //
-    // "lanczos3Scaling": false,
+     "lanczos3Scaling": false,
 
     // Workaround for buggy graphics drivers that don't properly synchronize
     // texture access. This is most apparent when text doesn't show up or the

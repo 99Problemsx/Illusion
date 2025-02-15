@@ -1,7 +1,7 @@
 #===============================================================================
 # Smash Event
 #===============================================================================
-# Overwrites Essentials Stuff
+#Overwrites Essentials Stuff
 def pbSmashEvent(event)
   return if !event
   if event.name[/cuttree/i]
@@ -11,18 +11,17 @@ def pbSmashEvent(event)
   elsif event.name[/smashice/i]
     pbSEPlay("Ice Smash", 80)
   end
-  pbMoveRoute(event, [
-                PBMoveRoute::WAIT, 2,
-                PBMoveRoute::TURN_LEFT,
-                PBMoveRoute::WAIT, 2,
-                PBMoveRoute::TURN_RIGHT,
-                PBMoveRoute::WAIT, 2,
-                PBMoveRoute::TURN_UP,
-                PBMoveRoute::WAIT, 2
-              ])
-  pbWait(0.4)  # Fixed so Strength Event can be push over Smash Event
-  event.erase
-  $PokemonMap&.addErasedEvent(event.id)
+  pbMoveRoute(event,[
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_LEFT,
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_RIGHT,
+    PBMoveRoute::WAIT, 2,
+    PBMoveRoute::TURN_UP,
+    PBMoveRoute::WAIT, 2])
+    pbWait(0.4)  # Fixed so Strength Event can be push over Smash Event
+    event.erase
+    $PokemonMap&.addErasedEvent(event.id)
 end
 
 #===============================================================================
@@ -32,7 +31,7 @@ end
 class Game_Event < Game_Character
   def pbCheckEventTriggerAfterTurning
     return if $game_system.map_interpreter.running? || @starting
-    return if !$game_player.camouflage == true
+    return if !$game_player.camouflage==true
     return if @trigger != 2 # Event touch
     return if !@event.name[/(?:sight|trainer)\((\d+)\)/i]
     distance = $~[1].to_i
@@ -49,7 +48,7 @@ class Game_Player < Game_Character
     return result if checkIfRunning && $game_system.map_interpreter.running?
     # All event loops
     $game_map.events.each_value do |event|
-      next if $game_player.camouflage == true
+      next if $game_player.camouflage==true
       next if !triggers.include?(event.trigger)
       next if !event.name[/trainer\((\d+)\)/i] && (trainer_only || !event.name[/sight\((\d+)\)/i])
       distance = $~[1].to_i
@@ -64,24 +63,16 @@ class Game_Player < Game_Character
     result = false
     return result if $game_system.map_interpreter.running?
     # All event loops
-    x_offset = if dir == 4
-                 -1
-               else
-                 (dir == 6) ? 1 : 0
-end
-    y_offset = if dir == 8
-                 -1
-               else
-                 (dir == 2) ? 1 : 0
-end
+    x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
+    y_offset = (dir == 8) ? -1 : (dir == 2) ? 1 : 0
     $game_map.events.each_value do |event|
       next if ![1, 2].include?(event.trigger) # Player touch, event touch
       # If event coordinates and triggers are consistent
       next if !event.at_coordinate?(@x + x_offset, @y + y_offset)
-      if event.name[/(?:sight|trainer)\((\d+)\)/i] && !$game_player.camouflage == true
+      if event.name[/(?:sight|trainer)\((\d+)\)/i] && !$game_player.camouflage==true
         distance = $~[1].to_i
         next if !pbEventCanReachPlayer?(event, self, distance)
-      elsif event.name[/counter\((\d+)\)/i] && !$game_player.camouflage == true
+      elsif event.name[/counter\((\d+)\)/i] && !$game_player.camouflage==true
         distance = $~[1].to_i
         next if !pbEventFacesPlayer?(event, self, distance)
       end

@@ -1,8 +1,9 @@
 ################################################################################
-#
+# 
 # Pokemon debug command edits.
-#
+# 
 ################################################################################
+
 
 #-------------------------------------------------------------------------------
 # Allows you to set the status count for a Pokemon's Drowsy status in the party.
@@ -39,11 +40,11 @@ MenuHandlers.add(:pokemon_debug_menu, :set_status, {
         else
           count = 0
           cancel = false
-          if [:SLEEP, :DROWSY].include?(ids[cmd])
+          if [:SLEEP, :DROWSY].include?(ids[cmd]) 
             params = ChooseNumberParams.new
             params.setRange(0, 9)
             params.setDefaultValue(3)
-            status = (ids[cmd] == :SLEEP) ? "sleep" : "drowsy"
+			status = (ids[cmd] == :SLEEP) ? "sleep" : "drowsy"
             count = pbMessageChooseNumber(
               _INTL("Set the Pokémon's #{status} count."), params
             ) { screen.pbUpdate }
@@ -112,7 +113,7 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_status, {
           params.setRange(0, 99)
           params.setDefaultValue((pkmn.status == :SLEEP) ? pkmn.statusCount : 3)
           params.setCancelValue(-1)
-          status = (ids[cmd] == :SLEEP) ? "sleep" : "drowsy"
+		  status = (ids[cmd] == :SLEEP) ? "sleep" : "drowsy"
           count = pbMessageChooseNumber("\\ts[]" + _INTL("Set {1}'s #{status} count (0-99).", pkmn_name), params)
           next if count < 0
           (battler || pkmn).statusCount = count
@@ -142,11 +143,13 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_status, {
   }
 })
 
+
 ################################################################################
-#
+# 
 # Used to add new eligible PBEffects to the battle debug menu.
-#
+# 
 ################################################################################
+
 
 #-------------------------------------------------------------------------------
 # Utility for choosing a stat from a list.
@@ -187,7 +190,7 @@ class Battle::DebugSetEffects
     end
     return false
   end
-
+  
   def update_input_for_type(effect, variable_data)
     if Input.trigger?(Input::USE)
       pbPlayDecisionSE

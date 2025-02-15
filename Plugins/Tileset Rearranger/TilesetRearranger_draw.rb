@@ -14,9 +14,9 @@ class TilesetRearranger
   # Draws the tileset on the left.
   def draw_tileset
     @sprites["tileset"].bitmap.clear
-    (0...NUM_ROWS_VISIBLE).each do |yy|
+    for yy in 0...NUM_ROWS_VISIBLE
       id_y_offset = (@top_y + yy) * TILES_PER_ROW
-      (0...TILES_PER_ROW).each do |xx|
+      for xx in 0...TILES_PER_ROW
         id = @tile_ID_map[id_y_offset + xx]
         break if !id
         tile_id = (id < 0) ? id : TILESET_START_ID + id
@@ -30,9 +30,9 @@ class TilesetRearranger
   # Draws "used tile" icon over tiles in use by a map.
   def draw_tileset_overlay
     star_rect = Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
-    (0...NUM_ROWS_VISIBLE).each do |yy|
+    for yy in 0...NUM_ROWS_VISIBLE
       id_y_offset = (@top_y + yy) * TILES_PER_ROW
-      (0...TILES_PER_ROW).each do |xx|
+      for xx in 0...TILES_PER_ROW
         id = @tile_ID_map[id_y_offset + xx]
         next if !id || id < 0
         if SHOW_LIKELY_BLANKS && @likely_blanks[id]
@@ -49,22 +49,22 @@ class TilesetRearranger
     bitmap = @sprites["scroll_bar"].bitmap
     bitmap.clear
     # Background line
-    bitmap.fill_rect((bitmap.width / 2) - 2, 0, 4, SCREEN_HEIGHT, CURSOR_OUTLINE_COLOR)
+    bitmap.fill_rect(bitmap.width / 2 - 2, 0, 4, SCREEN_HEIGHT, CURSOR_OUTLINE_COLOR)
     return if @height <= NUM_ROWS_VISIBLE
     # Slider
     slider_width = bitmap.width - 4
     slider_height = (SCREEN_HEIGHT * NUM_ROWS_VISIBLE.to_f / @height).round
     slider_height = 8 if slider_height < 8
     y_pos = ((SCREEN_HEIGHT - slider_height) * @top_y.to_f / (@height - NUM_ROWS_VISIBLE)).round
-    bitmap.fill_rect((bitmap.width - slider_width) / 2, y_pos, slider_width, slider_height, CURSOR_OUTLINE_COLOR)
-    bitmap.fill_rect(((bitmap.width - slider_width) / 2) + 2, y_pos + 2, slider_width - 4, slider_height - 4, CURSOR_COLOR)
+    bitmap.fill_rect((bitmap.width - slider_width) / 2,     y_pos,     slider_width,     slider_height,     CURSOR_OUTLINE_COLOR)
+    bitmap.fill_rect((bitmap.width - slider_width) / 2 + 2, y_pos + 2, slider_width - 4, slider_height - 4, CURSOR_COLOR)
   end
 
   def draw_preselected_area_on_tileset(full_width = false)
     area_top_x = (full_width) ? 0 : @selected_x
     area_width = (full_width) ? TILES_PER_ROW : @selected_width
-    pre_x = (area_top_x * TILE_SIZE) + TILESET_OFFSET_X
-    pre_y = ((@selected_y - @top_y) * TILE_SIZE) + TILESET_OFFSET_Y
+    pre_x = area_top_x * TILE_SIZE + TILESET_OFFSET_X
+    pre_y = (@selected_y - @top_y) * TILE_SIZE + TILESET_OFFSET_Y
     pre_width = area_width * TILE_SIZE
     pre_height = @selected_height * TILE_SIZE
     bitmap = @sprites["cursor"].bitmap
@@ -90,10 +90,10 @@ class TilesetRearranger
         cursor_height = [@y, @selected_y].max - [@y, @selected_y].min + 1
       end
     end
-    cursor_x = (cursor_top_x * TILE_SIZE) + TILESET_OFFSET_X
-    cursor_y = ((cursor_top_y - @top_y) * TILE_SIZE) + TILESET_OFFSET_Y
-    cursor_width *= TILE_SIZE
-    cursor_height *= TILE_SIZE
+    cursor_x = cursor_top_x * TILE_SIZE + TILESET_OFFSET_X
+    cursor_y = (cursor_top_y - @top_y) * TILE_SIZE + TILESET_OFFSET_Y
+    cursor_width = cursor_width * TILE_SIZE
+    cursor_height = cursor_height * TILE_SIZE
     bitmap = @sprites["cursor"].bitmap
     bitmap.fill_rect(cursor_x - 2,                cursor_y - 2,                 cursor_width + 4, 8,  CURSOR_OUTLINE_COLOR)
     bitmap.fill_rect(cursor_x - 2,                cursor_y - 2,                 8, cursor_height + 4, CURSOR_OUTLINE_COLOR)
@@ -107,8 +107,8 @@ class TilesetRearranger
 
   def draw_insert_row_cursor
     bitmap = @sprites["cursor"].bitmap
-    cursor_y = TILESET_OFFSET_Y + ((@y - @top_y) * TILE_SIZE)
-    bitmap.blt(TILESET_OFFSET_X - @arrow_bitmap.width - 2, cursor_y - (@arrow_bitmap.height / 2), @arrow_bitmap,
+    cursor_y = TILESET_OFFSET_Y + (@y - @top_y) * TILE_SIZE
+    bitmap.blt(TILESET_OFFSET_X - @arrow_bitmap.width - 2, cursor_y - @arrow_bitmap.height / 2, @arrow_bitmap,
                Rect.new(0, 0, @arrow_bitmap.width, @arrow_bitmap.height))
     bitmap.fill_rect(TILESET_OFFSET_X - 2, cursor_y - 4, TILESET_WIDTH + 4, 8, CURSOR_OUTLINE_COLOR)
     bitmap.fill_rect(TILESET_OFFSET_X,     cursor_y - 2, TILESET_WIDTH,     4, CURSOR_COLOR)
@@ -150,34 +150,34 @@ class TilesetRearranger
         case @mode
         when :swap
           pbDrawTextPositions(bitmap, [
-                                [_INTL("Choose tile(s) to swap"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
-                                 Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                              ])
+            [_INTL("Choose tile(s) to swap"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+             Color.new(248, 248, 248), Color.new(40, 40, 40)]
+          ])
         when :cut_insert
           pbDrawTextPositions(bitmap, [
-                                [_INTL("Choose tile(s) to cut"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
-                                 Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                              ])
+            [_INTL("Choose tile(s) to cut"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+             Color.new(248, 248, 248), Color.new(40, 40, 40)]
+          ])
         when :move_row
           pbDrawTextPositions(bitmap, [
-                                [_INTL("Choose row(s) to move"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
-                                 Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                              ])
+            [_INTL("Choose row(s) to move"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+             Color.new(248, 248, 248), Color.new(40, 40, 40)]
+          ])
         end
       else
         # Draw selected tiles
         sel_x = (@mode == :move_row) ? 0 : @selected_x
         sel_width = (@mode == :move_row) ? TILES_PER_ROW : @selected_width
         Rect.new(0, 0, TILE_SIZE, TILE_SIZE)
-        start_x = (bitmap.width - (sel_width * TILE_SIZE)) / 2
-        start_y = (bitmap.height - (@selected_height * TILE_SIZE)) / 2
-        (0...@selected_height).each do |yy|
+        start_x = (bitmap.width - sel_width * TILE_SIZE) / 2
+        start_y = (bitmap.height - @selected_height * TILE_SIZE) / 2
+        for yy in 0...@selected_height
           id_y_offset = (@selected_y + yy) * TILES_PER_ROW
-          (0...sel_width).each do |xx|
+          for xx in 0...sel_width
             id = @tile_ID_map[id_y_offset + sel_x + xx]
             break if !id
             tile_id = (id < 0) ? id : TILESET_START_ID + id
-            draw_tile_onto_bitmap(bitmap, (xx * TILE_SIZE) + start_x, (yy * TILE_SIZE) + start_y, tile_id, true)
+            draw_tile_onto_bitmap(bitmap, xx * TILE_SIZE + start_x, yy * TILE_SIZE + start_y, tile_id, true)
           end
         end
         # Draw white box around selected tiles
@@ -190,8 +190,8 @@ class TilesetRearranger
       end
     when :add_row
       pbDrawTextPositions(bitmap, [
-                            [_INTL("Insert new row"), bitmap.width / 2, (bitmap.height / 2) - 10, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                          ])
+        [_INTL("Insert new row"), bitmap.width / 2, (bitmap.height / 2) - 10, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+      ])
     when :erase
       # Draw blank tile
       start_x = (bitmap.width - TILE_SIZE) / 2
@@ -204,8 +204,8 @@ class TilesetRearranger
       bitmap.fill_rect(start_x + TILE_SIZE, start_y - 1,         1, TILE_SIZE + 2, Color.new(255, 255, 255))
       # Draw text
       pbDrawTextPositions(bitmap, [
-                            [_INTL("Erase tile(s)"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                          ])
+        [_INTL("Erase tile(s)"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+      ])
     when :delete_row
       # Draw blank tiles
       start_x = (bitmap.width - (TILES_PER_ROW * TILE_SIZE)) / 2
@@ -221,8 +221,8 @@ class TilesetRearranger
       bitmap.fill_rect(start_x + (TILES_PER_ROW * TILE_SIZE), start_y - 1,         1, TILE_SIZE + 2,                   Color.new(255, 255, 255))
       # Draw text
       pbDrawTextPositions(bitmap, [
-                            [_INTL("Delete row"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
-                          ])
+        [_INTL("Delete row"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+      ])
     end
   end
 end

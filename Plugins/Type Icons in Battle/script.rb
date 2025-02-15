@@ -1,13 +1,40 @@
+#-------------------------------------------------------------------------------
+# Config Options
+#-------------------------------------------------------------------------------
 class Battle::Scene::PokemonDataBox
-  unless method_defined?(:__types__initializeOtherGraphics)
-    alias __types__initializeOtherGraphics initializeOtherGraphics
-  end
+
+  # Set this to certain values to draw the icons at different positions
+  # 0 - Draw above the databox
+  # 1 - Draw below the databox
+  # 2 - Draw at the side of the databox
+  TYPE_ICONS_POSITION = 2
+
+end
+
+#-------------------------------------------------------------------------------
+# Main Script
+#-------------------------------------------------------------------------------
+class Battle::Scene::PokemonDataBox
+  alias __types__initializeOtherGraphics initializeOtherGraphics unless method_defined?(:__types__initializeOtherGraphics)
   def initializeOtherGraphics(*args)
-    @types_x = (@battler.opposes?(0)) ? 24 : 40
     @types_bitmap = AnimatedBitmap.new("Graphics/UI/Battle/icon_types")
     @types_sprite = Sprite.new(viewport)
     height = @types_bitmap.height / GameData::Type.count
-    @types_y = -height
+    @types_x, @types_y, height = 0
+    case TYPE_ICONS_POSITION
+    when 2
+      height = @databoxBitmap.height
+      @types_x = (@battler.opposes?(0)) ? @databoxBitmap.width - @types_bitmap.width : 0
+      @types_y = 4
+    when 1
+      height = @types_bitmap.height / GameData::Type.count
+      @types_x = (@battler.opposes?(0)) ? 24 : 40
+      @types_y = @databoxBitmap.height
+    when 0
+      height = @types_bitmap.height / GameData::Type.count
+      @types_x = (@battler.opposes?(0)) ? 24 : 40
+      @types_y = -height
+    end
     @types_sprite.bitmap = Bitmap.new(@databoxBitmap.width - @types_x, height)
     @sprites["types_sprite"] = @types_sprite
     __types__initializeOtherGraphics(*args)
@@ -34,7 +61,7 @@ class Battle::Scene::PokemonDataBox
   alias __types__set_z z= unless method_defined?(:__types__set_z)
   def z=(value)
     __types__set_z(value)
-    @types_sprite.z = value + 1
+    @types_sprite.z = value - 1
   end
 
   alias __databox__refresh refresh unless method_defined?(:__databox__refresh)
@@ -50,10 +77,39 @@ class Battle::Scene::PokemonDataBox
     @types_sprite.bitmap.clear
     width  = @types_bitmap.width
     height = @types_bitmap.height / GameData::Type.count
-    @battler.types.each_with_index do |type, i|
-      type_number = GameData::Type.get(type).icon_position
-      type_rect = Rect.new(0, type_number * height, width, height)
-      @types_sprite.bitmap.blt((width - 6) * i, 0, @types_bitmap.bitmap, type_rect)
+    types  = @battler.pbTypes.clone
+    if @battler.effects[PBEffects::Illusion]
+      illusion_types = @battler.effects[PBEffects::Illusion].types
+      base_types = @battler.pokemon.types
+      base_types.each { |type| types.delete(type) }
+      illusion_types.reverse.each { |type| types.insert(0, type) }
     end
+    types.each_with_index do |type, i|
+      type_number = GameData::Type.get(type).icon_position
+      if TYPE_ICONS_POSITION == 2
+        type_rect = Rect.new(0, type_number * height, width, height)
+        @types_sprite.bitmap.blt(0, height * i, @types_bitmap.bitmap, type_rect)
+      else
+        type_rect = Rect.new(0, type_number * height, width, height)
+        @types_sprite.bitmap.blt((width - 6) * i, 0, @types_bitmap.bitmap, type_rect)
+      end
+    end
+  end
+end
+
+class Battle::Battler
+  alias __types__pbChangeTypes pbChangeTypes unless method_defined?(:__types__pbChangeTypes)
+  def pbChangeTypes(*args)
+    ret = __types__pbChangeTypes(*args)
+    @battle.scene.sprites["dataBox_#{self.index}"]&.refresh
+    return ret
+  end
+
+  alias __types__pbEffectsOnMakingHit pbEffectsOnMakingHit unless method_defined?(:__types__pbEffectsOnMakingHit)
+  def pbEffectsOnMakingHit(*args)
+    ret = __types__pbEffectsOnMakingHit(*args)
+    @battle.scene.sprites["dataBox_#{args[1]&.index || 0}"]&.refresh
+    @battle.scene.sprites["dataBox_#{args[2]&.index || 0}"]&.refresh
+    return ret
   end
 end

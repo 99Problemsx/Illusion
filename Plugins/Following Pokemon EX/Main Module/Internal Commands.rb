@@ -5,7 +5,6 @@ module FollowingPkmn
   # Checks if the Following Pokemon is active and following the player
   #-----------------------------------------------------------------------------
   def self.active?; return @@can_refresh; end
-
   #-----------------------------------------------------------------------------
   # Checks whether Following Pokemon data should be accessed or no
   #-----------------------------------------------------------------------------
@@ -14,10 +13,9 @@ module FollowingPkmn
     return false if !$game_temp.respond_to?(:followers) || !$game_temp.followers
     return false if !$PokemonGlobal.respond_to?(:followers) || !$PokemonGlobal.followers
     return false if !$player.respond_to?(:party) || !$player.party
-    return false if !$scene.is_a?(Scene_Map)
+	return false if !$scene.is_a?(Scene_Map)
     return true
   end
-
   #-----------------------------------------------------------------------------
   # Refresh Following Pokemon's visibility when Following the player
   #-----------------------------------------------------------------------------
@@ -34,9 +32,8 @@ module FollowingPkmn
       refresh = true if refresh == -1
     end
     @@can_refresh = refresh
-    $PokemonGlobal.call_refresh[1] = true if old_refresh != @@can_refresh && !$PokemonGlobal.call_refresh[1]
+    $PokemonGlobal.call_refresh[1] = true if old_refresh != @@can_refresh && !$PokemonGlobal.call_refresh[1] 
   end
-
   #-----------------------------------------------------------------------------
   # Raises The Current Following Pokemon's Happiness by 3-5 and
   # checks for hold item
@@ -47,9 +44,8 @@ module FollowingPkmn
     friendship_time = FollowingPkmn::FRIENDSHIP_TIME_TAKEN * Graphics.frame_rate
     item_time = FollowingPkmn::ITEM_TIME_TAKEN * Graphics.frame_rate
     FollowingPkmn.get_pokemon&.changeHappiness("levelup") if ($PokemonGlobal.time_taken % friendship_time) == 0
-    $PokemonGlobal.follower_hold_item = true if $PokemonGlobal.time_taken > item_time
+    $PokemonGlobal.follower_hold_item = true if ($PokemonGlobal.time_taken > item_time)
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for Following Pokémon finding an item in the field
   #-----------------------------------------------------------------------------
@@ -72,7 +68,7 @@ module FollowingPkmn
         pbMessage(_INTL("\\me[{1}]{3} found \\c[1]{2}\\c[0]!\\wtnp[30]", meName, itemname, pokename))
       elsif item.is_machine?   # TM or HM
         pbMessage(_INTL("\\me[{1}]{4} found \\c[1]{2} {3}\\c[0]!\\wtnp[30]", meName, itemname, GameData::Move.get(move).name, pokename))
-      elsif quantity > 1
+      elsif quantity>1
         pbMessage(_INTL("\\me[{1}]{4} found {2} \\c[1]{3}\\c[0]!\\wtnp[30]", meName, quantity, itemname, pokename))
       elsif itemname.starts_with_vowel?
         pbMessage(_INTL("\\me[{1}]{3} found an \\c[1]{2}\\c[0]!\\wtnp[30]", meName, itemname, pokename))
@@ -80,7 +76,7 @@ module FollowingPkmn
         pbMessage(_INTL("\\me[{1}]{3} found a \\c[1]{2}\\c[0]!\\wtnp[30]", meName, itemname, pokename))
       end
       pbMessage(_INTL("You put the {1} away\\nin the <icon=bagPocket{2}>\\c[1]{3} Pocket\\c[0].",
-                      itemname, pocket, PokemonBag.pocket_names[pocket]))
+         itemname, pocket, PokemonBag.pocket_names[pocket]))
       $PokemonGlobal.follower_hold_item = false
       $PokemonGlobal.time_taken         = 0
       return true
@@ -92,7 +88,7 @@ module FollowingPkmn
       pbMessage(_INTL("{1} found \\c[1]{2}\\c[0]!\\wtnp[30]", pokename, itemname))
     elsif item.is_machine?   # TM or HM
       pbMessage(_INTL("{1} found \\c[1]{2} {3}\\c[0]!\\wtnp[30]", pokename, itemname, GameData::Move.get(move).name))
-    elsif quantity > 1
+    elsif quantity>1
       pbMessage(_INTL("{1} found {2} \\c[1]{3}\\c[0]!\\wtnp[30]", pokename, quantity, itemname))
     elsif itemname.starts_with_vowel?
       pbMessage(_INTL("{1} found an \\c[1]{2}\\c[0]!\\wtnp[30]", pokename, itemname))
@@ -102,7 +98,6 @@ module FollowingPkmn
     pbMessage(_INTL("But your Bag is full..."))
     return false
   end
-
   #-----------------------------------------------------------------------------
   # Check if the Following Pokemon can be spoken to, or not
   #-----------------------------------------------------------------------------

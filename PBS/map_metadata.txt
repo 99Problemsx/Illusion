@@ -2,7 +2,6 @@
 #-------------------------------
 [001]   # PokéCenter
 Name = Intro
-Flags = HideFollowingPkmn
 #-------------------------------
 [002]   # Berheide
 Name = Lappet Town
