@@ -27,6 +27,7 @@ module FollowingPkmn
     end
     FollowingPkmn.refresh(anim)
   end
+
   #-----------------------------------------------------------------------------
   # Script Command to remove the event following the player as a Following
   # Pokemon
@@ -36,6 +37,7 @@ module FollowingPkmn
     $game_temp.followers.remove_follower_by_name("FollowerPkmn")
     $game_temp.followers.remove_follower_by_name("FollowingPkmn")
   end
+
   #-----------------------------------------------------------------------------
   # Script Command to toggle Following Pokemon
   #-----------------------------------------------------------------------------
@@ -43,11 +45,11 @@ module FollowingPkmn
     return if !FollowingPkmn.can_check? || !FollowingPkmn.get
     return if !FollowingPkmn.get_pokemon
     anim_1 = FollowingPkmn.active?
-    if !forced.nil?
+    if forced.nil?
+      $PokemonGlobal.follower_toggled = !$PokemonGlobal.follower_toggled
+    else
       # This may seem redundant but it keeps follower_toggled a boolean always
       $PokemonGlobal.follower_toggled = !(!forced)
-    else
-      $PokemonGlobal.follower_toggled = !($PokemonGlobal.follower_toggled)
     end
     anim_2 = FollowingPkmn.active?
     anim = anim_1 != anim_2 if anim.nil?
@@ -55,18 +57,21 @@ module FollowingPkmn
     $game_temp.followers.move_followers
     $game_temp.followers.turn_followers
   end
+
   #-----------------------------------------------------------------------------
   # Script Command to toggle Following Pokemon off
   #-----------------------------------------------------------------------------
   def self.toggle_off(anim = nil)
     FollowingPkmn.toggle(false, anim)
   end
+
   #-----------------------------------------------------------------------------
   # Script Command to toggle Following Pokemon on
   #-----------------------------------------------------------------------------
   def self.toggle_on(anim = nil)
     FollowingPkmn.toggle(true, anim)
   end
+
   #-----------------------------------------------------------------------------
   # Script Command for talking to Following Pokemon
   #-----------------------------------------------------------------------------
@@ -86,6 +91,7 @@ module FollowingPkmn
     pbTurnTowardEvent(event, $game_player)
     return true
   end
+
   #-----------------------------------------------------------------------------
   # Control the following Pokemon using move routes
   #-----------------------------------------------------------------------------
@@ -99,6 +105,7 @@ module FollowingPkmn
     pbMoveRoute(event, commands, false) if event
     pbMapInterpreter&.command_210 if event && wait_complete
   end
+
   #-----------------------------------------------------------------------------
   # Script Command for adding an animation to the Following Pokemon event
   #-----------------------------------------------------------------------------

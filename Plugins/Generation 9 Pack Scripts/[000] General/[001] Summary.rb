@@ -1,9 +1,8 @@
 ################################################################################
-# 
+#
 # Pokemon Summary changes.
-# 
+#
 ################################################################################
-
 
 class PokemonSummary_Scene
   #-----------------------------------------------------------------------------
@@ -68,16 +67,14 @@ class PokemonSummary_Scene
           dorefresh = true
         end
       end
-      if dorefresh
-        drawPage(@page)
-      end
+      drawPage(@page) if dorefresh
     end
     return @partyindex
   end
 
   #-----------------------------------------------------------------------------
   # -Edited to add Nickname prompt in the Summary options.
-  # -Edited to allow the use TM's, and to relearn/forget moves on the moves page. 
+  # -Edited to allow the use TM's, and to relearn/forget moves on the moves page.
   #-----------------------------------------------------------------------------
   def pbOptions
     dorefresh = false
@@ -115,9 +112,7 @@ class PokemonSummary_Scene
         screen = PokemonBagScreen.new(scene, $bag)
         item = screen.pbChooseItemScreen(proc { |itm| GameData::Item.get(itm).can_hold? })
       }
-      if item
-        dorefresh = pbGiveItemToPokemon(item, @pokemon, self, @partyindex)
-      end
+      dorefresh = pbGiveItemToPokemon(item, @pokemon, self, @partyindex) if item
     elsif cmdTakeItem >= 0 && command == cmdTakeItem
       dorefresh = pbTakeItemFromPokemon(@pokemon, self)
     elsif cmdNickname >= 0 && command == cmdNickname
@@ -154,8 +149,8 @@ class PokemonSummary_Scene
       pbFadeOutIn {
         scene  = PokemonBag_Scene.new
         screen = PokemonBagScreen.new(scene, $bag)
-        item = screen.pbChooseItemScreen(Proc.new{ |itm|
-          move = GameData::Item.get(itm).move  
+        item = screen.pbChooseItemScreen(proc { |itm|
+          move = GameData::Item.get(itm).move
           next false if !move || @pokemon.hasMove?(move) || !@pokemon.compatible_with_move?(move)
           next true
         })
