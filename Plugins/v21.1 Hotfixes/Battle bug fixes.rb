@@ -57,70 +57,62 @@ class Battle::AI
       break
     end
     # Log the result
-    return unless @battle.choices[user_battler.index][2]
-    move_name = @battle.choices[user_battler.index][2].name
-    if @battle.choices[user_battler.index][3] >= 0
-      PBDebug.log("   => will use #{move_name} (target #{@battle.choices[user_battler.index][3]})")
-    else
-      PBDebug.log("   => will use #{move_name}")
+    if @battle.choices[user_battler.index][2]
+      move_name = @battle.choices[user_battler.index][2].name
+      if @battle.choices[user_battler.index][3] >= 0
+        PBDebug.log("   => will use #{move_name} (target #{@battle.choices[user_battler.index][3]})")
+      else
+        PBDebug.log("   => will use #{move_name}")
+      end
     end
   end
 end
 
 Battle::AI::Handlers::ShouldSwitch.add(:asleep,
-                                       proc { |battler, reserves, ai, battle|
-                                         # Asleep and won't wake up this round or next round
-                                         next false if battler.status != :SLEEP || battler.statusCount <= 2
-                                         # Doesn't want to be asleep (includes checking for moves usable while asleep)
-                                         next false if battler.wants_status_problem?(:SLEEP)
-                                         # Doesn't benefit from being asleep
-                                         next false if battler.has_active_ability?(:MARVELSCALE)
-                                         # Doesn't know Rest (if it does, sleep is expected, so don't apply this check)
-                                         if battler.check_for_move { |m| m.function_code == "HealUserFullyAndFallAsleep" }
-                                           next false
-                                         end
-                                         # Not trapping another battler in battle
-                                         if ai.trainer.high_skill?
-                                           next false if ai.battlers.any? do |b|
-                                             b.effects[PBEffects::JawLock] == battler.index ||
-                                             b.effects[PBEffects::MeanLook] == battler.index ||
-                                             b.effects[PBEffects::Octolock] == battler.index ||
-                                             b.effects[PBEffects::TrappingUser] == battler.index
-                                           end
-                                           trapping = false
-                                           ai.each_foe_battler(battler.side) do |b, i|
-                                             if b.ability_active? && Battle::AbilityEffects.triggerCertainSwitching(b.ability, b.battler, battle)
-                                               next
-                                             end
-                                             if b.item_active? && Battle::ItemEffects.triggerCertainSwitching(b.item, b.battler, battle)
-                                               next
-                                             end
-                                             next if Settings::MORE_TYPE_EFFECTS && b.has_type?(:GHOST)
-                                             # Relevant trapping effects are checked above
-                                             next if b.battler.trappedInBattle?
-                                             if battler.ability_active?
-                                               trapping = Battle::AbilityEffects.triggerTrappingByTarget(battler.ability, b.battler, battler.battler, battle)
-                                               break if trapping
-                                             end
-                                             if battler.item_active?
-                                               trapping = Battle::ItemEffects.triggerTrappingByTarget(battler.item, b.battler, battler.battler, battle)
-                                               break if trapping
-                                             end
-                                           end
-                                           next false if trapping
-                                         end
-                                         # Doesn't have sufficiently raised stats that would be lost by switching
-                                         next false if battler.stages.any? { |key, val| val >= 2 }
-                                         # A reserve Pokémon is awake and not frozen
-                                         if reserves.none? { |pkmn| ![:SLEEP, :FROZEN].include?(pkmn.status) }
-                                           next false
-                                         end
-                                         # 60% chance to not bother
-                                         next false if ai.pbAIRandom(100) < 60
-                                         PBDebug.log_ai("#{battler.name} wants to switch because it is asleep and can't do anything")
-                                         next true
-                                       }
-                                      )
+  proc { |battler, reserves, ai, battle|
+    # Asleep and won't wake up this round or next round
+    next false if battler.status != :SLEEP || battler.statusCount <= 2
+    # Doesn't want to be asleep (includes checking for moves usable while asleep)
+    next false if battler.wants_status_problem?(:SLEEP)
+    # Doesn't benefit from being asleep
+    next false if battler.has_active_ability?(:MARVELSCALE)
+    # Doesn't know Rest (if it does, sleep is expected, so don't apply this check)
+    next false if battler.check_for_move { |m| m.function_code == "HealUserFullyAndFallAsleep" }
+    # Not trapping another battler in battle
+    if ai.trainer.high_skill?
+      next false if ai.battlers.any? do |b|
+        b.effects[PBEffects::JawLock] == battler.index ||
+        b.effects[PBEffects::MeanLook] == battler.index ||
+        b.effects[PBEffects::Octolock] == battler.index ||
+        b.effects[PBEffects::TrappingUser] == battler.index
+      end
+      trapping = false
+      ai.each_foe_battler(battler.side) do |b, i|
+        next if b.ability_active? && Battle::AbilityEffects.triggerCertainSwitching(b.ability, b.battler, battle)
+        next if b.item_active? && Battle::ItemEffects.triggerCertainSwitching(b.item, b.battler, battle)
+        next if Settings::MORE_TYPE_EFFECTS && b.has_type?(:GHOST)
+        next if b.battler.trappedInBattle?   # Relevant trapping effects are checked above
+        if battler.ability_active?
+          trapping = Battle::AbilityEffects.triggerTrappingByTarget(battler.ability, b.battler, battler.battler, battle)
+          break if trapping
+        end
+        if battler.item_active?
+          trapping = Battle::ItemEffects.triggerTrappingByTarget(battler.item, b.battler, battler.battler, battle)
+          break if trapping
+        end
+      end
+      next false if trapping
+    end
+    # Doesn't have sufficiently raised stats that would be lost by switching
+    next false if battler.stages.any? { |key, val| val >= 2 }
+    # A reserve Pokémon is awake and not frozen
+    next false if reserves.none? { |pkmn| ![:SLEEP, :FROZEN].include?(pkmn.status) }
+    # 60% chance to not bother
+    next false if ai.pbAIRandom(100) < 60
+    PBDebug.log_ai("#{battler.name} wants to switch because it is asleep and can't do anything")
+    next true
+  }
+)
 
 #===============================================================================
 # Fixed Cramorant's form not reverting after coughing up its Gulp Missile.
@@ -129,29 +121,31 @@ class Battle::Battler
   alias __hotfixes__pbEffectsOnMakingHit pbEffectsOnMakingHit unless method_defined?(:__hotfixes__pbEffectsOnMakingHit)
 
   def pbEffectsOnMakingHit(move, user, target)
-    # Cramorant - Gulp Missile
-    if target.damageState.calcDamage > 0 && !target.damageState.substitute && (target.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
-             target.form > 0 && !target.effects[PBEffects::Transform])
-      oldHP = user.hp
-      # NOTE: Strictly speaking, an attack animation should be shown (the
-      #       target Cramorant attacking the user) and the ability splash
-      #       shouldn't be shown.
-      @battle.pbShowAbilitySplash(target)
-      target_form = target.form
-      target.pbChangeForm(0, nil)
-      if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
-        @battle.scene.pbDamageAnimation(user)
-        user.pbReduceHP(user.totalhp / 4, false)
+    if target.damageState.calcDamage > 0 && !target.damageState.substitute
+      # Cramorant - Gulp Missile
+      if target.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
+         target.form > 0 && !target.effects[PBEffects::Transform]
+        oldHP = user.hp
+        # NOTE: Strictly speaking, an attack animation should be shown (the
+        #       target Cramorant attacking the user) and the ability splash
+        #       shouldn't be shown.
+        @battle.pbShowAbilitySplash(target)
+        target_form = target.form
+        target.pbChangeForm(0, nil)
+        if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
+          @battle.scene.pbDamageAnimation(user)
+          user.pbReduceHP(user.totalhp / 4, false)
+        end
+        case target_form
+        when 1   # Gulping Form
+          user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
+        when 2   # Gorging Form
+          user.pbParalyze(target) if user.pbCanParalyze?(target, false)
+        end
+        @battle.pbHideAbilitySplash(target)
+        user.pbItemHPHealCheck if user.hp < oldHP
       end
-      case target_form
-      when 1   # Gulping Form
-        user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
-      when 2   # Gorging Form
-        user.pbParalyze(target) if user.pbCanParalyze?(target, false)
-      end
-      @battle.pbHideAbilitySplash(target)
-      user.pbItemHPHealCheck if user.hp < oldHP
-          end
+    end
     __hotfixes__pbEffectsOnMakingHit(move, user, target)
   end
 end
@@ -164,11 +158,13 @@ end
 module Battle::CatchAndStoreMixin
   def pbStorePokemon(pkmn)
     # Nickname the Pokémon (unless it's a Shadow Pokémon)
-    if !pkmn.shadowPokemon? && ($PokemonSystem.givenicknames == 0 &&
-         pbDisplayConfirm(_INTL("Would you like to give a nickname to {1}?", pkmn.name)))
-      nickname = @scene.pbNameEntry(_INTL("{1}'s nickname?", pkmn.speciesName), pkmn)
-      pkmn.name = nickname
+    if !pkmn.shadowPokemon?
+      if $PokemonSystem.givenicknames == 0 &&
+         pbDisplayConfirm(_INTL("Would you like to give a nickname to {1}?", pkmn.name))
+        nickname = @scene.pbNameEntry(_INTL("{1}'s nickname?", pkmn.speciesName), pkmn)
+        pkmn.name = nickname
       end
+    end
     # Store the Pokémon
     if pbPlayer.party_full? && (@sendToBoxes == 0 || @sendToBoxes == 2)   # Ask/must add to party
       cmds = [_INTL("Add to your party"),
@@ -256,14 +252,15 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     return if !busy?
     return if @textchars[@curchar] == "\n"
     resume
-    return unless curcharSkip(true)
-    visiblelines = (self.height - self.borderY) / @lineHeight
-    if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
-      @scroll_timer_start = System.uptime
-    elsif @textchars[@curchar] == "\1"
-      @pausing = true if @curchar < @numtextchars - 1
-      self.startPause
-      refresh
+    if curcharSkip(true)
+      visiblelines = (self.height - self.borderY) / @lineHeight
+      if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+        @scroll_timer_start = System.uptime
+      elsif @textchars[@curchar] == "\1"
+        @pausing = true if @curchar < @numtextchars - 1
+        self.startPause
+        refresh
+      end
     end
   end
 end
@@ -355,7 +352,9 @@ end
 #===============================================================================
 class Battle::Battler
   def pbAbilitiesOnSwitchOut
-    Battle::AbilityEffects.triggerOnSwitchOut(self.ability, self, false) if abilityActive?
+    if abilityActive?
+      Battle::AbilityEffects.triggerOnSwitchOut(self.ability, self, false)
+    end
     # Reset form
     @battle.peer.pbOnLeavingBattle(@battle, @pokemon, @battle.usedInBattle[idxOwnSide][@index / 2])
     # Check for end of Neutralizing Gas/Unnerve
@@ -383,9 +382,7 @@ end
 # loop of that weather starting and ending.
 #===============================================================================
 class Battle
-  unless method_defined?(:__hotfixes__pbEndPrimordialWeather)
-    alias __hotfixes__pbEndPrimordialWeather pbEndPrimordialWeather
-  end
+  alias __hotfixes__pbEndPrimordialWeather pbEndPrimordialWeather unless method_defined?(:__hotfixes__pbEndPrimordialWeather)
 
   def pbEndPrimordialWeather
     return if @field.weather == @field.defaultWeather
@@ -398,73 +395,77 @@ end
 # switching because of that.
 #===============================================================================
 Battle::AI::Handlers::ShouldSwitch.add(:significant_eor_damage,
-                                       proc { |battler, reserves, ai, battle|
-                                         eor_damage = battler.rough_end_of_round_damage
-                                         next false if eor_damage <= 0
-                                         # Switch if battler will take significant EOR damage
-                                         if eor_damage >= battler.hp / 2 || eor_damage >= battler.totalhp / 4
-                                           PBDebug.log_ai("#{battler.name} wants to switch because it will take a lot of EOR damage")
-                                           next true
-                                         end
-                                         # Switch to remove certain effects that cause the battler EOR damage
-                                         if ai.trainer.high_skill?
-                                           if battler.effects[PBEffects::LeechSeed] >= 0 && ai.pbAIRandom(100) < 50
-                                             PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Leech Seed")
-                                             next true
-                                           end
-                                           if battler.effects[PBEffects::Nightmare]
-                                             PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Nightmare")
-                                             next true
-                                           end
-                                           if battler.effects[PBEffects::Curse]
-                                             PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Curse")
-                                             next true
-                                           end
-                                           if battler.status == :POISON && battler.statusCount > 0 && !battler.has_active_ability?(:POISONHEAL)
-                                             poison_damage = battler.totalhp / 8
-                                             next_toxic_damage = battler.totalhp * (battler.effects[PBEffects::Toxic] + 1) / 16
-                                             if (battler.hp <= next_toxic_damage && battler.hp > poison_damage) ||
-                                                next_toxic_damage > poison_damage * 2
-                                               PBDebug.log_ai("#{battler.name} wants to switch to reduce toxic to regular poisoning")
-                                               next true
-                                             end
-                                           end
-                                         end
-                                         next false
-                                       }
-                                      )
+  proc { |battler, reserves, ai, battle|
+    eor_damage = battler.rough_end_of_round_damage
+    next false if eor_damage <= 0
+    # Switch if battler will take significant EOR damage
+    if eor_damage >= battler.hp / 2 || eor_damage >= battler.totalhp / 4
+      PBDebug.log_ai("#{battler.name} wants to switch because it will take a lot of EOR damage")
+      next true
+    end
+    # Switch to remove certain effects that cause the battler EOR damage
+    if ai.trainer.high_skill?
+      if battler.effects[PBEffects::LeechSeed] >= 0 && ai.pbAIRandom(100) < 50
+        PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Leech Seed")
+        next true
+      end
+      if battler.effects[PBEffects::Nightmare]
+        PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Nightmare")
+        next true
+      end
+      if battler.effects[PBEffects::Curse]
+        PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Curse")
+        next true
+      end
+      if battler.status == :POISON && battler.statusCount > 0 && !battler.has_active_ability?(:POISONHEAL)
+        poison_damage = battler.totalhp / 8
+        next_toxic_damage = battler.totalhp * (battler.effects[PBEffects::Toxic] + 1) / 16
+        if (battler.hp <= next_toxic_damage && battler.hp > poison_damage) ||
+           next_toxic_damage > poison_damage * 2
+          PBDebug.log_ai("#{battler.name} wants to switch to reduce toxic to regular poisoning")
+          next true
+        end
+      end
+    end
+    next false
+  }
+)
 
 #===============================================================================
 # Fixed the AI wanting to trigger a target's ability/item instead of not wanting
 # to.
 #===============================================================================
 Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:trigger_target_ability_or_item_upon_hit,
-                                                        proc { |score, move, user, target, ai, battle|
-                                                          if ai.trainer.high_skill? && move.damagingMove? && target.effects[PBEffects::Substitute] == 0
-                                                            if target.ability_active? && (Battle::AbilityEffects::OnBeingHit[target.ability] ||
-                                                                 (Battle::AbilityEffects::AfterMoveUseFromTarget[target.ability] &&
-                                                                 (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0)))
-                                                              old_score = score
-                                                              score -= 8
-                                                              PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
-                                                              end
-                                                            if target.battler.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
-                                                               target.battler.form > 0 && !target.effects[PBEffects::Transform]
-                                                              old_score = score
-                                                              score -= 8
-                                                              PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
-                                                            end
-                                                            if target.item_active? && (Battle::ItemEffects::OnBeingHit[target.item] ||
-                                                                 (Battle::ItemEffects::AfterMoveUseFromTarget[target.item] &&
-                                                                 (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0)))
-                                                              old_score = score
-                                                              score -= 8
-                                                              PBDebug.log_score_change(score - old_score, "can trigger the target's item")
-                                                              end
-                                                          end
-                                                          next score
-                                                        }
-                                                       )
+  proc { |score, move, user, target, ai, battle|
+    if ai.trainer.high_skill? && move.damagingMove? && target.effects[PBEffects::Substitute] == 0
+      if target.ability_active?
+        if Battle::AbilityEffects::OnBeingHit[target.ability] ||
+           (Battle::AbilityEffects::AfterMoveUseFromTarget[target.ability] &&
+           (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0))
+          old_score = score
+          score -= 8
+          PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
+        end
+      end
+      if target.battler.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
+         target.battler.form > 0 && !target.effects[PBEffects::Transform]
+        old_score = score
+        score -= 8
+        PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
+      end
+      if target.item_active?
+        if Battle::ItemEffects::OnBeingHit[target.item] ||
+           (Battle::ItemEffects::AfterMoveUseFromTarget[target.item] &&
+           (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0))
+          old_score = score
+          score -= 8
+          PBDebug.log_score_change(score - old_score, "can trigger the target's item")
+        end
+      end
+    end
+    next score
+  }
+)
 
 #===============================================================================
 # Fixed a replacement Pokémon being invisible if its predecessor fainted and

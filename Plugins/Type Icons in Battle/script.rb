@@ -2,25 +2,24 @@
 # Config Options
 #-------------------------------------------------------------------------------
 class Battle::Scene::PokemonDataBox
+
   # Set this to certain values to draw the icons at different positions
   # 0 - Draw above the databox
   # 1 - Draw below the databox
   # 2 - Draw at the side of the databox
   TYPE_ICONS_POSITION = 2
+
 end
 
 #-------------------------------------------------------------------------------
 # Main Script
 #-------------------------------------------------------------------------------
 class Battle::Scene::PokemonDataBox
-  unless method_defined?(:__types__initializeOtherGraphics)
-    alias __types__initializeOtherGraphics initializeOtherGraphics
-  end
+  alias __types__initializeOtherGraphics initializeOtherGraphics unless method_defined?(:__types__initializeOtherGraphics)
   def initializeOtherGraphics(*args)
     @types_bitmap = AnimatedBitmap.new("Graphics/UI/Battle/icon_types")
     @types_sprite = Sprite.new(viewport)
-    @types_bitmap.height
-    GameData::Type.count
+    height = @types_bitmap.height / GameData::Type.count
     @types_x, @types_y, height = 0
     case TYPE_ICONS_POSITION
     when 2
@@ -87,12 +86,13 @@ class Battle::Scene::PokemonDataBox
     end
     types.each_with_index do |type, i|
       type_number = GameData::Type.get(type).icon_position
-      type_rect = Rect.new(0, type_number * height, width, height)
       if TYPE_ICONS_POSITION == 2
+        type_rect = Rect.new(0, type_number * height, width, height)
         @types_sprite.bitmap.blt(0, height * i, @types_bitmap.bitmap, type_rect)
       else
+        type_rect = Rect.new(0, type_number * height, width, height)
         @types_sprite.bitmap.blt((width - 6) * i, 0, @types_bitmap.bitmap, type_rect)
-            end
+      end
     end
   end
 end

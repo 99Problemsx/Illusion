@@ -11,7 +11,6 @@ module FollowingPkmn
     end
     return nil
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for getting the Following Pokemon event
   #-----------------------------------------------------------------------------
@@ -20,7 +19,6 @@ module FollowingPkmn
     ret = FollowingPkmn.get
     return ret.is_a?(Array) ? ret[0] : nil
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for getting the Following Pokemon FollowerData
   #-----------------------------------------------------------------------------
@@ -29,7 +27,6 @@ module FollowingPkmn
     ret = FollowingPkmn.get
     return ret.is_a?(Array) ? ret[1] : nil
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for getting the Pokemon Object of the Following Pokemon
   #-----------------------------------------------------------------------------
@@ -37,7 +34,6 @@ module FollowingPkmn
     return nil if !FollowingPkmn.can_check?
     return $player.first_able_pokemon
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for checking whether the current follower is airborne
   #-----------------------------------------------------------------------------
@@ -47,12 +43,9 @@ module FollowingPkmn
     return false if !pkmn
     return true if pkmn.hasType?(:FLYING)
     return true if pkmn.hasAbility?(:LEVITATE)
-    if FollowingPkmn::LEVITATING_FOLLOWERS.any? { |s| s == pkmn.species || s.to_s == "#{pkmn.species}_#{pkmn.form}" }
-      return true
-    end
+    return true if FollowingPkmn::LEVITATING_FOLLOWERS.any? { |s| s == pkmn.species || s.to_s == "#{pkmn.species}_#{pkmn.form}" }
     return false
   end
-
   #-----------------------------------------------------------------------------
   # Script Command for checking whether the current follower is waterborne
   #-----------------------------------------------------------------------------
@@ -69,7 +62,6 @@ module FollowingPkmn
     return true if FollowingPkmn.airborne_follower?
     return false
   end
-
   #-----------------------------------------------------------------------------
   # Forcefully refresh Following Pokemon sprite with animation (if specified)
   #-----------------------------------------------------------------------------
@@ -94,14 +86,11 @@ module FollowingPkmn
       end
     end
     FollowingPkmn.change_sprite(first_pkmn) if ret
-    if FollowingPkmn::ALWAYS_ANIMATE
-      FollowingPkmn.move_route([(ret ? PBMoveRoute::STEP_ANIME_ON : PBMoveRoute::STEP_ANIME_OFF)])
-    end
+    FollowingPkmn.move_route([(ret ? PBMoveRoute::STEP_ANIME_ON : PBMoveRoute::STEP_ANIME_OFF)]) if FollowingPkmn::ALWAYS_ANIMATE
     event&.calculate_bush_depth
     $PokemonGlobal.time_taken = 0 if !ret
     return ret
   end
-
   #-----------------------------------------------------------------------------
   # Forcefully refresh Following Pokemon sprite with animation (if specified)
   #-----------------------------------------------------------------------------
@@ -111,22 +100,22 @@ module FollowingPkmn
     FollowingPkmn.get_event&.character_hue  = 0
     FollowingPkmn.get_data&.character_hue   = 0
   end
-
   #-----------------------------------------------------------------------------
   # Set the Following Pokemon sprite to a different Pokemon
   #-----------------------------------------------------------------------------
   def self.change_sprite(pkmn)
     shiny = pkmn.shiny?
-    shiny = pkmn.superVariant if pkmn.respond_to?(:superVariant) && !pkmn.superVariant.nil? && pkmn.superShiny?
+    shiny = pkmn.superVariant if (pkmn.respond_to?(:superVariant) && !pkmn.superVariant.nil? && pkmn.superShiny?)
     fname = GameData::Species.ow_sprite_filename(pkmn.species, pkmn.form,
-                                                 pkmn.gender, shiny, pkmn.shadow)
+      pkmn.gender, shiny, pkmn.shadow)
     fname.gsub!("Graphics/Characters/", "")
     FollowingPkmn.get_event&.character_name = fname
     FollowingPkmn.get_data&.character_name  = fname
-    return unless FollowingPkmn.get_event&.move_route_forcing
-    hue = pkmn.respond_to?(:superHue) && pkmn.superShiny? ? pkmn.superHue : 0
-    FollowingPkmn.get_event&.character_hue  = hue
-    FollowingPkmn.get_data&.character_hue   = hue
+    if FollowingPkmn.get_event&.move_route_forcing
+      hue = pkmn.respond_to?(:superHue) && pkmn.superShiny? ? pkmn.superHue : 0
+      FollowingPkmn.get_event&.character_hue  = hue
+      FollowingPkmn.get_data&.character_hue   = hue
+    end
   end
   #-----------------------------------------------------------------------------
 end

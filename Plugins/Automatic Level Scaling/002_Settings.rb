@@ -34,8 +34,8 @@ module LevelScalingSettings
     2 => Difficulty.new(random_increase: 2),                      # Medium
     3 => Difficulty.new(fixed_increase: 3, random_increase: 3),   # Hard
     4 => Difficulty.new,                                          # Avarage
-    5 => Difficulty.new(fixed_increase: -2, random_increase: 5)  # Standard Essentials
-  }.freeze
+    5 => Difficulty.new(fixed_increase: -2, random_increase: 5),  # Standard Essentials
+  }
 
   # You can insert the first stage of a custom regional form here
   # Pokemon not included in this array will have their evolution selected randomly among all their possible forms
@@ -45,5 +45,5 @@ module LevelScalingSettings
     :DARUMAKA, :YAMASK, :STUNFISK, :SLOWPOKE, :ARTICUNO, :ZAPDOS,
     :MOLTRES, :PIKACHU, :EXEGGCUTE, :CUBONE, :KOFFING, :MIMEJR,
     :BURMY, :DEERLING, :ROCKRUFF, :MINIOR, :PUMPKABOO
-  ].freeze
+  ]
 end

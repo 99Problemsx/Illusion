@@ -7,7 +7,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
       passed_tile_checks = false
       bit = (1 << ((direction / 2) - 1)) & 0x0f
       # Check all events for ones using tiles as graphics, and see if they're passable
-      this_map.events.each_value do |event|
+      this_map.events.values.each do |event|
         next if event.tile_id < 0 || event.through || !event.at_coordinate?(x, y)
         tile_data = GameData::TerrainTag.try_get(this_map.terrain_tags[event.tile_id])
         next if tile_data.ignore_passability
@@ -20,7 +20,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
         passage = this_map.passages[event.tile_id] || 0
         return false if passage & bit != 0
         passed_tile_checks = true if (tile_data.bridge && $PokemonGlobal.bridge > 0) ||
-                                     (this_map.priorities[event.tile_id] || -1) == 0
+        (this_map.priorities[event.tile_id] || -1) == 0
         break if passed_tile_checks
       end
       # Check if tiles at (x, y) allow passage for followe
@@ -43,7 +43,7 @@ if PluginManager.findDirectory("Following Pokemon EX")
         end
       end
       # Check all events on the map to see if any are in the way
-      this_map.events.each_value do |event|
+      this_map.events.values.each do |event|
         next if !event.at_coordinate?(x, y)
         return false if !event.through && event.character_name != ""
       end
@@ -81,17 +81,17 @@ if PluginManager.findDirectory("Following Pokemon EX")
       FollowingPkmn.get_data&.character_name  = ""
       FollowingPkmn.get_event&.character_hue  = 0
       FollowingPkmn.get_data&.character_hue   = 0
-      if Item_Camouflage[:orignal_effect]
+      if !Item_Camouflage[:orignal_effect]
         if $game_player.camouflage == true
-          pbMoveRoute(FollowingPkmn.get_event, [
-                        PBMoveRoute::Opacity, 0  # 0%
-                      ])
+          pbMoveRoute(FollowingPkmn.get_event,[
+            PBMoveRoute::Opacity,51  #20%
+            ])
         end
       else
         if $game_player.camouflage == true
-          pbMoveRoute(FollowingPkmn.get_event, [
-                        PBMoveRoute::Opacity, 51  # 20%
-                      ])
+          pbMoveRoute(FollowingPkmn.get_event,[
+            PBMoveRoute::Opacity,0  #0%
+            ])
         end
       end
     end

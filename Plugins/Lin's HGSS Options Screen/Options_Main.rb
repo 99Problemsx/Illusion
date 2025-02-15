@@ -19,9 +19,9 @@ class Window_PokemonOption < Window_DrawableCommand
   def itemCount
     if PluginManager.installed?("Set the Controls Screen") && OptionsConfig::CONTROLS_IN_OPTIONS == true
       return @options.length + 2
-end
-
-    return @options.length + 1
+    else
+      return @options.length + 1
+    end
   end
 
   def drawItem(index, _count, rect)
@@ -30,9 +30,9 @@ end
     # Draw option's name
     if PluginManager.installed?("Set the Controls Screen") && OptionsConfig::CONTROLS_IN_OPTIONS == true
       optionname = case index
-                   when @options.length + 1 then _INTL("Close")
-                   when @options.length then _INTL("Controls")
-                   else; @options[index].name
+      when @options.length+1; _INTL("Close")
+      when @options.length;   _INTL("Controls")
+      else; @options[index].name
       end
     else
       optionname = (index == @options.length) ? _INTL("Close") : @options[index].name
@@ -51,14 +51,14 @@ end
     when EnumOption
       if @options[index].values.length > 1
         totalwidth = 0
-        @options[index].each_value do |value|
+        @options[index].values.each do |value|
           totalwidth += self.contents.text_size(value).width
         end
         spacing = (rect.width - rect.x - optionwidth - totalwidth) / (@options[index].values.length - 1)
         spacing = 0 if spacing < 0
         xpos = optionwidth + rect.x
         ivalue = 0
-        @options[index].each_value do |value|
+        @options[index].values.each do |value|
           pbDrawShadowText(self.contents, xpos, rect.y, optionwidth, rect.height, value,
                            (ivalue == self[index]) ? SEL_VALUE_BASE_COLOR : self.baseColor,
                            (ivalue == self[index]) ? SEL_VALUE_SHADOW_COLOR : self.shadowColor)
@@ -113,7 +113,7 @@ class PokemonOption_Scene
     end
     # Create sprites
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99_999
+    @viewport.z = 99999
     @sprites = {}
     addBackgroundOrColoredPlane(@sprites, "bg", "optionsbg", Color.new(192, 200, 208), @viewport)
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
@@ -136,7 +136,7 @@ class PokemonOption_Scene
     @sprites["option"].baseColor   = OptionsConfig::TEXT_BASE
     @sprites["option"].shadowColor = OptionsConfig::TEXT_SHADOW
     # Get the values of each option
-    @options.length.times { |i| @sprites["option"].setValueNoRefresh(i, @options[i].get || 0) }
+    @options.length.times { |i|  @sprites["option"].setValueNoRefresh(i, @options[i].get || 0) }
     @sprites["option"].refresh
     pbChangeSelection
     pbDeactivateWindows(@sprites)
@@ -158,9 +158,9 @@ class PokemonOption_Scene
       end
     else
       if PluginManager.installed?("Set the Controls Screen")
-        if @sprites["option"].index == @options.length
+        if @sprites["option"].index==@options.length
           description = _INTL("Set the Controls.")
-        else
+        else  
           description = _INTL("Close the screen.")
         end
       else
@@ -187,7 +187,7 @@ class PokemonOption_Scene
           break
         elsif Input.trigger?(Input::USE)
           if PluginManager.installed?("Set the Controls Screen") && OptionsConfig::CONTROLS_IN_OPTIONS == true
-            break if @sprites["option"].index == @options.length + 1
+            break if @sprites["option"].index == @options.length+1
             open_set_controls_ui if @sprites["option"].index == @options.length
           else
             break if @sprites["option"].index == @options.length

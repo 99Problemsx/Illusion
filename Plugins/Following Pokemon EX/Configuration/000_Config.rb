@@ -29,11 +29,11 @@ module FollowingPkmn
 
   # Status tones to be used, if this is true (Red, Green, Blue)
   APPLY_STATUS_TONES        = true
-  TONE_BURN                 = [206, 73, 43].freeze
-  TONE_POISON               = [109, 55, 130].freeze
-  TONE_PARALYSIS            = [204, 152, 44].freeze
-  TONE_FROZEN               = [56, 160, 193].freeze
-  TONE_SLEEP                = [0, 0, 0].freeze
+  TONE_BURN                 = [206, 73, 43]
+  TONE_POISON               = [109, 55, 130]
+  TONE_PARALYSIS            = [204, 152, 44]
+  TONE_FROZEN               = [56, 160, 193]
+  TONE_SLEEP                = [0, 0, 0]
   # For your custom status conditions, just add it as "TONE_(INTERNAL NAME)"
   # Example: TONE_BLEED, TONE_CONFUSE, TONE_INFATUATION
 
@@ -91,7 +91,7 @@ module FollowingPkmn
     # Gen 8
     :ORBEETLE, :FLAPPLE, :SINISTEA, :POLTEAGEIST, :FROSMOTH, :DREEPY, :DRAKLOAK,
     :DRAGAPULT, :ETERNATUS, :REGIELEKI, :REGIDRAGO, :CALYREX
-  ].freeze
+  ]
 
   # List of Pokemon that will not appear behind the player when surfing,
   # regardless of whether they are flying type, have levitate or are mentioned
@@ -116,5 +116,5 @@ module FollowingPkmn
     :ROWLET, :DARTRIX, :PIKIPEK, :ORICORIO, :SILVALLY_2,
     # Gen VIII
     :ROOKIDEE, :CALYREX_1, :CALYREX_2
-  ].freeze
+  ]
 end

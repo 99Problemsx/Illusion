@@ -35,26 +35,30 @@ class TilesetRearranger
           draw_help_text
         end
       elsif @mode == :swap   # Finish swapping tiles
-        if Input.trigger?(Input::USE) && swap_tiles
-          clear_selection
-          draw_tileset
-          draw_help_text
-          end
-      elsif @mode == :cut_insert   # Finish inserting tiles
-        if can_insert_cut_tiles? && Input.trigger?(Input::USE)
-          add_to_history
-          (TILES_PER_ROW * @selected_height).times { @tile_ID_map.insert(@y * TILES_PER_ROW, -1) }
-          @height += @selected_height
-          @selected_y += @selected_height if @selected_y >= @y
-          @x = @selected_x
-          if swap_tiles(false)
-            ensure_cursor_and_tileset_on_screen
+        if Input.trigger?(Input::USE)
+          if swap_tiles
             clear_selection
             draw_tileset
-            draw_title_text
             draw_help_text
           end
+        end
+      elsif @mode == :cut_insert   # Finish inserting tiles
+        if can_insert_cut_tiles?
+          if Input.trigger?(Input::USE)
+            add_to_history
+            (TILES_PER_ROW * @selected_height).times { @tile_ID_map.insert(@y * TILES_PER_ROW, -1) }
+            @height += @selected_height
+            @selected_y += @selected_height if @selected_y >= @y
+            @x = @selected_x
+            if swap_tiles(false)
+              ensure_cursor_and_tileset_on_screen
+              clear_selection
+              draw_tileset
+              draw_title_text
+              draw_help_text
+            end
           end
+        end
       end
     when :move_row
       if @selected_y < 0   # Start selecting rows
@@ -157,7 +161,7 @@ class TilesetRearranger
           :move_row   => :add_row,
           :add_row    => :erase,
           :erase      => :delete_row,
-          :delete_row => @swap_mode
+          :delete_row => @swap_mode,
         }[@mode]
         ensure_cursor_and_tileset_on_screen
         clear_selection
