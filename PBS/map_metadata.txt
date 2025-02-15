@@ -217,7 +217,7 @@ MapSize = 1,111
 #-------------------------------
 [042]   # Dein Zuhause
 Name = Du's Home
-HealingSpot = 42,6,7
+HealingSpot = 42,5,6
 #-------------------------------
 [044]
 Name = Route 6

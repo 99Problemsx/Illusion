@@ -11950,6 +11950,65 @@ List of Event Commands:
 @>
 
 #------------------------------------------------------------------------------
+Event ID: 003
+Event Name: EV003
+(X,Y): (005,006)
+
+Page #1
+Conditions
+Switch 0116: Start Heal is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Event Touch
+
+List of Event Commands:
+@>Script: pbSetPokemonCenter
+@>Control Self Switch: A =ON
+@>
+
+Page #2
+Conditions
+Self Switch A is ON
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Action Button
+
+List of Event Commands:
+@>
+
+#------------------------------------------------------------------------------
+Event ID: 004
+Event Name: EV004
+(X,Y): (006,009)
+
+Page #1
+Conditions
+None
+
+Autonomous Movement
+Type: Fixed
+Speed: 3: Slow
+Freq: 3: Low
+Options Enabled
+Move Animation
+Trigger: Event Touch
+
+List of Event Commands:
+@>Control Switches: [0116: Start Heal] = ON
+@>Control Self Switch: A =ON
+@>
+
+#------------------------------------------------------------------------------
 Event ID: 005
 Event Name: EV005
 (X,Y): (014,008)
@@ -26270,7 +26329,7 @@ List of Event Commands:
   @>Show Choices: Level Cap aktivieren, Ohne Level Cap spielen
   (When Cancel: Choice 2)
   : When [Level Cap aktivieren]
-   @>Text: Unser System hat zwei EInstellungen, einmal, Hard Cap - Das Pokemon kann nicht aufleveln/ Erfahrung sammeln falls es das Level Cap erreicht hat.
+   @>Text: Unser System hat zwei Einstellungen, einmal, Hard Cap - Das Pokemon kann nicht aufleveln/ Erfahrung sammeln falls es das Level Cap erreicht hat.
     :    : Die andere Einstellung ist EXP Cap - Das Pokémon  wird reduzierte Erfahrungspunkte erhalten wenn es das Level Cap erreicht hat.
    @>Text: Wähle eine Einstellung
    @>Show Choices: Hard Cap, EXP Cap
